@@ -1,0 +1,29 @@
+# NTX Configuration 
+
+# Application Settings
+[app]
+refresh_interval = "60s"        # Data refresh frequency (30s-5min)
+startup_view = "portfolio"      # Default view: portfolio, market, watchlist
+log_level = "info"             # Logging: debug, info, warn, error
+
+# Market Data Settings  
+[market]
+rate_limit = "2s"              # Request interval (1-3 seconds)
+request_timeout = "10s"        # HTTP timeout
+retry_attempts = 3             # Number of retries on failure
+backoff_multiplier = 2.0       # Exponential backoff factor
+
+# Display Preferences
+[display]
+theme = "default"              # UI theme: default, dark, light
+decimal_places = 2             # Price precision
+currency_symbol = "Rs."        # Display currency
+date_format = "2025-01-30"     # Date format string
+show_percentage = true         # Show percentage changes
+
+# TUI Layout
+[ui]
+show_borders = true            # Pane borders on/off
+pane_width_ratio = [30, 40, 30] # Portfolio:Watchlist:Market ratios
+enable_colors = true           # Color coding for gains/losses
+animation_speed = "normal"     # Animation: slow, normal, fast
