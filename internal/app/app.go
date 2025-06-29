@@ -6,18 +6,25 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"ntx/internal/app/services"
+	"ntx/internal/data/repository"
+	"ntx/internal/data/sqlite"
 	"ntx/internal/security"
 	"ntx/internal/ui/dashboard"
 )
 
 // App represents the main application
 type App struct {
-	config    *Config
-	logger    *slog.Logger
-	program   *tea.Program
-	configDir string
+	config       *Config
+	logger       *slog.Logger
+	program      *tea.Program
+	configDir    string
+	credentials  *security.Credentials
+	dbManager    repository.DatabaseManager
+	backupService *services.BackupService
 }
 
 // Config holds application configuration
@@ -26,6 +33,9 @@ type Config struct {
 	StartupView     string
 	LogLevel        string
 	DataDir         string
+	DatabasePath    string
+	BackupEnabled   bool
+	BackupInterval  string
 }
 
 // New creates a new application instance
@@ -47,6 +57,12 @@ func New() (*App, error) {
 		return nil, fmt.Errorf("failed to initialize credentials: %w", err)
 	}
 
+	// Load credentials
+	credentials, err := security.LoadCredentials(configDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load credentials: %w", err)
+	}
+
 	// Load configuration
 	config, err := loadConfig(configDir)
 	if err != nil {
@@ -56,6 +72,19 @@ func New() (*App, error) {
 	// Setup logger
 	logger := setupLogger(config.LogLevel)
 
+	// Initialize database
+	dbManager, err := initializeDatabase(config, credentials, logger)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize database: %w", err)
+	}
+
+	// Initialize backup service
+	backupService, err := initializeBackupService(dbManager, config, logger)
+	if err != nil {
+		logger.Warn("Failed to initialize backup service", "error", err)
+		// Continue without backup service - not critical for basic functionality
+	}
+
 	// Create the dashboard model
 	model := dashboard.NewModel()
 
@@ -63,10 +92,13 @@ func New() (*App, error) {
 	program := tea.NewProgram(model, tea.WithAltScreen())
 
 	app := &App{
-		config:    config,
-		logger:    logger,
-		program:   program,
-		configDir: configDir,
+		config:        config,
+		logger:        logger,
+		program:       program,
+		configDir:     configDir,
+		credentials:   credentials,
+		dbManager:     dbManager,
+		backupService: backupService,
 	}
 
 	return app, nil
@@ -77,6 +109,15 @@ func (a *App) Start(ctx context.Context) error {
 	a.logger.Info("Starting NTX - NEPSE Power Terminal", 
 		"version", "0.1.0",
 		"config_dir", a.configDir)
+
+	// Start backup service if enabled
+	if a.backupService != nil {
+		if err := a.backupService.Start(ctx); err != nil {
+			a.logger.Error("Failed to start backup service", "error", err)
+		} else {
+			a.logger.Info("Backup service started")
+		}
+	}
 
 	// Start the TUI in a goroutine so we can handle context cancellation
 	go func() {
@@ -92,8 +133,23 @@ func (a *App) Start(ctx context.Context) error {
 func (a *App) Stop() error {
 	a.logger.Info("Stopping application...")
 	
+	// Stop backup service
+	if a.backupService != nil {
+		if err := a.backupService.Stop(); err != nil {
+			a.logger.Error("Failed to stop backup service", "error", err)
+		}
+	}
+
+	// Stop TUI program
 	if a.program != nil {
 		a.program.Quit()
+	}
+
+	// Close database connection
+	if a.dbManager != nil {
+		if err := a.dbManager.Close(); err != nil {
+			a.logger.Error("Failed to close database", "error", err)
+		}
 	}
 
 	a.logger.Info("Application stopped successfully")
@@ -102,14 +158,18 @@ func (a *App) Stop() error {
 
 // loadConfig loads the application configuration
 func loadConfig(configDir string) (*Config, error) {
-	// For now, return default configuration
-	// TODO: Implement proper config loading from TOML file
-	return &Config{
+	// TODO: Implement proper config loading from TOML file using Viper
+	config := &Config{
 		RefreshInterval: "60s",
 		StartupView:     "portfolio",
 		LogLevel:        "info",
 		DataDir:         configDir,
-	}, nil
+		DatabasePath:    filepath.Join(configDir, "data.db"),
+		BackupEnabled:   true,
+		BackupInterval:  "24h",
+	}
+	
+	return config, nil
 }
 
 // setupLogger configures structured logging
@@ -137,4 +197,71 @@ func setupLogger(level string) *slog.Logger {
 	slog.SetDefault(logger)
 
 	return logger
+}
+
+// initializeDatabase initializes the database manager and runs migrations
+func initializeDatabase(config *Config, credentials *security.Credentials, logger *slog.Logger) (repository.DatabaseManager, error) {
+	// Create SQLite configuration
+	sqliteConfig := sqlite.DefaultConfig(config.DataDir)
+	sqliteConfig.DatabasePath = config.DatabasePath
+
+	// Create database manager
+	dbManager := sqlite.NewManager(sqliteConfig, credentials)
+
+	// Connect to database
+	ctx := context.Background()
+	if err := dbManager.Connect(ctx, config.DatabasePath); err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	logger.Info("Database connected successfully", "path", config.DatabasePath)
+
+	// Run database migrations
+	if err := dbManager.RunMigrations(ctx); err != nil {
+		return nil, fmt.Errorf("failed to run database migrations: %w", err)
+	}
+
+	// Get schema version for logging
+	if version, err := dbManager.GetSchemaVersion(ctx); err == nil {
+		logger.Info("Database migrations completed", "schema_version", version)
+	}
+
+	return dbManager, nil
+}
+
+// initializeBackupService initializes the backup service if enabled
+func initializeBackupService(dbManager repository.DatabaseManager, config *Config, logger *slog.Logger) (*services.BackupService, error) {
+	if !config.BackupEnabled {
+		return nil, nil
+	}
+
+	backupDir := filepath.Join(config.DataDir, "backups")
+	
+	// Parse backup interval
+	backupConfig := services.DefaultBackupConfig()
+	if config.BackupInterval != "" {
+		if interval, err := time.ParseDuration(config.BackupInterval); err == nil {
+			backupConfig.BackupInterval = interval
+		} else {
+			logger.Warn("Invalid backup interval, using default", "interval", config.BackupInterval)
+		}
+	}
+
+	backupService := services.NewBackupService(dbManager, backupDir, logger, backupConfig)
+	return backupService, nil
+}
+
+// GetDatabaseManager returns the database manager (for external access)
+func (a *App) GetDatabaseManager() repository.DatabaseManager {
+	return a.dbManager
+}
+
+// GetBackupService returns the backup service (for external access)
+func (a *App) GetBackupService() *services.BackupService {
+	return a.backupService
+}
+
+// GetCredentials returns the loaded credentials (for external access)
+func (a *App) GetCredentials() *security.Credentials {
+	return a.credentials
 }
