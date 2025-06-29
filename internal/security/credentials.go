@@ -190,10 +190,9 @@ func LoadCredentials(configDir string) (*Credentials, error) {
 
 // deriveMasterKey derives a master key from system-specific information
 func deriveMasterKey(credentialsPath string) ([]byte, error) {
-	// Get file info for additional entropy
-	fileInfo, err := os.Stat(credentialsPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get file info: %w", err)
+	// Verify file exists
+	if _, err := os.Stat(credentialsPath); err != nil {
+		return nil, fmt.Errorf("failed to access credentials file: %w", err)
 	}
 
 	// Get hostname for system-specific entropy
@@ -211,16 +210,16 @@ func deriveMasterKey(credentialsPath string) ([]byte, error) {
 		}
 	}
 
-	// Combine entropy sources
-	entropy := fmt.Sprintf("%s:%s:%d", hostname, user, fileInfo.ModTime().Unix())
-	
+	// Combine entropy sources (removed file modification time as it changes during creation)
+	entropy := fmt.Sprintf("%s:%s", hostname, user)
+
 	// Use a simple but effective key derivation
 	// In production, you might want to use PBKDF2 or Argon2
 	hasher := func(data string) []byte {
 		// Simple hash-based key derivation
 		result := make([]byte, keySize)
 		dataBytes := []byte(data)
-		
+
 		for i := 0; i < keySize; i++ {
 			var sum byte
 			for j, b := range dataBytes {

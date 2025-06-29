@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"strconv"
@@ -23,6 +24,108 @@ const (
 	PaisaPerRupee     = 100
 	BasisPointsPerOne = 100 // 1% = 100 basis points
 )
+
+// Database interfaces for Money
+
+// Scan implements sql.Scanner interface for Money
+func (m *Money) Scan(value interface{}) error {
+	if value == nil {
+		*m = 0
+		return nil
+	}
+
+	switch v := value.(type) {
+	case int64:
+		*m = Money(v)
+	case int:
+		*m = Money(v)
+	case float64:
+		*m = Money(int64(v))
+	case string:
+		val, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return fmt.Errorf("cannot scan %T into Money", value)
+		}
+		*m = Money(val)
+	default:
+		return fmt.Errorf("cannot scan %T into Money", value)
+	}
+
+	return nil
+}
+
+// Value implements driver.Valuer interface for Money
+func (m Money) Value() (driver.Value, error) {
+	return int64(m), nil
+}
+
+// Database interfaces for Quantity
+
+// Scan implements sql.Scanner interface for Quantity
+func (q *Quantity) Scan(value interface{}) error {
+	if value == nil {
+		*q = 0
+		return nil
+	}
+
+	switch v := value.(type) {
+	case int64:
+		*q = Quantity(v)
+	case int:
+		*q = Quantity(v)
+	case float64:
+		*q = Quantity(int64(v))
+	case string:
+		val, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return fmt.Errorf("cannot scan %T into Quantity", value)
+		}
+		*q = Quantity(val)
+	default:
+		return fmt.Errorf("cannot scan %T into Quantity", value)
+	}
+
+	return nil
+}
+
+// Value implements driver.Valuer interface for Quantity
+func (q Quantity) Value() (driver.Value, error) {
+	return int64(q), nil
+}
+
+// Database interfaces for Percentage
+
+// Scan implements sql.Scanner interface for Percentage
+func (p *Percentage) Scan(value interface{}) error {
+	if value == nil {
+		*p = 0
+		return nil
+	}
+
+	switch v := value.(type) {
+	case int64:
+		*p = Percentage(v)
+	case int:
+		*p = Percentage(v)
+	case float64:
+		*p = Percentage(int64(v))
+	case string:
+		val, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return fmt.Errorf("cannot scan %T into Percentage", value)
+		}
+		*p = Percentage(val)
+	default:
+		return fmt.Errorf("cannot scan %T into Percentage", value)
+	}
+
+	return nil
+}
+
+// Value implements driver.Valuer interface for Percentage
+func (p Percentage) Value() (driver.Value, error) {
+	return int64(p), nil
+}
 
 // Money constructor functions
 
@@ -86,12 +189,12 @@ func (m Money) FormattedString() string {
 func (m Money) CommaSeparated() string {
 	rupees := m.Rupees()
 	str := fmt.Sprintf("%.2f", rupees)
-	
+
 	// Split integer and decimal parts
 	parts := strings.Split(str, ".")
 	integer := parts[0]
 	decimal := parts[1]
-	
+
 	// Add commas to integer part
 	if len(integer) > 3 {
 		var result strings.Builder
@@ -103,7 +206,7 @@ func (m Money) CommaSeparated() string {
 		}
 		return fmt.Sprintf("Rs. %s.%s", result.String(), decimal)
 	}
-	
+
 	return fmt.Sprintf("Rs. %s", str)
 }
 
@@ -277,7 +380,7 @@ func NewQuantity(q int64) Quantity {
 func NewQuantityFromString(s string) (Quantity, error) {
 	s = strings.TrimSpace(s)
 	s = strings.ReplaceAll(s, ",", "")
-	
+
 	if s == "" {
 		return Quantity(0), nil
 	}
@@ -308,7 +411,7 @@ func (q Quantity) CommaSeparated() string {
 	if len(str) <= 3 {
 		return str
 	}
-	
+
 	var result strings.Builder
 	for i, digit := range str {
 		if i > 0 && (len(str)-i)%3 == 0 {
@@ -355,11 +458,11 @@ func CalculatePercentageChange(oldValue, newValue Money) Percentage {
 	if oldValue.IsZero() {
 		return Percentage(0)
 	}
-	
+
 	change := newValue.Subtract(oldValue)
 	changeFloat := change.Rupees()
 	oldFloat := oldValue.Rupees()
-	
+
 	percentFloat := (changeFloat / oldFloat) * 100
 	return NewPercentageFromFloat(percentFloat)
 }

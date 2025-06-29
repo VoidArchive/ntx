@@ -8,22 +8,24 @@ import (
 	"path/filepath"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"ntx/internal/app/services"
-	"ntx/internal/data/repository"
-	"ntx/internal/data/sqlite"
+	"ntx/internal/database"
 	"ntx/internal/security"
 	"ntx/internal/ui/dashboard"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // App represents the main application
+// This struct now uses the modern database.Manager with Goose migrations and SQLC queries
+// instead of the previous repository pattern for better performance and type safety.
 type App struct {
-	config       *Config
-	logger       *slog.Logger
-	program      *tea.Program
-	configDir    string
-	credentials  *security.Credentials
-	dbManager    repository.DatabaseManager
+	config        *Config
+	logger        *slog.Logger
+	program       *tea.Program
+	configDir     string
+	credentials   *security.Credentials
+	dbManager     *database.Manager
 	backupService *services.BackupService
 }
 
@@ -39,6 +41,8 @@ type Config struct {
 }
 
 // New creates a new application instance
+// This initialization now uses the modern database.Manager with Goose + SQLC
+// for improved type safety and performance over the previous repository pattern.
 func New() (*App, error) {
 	// Determine config directory
 	homeDir, err := os.UserHomeDir()
@@ -72,8 +76,8 @@ func New() (*App, error) {
 	// Setup logger
 	logger := setupLogger(config.LogLevel)
 
-	// Initialize database
-	dbManager, err := initializeDatabase(config, credentials, logger)
+	// Initialize database with new Manager
+	dbManager, err := initializeDatabase(config, logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
@@ -106,7 +110,7 @@ func New() (*App, error) {
 
 // Start starts the application
 func (a *App) Start(ctx context.Context) error {
-	a.logger.Info("Starting NTX - NEPSE Power Terminal", 
+	a.logger.Info("Starting NTX - NEPSE Power Terminal",
 		"version", "0.1.0",
 		"config_dir", a.configDir)
 
@@ -132,7 +136,7 @@ func (a *App) Start(ctx context.Context) error {
 // Stop stops the application gracefully
 func (a *App) Stop() error {
 	a.logger.Info("Stopping application...")
-	
+
 	// Stop backup service
 	if a.backupService != nil {
 		if err := a.backupService.Stop(); err != nil {
@@ -168,7 +172,7 @@ func loadConfig(configDir string) (*Config, error) {
 		BackupEnabled:   true,
 		BackupInterval:  "24h",
 	}
-	
+
 	return config, nil
 }
 
@@ -200,13 +204,11 @@ func setupLogger(level string) *slog.Logger {
 }
 
 // initializeDatabase initializes the database manager and runs migrations
-func initializeDatabase(config *Config, credentials *security.Credentials, logger *slog.Logger) (repository.DatabaseManager, error) {
-	// Create SQLite configuration
-	sqliteConfig := sqlite.DefaultConfig(config.DataDir)
-	sqliteConfig.DatabasePath = config.DatabasePath
-
+// This now uses the modern database.Manager with Goose migrations and SQLC queries
+// replacing the previous custom migration system for industry-standard practices.
+func initializeDatabase(config *Config, logger *slog.Logger) (*database.Manager, error) {
 	// Create database manager
-	dbManager := sqlite.NewManager(sqliteConfig, credentials)
+	dbManager := database.NewManager()
 
 	// Connect to database
 	ctx := context.Background()
@@ -216,7 +218,7 @@ func initializeDatabase(config *Config, credentials *security.Credentials, logge
 
 	logger.Info("Database connected successfully", "path", config.DatabasePath)
 
-	// Run database migrations
+	// Run database migrations using Goose
 	if err := dbManager.RunMigrations(ctx); err != nil {
 		return nil, fmt.Errorf("failed to run database migrations: %w", err)
 	}
@@ -230,13 +232,14 @@ func initializeDatabase(config *Config, credentials *security.Credentials, logge
 }
 
 // initializeBackupService initializes the backup service if enabled
-func initializeBackupService(dbManager repository.DatabaseManager, config *Config, logger *slog.Logger) (*services.BackupService, error) {
+// This service now works with the modern database.Manager for consistent backup operations.
+func initializeBackupService(dbManager *database.Manager, config *Config, logger *slog.Logger) (*services.BackupService, error) {
 	if !config.BackupEnabled {
 		return nil, nil
 	}
 
 	backupDir := filepath.Join(config.DataDir, "backups")
-	
+
 	// Parse backup interval
 	backupConfig := services.DefaultBackupConfig()
 	if config.BackupInterval != "" {
@@ -252,7 +255,7 @@ func initializeBackupService(dbManager repository.DatabaseManager, config *Confi
 }
 
 // GetDatabaseManager returns the database manager (for external access)
-func (a *App) GetDatabaseManager() repository.DatabaseManager {
+func (a *App) GetDatabaseManager() *database.Manager {
 	return a.dbManager
 }
 

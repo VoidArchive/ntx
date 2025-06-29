@@ -1,0 +1,27 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "internal/data/queries/"
+    schema: "internal/data/migrations/"
+    gen:
+      go:
+        package: "database"
+        out: "internal/database"
+        emit_json_tags: true
+        emit_interface: false
+        emit_prepared_queries: false
+        overrides:
+          - column: "*.avg_cost"
+            go_type: "ntx/internal/data/models.Money"
+          - column: "*.last_price"
+            go_type: "ntx/internal/data/models.Money"
+          - column: "*.change_amount"
+            go_type: "ntx/internal/data/models.Money"
+          - column: "*.total_amount"
+            go_type: "ntx/internal/data/models.Money"
+          - column: "*.fees"
+            go_type: "ntx/internal/data/models.Money"
+          - column: "*.dividend_amount"
+            go_type: "ntx/internal/data/models.Money"
+          - column: "*.quantity"
+            go_type: "ntx/internal/data/models.Quantity" 

@@ -9,12 +9,14 @@ import (
 	"strings"
 	"time"
 
-	"ntx/internal/data/repository"
+	"ntx/internal/database"
 )
 
 // BackupService handles automatic database backups
+// This service now works directly with the modern database.Manager using SQLC queries
+// for improved type safety and performance over the previous repository pattern.
 type BackupService struct {
-	dbManager     repository.DatabaseManager
+	dbManager     *database.Manager
 	backupDir     string
 	logger        *slog.Logger
 	config        *BackupConfig
@@ -26,32 +28,32 @@ type BackupService struct {
 type BackupConfig struct {
 	// Automatic backup interval (default: 24 hours)
 	BackupInterval time.Duration
-	
+
 	// Maximum number of backup files to keep (default: 30)
 	MaxBackupFiles int
-	
+
 	// Backup file retention period (default: 30 days)
 	RetentionPeriod time.Duration
-	
+
 	// Enable compression for backup files (default: false)
 	EnableCompression bool
-	
+
 	// Backup file name pattern (default: "ntx-backup-{timestamp}.db")
 	FileNamePattern string
-	
+
 	// Enable automatic cleanup of old backups (default: true)
 	AutoCleanup bool
 }
 
 // BackupRecord represents a backup operation record
 type BackupRecord struct {
-	FilePath    string    `json:"file_path"`
-	Timestamp   time.Time `json:"timestamp"`
-	Size        int64     `json:"size"`
-	Duration    time.Duration `json:"duration"`
-	Success     bool      `json:"success"`
-	Error       string    `json:"error,omitempty"`
-	Automatic   bool      `json:"automatic"`
+	FilePath  string        `json:"file_path"`
+	Timestamp time.Time     `json:"timestamp"`
+	Size      int64         `json:"size"`
+	Duration  time.Duration `json:"duration"`
+	Success   bool          `json:"success"`
+	Error     string        `json:"error,omitempty"`
+	Automatic bool          `json:"automatic"`
 }
 
 // DefaultBackupConfig returns the default backup configuration
@@ -67,7 +69,9 @@ func DefaultBackupConfig() *BackupConfig {
 }
 
 // NewBackupService creates a new backup service
-func NewBackupService(dbManager repository.DatabaseManager, backupDir string, logger *slog.Logger, config *BackupConfig) *BackupService {
+// This constructor now accepts the modern database.Manager for direct integration
+// with Goose migrations and SQLC queries instead of the repository pattern.
+func NewBackupService(dbManager *database.Manager, backupDir string, logger *slog.Logger, config *BackupConfig) *BackupService {
 	if config == nil {
 		config = DefaultBackupConfig()
 	}
@@ -116,7 +120,7 @@ func (bs *BackupService) CreateBackup(ctx context.Context) (*BackupRecord, error
 func (bs *BackupService) createBackup(ctx context.Context, automatic bool) (*BackupRecord, error) {
 	startTime := time.Now()
 	timestamp := startTime.Format("20060102-150405")
-	
+
 	// Generate backup filename
 	filename := strings.ReplaceAll(bs.config.FileNamePattern, "{timestamp}", timestamp)
 	backupPath := filepath.Join(bs.backupDir, filename)
@@ -142,10 +146,10 @@ func (bs *BackupService) createBackup(ctx context.Context, automatic bool) (*Bac
 			"path", backupPath,
 			"duration", record.Duration,
 			"error", err)
-		
+
 		// Clean up failed backup file
 		os.Remove(backupPath)
-		
+
 		bs.backupHistory = append(bs.backupHistory, *record)
 		return record, fmt.Errorf("backup failed: %w", err)
 	}
@@ -264,9 +268,9 @@ func (bs *BackupService) GetBackupStats() (*BackupStats, error) {
 	}
 
 	stats := &BackupStats{
-		TotalBackups:    len(backups),
-		TotalSize:       0,
-		LastBackupTime:  time.Time{},
+		TotalBackups:     len(backups),
+		TotalSize:        0,
+		LastBackupTime:   time.Time{},
 		OldestBackupTime: time.Time{},
 	}
 
@@ -373,12 +377,12 @@ type BackupInfo struct {
 
 // BackupStats provides statistics about the backup system
 type BackupStats struct {
-	TotalBackups       int       `json:"total_backups"`
-	TotalSize          int64     `json:"total_size"`
-	LastBackupTime     time.Time `json:"last_backup_time"`
-	OldestBackupTime   time.Time `json:"oldest_backup_time"`
-	SuccessfulBackups  int       `json:"successful_backups"`
-	FailedBackups      int       `json:"failed_backups"`
+	TotalBackups      int       `json:"total_backups"`
+	TotalSize         int64     `json:"total_size"`
+	LastBackupTime    time.Time `json:"last_backup_time"`
+	OldestBackupTime  time.Time `json:"oldest_backup_time"`
+	SuccessfulBackups int       `json:"successful_backups"`
+	FailedBackups     int       `json:"failed_backups"`
 }
 
 // Helper functions
