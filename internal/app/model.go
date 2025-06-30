@@ -586,7 +586,7 @@ func (m Model) renderSectionContentResized(width int) string {
 	navHint := ""
 	if m.selectedItem > 0 {
 		navHint = fmt.Sprintf("\n\n[Item %d selected - hjkl to navigate]", m.selectedItem)
-		navHint = theme.MutedStyle().Render(navHint)
+		navHint = string(theme.Muted())
 	}
 
 	// Consistent spacing prevents visual clutter during information scanning
