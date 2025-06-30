@@ -144,12 +144,12 @@ func (c *CalculatorService) CalculateAverageCost(currentQuantity int64, currentA
 
 // TransactionImpact represents the impact of a transaction on holdings
 type TransactionImpact struct {
-	Symbol            string           `json:"symbol"`
+	Symbol            string             `json:"symbol"`
 	Transaction       models.Transaction `json:"transaction"`
-	CurrentHolding    *models.Holding  `json:"current_holding,omitempty"`
-	NewHolding        *models.Holding  `json:"new_holding,omitempty"`
-	TransactionAmount models.Money     `json:"transaction_amount"`
-	RealizedPnL       models.Money     `json:"realized_pnl,omitempty"`
+	CurrentHolding    *models.Holding    `json:"current_holding,omitempty"`
+	NewHolding        *models.Holding    `json:"new_holding,omitempty"`
+	TransactionAmount models.Money       `json:"transaction_amount"`
+	RealizedPnL       models.Money       `json:"realized_pnl"`
 }
 
 // CalculateBuyImpact calculates impact of a buy transaction
@@ -207,12 +207,12 @@ func (c *CalculatorService) convertPortfolio(p *database.Portfolios) *models.Por
 	if p.Currency.Valid {
 		currency = p.Currency.String
 	}
-	
+
 	createdAt := time.Now()
 	if p.CreatedAt.Valid {
 		createdAt = p.CreatedAt.Time
 	}
-	
+
 	updatedAt := time.Now()
 	if p.UpdatedAt.Valid {
 		updatedAt = p.UpdatedAt.Time
@@ -239,7 +239,7 @@ func (c *CalculatorService) convertHolding(h *database.Holdings) *models.Holding
 	if h.CreatedAt.Valid {
 		createdAt = h.CreatedAt.Time
 	}
-	
+
 	updatedAt := time.Now()
 	if h.UpdatedAt.Valid {
 		updatedAt = h.UpdatedAt.Time
@@ -268,24 +268,24 @@ func (c *CalculatorService) convertHoldingWithValue(h *database.GetHoldingValueR
 	if h.CreatedAt.Valid {
 		createdAt = h.CreatedAt.Time
 	}
-	
+
 	updatedAt := time.Now()
 	if h.UpdatedAt.Valid {
 		updatedAt = h.UpdatedAt.Time
 	}
 
 	holding := &models.Holding{
-		ID:               h.ID,
-		PortfolioID:      h.PortfolioID,
-		Symbol:           h.Symbol,
-		Quantity:         h.Quantity,
-		AverageCost:      models.NewMoneyFromPaisa(h.AverageCostPaisa),
-		LastPrice:        lastPrice,
-		CreatedAt:        createdAt,
-		UpdatedAt:        updatedAt,
-		TotalCost:        models.NewMoneyFromPaisa(h.TotalCostPaisa.(int64)),
-		TotalValue:       models.NewMoneyFromPaisa(h.TotalValuePaisa.(int64)),
-		UnrealizedPnL:    models.NewMoneyFromPaisa(h.UnrealizedPnlPaisa),
+		ID:            h.ID,
+		PortfolioID:   h.PortfolioID,
+		Symbol:        h.Symbol,
+		Quantity:      h.Quantity,
+		AverageCost:   models.NewMoneyFromPaisa(h.AverageCostPaisa),
+		LastPrice:     lastPrice,
+		CreatedAt:     createdAt,
+		UpdatedAt:     updatedAt,
+		TotalCost:     models.NewMoneyFromPaisa(h.TotalCostPaisa.(int64)),
+		TotalValue:    models.NewMoneyFromPaisa(h.TotalValuePaisa.(int64)),
+		UnrealizedPnL: models.NewMoneyFromPaisa(h.UnrealizedPnlPaisa),
 	}
 
 	// Calculate percentage
@@ -304,24 +304,24 @@ func (c *CalculatorService) convertHoldingWithValueRow(h *database.ListHoldingsW
 	if h.CreatedAt.Valid {
 		createdAt = h.CreatedAt.Time
 	}
-	
+
 	updatedAt := time.Now()
 	if h.UpdatedAt.Valid {
 		updatedAt = h.UpdatedAt.Time
 	}
 
 	holding := &models.Holding{
-		ID:               h.ID,
-		PortfolioID:      h.PortfolioID,
-		Symbol:           h.Symbol,
-		Quantity:         h.Quantity,
-		AverageCost:      models.NewMoneyFromPaisa(h.AverageCostPaisa),
-		LastPrice:        lastPrice,
-		CreatedAt:        createdAt,
-		UpdatedAt:        updatedAt,
-		TotalCost:        models.NewMoneyFromPaisa(h.TotalCostPaisa.(int64)),
-		TotalValue:       models.NewMoneyFromPaisa(h.TotalValuePaisa.(int64)),
-		UnrealizedPnL:    models.NewMoneyFromPaisa(h.UnrealizedPnlPaisa),
+		ID:            h.ID,
+		PortfolioID:   h.PortfolioID,
+		Symbol:        h.Symbol,
+		Quantity:      h.Quantity,
+		AverageCost:   models.NewMoneyFromPaisa(h.AverageCostPaisa),
+		LastPrice:     lastPrice,
+		CreatedAt:     createdAt,
+		UpdatedAt:     updatedAt,
+		TotalCost:     models.NewMoneyFromPaisa(h.TotalCostPaisa.(int64)),
+		TotalValue:    models.NewMoneyFromPaisa(h.TotalValuePaisa.(int64)),
+		UnrealizedPnL: models.NewMoneyFromPaisa(h.UnrealizedPnlPaisa),
 	}
 
 	// Calculate percentage
@@ -336,3 +336,4 @@ func nullStringToPtr(ns sql.NullString) *string {
 	}
 	return nil
 }
+

@@ -97,7 +97,7 @@ func (s *PortfolioService) ExecuteTransaction(ctx context.Context, req ExecuteTr
 
 		// Create transaction in database
 		transactionData, err := repo.Transaction.Create(ctx, repository.CreateTransactionRequest{
-			PortfolioID:      req.PortfolioID,
+			PortfolioID:     req.PortfolioID,
 			Symbol:          req.Symbol,
 			TransactionType: req.TransactionType,
 			Quantity:        req.Quantity,
@@ -124,7 +124,7 @@ func (s *PortfolioService) ExecuteTransaction(ctx context.Context, req ExecuteTr
 			} else {
 				// Create new holding
 				_, err = repo.Holding.Create(ctx, repository.CreateHoldingRequest{
-					PortfolioID:       req.PortfolioID,
+					PortfolioID:      req.PortfolioID,
 					Symbol:           req.Symbol,
 					Quantity:         impact.NewHolding.Quantity,
 					AverageCostPaisa: impact.NewHolding.AverageCost.Paisa,
@@ -144,13 +144,12 @@ func (s *PortfolioService) ExecuteTransaction(ctx context.Context, req ExecuteTr
 		// Prepare result
 		result = &TransactionResult{
 			TransactionID:     transactionData.ID,
-			Impact:           *impact,
+			Impact:            *impact,
 			TransactionAmount: req.Price.MultiplyInt(req.Quantity).Add(req.Commission).Add(req.Tax),
 		}
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -198,15 +197,15 @@ func (r CreatePortfolioRequest) Validate() error {
 }
 
 type ExecuteTransactionRequest struct {
-	PortfolioID     int64         `json:"portfolio_id"`
-	Symbol          string        `json:"symbol"`
-	TransactionType string        `json:"transaction_type"` // "buy" or "sell"
-	Quantity        int64         `json:"quantity"`
-	Price           models.Money  `json:"price"`
-	Commission      models.Money  `json:"commission"`
-	Tax             models.Money  `json:"tax"`
-	TransactionDate time.Time     `json:"transaction_date"`
-	Notes           *string       `json:"notes,omitempty"`
+	PortfolioID     int64        `json:"portfolio_id"`
+	Symbol          string       `json:"symbol"`
+	TransactionType string       `json:"transaction_type"` // "buy" or "sell"
+	Quantity        int64        `json:"quantity"`
+	Price           models.Money `json:"price"`
+	Commission      models.Money `json:"commission"`
+	Tax             models.Money `json:"tax"`
+	TransactionDate time.Time    `json:"transaction_date"`
+	Notes           *string      `json:"notes,omitempty"`
 }
 
 func (r ExecuteTransactionRequest) Validate() error {
@@ -238,9 +237,9 @@ func (r ExecuteTransactionRequest) Validate() error {
 }
 
 type TransactionResult struct {
-	TransactionID     int64              `json:"transaction_id"`
-	Impact           TransactionImpact   `json:"impact"`
-	TransactionAmount models.Money       `json:"transaction_amount"`
+	TransactionID     int64             `json:"transaction_id"`
+	Impact            TransactionImpact `json:"impact"`
+	TransactionAmount models.Money      `json:"transaction_amount"`
 }
 
 // Helper functions
@@ -250,3 +249,4 @@ func getLastPricePaisa(price *models.Money) *int64 {
 	}
 	return &price.Paisa
 }
+

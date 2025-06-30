@@ -22,20 +22,22 @@ Build a feature-rich portfolio management TUI that includes:
 ### FR1: Holdings Dashboard & Overview
 
 - **FR1.1**: Main dashboard showing portfolio summary:
+
   ```
   ┌─ Portfolio Overview ────────────────────────────────────────────────┐
-  │ Total: ₹2,45,670 (+1.8%) │ Today: +₹5,620 │ Unrealized: +₹12,340   │
+  │ Total: Rs.2,45,670 (+1.8%) │ Today: +Rs.5,620 │ Unrealized: +Rs.12,340   │
   └─────────────────────────────────────────────────────────────────────┘
   ```
 
 - **FR1.2**: Holdings table with sortable columns:
+
   ```
   ┌─ Holdings [4] ──────────────────────────────────────────────────────┐
   │ Symbol │Qty│ Avg Cost │  LTP   │ Value │  P/L  │ %Change │ Weight  │
-  │►NABIL  │50 │  ₹1,250  │ ₹1,320 │ 66k   │ +3.5k │  +5.6%  │  28.5%  │
-  │ EBL    │30 │    ₹680  │   ₹710 │ 21k   │ +0.9k │  +4.4%  │   9.1%  │
-  │ HIDCL  │100│    ₹420  │   ₹445 │ 45k   │ +2.5k │  +6.0%  │  19.4%  │
-  │ KTM    │25 │    ₹890  │   ₹920 │ 23k   │ +0.8k │  +3.4%  │   9.9%  │
+  │►NABIL  │50 │  Rs.1,250  │ Rs.1,320 │ 66k   │ +3.5k │  +5.6%  │  28.5%  │
+  │ EBL    │30 │    Rs.680  │   Rs.710 │ 21k   │ +0.9k │  +4.4%  │   9.1%  │
+  │ HIDCL  │100│    Rs.420  │   Rs.445 │ 45k   │ +2.5k │  +6.0%  │  19.4%  │
+  │ KTM    │25 │    Rs.890  │   Rs.920 │ 23k   │ +0.8k │  +3.4%  │   9.9%  │
   └─────────────────────────────────────────────────────────────────────┘
   ```
 
@@ -59,6 +61,7 @@ Build a feature-rich portfolio management TUI that includes:
 ### FR2: Transaction Management System
 
 - **FR2.1**: Transaction entry form with validation:
+
   ```
   ┌─ Add Transaction ───────────────────────────────────────────────────┐
   │                                                                     │
@@ -92,6 +95,7 @@ Build a feature-rich portfolio management TUI that includes:
   - Date validation (not future dates)
 
 - **FR2.4**: Transaction history view:
+
   ```
   ┌─ Transaction History ───────────────────────────────────────────────┐
   │ Date       │ Symbol │ Type │ Qty │ Price   │ Total     │ Notes       │
@@ -110,6 +114,7 @@ Build a feature-rich portfolio management TUI that includes:
 ### FR3: Portfolio Analytics & Calculations
 
 - **FR3.1**: Portfolio performance metrics:
+
   ```
   ┌─ Portfolio Performance ─────────────────────────────────────────────┐
   │                                                                     │
@@ -127,6 +132,7 @@ Build a feature-rich portfolio management TUI that includes:
   ```
 
 - **FR3.2**: Sector allocation analysis:
+
   ```
   ┌─ Sector Allocation ─────────────────────────────────────────────────┐
   │                                                                     │
@@ -141,6 +147,7 @@ Build a feature-rich portfolio management TUI that includes:
   ```
 
 - **FR3.3**: Individual holding analytics:
+
   ```
   ┌─ NABIL Details ─────────────────────────────────────────────────────┐
   │                                                                     │
@@ -171,6 +178,7 @@ Build a feature-rich portfolio management TUI that includes:
 ### FR4: CSV Import System (Meroshare Integration)
 
 - **FR4.1**: CSV file import interface:
+
   ```
   ┌─ Import Portfolio Data ─────────────────────────────────────────────┐
   │                                                                     │
@@ -215,6 +223,7 @@ Build a feature-rich portfolio management TUI that includes:
 ### FR5: Multi-Portfolio Management
 
 - **FR5.1**: Portfolio switcher interface:
+
   ```
   ┌─ Portfolio Selection ───────────────────────────────────────────────┐
   │                                                                     │
@@ -257,9 +266,11 @@ Build a feature-rich portfolio management TUI that includes:
   - Mobile-friendly key bindings
 
 - **FR6.2**: Search and filtering:
+
   ```
   Filter: [/NABIL_______] [Type: All ▼] [Date: Last 30 days ▼]
   ```
+
   - Real-time search across symbols, notes
   - Advanced filtering options
   - Saved filter presets
@@ -272,6 +283,7 @@ Build a feature-rich portfolio management TUI that includes:
   - Multiple format support (CSV, JSON, PDF)
 
 - **FR6.4**: Keyboard shortcuts and efficiency:
+
   ```
   Portfolio Operations:
   a: Add transaction          e: Edit selected
@@ -370,36 +382,42 @@ Build a feature-rich portfolio management TUI that includes:
 ## Implementation Plan
 
 ### Step 1: Core Holdings Display (Week 1)
+
 1. Implement portfolio overview component
 2. Create holdings table with sorting
 3. Build basic navigation system
 4. Add real-time P/L calculations
 
 ### Step 2: Transaction Management (Week 2)
+
 1. Design transaction entry forms
 2. Implement validation and auto-calculations
 3. Build transaction history viewer
 4. Add edit/delete functionality
 
 ### Step 3: Portfolio Analytics (Week 3)
+
 1. Implement portfolio metrics calculations
 2. Create performance analytics views
 3. Build sector allocation analysis
 4. Add individual holding details
 
 ### Step 4: CSV Import System (Week 4)
+
 1. Design import interface
 2. Implement Meroshare CSV parser
 3. Build data mapping and validation
 4. Add conflict resolution logic
 
 ### Step 5: Multi-Portfolio Support (Week 5)
+
 1. Implement portfolio switching
 2. Build portfolio management interface
 3. Add cross-portfolio analytics
 4. Create portfolio comparison views
 
 ### Step 6: Polish & Integration (Week 6)
+
 1. Implement advanced UI features
 2. Add search and filtering
 3. Build export functionality
@@ -408,6 +426,7 @@ Build a feature-rich portfolio management TUI that includes:
 ## Acceptance Criteria
 
 ### AC1: Holdings Dashboard
+
 - [ ] Portfolio overview displays current metrics correctly
 - [ ] Holdings table shows all positions with accurate P/L
 - [ ] Color coding works consistently across themes
@@ -415,6 +434,7 @@ Build a feature-rich portfolio management TUI that includes:
 - [ ] Sorting and filtering work properly
 
 ### AC2: Transaction Management
+
 - [ ] Transaction entry form validates all inputs
 - [ ] Auto-calculations for commission and tax work correctly
 - [ ] Transaction history displays chronologically
@@ -422,6 +442,7 @@ Build a feature-rich portfolio management TUI that includes:
 - [ ] Average cost calculations are accurate
 
 ### AC3: Portfolio Analytics
+
 - [ ] P/L calculations match manual verification
 - [ ] Sector allocation adds up to 100%
 - [ ] Performance metrics are mathematically correct
@@ -429,6 +450,7 @@ Build a feature-rich portfolio management TUI that includes:
 - [ ] Risk assessments are reasonable
 
 ### AC4: CSV Import
+
 - [ ] Meroshare CSV files import successfully
 - [ ] Data mapping is intuitive and accurate
 - [ ] Validation catches common errors
@@ -436,6 +458,7 @@ Build a feature-rich portfolio management TUI that includes:
 - [ ] Conflict resolution works properly
 
 ### AC5: Multi-Portfolio
+
 - [ ] Portfolio switching works seamlessly
 - [ ] Cross-portfolio analytics are accurate
 - [ ] Portfolio creation/deletion works properly
@@ -443,6 +466,7 @@ Build a feature-rich portfolio management TUI that includes:
 - [ ] Data isolation between portfolios
 
 ### AC6: User Experience
+
 - [ ] Interface is intuitive and beautiful
 - [ ] Keyboard navigation is efficient
 - [ ] Error handling is user-friendly
@@ -461,12 +485,14 @@ Build a feature-rich portfolio management TUI that includes:
 ## Constraints & Assumptions
 
 ### Constraints
+
 - Terminal-based interface only (no GUI dependencies)
 - SQLite database backend (established in Phase 2)
 - Integer-based financial calculations (paisa precision)
 - NEPSE market focus (Nepali symbols and conventions)
 
 ### Assumptions
+
 - Users understand basic financial concepts
 - Portfolio sizes are reasonable (<100 holdings typically)
 - Manual price updates acceptable (no real-time feed)
@@ -475,6 +501,7 @@ Build a feature-rich portfolio management TUI that includes:
 ## Future Phase Preparation
 
 This Phase 3 implementation prepares for:
+
 - **Phase 4**: Market data integration and price updates
 - **Phase 5**: Technical indicators and advanced analytics
 - **Phase 6**: Reporting and data visualization
@@ -485,16 +512,19 @@ The portfolio management foundation should be extensible for market data integra
 ## Risk Mitigation
 
 ### Technical Risks
+
 - **Calculation Complexity**: Extensive unit testing and validation against known scenarios
 - **UI Complexity**: Incremental development with user feedback loops
 - **Performance**: Early optimization and benchmarking
 
 ### Business Risks
+
 - **User Adoption**: Focus on intuitive design and comprehensive help system
 - **Data Accuracy**: Multiple validation layers and audit trails
 - **Scalability**: Design for growth from the beginning
 
 ### Mitigation Strategies
+
 - Test-driven development for all financial calculations
 - Comprehensive error handling and recovery mechanisms
 - Regular performance profiling and optimization
@@ -502,3 +532,4 @@ The portfolio management foundation should be extensible for market data integra
 - Extensive documentation and help system
 
 This Phase 3 implementation will deliver a **production-ready portfolio management TUI** that combines **functional excellence** with **beautiful design**, providing NEPSE investors with a powerful tool for tracking and managing their investments with precision and confidence.
+
