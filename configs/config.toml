@@ -27,3 +27,34 @@ show_borders = true            # Pane borders on/off
 pane_width_ratio = [30, 40, 30] # Portfolio:Watchlist:Market ratios
 enable_colors = true           # Color coding for gains/losses
 animation_speed = "normal"     # Animation: slow, normal, fast
+default_layout = "quadrant"    # Starting layout: quadrant, market_focus, portfolio_focus, analysis_focus
+vim_keybindings = true         # Enable vim-style navigation (hjkl, gg, G, /, :)
+auto_refresh = true            # Enable automatic data refresh
+refresh_rate = 5               # Auto-refresh interval in seconds (1-60)
+
+# Enhanced Layout Preferences
+[layouts]
+# F1 - Market Focus Layout
+market_focus_main = "market_status"
+market_focus_sidebar = ["portfolio", "dashboard"]
+
+# F2 - Portfolio Focus Layout  
+portfolio_focus_main = "portfolio"
+portfolio_focus_sidebar = ["market_status", "watchlist"]
+
+# F3 - Analysis Focus Layout
+analysis_focus_panes = ["portfolio", "watchlist", "market_status", "dashboard"]
+
+# Terminal Size Handling
+[terminal]
+min_width = 60                 # Minimum terminal width
+min_height = 24                # Minimum terminal height
+narrow_threshold = 100         # Switch to narrow layout below this width
+show_size_warning = true       # Show warning when terminal too small
+
+# Browser Scraper Settings (ChromeDP)
+[scraper]
+enable_browser = true          # Use ChromeDP for JavaScript-rendered content
+fallback_to_http = true        # Fall back to HTTP scraper if browser fails
+browser_timeout = 10           # Browser operation timeout in seconds
+restart_on_failure = true     # Auto-restart browser on crash

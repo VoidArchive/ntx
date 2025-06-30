@@ -146,6 +146,24 @@ var DefaultLayouts = map[string]*LayoutConfig{
 			PaneTypeWatchlist,
 		},
 	},
+	// Enhanced layouts for btop-inspired TUI
+	"market_focus": {
+		Type:      LayoutSidebar,
+		MainPane:  PaneTypeMarketStatus,
+		PaneOrder: []PaneType{PaneTypeMarketStatus, PaneTypePortfolio, PaneTypeDashboard},
+	},
+	"portfolio_focus": {
+		Type:      LayoutSidebar,
+		MainPane:  PaneTypePortfolio,
+		PaneOrder: []PaneType{PaneTypePortfolio, PaneTypeMarketStatus, PaneTypeWatchlist},
+	},
+	"analysis_focus": {
+		Type: LayoutQuadrant,
+		PaneOrder: []PaneType{
+			PaneTypePortfolio, PaneTypeWatchlist,
+			PaneTypeMarketStatus, PaneTypeDashboard,
+		},
+	},
 }
 
 // LayoutManager handles pane positioning and sizing
@@ -283,9 +301,11 @@ func (lm *LayoutManager) RenderPanes(panes map[PaneType]Pane) string {
 // GetNavigationHelp returns help text for pane navigation
 func (lm *LayoutManager) GetNavigationHelp() string {
 	help := []string{
-		KeyStyle.Render("Tab") + "/Shift+Tab: Switch panes",
+		KeyStyle.Render("hjkl") + ": Vim nav",
+		KeyStyle.Render("Tab") + ": Switch panes", 
+		KeyStyle.Render("F1-F3") + ": Layouts",
+		KeyStyle.Render("/") + ": Search",
 		KeyStyle.Render("R") + ": Refresh",
-		KeyStyle.Render("L") + ": Change layout",
 		KeyStyle.Render("Q") + ": Quit",
 	}
 

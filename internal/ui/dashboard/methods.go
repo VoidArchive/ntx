@@ -17,6 +17,43 @@ func (m Model) renderLoading() string {
 	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, loading)
 }
 
+// renderTerminalTooSmall displays message when terminal is below minimum size
+func (m Model) renderTerminalTooSmall() string {
+	message := common.ErrorStyle.Render("Terminal size too small")
+	requirement := common.MutedStyle.Render(fmt.Sprintf("Minimum required: 60x24 (current: %dx%d)", m.width, m.height))
+	instruction := common.InfoStyle.Render("Please resize your terminal window")
+	
+	content := lipgloss.JoinVertical(lipgloss.Center, message, requirement, instruction)
+	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, content)
+}
+
+// renderNarrowTerminal renders a simplified layout for narrow terminals
+func (m Model) renderNarrowTerminal() string {
+	var sections []string
+
+	// Compact header
+	title := common.HeaderStyle.Render("NTX Terminal")
+	sections = append(sections, title)
+
+	// Show only active pane in full
+	if activePane, exists := m.panes[m.activePaneType]; exists {
+		// Set pane to full width for narrow display
+		activePane.SetSize(m.width-4, m.height-8) // Account for margins
+		paneView := activePane.View()
+		sections = append(sections, paneView)
+	}
+
+	// Compact footer with essential navigation
+	navHelp := common.HelpStyle.Render("Tab: Switch • Q: Quit • R: Refresh")
+	sections = append(sections, navHelp)
+
+	// Show which pane is active and how to switch
+	paneIndicator := common.MutedStyle.Render(fmt.Sprintf("Active: %s (Tab to switch)", string(m.activePaneType)))
+	sections = append(sections, paneIndicator)
+
+	return lipgloss.JoinVertical(lipgloss.Left, sections...)
+}
+
 // renderHeader renders the dashboard header
 func (m Model) renderHeader() string {
 	title := common.HeaderStyle.Render("🚀 NTX - NEPSE Power Terminal")

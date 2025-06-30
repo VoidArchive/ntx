@@ -7,30 +7,30 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Color scheme for NEPSE Power Terminal
+// Color scheme for NEPSE Power Terminal - btop-inspired palette
 var (
 	// Primary brand colors
-	Primary   = lipgloss.Color("#7D56F4") // Purple
-	Secondary = lipgloss.Color("#874BFD") // Light purple
-	Accent    = lipgloss.Color("#F25D94") // Pink
+	Primary   = lipgloss.Color("#6e94b2") // Palette 4 - Primary blue
+	Secondary = lipgloss.Color("#6e94b2") // Same as primary for consistency
+	Accent    = lipgloss.Color("#f3be7c") // Palette 3 - Warning yellow
 
-	// Market colors
-	GainColor    = lipgloss.Color("#00FF87") // Bright green
-	LossColor    = lipgloss.Color("#FF5757") // Bright red
-	NeutralColor = lipgloss.Color("#8E8E93") // Gray
+	// Market colors (maintain existing green/red for gains/losses)
+	GainColor    = lipgloss.Color("#7fa563") // Palette 2 - Success green
+	LossColor    = lipgloss.Color("#d8647e") // Palette 1 - Error red
+	NeutralColor = lipgloss.Color("#cdcdcd") // Foreground color for neutral
 
 	// UI colors
-	Background = lipgloss.Color("#1E1E2E") // Dark background
-	Surface    = lipgloss.Color("#313244") // Card/pane background
-	Text       = lipgloss.Color("#CDD6F4") // Primary text
-	Muted      = lipgloss.Color("#6C7086") // Secondary text
-	Border     = lipgloss.Color("#45475A") // Border color
+	Background = lipgloss.Color("#141415") // Custom background
+	Surface    = lipgloss.Color("#1a1a1b") // Slightly lighter for surfaces
+	Text       = lipgloss.Color("#cdcdcd") // Custom foreground
+	Muted      = lipgloss.Color("#8a8a8a") // Dimmed text
+	Border     = lipgloss.Color("#3a3a3b") // Subtle border
 
 	// Status colors
-	Success = lipgloss.Color("#A6E3A1") // Green
-	Warning = lipgloss.Color("#F9E2AF") // Yellow
-	Error   = lipgloss.Color("#F38BA8") // Red
-	Info    = lipgloss.Color("#89B4FA") // Blue
+	Success = lipgloss.Color("#7fa563") // Palette 2 - Green
+	Warning = lipgloss.Color("#f3be7c") // Palette 3 - Yellow
+	Error   = lipgloss.Color("#d8647e") // Palette 1 - Red
+	Info    = lipgloss.Color("#6e94b2") // Palette 4 - Blue
 )
 
 // Base styles for consistent theming
