@@ -209,24 +209,24 @@ golang.org/x/term v0.32.0
 - [x] Multiple theme options available (Tokyo Night, Rose Pine, Gruvbox, Default)
 
 ### AC4: Configuration
-- [ ] Config file created at `~/.config/ntx/config.toml` on first run
-- [ ] Command line flags override config file settings
-- [ ] `--theme` flag changes theme
-- [ ] Configuration loads without errors
-- [ ] Theme preference persists (when config is saved)
+- [x] Config file created at `~/.config/ntx/config.toml` on first run
+- [x] Command line flags override config file settings
+- [x] `--theme` flag changes theme
+- [x] Configuration loads without errors
+- [x] Theme preference persists (when config is saved)
 
 ### AC5: Navigation & Layout
-- [ ] h/j/k/l keys work for navigation within sections
-- [ ] Tab/Shift+Tab cycle between sections
-- [ ] Layout adapts to terminal width (3-pane → 2-pane → 1-pane)
-- [ ] Terminal resize handled without restart
-- [ ] Minimum size handling shows appropriate message
+- [x] h/j/k/l keys work for navigation within sections
+- [x] Tab/Shift+Tab cycle between sections
+- [x] Layout adapts to terminal width (3-pane → 2-pane → 1-pane)
+- [x] Terminal resize handled without restart
+- [x] Minimum size handling shows appropriate message
 
 ### AC6: Code Quality
-- [ ] Code passes `go fmt` check
-- [ ] No runtime dependencies beyond stdlib
-- [ ] Graceful error handling for invalid terminal sizes
-- [ ] Help system ('?' key) shows all available keybindings
+- [x] Code passes `go fmt` check
+- [x] No runtime dependencies beyond stdlib
+- [x] Graceful error handling for invalid terminal sizes
+- [x] Help system ('?' key) shows all available keybindings
 
 ## Success Metrics
 

@@ -1,37 +1,60 @@
-/**
- * NTX Portfolio Management TUI - Main Entry Point
- *
- * This file serves as the primary application entry point for the NTX (NEPSE Power Terminal)
- * Portfolio Management TUI. It initializes the application and starts the main program flow.
- *
- * The application is built using the Bubbletea framework for TUI functionality and follows
- * the Model-View-Update pattern. This Phase 1 implementation establishes the foundation
- * for future portfolio management features.
- */
+/*
+NTX Portfolio Management TUI - Main Entry Point
+
+Bootstrap configuration prioritizes CLI flags > env vars > config file > defaults
+to support both casual users and power users with complex setups.
+
+Bubbletea's Model-View-Update pattern chosen for predictable state management
+and excellent terminal event handling - critical for financial data accuracy.
+*/
 
 package main
 
 import (
+	"flag"
 	"fmt"
+	"ntx/internal/app"
+	"ntx/internal/config"
 	"os"
 
-	"ntx/internal/app"
-
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/spf13/viper"
 )
 
-// main initializes and starts the NTX Portfolio Management TUI application
-// This creates a new Bubbletea application with the main model and starts the TUI
+// Bootstrap handles configuration cascade and error recovery
+// Early exit prevents corrupted financial data from invalid configs
 func main() {
-	// Create the main application model following Bubbletea's Model-View-Update pattern
-	model := app.NewModel()
+	// CLI flags override config file to support CI/CD and scripting
+	var (
+		themeFlag  = flag.String("theme", "", "Theme to use (tokyo_night, rose_pine, gruvbox, default)")
+		configFlag = flag.String("config", "", "Path to config file")
+	)
+	flag.Parse()
 
-	// Initialize the Bubbletea program with standard input/output
-	// This starts the TUI event loop and handles user interaction
+	// Viper cascade ensures consistent config precedence across deployments
+	if *themeFlag != "" {
+		viper.Set("ui.theme", *themeFlag)
+	}
+	if *configFlag != "" {
+		viper.SetConfigFile(*configFlag)
+	}
+
+	// Config validation prevents runtime errors with financial calculations
+	cfg, err := config.Load()
+	if err != nil {
+		fmt.Printf("Error loading configuration: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Dependency injection pattern enables testing and configuration flexibility
+	model := app.NewModelWithConfig(cfg)
+
+	// Alt screen preserves user's terminal history during portfolio sessions
+	// Mouse support enables modern interaction patterns for data exploration
 	program := tea.NewProgram(model, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
-	// Start the TUI application and handle any errors
-	// The application will run until the user quits (q key or Ctrl+C)
+	// Graceful error handling prevents data corruption during market sessions
+	// NOTE: Application state persists across restarts for session continuity
 	if _, err := program.Run(); err != nil {
 		fmt.Printf("Error running NTX Portfolio Management TUI: %v\n", err)
 		os.Exit(1)
