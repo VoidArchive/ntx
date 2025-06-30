@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"ntx/internal/database"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-
-	"ntx/internal/database"
 )
 
 // BackupService handles automatic database backups
@@ -244,7 +243,7 @@ func (bs *BackupService) ListBackups() ([]BackupInfo, error) {
 	}
 
 	// Sort by timestamp (newest first)
-	for i := 0; i < len(backups)-1; i++ {
+	for i := range len(backups) - 1 {
 		for j := i + 1; j < len(backups); j++ {
 			if backups[j].Timestamp.After(backups[i].Timestamp) {
 				backups[i], backups[j] = backups[j], backups[i]

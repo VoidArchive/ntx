@@ -8,7 +8,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"strings"
 
 	"ntx/internal/data/models"
 )
@@ -237,61 +236,6 @@ ORDER BY ex_date DESC, created_at DESC
 
 func (q *Queries) GetCorporateActionsByType(ctx context.Context, actionType string) ([]CorporateAction, error) {
 	rows, err := q.db.QueryContext(ctx, getCorporateActionsByType, actionType)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []CorporateAction
-	for rows.Next() {
-		var i CorporateAction
-		if err := rows.Scan(
-			&i.ID,
-			&i.Symbol,
-			&i.ActionType,
-			&i.AnnouncementDate,
-			&i.RecordDate,
-			&i.ExDate,
-			&i.Ratio,
-			&i.DividendAmount,
-			&i.Processed,
-			&i.ProcessedDate,
-			&i.Notes,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getCorporateActionsForPortfolio = `-- name: GetCorporateActionsForPortfolio :many
-SELECT id, symbol, action_type, announcement_date, record_date, ex_date, ratio,
-       dividend_amount, processed, processed_date, notes, created_at, updated_at
-FROM corporate_actions
-WHERE symbol IN (/*SLICE:symbols*/?) COLLATE NOCASE
-ORDER BY symbol, ex_date DESC
-`
-
-func (q *Queries) GetCorporateActionsForPortfolio(ctx context.Context, symbols []string) ([]CorporateAction, error) {
-	query := getCorporateActionsForPortfolio
-	var queryParams []interface{}
-	if len(symbols) > 0 {
-		for _, v := range symbols {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:symbols*/?", strings.Repeat(",?", len(symbols))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:symbols*/?", "NULL", 1)
-	}
-	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}

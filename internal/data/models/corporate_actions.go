@@ -9,19 +9,19 @@ import (
 
 // CorporateAction represents a corporate action announcement for NEPSE stocks
 type CorporateAction struct {
-	ID               int64                 `json:"id" db:"id"`
-	Symbol           string                `json:"symbol" db:"symbol"`
-	ActionType       CorporateActionType   `json:"action_type" db:"action_type"`
-	AnnouncementDate time.Time             `json:"announcement_date" db:"announcement_date"`
-	RecordDate       time.Time             `json:"record_date" db:"record_date"`
-	ExDate           time.Time             `json:"ex_date" db:"ex_date"`
-	Ratio            string                `json:"ratio" db:"ratio"`
-	DividendAmount   Money                 `json:"dividend_amount" db:"dividend_amount"`
-	Processed        bool                  `json:"processed" db:"processed"`
-	ProcessedDate    time.Time             `json:"processed_date" db:"processed_date"`
-	Notes            string                `json:"notes" db:"notes"`
-	CreatedAt        time.Time             `json:"created_at" db:"created_at"`
-	UpdatedAt        time.Time             `json:"updated_at" db:"updated_at"`
+	ID               int64               `json:"id" db:"id"`
+	Symbol           string              `json:"symbol" db:"symbol"`
+	ActionType       CorporateActionType `json:"action_type" db:"action_type"`
+	AnnouncementDate time.Time           `json:"announcement_date" db:"announcement_date"`
+	RecordDate       time.Time           `json:"record_date" db:"record_date"`
+	ExDate           time.Time           `json:"ex_date" db:"ex_date"`
+	Ratio            string              `json:"ratio" db:"ratio"`
+	DividendAmount   Money               `json:"dividend_amount" db:"dividend_amount"`
+	Processed        bool                `json:"processed" db:"processed"`
+	ProcessedDate    time.Time           `json:"processed_date" db:"processed_date"`
+	Notes            string              `json:"notes" db:"notes"`
+	CreatedAt        time.Time           `json:"created_at" db:"created_at"`
+	UpdatedAt        time.Time           `json:"updated_at" db:"updated_at"`
 }
 
 // CorporateActionType represents the type of corporate action
@@ -48,24 +48,24 @@ type CorporateActionRequest struct {
 
 // CorporateActionSummary provides summarized corporate action information
 type CorporateActionSummary struct {
-	Symbol              string              `json:"symbol"`
-	ActionType          CorporateActionType `json:"action_type"`
-	ExDate              time.Time           `json:"ex_date"`
-	Description         string              `json:"description"`
-	Status              string              `json:"status"`
-	RequiresProcessing  bool                `json:"requires_processing"`
-	ImpactDescription   string              `json:"impact_description"`
-	DaysUntilExDate     int                 `json:"days_until_ex_date"`
+	Symbol             string              `json:"symbol"`
+	ActionType         CorporateActionType `json:"action_type"`
+	ExDate             time.Time           `json:"ex_date"`
+	Description        string              `json:"description"`
+	Status             string              `json:"status"`
+	RequiresProcessing bool                `json:"requires_processing"`
+	ImpactDescription  string              `json:"impact_description"`
+	DaysUntilExDate    int                 `json:"days_until_ex_date"`
 }
 
 // BonusShareCalculation represents the calculation for bonus share distribution
 type BonusShareCalculation struct {
-	Symbol           string    `json:"symbol"`
-	CurrentHolding   Quantity  `json:"current_holding"`
-	BonusRatio       string    `json:"bonus_ratio"`
-	BonusShares      Quantity  `json:"bonus_shares"`
-	NewTotalShares   Quantity  `json:"new_total_shares"`
-	NewAverageCost   Money     `json:"new_average_cost"`
+	Symbol         string   `json:"symbol"`
+	CurrentHolding Quantity `json:"current_holding"`
+	BonusRatio     string   `json:"bonus_ratio"`
+	BonusShares    Quantity `json:"bonus_shares"`
+	NewTotalShares Quantity `json:"new_total_shares"`
+	NewAverageCost Money    `json:"new_average_cost"`
 }
 
 // DividendCalculation represents the calculation for dividend distribution
@@ -80,14 +80,14 @@ type DividendCalculation struct {
 
 // RightsShareCalculation represents the calculation for rights share offering
 type RightsShareCalculation struct {
-	Symbol           string   `json:"symbol"`
-	CurrentHolding   Quantity `json:"current_holding"`
-	RightsRatio      string   `json:"rights_ratio"`
-	RightsEntitled   Quantity `json:"rights_entitled"`
-	RightsPrice      Money    `json:"rights_price"`
-	TotalInvestment  Money    `json:"total_investment"`
-	NewTotalShares   Quantity `json:"new_total_shares"`
-	NewAverageCost   Money    `json:"new_average_cost"`
+	Symbol          string   `json:"symbol"`
+	CurrentHolding  Quantity `json:"current_holding"`
+	RightsRatio     string   `json:"rights_ratio"`
+	RightsEntitled  Quantity `json:"rights_entitled"`
+	RightsPrice     Money    `json:"rights_price"`
+	TotalInvestment Money    `json:"total_investment"`
+	NewTotalShares  Quantity `json:"new_total_shares"`
+	NewAverageCost  Money    `json:"new_average_cost"`
 }
 
 // Methods for CorporateAction
@@ -136,19 +136,19 @@ func (ca *CorporateAction) GetDescription() string {
 // GetStatus returns the current status of the corporate action
 func (ca *CorporateAction) GetStatus() string {
 	now := time.Now()
-	
+
 	if ca.Processed {
 		return "Processed"
 	}
-	
+
 	if now.Before(ca.ExDate) {
 		return "Pending"
 	}
-	
+
 	if now.After(ca.ExDate) && !ca.Processed {
 		return "Due for Processing"
 	}
-	
+
 	return "Active"
 }
 
@@ -179,7 +179,7 @@ func (ca *CorporateAction) CalculateBonusShares(currentHolding Quantity, current
 	}
 
 	newTotalShares := currentHolding.Add(bonusShares)
-	
+
 	// New average cost = (old total cost) / (new total shares)
 	totalCost := currentAvgCost.MultiplyByQuantity(currentHolding)
 	newAvgCost := totalCost.DivideByQuantity(newTotalShares)
@@ -205,7 +205,7 @@ func (ca *CorporateAction) CalculateDividend(currentHolding Quantity) (*Dividend
 	}
 
 	totalDividend := ca.DividendAmount.MultiplyByQuantity(currentHolding)
-	
+
 	// In Nepal, dividend tax is typically 5% for individuals
 	taxRate := NewPercentageFromFloat(5.0)
 	taxDeduction := ApplyPercentageToMoney(totalDividend, taxRate)
@@ -234,7 +234,7 @@ func (ca *CorporateAction) CalculateRightsShares(currentHolding Quantity, curren
 
 	totalInvestment := rightsPrice.MultiplyByQuantity(rightsEntitled)
 	newTotalShares := currentHolding.Add(rightsEntitled)
-	
+
 	// New average cost = (old total cost + rights investment) / (new total shares)
 	oldTotalCost := currentAvgCost.MultiplyByQuantity(currentHolding)
 	newTotalCost := oldTotalCost.Add(totalInvestment)
@@ -255,14 +255,14 @@ func (ca *CorporateAction) CalculateRightsShares(currentHolding Quantity, curren
 // ToSummary converts corporate action to summary format
 func (ca *CorporateAction) ToSummary() CorporateActionSummary {
 	return CorporateActionSummary{
-		Symbol:              ca.Symbol,
-		ActionType:          ca.ActionType,
-		ExDate:              ca.ExDate,
-		Description:         ca.GetDescription(),
-		Status:              ca.GetStatus(),
-		RequiresProcessing:  ca.RequiresProcessing(),
-		ImpactDescription:   ca.getImpactDescription(),
-		DaysUntilExDate:     ca.DaysUntilExDate(),
+		Symbol:             ca.Symbol,
+		ActionType:         ca.ActionType,
+		ExDate:             ca.ExDate,
+		Description:        ca.GetDescription(),
+		Status:             ca.GetStatus(),
+		RequiresProcessing: ca.RequiresProcessing(),
+		ImpactDescription:  ca.getImpactDescription(),
+		DaysUntilExDate:    ca.DaysUntilExDate(),
 	}
 }
 
@@ -347,7 +347,7 @@ func calculateBonusFromRatio(ratio string, currentHolding Quantity) (Quantity, e
 		if err != nil {
 			return Quantity(0), fmt.Errorf("invalid percentage format: %s", ratio)
 		}
-		
+
 		bonusFloat := float64(currentHolding.Int64()) * (percent / 100.0)
 		return Quantity(int64(bonusFloat)), nil
 	}
@@ -395,13 +395,13 @@ func FilterCorporateActions(actions []CorporateAction, filters CorporateActionFi
 
 // CorporateActionFilters represents filtering criteria for corporate actions
 type CorporateActionFilters struct {
-	Symbol           string              `json:"symbol,omitempty"`
-	ActionType       CorporateActionType `json:"action_type,omitempty"`
-	ProcessedOnly    bool                `json:"processed_only,omitempty"`
-	UnprocessedOnly  bool                `json:"unprocessed_only,omitempty"`
-	RequiresAction   bool                `json:"requires_action,omitempty"`
-	FromDate         time.Time           `json:"from_date,omitempty"`
-	ToDate           time.Time           `json:"to_date,omitempty"`
+	Symbol          string              `json:"symbol,omitempty"`
+	ActionType      CorporateActionType `json:"action_type,omitempty"`
+	ProcessedOnly   bool                `json:"processed_only,omitempty"`
+	UnprocessedOnly bool                `json:"unprocessed_only,omitempty"`
+	RequiresAction  bool                `json:"requires_action,omitempty"`
+	FromDate        time.Time           `json:"from_date"`
+	ToDate          time.Time           `json:"to_date"`
 }
 
 // shouldIncludeAction checks if an action matches the filters

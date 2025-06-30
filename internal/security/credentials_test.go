@@ -304,14 +304,14 @@ func TestConcurrentCredentialAccess(t *testing.T) {
 
 		// Run multiple initializations concurrently
 		done := make(chan error, 5)
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			go func() {
 				done <- InitializeCredentials(tempDir)
 			}()
 		}
 
 		// All should succeed without panics
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			err := <-done
 			assert.NoError(t, err)
 		}
@@ -333,7 +333,7 @@ func TestConcurrentCredentialAccess(t *testing.T) {
 		done := make(chan *Credentials, 5)
 		errors := make(chan error, 5)
 
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			go func() {
 				creds, err := LoadCredentials(tempDir)
 				if err != nil {
@@ -346,7 +346,7 @@ func TestConcurrentCredentialAccess(t *testing.T) {
 
 		// All should succeed
 		var allCreds []*Credentials
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			select {
 			case creds := <-done:
 				allCreds = append(allCreds, creds)
@@ -372,7 +372,7 @@ func BenchmarkCredentialOperations(b *testing.B) {
 	require.NoError(b, err)
 
 	b.Run("LoadCredentials", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_, err := LoadCredentials(tempDir)
 			if err != nil {
 				b.Fatal(err)
@@ -382,7 +382,7 @@ func BenchmarkCredentialOperations(b *testing.B) {
 
 	b.Run("DeriveMasterKey", func(b *testing.B) {
 		credentialsPath := filepath.Join(tempDir, credentialsFile)
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_, err := deriveMasterKey(credentialsPath)
 			if err != nil {
 				b.Fatal(err)

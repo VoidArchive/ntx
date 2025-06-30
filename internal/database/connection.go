@@ -67,7 +67,7 @@ const (
 // Helper functions for creating domain-specific errors
 
 // NewNotFoundError creates a not found error
-func NewNotFoundError(resource string, identifier interface{}) *RepositoryError {
+func NewNotFoundError(resource string, identifier any) *RepositoryError {
 	return &RepositoryError{
 		Type:    ErrorTypeNotFound,
 		Message: resource + " not found: " + toString(identifier),
@@ -75,7 +75,7 @@ func NewNotFoundError(resource string, identifier interface{}) *RepositoryError 
 }
 
 // NewAlreadyExistsError creates an already exists error
-func NewAlreadyExistsError(resource string, identifier interface{}) *RepositoryError {
+func NewAlreadyExistsError(resource string, identifier any) *RepositoryError {
 	return &RepositoryError{
 		Type:    ErrorTypeAlreadyExists,
 		Message: resource + " already exists: " + toString(identifier),
@@ -146,7 +146,7 @@ func NewBackupError(message string, cause error) *RepositoryError {
 }
 
 // toString converts various types to string representation
-func toString(v interface{}) string {
+func toString(v any) string {
 	if v == nil {
 		return "<nil>"
 	}
@@ -226,6 +226,7 @@ func (m *Manager) buildConnectionString(databasePath string) string {
 		"_foreign_keys=ON",    // Enable foreign key constraints
 		"_cache_size=-64000",  // 64MB cache size (negative = KB)
 		"_temp_store=MEMORY",  // Store temporary data in memory
+
 	}
 
 	return fmt.Sprintf("file:%s?%s", databasePath, strings.Join(params, "&"))
@@ -258,6 +259,9 @@ func (m *Manager) RunMigrations(ctx context.Context) error {
 	// Set Goose dialect to SQLite
 	goose.SetDialect("sqlite3")
 
+	// Silence Goose output to prevent interference with TUI
+	goose.SetLogger(goose.NopLogger())
+
 	// Get migrations directory - handle both running from project root and cmd/ntx
 	migrationsDir := "internal/data/migrations"
 	if _, err := os.Stat(migrationsDir); os.IsNotExist(err) {
@@ -284,6 +288,7 @@ func (m *Manager) GetSchemaVersion(ctx context.Context) (int64, error) {
 	}
 
 	goose.SetDialect("sqlite3")
+	goose.SetLogger(goose.NopLogger())
 	version, err := goose.GetDBVersionContext(ctx, m.db)
 	if err != nil {
 		return 0, NewInternalError("failed to get schema version", err)

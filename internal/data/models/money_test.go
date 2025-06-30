@@ -493,31 +493,31 @@ func BenchmarkMoney_Operations(b *testing.B) {
 	quantity := NewQuantity(100)
 
 	b.Run("Add", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = money1.Add(money2)
 		}
 	})
 
 	b.Run("Multiply", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = money1.Multiply(2.5)
 		}
 	})
 
 	b.Run("MultiplyByQuantity", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = money1.MultiplyByQuantity(quantity)
 		}
 	})
 
 	b.Run("String", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = money1.String()
 		}
 	})
 
 	b.Run("CommaSeparated", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = money1.CommaSeparated()
 		}
 	})
@@ -529,13 +529,13 @@ func BenchmarkPercentage_Operations(b *testing.B) {
 	p2 := NewPercentageFromFloat(2.75)
 
 	b.Run("Add", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = p1.Add(p2)
 		}
 	})
 
 	b.Run("String", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = p1.String()
 		}
 	})

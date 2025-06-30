@@ -4,12 +4,15 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"time"
+
+	"golang.org/x/crypto/pbkdf2"
 )
 
 // Credentials represents the encrypted credentials structure
@@ -21,10 +24,21 @@ type Credentials struct {
 	APITokens   map[string]string `json:"api_tokens"`
 }
 
+// EncryptedContainer wraps the encrypted credentials with metadata needed for decryption
+type EncryptedContainer struct {
+	Version       string    `json:"version"`
+	CreatedAt     time.Time `json:"created_at"`
+	Hostname      string    `json:"hostname"` // Store hostname used for key derivation
+	Username      string    `json:"username"` // Store username used for key derivation
+	EncryptedData []byte    `json:"encrypted_data"`
+	Salt          []byte    `json:"salt"` // Store salt directly in container
+}
+
 const (
-	credentialsFile = "credentials"
-	keySize         = 32 // AES-256
-	saltSize        = 16
+	credentialsFile  = "credentials"
+	keySize          = 32     // AES-256
+	saltSize         = 32     // 256-bit salt for PBKDF2
+	pbkdf2Iterations = 100000 // OWASP recommended minimum iterations
 )
 
 // InitializeCredentials initializes the credentials file if it doesn't exist
@@ -146,7 +160,7 @@ func saveEncryptedCredentials(path string, creds *Credentials, key []byte) error
 }
 
 // saveCredentialsTemporary saves credentials temporarily to establish file for key derivation
-func saveCredentialsTemporary(path string, creds *Credentials) error {
+func saveCredentialsTemporary(path string, _ *Credentials) error {
 	// Create a temporary placeholder file
 	placeholder := []byte("placeholder")
 	if err := os.WriteFile(path, placeholder, 0600); err != nil {
@@ -164,31 +178,28 @@ func LoadCredentials(configDir string) (*Credentials, error) {
 		return nil, fmt.Errorf("credentials file not found: %s", credentialsPath)
 	}
 
-	// Read encrypted credentials file
-	encryptedData, err := os.ReadFile(credentialsPath)
+	// Read credentials file
+	fileData, err := os.ReadFile(credentialsPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read credentials file: %w", err)
 	}
 
-	// For this implementation, we'll derive the master key from a combination of:
-	// 1. System-specific information (hostname, user)
-	// 2. File modification time (as additional entropy)
-	// This provides reasonable security for a local-first application
-	masterKey, err := deriveMasterKey(credentialsPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to derive master key: %w", err)
+	// Check for corrupted placeholder data
+	if len(fileData) >= 11 && string(fileData[:11]) == "placeholder" {
+		return nil, fmt.Errorf("credentials file contains placeholder data - file was not properly encrypted")
 	}
 
-	// Decrypt credentials
-	credentials, err := decryptCredentials(encryptedData, masterKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decrypt credentials: %w", err)
+	// Try to parse as new container format first
+	var container EncryptedContainer
+	if err := json.Unmarshal(fileData, &container); err == nil {
+		return loadFromContainer(&container)
 	}
 
-	return credentials, nil
+	// Fall back to legacy format
+	return loadLegacyCredentials(credentialsPath, fileData)
 }
 
-// deriveMasterKey derives a master key from system-specific information
+// deriveMasterKey derives a master key using PBKDF2 with system-specific information
 func deriveMasterKey(credentialsPath string) ([]byte, error) {
 	// Verify file exists
 	if _, err := os.Stat(credentialsPath); err != nil {
@@ -210,27 +221,42 @@ func deriveMasterKey(credentialsPath string) ([]byte, error) {
 		}
 	}
 
-	// Combine entropy sources (removed file modification time as it changes during creation)
-	entropy := fmt.Sprintf("%s:%s", hostname, user)
+	// Create a deterministic but unique password from system info
+	password := fmt.Sprintf("ntx-credentials:%s:%s", hostname, user)
 
-	// Use a simple but effective key derivation
-	// In production, you might want to use PBKDF2 or Argon2
-	hasher := func(data string) []byte {
-		// Simple hash-based key derivation
-		result := make([]byte, keySize)
-		dataBytes := []byte(data)
-
-		for i := 0; i < keySize; i++ {
-			var sum byte
-			for j, b := range dataBytes {
-				sum ^= b + byte(i) + byte(j)
-			}
-			result[i] = sum
-		}
-		return result
+	// Generate or load salt from a consistent source
+	salt, err := getOrCreateSalt(credentialsPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get salt: %w", err)
 	}
 
-	return hasher(entropy), nil
+	// Use PBKDF2 for proper key derivation (OWASP recommended)
+	derivedKey := pbkdf2.Key([]byte(password), salt, pbkdf2Iterations, keySize, sha256.New)
+
+	return derivedKey, nil
+}
+
+// getOrCreateSalt generates or retrieves a consistent salt for key derivation
+func getOrCreateSalt(credentialsPath string) ([]byte, error) {
+	saltPath := credentialsPath + ".salt"
+
+	// Try to read existing salt first
+	if saltData, err := os.ReadFile(saltPath); err == nil && len(saltData) == saltSize {
+		return saltData, nil
+	}
+
+	// Generate new salt if none exists or is invalid
+	salt := make([]byte, saltSize)
+	if _, err := rand.Read(salt); err != nil {
+		return nil, fmt.Errorf("failed to generate salt: %w", err)
+	}
+
+	// Save salt to file with secure permissions
+	if err := os.WriteFile(saltPath, salt, 0600); err != nil {
+		return nil, fmt.Errorf("failed to save salt: %w", err)
+	}
+
+	return salt, nil
 }
 
 // decryptCredentials decrypts the credentials using the master key
@@ -270,4 +296,68 @@ func decryptCredentials(encryptedData []byte, key []byte) (*Credentials, error) 
 	}
 
 	return &credentials, nil
+}
+
+// loadFromContainer loads credentials from the new container format
+func loadFromContainer(container *EncryptedContainer) (*Credentials, error) {
+	// Use the stored system info for key derivation
+	password := fmt.Sprintf("ntx-credentials:%s:%s", container.Hostname, container.Username)
+
+	// Use PBKDF2 for key derivation with stored salt
+	derivedKey := pbkdf2.Key([]byte(password), container.Salt, pbkdf2Iterations, keySize, sha256.New)
+
+	// Decrypt the credentials
+	return decryptCredentials(container.EncryptedData, derivedKey)
+}
+
+// loadLegacyCredentials loads credentials using the legacy format
+func loadLegacyCredentials(credentialsPath string, encryptedData []byte) (*Credentials, error) {
+	// Use the original derivation method for backward compatibility
+	masterKey, err := deriveMasterKey(credentialsPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive master key: %w", err)
+	}
+
+	// Decrypt credentials
+	credentials, err := decryptCredentials(encryptedData, masterKey)
+	if err != nil {
+		// Check if this looks like a key mismatch (most common cause)
+		if err.Error() == "failed to decrypt credentials: cipher: message authentication failed" {
+			fmt.Printf("RECOVERY: Credentials decryption failed due to system info change.\n")
+			fmt.Printf("RECOVERY: This usually happens when hostname or username changed.\n")
+			fmt.Printf("RECOVERY: Recreating credentials with current system info...\n")
+
+			// Backup the old file
+			backupPath := credentialsPath + ".backup." + fmt.Sprintf("%d", time.Now().Unix())
+			if backupErr := os.Rename(credentialsPath, backupPath); backupErr != nil {
+				fmt.Printf("WARNING: Could not backup old credentials: %v\n", backupErr)
+			} else {
+				fmt.Printf("RECOVERY: Backed up old credentials to: %s\n", backupPath)
+			}
+
+			// Backup salt file too
+			saltPath := credentialsPath + ".salt"
+			saltBackupPath := saltPath + ".backup." + fmt.Sprintf("%d", time.Now().Unix())
+			if backupErr := os.Rename(saltPath, saltBackupPath); backupErr != nil {
+				fmt.Printf("WARNING: Could not backup old salt: %v\n", backupErr)
+			} else {
+				fmt.Printf("RECOVERY: Backed up old salt to: %s\n", saltBackupPath)
+			}
+
+			// Create new credentials
+			if createErr := createCredentials(credentialsPath); createErr != nil {
+				return nil, fmt.Errorf("failed to recreate credentials: %w", createErr)
+			}
+
+			fmt.Printf("RECOVERY: Successfully recreated credentials.\n")
+			fmt.Printf("RECOVERY: Application will now use the new credentials.\n")
+
+			// Load the newly created credentials
+			return LoadCredentials(filepath.Dir(credentialsPath))
+		}
+
+		return nil, fmt.Errorf("failed to decrypt credentials: %w", err)
+	}
+
+	return credentials, nil
 }

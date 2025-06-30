@@ -28,7 +28,7 @@ const (
 // Database interfaces for Money
 
 // Scan implements sql.Scanner interface for Money
-func (m *Money) Scan(value interface{}) error {
+func (m *Money) Scan(value any) error {
 	if value == nil {
 		*m = 0
 		return nil
@@ -62,7 +62,7 @@ func (m Money) Value() (driver.Value, error) {
 // Database interfaces for Quantity
 
 // Scan implements sql.Scanner interface for Quantity
-func (q *Quantity) Scan(value interface{}) error {
+func (q *Quantity) Scan(value any) error {
 	if value == nil {
 		*q = 0
 		return nil
@@ -96,7 +96,7 @@ func (q Quantity) Value() (driver.Value, error) {
 // Database interfaces for Percentage
 
 // Scan implements sql.Scanner interface for Percentage
-func (p *Percentage) Scan(value interface{}) error {
+func (p *Percentage) Scan(value any) error {
 	if value == nil {
 		*p = 0
 		return nil
@@ -471,7 +471,8 @@ func CalculatePercentageChange(oldValue, newValue Money) Percentage {
 func CalculatePortfolioValue(holdings []struct {
 	Quantity Quantity
 	Price    Money
-}) Money {
+},
+) Money {
 	total := Money(0)
 	for _, holding := range holdings {
 		value := holding.Price.MultiplyByQuantity(holding.Quantity)

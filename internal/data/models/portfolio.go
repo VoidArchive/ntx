@@ -1,17 +1,18 @@
 package models
 
 import (
+	"slices"
 	"time"
 )
 
 // Portfolio represents a collection of holdings
 type Portfolio struct {
-	Holdings      []Holding     `json:"holdings"`
-	TotalValue    Money         `json:"total_value"`
-	TotalCost     Money         `json:"total_cost"`
-	DayChange     Money         `json:"day_change"`
-	DayChangePerc Percentage    `json:"day_change_perc"`
-	UpdatedAt     time.Time     `json:"updated_at"`
+	Holdings      []Holding  `json:"holdings"`
+	TotalValue    Money      `json:"total_value"`
+	TotalCost     Money      `json:"total_cost"`
+	DayChange     Money      `json:"day_change"`
+	DayChangePerc Percentage `json:"day_change_perc"`
+	UpdatedAt     time.Time  `json:"updated_at"`
 }
 
 // Holding represents a single stock position in the portfolio
@@ -24,7 +25,7 @@ type Holding struct {
 	Notes        string    `json:"notes" db:"notes"` // May be encrypted
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
-	
+
 	// Calculated fields (not stored in database)
 	CurrentPrice  Money      `json:"current_price,omitempty"`
 	MarketValue   Money      `json:"market_value,omitempty"`
@@ -46,29 +47,29 @@ type MarketData struct {
 
 // PortfolioMetrics represents calculated portfolio performance metrics
 type PortfolioMetrics struct {
-	TotalValue      Money      `json:"total_value"`
-	TotalCost       Money      `json:"total_cost"`
-	TotalGainLoss   Money      `json:"total_gain_loss"`
+	TotalValue        Money      `json:"total_value"`
+	TotalCost         Money      `json:"total_cost"`
+	TotalGainLoss     Money      `json:"total_gain_loss"`
 	TotalGainLossPerc Percentage `json:"total_gain_loss_perc"`
-	DayChange       Money      `json:"day_change"`
-	DayChangePerc   Percentage `json:"day_change_perc"`
-	PortfolioCount  int        `json:"portfolio_count"`
-	LastUpdated     time.Time  `json:"last_updated"`
+	DayChange         Money      `json:"day_change"`
+	DayChangePerc     Percentage `json:"day_change_perc"`
+	PortfolioCount    int        `json:"portfolio_count"`
+	LastUpdated       time.Time  `json:"last_updated"`
 }
 
 // HoldingSummary represents summarized holding information for display
 type HoldingSummary struct {
-	Symbol        string     `json:"symbol"`
-	Quantity      Quantity   `json:"quantity"`
-	AvgCost       Money      `json:"avg_cost"`
-	CurrentPrice  Money      `json:"current_price"`
-	MarketValue   Money      `json:"market_value"`
-	TotalCost     Money      `json:"total_cost"`
-	UnrealizedPnL Money      `json:"unrealized_pnl"`
-	GainLossPerc  Percentage `json:"gain_loss_perc"`
+	Symbol         string     `json:"symbol"`
+	Quantity       Quantity   `json:"quantity"`
+	AvgCost        Money      `json:"avg_cost"`
+	CurrentPrice   Money      `json:"current_price"`
+	MarketValue    Money      `json:"market_value"`
+	TotalCost      Money      `json:"total_cost"`
+	UnrealizedPnL  Money      `json:"unrealized_pnl"`
+	GainLossPerc   Percentage `json:"gain_loss_perc"`
 	AllocationPerc Percentage `json:"allocation_perc"`
-	DayChange     Money      `json:"day_change"`
-	DayChangePerc Percentage `json:"day_change_perc"`
+	DayChange      Money      `json:"day_change"`
+	DayChangePerc  Percentage `json:"day_change_perc"`
 }
 
 // PortfolioRequest represents a request to add/update portfolio holdings
@@ -111,9 +112,9 @@ func (h *Holding) UpdateCalculations(currentPrice Money) {
 
 // IsValid validates the holding data
 func (h *Holding) IsValid() bool {
-	return h.Symbol != "" && 
-		   h.Quantity.IsPositive() && 
-		   h.AvgCost.IsPositive()
+	return h.Symbol != "" &&
+		h.Quantity.IsPositive() &&
+		h.AvgCost.IsPositive()
 }
 
 // Methods for Portfolio
@@ -128,7 +129,7 @@ func (p *Portfolio) AddHolding(holding Holding) {
 func (p *Portfolio) RemoveHolding(symbol string) bool {
 	for i, holding := range p.Holdings {
 		if holding.Symbol == symbol {
-			p.Holdings = append(p.Holdings[:i], p.Holdings[i+1:]...)
+			p.Holdings = slices.Delete(p.Holdings, i, i+1)
 			p.UpdatedAt = time.Now()
 			return true
 		}
@@ -164,25 +165,25 @@ func (p *Portfolio) UpdateHolding(symbol string, updatedHolding Holding) bool {
 // CalculateMetrics calculates portfolio-level metrics
 func (p *Portfolio) CalculateMetrics() PortfolioMetrics {
 	var totalValue, totalCost, dayChange Money
-	
+
 	for _, holding := range p.Holdings {
 		totalValue = totalValue.Add(holding.MarketValue)
 		totalCost = totalCost.Add(holding.TotalCost)
 		// Day change would be calculated based on previous day's prices
 		// For now, we'll leave it as zero until we implement price history
 	}
-	
+
 	totalGainLoss := totalValue.Subtract(totalCost)
 	var totalGainLossPerc Percentage
 	if !totalCost.IsZero() {
 		totalGainLossPerc = CalculatePercentageChange(totalCost, totalValue)
 	}
-	
+
 	var dayChangePerc Percentage
 	if !totalValue.IsZero() && !dayChange.IsZero() {
 		dayChangePerc = CalculatePercentageChange(totalValue.Subtract(dayChange), totalValue)
 	}
-	
+
 	return PortfolioMetrics{
 		TotalValue:        totalValue,
 		TotalCost:         totalCost,
@@ -199,14 +200,14 @@ func (p *Portfolio) CalculateMetrics() PortfolioMetrics {
 func (p *Portfolio) GetHoldingSummaries() []HoldingSummary {
 	metrics := p.CalculateMetrics()
 	summaries := make([]HoldingSummary, len(p.Holdings))
-	
+
 	for i, holding := range p.Holdings {
 		var allocationPerc Percentage
 		if !metrics.TotalValue.IsZero() {
 			allocationFloat := (holding.MarketValue.Rupees() / metrics.TotalValue.Rupees()) * 100
 			allocationPerc = NewPercentageFromFloat(allocationFloat)
 		}
-		
+
 		summaries[i] = HoldingSummary{
 			Symbol:         holding.Symbol,
 			Quantity:       holding.Quantity,
@@ -217,11 +218,11 @@ func (p *Portfolio) GetHoldingSummaries() []HoldingSummary {
 			UnrealizedPnL:  holding.UnrealizedPnL,
 			GainLossPerc:   holding.GainLossPerc,
 			AllocationPerc: allocationPerc,
-			DayChange:      Money(0), // TODO: Implement with price history
-			DayChangePerc:  Percentage(0), // TODO: Implement with price history
+			DayChange:      Money(0),      // Day change handled by PortfolioService
+			DayChangePerc:  Percentage(0), // Day change handled by PortfolioService
 		}
 	}
-	
+
 	return summaries
 }
 
@@ -248,7 +249,7 @@ func (pr *PortfolioRequest) ToHolding() Holding {
 	if purchaseDate.IsZero() {
 		purchaseDate = now
 	}
-	
+
 	return Holding{
 		Symbol:       pr.Symbol,
 		Quantity:     pr.Quantity,
@@ -262,11 +263,11 @@ func (pr *PortfolioRequest) ToHolding() Holding {
 
 // IsValid validates the portfolio request
 func (pr *PortfolioRequest) IsValid() bool {
-	return pr.Symbol != "" && 
-		   len(pr.Symbol) >= 2 && len(pr.Symbol) <= 10 &&
-		   pr.Quantity.IsPositive() && 
-		   pr.AvgCost.IsPositive() &&
-		   len(pr.Notes) <= 500
+	return pr.Symbol != "" &&
+		len(pr.Symbol) >= 2 && len(pr.Symbol) <= 10 &&
+		pr.Quantity.IsPositive() &&
+		pr.AvgCost.IsPositive() &&
+		len(pr.Notes) <= 500
 }
 
 // Methods for MarketData

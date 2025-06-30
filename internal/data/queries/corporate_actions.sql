@@ -59,12 +59,7 @@ UPDATE corporate_actions
 SET processed = TRUE, processed_date = ?, updated_at = ?
 WHERE id = ?;
 
--- name: GetCorporateActionsForPortfolio :many
-SELECT id, symbol, action_type, announcement_date, record_date, ex_date, ratio,
-       dividend_amount, processed, processed_date, notes, created_at, updated_at
-FROM corporate_actions
-WHERE symbol IN (sqlc.slice('symbols')) COLLATE NOCASE
-ORDER BY symbol, ex_date DESC;
+
 
 -- name: GetCorporateActionsByDateRange :many
 SELECT id, symbol, action_type, announcement_date, record_date, ex_date, ratio,

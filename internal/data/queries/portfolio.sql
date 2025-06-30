@@ -58,4 +58,39 @@ LEFT JOIN (
     SELECT symbol, last_price,
            ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY timestamp DESC) as rn
     FROM market_data
-) m ON p.symbol = m.symbol COLLATE NOCASE AND m.rn = 1; 
+) m ON p.symbol = m.symbol COLLATE NOCASE AND m.rn = 1;
+
+-- name: GetCurrentMarketPrice :one
+SELECT last_price
+FROM market_data
+WHERE symbol = ? COLLATE NOCASE
+ORDER BY timestamp DESC
+LIMIT 1;
+
+-- name: GetPreviousClosePrice :one
+SELECT last_price
+FROM market_data
+WHERE symbol = ? COLLATE NOCASE
+  AND DATE(timestamp) = DATE('now', '-1 day')
+ORDER BY timestamp DESC
+LIMIT 1;
+
+-- name: GetPortfolioWithCurrentPrices :many
+SELECT 
+    p.id, p.symbol, p.quantity, p.avg_cost, 
+    CAST(p.purchase_date AS TEXT) as purchase_date, 
+    p.notes, 
+    CAST(p.created_at AS TEXT) as created_at, 
+    CAST(p.updated_at AS TEXT) as updated_at,
+    COALESCE(m.last_price, 0) as current_price
+FROM portfolio p
+LEFT JOIN (
+    SELECT DISTINCT symbol, last_price
+    FROM market_data md1
+    WHERE timestamp = (
+        SELECT MAX(timestamp)
+        FROM market_data md2
+        WHERE md2.symbol = md1.symbol
+    )
+) m ON p.symbol = m.symbol COLLATE NOCASE
+ORDER BY p.symbol; 

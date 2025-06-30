@@ -97,6 +97,21 @@ func (q *Queries) GetAllHoldings(ctx context.Context) ([]Portfolio, error) {
 	return items, nil
 }
 
+const getCurrentMarketPrice = `-- name: GetCurrentMarketPrice :one
+SELECT last_price
+FROM market_data
+WHERE symbol = ? COLLATE NOCASE
+ORDER BY timestamp DESC
+LIMIT 1
+`
+
+func (q *Queries) GetCurrentMarketPrice(ctx context.Context, symbol string) (models.Money, error) {
+	row := q.db.QueryRowContext(ctx, getCurrentMarketPrice, symbol)
+	var last_price models.Money
+	err := row.Scan(&last_price)
+	return last_price, err
+}
+
 const getHolding = `-- name: GetHolding :one
 SELECT id, symbol, quantity, avg_cost, purchase_date, notes, created_at, updated_at
 FROM portfolio
@@ -241,6 +256,88 @@ func (q *Queries) GetPortfolioValue(ctx context.Context) (interface{}, error) {
 	var total_value interface{}
 	err := row.Scan(&total_value)
 	return total_value, err
+}
+
+const getPortfolioWithCurrentPrices = `-- name: GetPortfolioWithCurrentPrices :many
+SELECT 
+    p.id, p.symbol, p.quantity, p.avg_cost, 
+    CAST(p.purchase_date AS TEXT) as purchase_date, 
+    p.notes, 
+    CAST(p.created_at AS TEXT) as created_at, 
+    CAST(p.updated_at AS TEXT) as updated_at,
+    COALESCE(m.last_price, 0) as current_price
+FROM portfolio p
+LEFT JOIN (
+    SELECT DISTINCT symbol, last_price
+    FROM market_data md1
+    WHERE timestamp = (
+        SELECT MAX(timestamp)
+        FROM market_data md2
+        WHERE md2.symbol = md1.symbol
+    )
+) m ON p.symbol = m.symbol COLLATE NOCASE
+ORDER BY p.symbol
+`
+
+type GetPortfolioWithCurrentPricesRow struct {
+	ID           int64           `json:"id"`
+	Symbol       string          `json:"symbol"`
+	Quantity     models.Quantity `json:"quantity"`
+	AvgCost      models.Money    `json:"avg_cost"`
+	PurchaseDate string          `json:"purchase_date"`
+	Notes        sql.NullString  `json:"notes"`
+	CreatedAt    string          `json:"created_at"`
+	UpdatedAt    string          `json:"updated_at"`
+	CurrentPrice models.Money    `json:"current_price"`
+}
+
+func (q *Queries) GetPortfolioWithCurrentPrices(ctx context.Context) ([]GetPortfolioWithCurrentPricesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPortfolioWithCurrentPrices)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPortfolioWithCurrentPricesRow
+	for rows.Next() {
+		var i GetPortfolioWithCurrentPricesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Symbol,
+			&i.Quantity,
+			&i.AvgCost,
+			&i.PurchaseDate,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CurrentPrice,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPreviousClosePrice = `-- name: GetPreviousClosePrice :one
+SELECT last_price
+FROM market_data
+WHERE symbol = ? COLLATE NOCASE
+  AND DATE(timestamp) = DATE('now', '-1 day')
+ORDER BY timestamp DESC
+LIMIT 1
+`
+
+func (q *Queries) GetPreviousClosePrice(ctx context.Context, symbol string) (models.Money, error) {
+	row := q.db.QueryRowContext(ctx, getPreviousClosePrice, symbol)
+	var last_price models.Money
+	err := row.Scan(&last_price)
+	return last_price, err
 }
 
 const updateHolding = `-- name: UpdateHolding :exec
