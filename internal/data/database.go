@@ -23,13 +23,13 @@ func NewDatabase() (*Database, error) {
 	}
 
 	// Ensure directory exists
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create database directory: %w", err)
 	}
 
 	// Open SQLite connection with optimized pragmas
 	dsn := fmt.Sprintf("%s?_pragma=journal_mode(WAL)&_pragma=synchronous(NORMAL)&_pragma=temp_store(memory)&_pragma=mmap_size(268435456)&_pragma=foreign_keys(1)", dbPath)
-	
+
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
@@ -37,7 +37,9 @@ func NewDatabase() (*Database, error) {
 
 	// Test connection
 	if err := db.Ping(); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			return nil, fmt.Errorf("failed to ping database: %w, and failed to close database: %w", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
@@ -58,6 +60,6 @@ func getDatabasePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	return filepath.Join(homeDir, ".local", "share", "ntx", "portfolio.db"), nil
 }

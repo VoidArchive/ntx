@@ -62,7 +62,7 @@ func SeedData(db *Database) error {
 
 	for _, tx := range transactions1 {
 		_, err := services.Repository.Transaction.Create(ctx, repository.CreateTransactionRequest{
-			PortfolioID:      portfolio1.ID,
+			PortfolioID:     portfolio1.ID,
 			Symbol:          tx.symbol,
 			TransactionType: tx.txType,
 			Quantity:        tx.quantity,
@@ -79,20 +79,20 @@ func SeedData(db *Database) error {
 
 	// Portfolio 1 holdings (aggregated positions)
 	holdings1 := []struct {
-		symbol           string
-		quantity         int64
-		avgCostPaisa     int64
-		lastPricePaisa   int64
+		symbol         string
+		quantity       int64
+		avgCostPaisa   int64
+		lastPricePaisa int64
 	}{
-		{"NABIL", 75, 126667, 132000},  // 75 shares avg ₹1,266.67, LTP ₹1,320
-		{"EBL", 30, 68000, 71000},      // 30 shares at ₹680, LTP ₹710
-		{"HIDCL", 100, 42000, 44500},   // 100 shares at ₹420, LTP ₹445
-		{"KTM", 40, 89000, 92000},      // 40 shares at ₹890, LTP ₹920
+		{"NABIL", 75, 126667, 132000}, // 75 shares avg Rs.1,266.67, LTP Rs.1,320
+		{"EBL", 30, 68000, 71000},     // 30 shares at Rs.680, LTP Rs.710
+		{"HIDCL", 100, 42000, 44500},  // 100 shares at Rs.420, LTP Rs.445
+		{"KTM", 40, 89000, 92000},     // 40 shares at Rs.890, LTP Rs.920
 	}
 
 	for _, h := range holdings1 {
 		_, err := services.Repository.Holding.Create(ctx, repository.CreateHoldingRequest{
-			PortfolioID:       portfolio1.ID,
+			PortfolioID:      portfolio1.ID,
 			Symbol:           h.symbol,
 			Quantity:         h.quantity,
 			AverageCostPaisa: h.avgCostPaisa,
@@ -121,7 +121,7 @@ func SeedData(db *Database) error {
 
 	for _, tx := range transactions2 {
 		_, err := services.Repository.Transaction.Create(ctx, repository.CreateTransactionRequest{
-			PortfolioID:      portfolio2.ID,
+			PortfolioID:     portfolio2.ID,
 			Symbol:          tx.symbol,
 			TransactionType: tx.txType,
 			Quantity:        tx.quantity,
@@ -138,19 +138,19 @@ func SeedData(db *Database) error {
 
 	// Portfolio 2 holdings
 	holdings2 := []struct {
-		symbol           string
-		quantity         int64
-		avgCostPaisa     int64
-		lastPricePaisa   int64
+		symbol         string
+		quantity       int64
+		avgCostPaisa   int64
+		lastPricePaisa int64
 	}{
-		{"ADBL", 60, 55000, 56500},     // 60 shares at ₹550, LTP ₹565
-		{"PRVU", 25, 78000, 79500},     // 25 shares at ₹780, LTP ₹795
-		{"SBI", 80, 41000, 42200},      // 80 shares at ₹410, LTP ₹422
+		{"ADBL", 60, 55000, 56500}, // 60 shares at Rs.550, LTP Rs.565
+		{"PRVU", 25, 78000, 79500}, // 25 shares at Rs.780, LTP Rs.795
+		{"SBI", 80, 41000, 42200},  // 80 shares at Rs.410, LTP Rs.422
 	}
 
 	for _, h := range holdings2 {
 		_, err := services.Repository.Holding.Create(ctx, repository.CreateHoldingRequest{
-			PortfolioID:       portfolio2.ID,
+			PortfolioID:      portfolio2.ID,
 			Symbol:           h.symbol,
 			Quantity:         h.quantity,
 			AverageCostPaisa: h.avgCostPaisa,
@@ -179,7 +179,7 @@ func SeedData(db *Database) error {
 			announcementDate: time.Date(2024, 10, 1, 0, 0, 0, 0, time.UTC),
 			recordDate:       time.Date(2024, 10, 15, 0, 0, 0, 0, time.UTC),
 			executionDate:    timePtr(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC)),
-			amountPaisa:      int64Ptr(2000), // ₹20 per share dividend
+			amountPaisa:      int64Ptr(2000), // Rs.20 per share dividend
 			notes:            "Annual cash dividend payment",
 		},
 		{
@@ -198,9 +198,9 @@ func SeedData(db *Database) error {
 			announcementDate: time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC),
 			recordDate:       time.Date(2024, 11, 15, 0, 0, 0, 0, time.UTC),
 			ratioFrom:        int64Ptr(1),
-			ratioTo:          int64Ptr(5), // 1:5 rights issue
-			amountPaisa:      int64Ptr(50000), // ₹500 per share rights price
-			notes:            "Rights issue at ₹500 per share",
+			ratioTo:          int64Ptr(5),     // 1:5 rights issue
+			amountPaisa:      int64Ptr(50000), // Rs.500 per share rights price
+			notes:            "Rights issue at Rs.500 per share",
 		},
 	}
 

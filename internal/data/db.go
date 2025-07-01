@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -17,7 +18,9 @@ func InitializeDatabase() (*Database, error) {
 
 	// Run migrations
 	if err := RunMigrations(db.DB); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			return nil, fmt.Errorf("failed to run migrations: %w, and failed to close database: %w", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
@@ -42,7 +45,9 @@ func ResetDatabase() (*Database, error) {
 
 	// Re-run all migrations
 	if err := RunMigrations(db.DB); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			return nil, fmt.Errorf("failed to run migrations: %w, and failed to close database: %w", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
@@ -63,7 +68,7 @@ func BackupDatabase() (string, error) {
 
 	// Create backup directory if it doesn't exist
 	backupDir := filepath.Join(filepath.Dir(dbPath), "backups")
-	if err := os.MkdirAll(backupDir, 0755); err != nil {
+	if err := os.MkdirAll(backupDir, 0750); err != nil {
 		return "", fmt.Errorf("failed to create backup directory: %w", err)
 	}
 
@@ -93,7 +98,7 @@ func RestoreDatabase(backupPath string) error {
 	}
 
 	// Create database directory if it doesn't exist
-	if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0750); err != nil {
 		return fmt.Errorf("failed to create database directory: %w", err)
 	}
 
@@ -113,7 +118,7 @@ func ListBackups() ([]string, error) {
 	}
 
 	backupDir := filepath.Join(filepath.Dir(dbPath), "backups")
-	
+
 	// Check if backup directory exists
 	if _, err := os.Stat(backupDir); os.IsNotExist(err) {
 		return []string{}, nil // No backups exist
@@ -135,15 +140,31 @@ func ListBackups() ([]string, error) {
 	return backups, nil
 }
 
-// copyFile copies a file from src to dst
+// copyFile copies a file from src to dst with path validation
+// Prevents directory traversal attacks by validating file paths
 func copyFile(src, dst string) error {
-	srcFile, err := os.Open(src)
+	// Clean paths to prevent directory traversal
+	cleanSrc := filepath.Clean(src)
+	cleanDst := filepath.Clean(dst)
+
+	// Validate that cleaned paths don't contain directory traversal patterns
+	if strings.Contains(cleanSrc, "..") || strings.Contains(cleanDst, "..") {
+		return fmt.Errorf("invalid path: directory traversal detected")
+	}
+
+	// Additional security: ensure paths are absolute to prevent relative path issues
+	if !filepath.IsAbs(cleanSrc) || !filepath.IsAbs(cleanDst) {
+		return fmt.Errorf("paths must be absolute")
+	}
+
+	srcFile, err := os.Open(cleanSrc)
 	if err != nil {
 		return err
 	}
 	defer srcFile.Close()
 
-	dstFile, err := os.Create(dst)
+	// Create destination file with secure permissions (0600)
+	dstFile, err := os.OpenFile(cleanDst, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
 	}

@@ -13,6 +13,8 @@ package app
 import (
 	"fmt"
 	"ntx/internal/config"
+	"ntx/internal/ui/components/holdings"
+	"ntx/internal/ui/components/overview"
 	"ntx/internal/ui/themes"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -42,15 +44,17 @@ var sectionNames = map[Section]string{
 // Model holds application state with strict separation of concerns
 // Ready/quitting flags prevent rendering during state transitions
 type Model struct {
-	currentSection Section              // Holdings default optimizes for primary use case
-	ready          bool                 // Terminal resize handling prevents corrupted layouts
-	quitting       bool                 // Graceful shutdown preserves data integrity
-	themeManager   *themes.ThemeManager // Live theme switching for extended trading sessions
-	config         *config.Config       // Persistent preferences across market sessions
-	width          int                  // Terminal width for responsive layout
-	height         int                  // Terminal height for responsive layout
-	showHelp       bool                 // Help overlay state
-	selectedItem   int                  // Currently selected item within sections
+	currentSection  Section                   // Holdings default optimizes for primary use case
+	ready           bool                      // Terminal resize handling prevents corrupted layouts
+	quitting        bool                      // Graceful shutdown preserves data integrity
+	themeManager    *themes.ThemeManager      // Live theme switching for extended trading sessions
+	config          *config.Config            // Persistent preferences across market sessions
+	width           int                       // Terminal width for responsive layout
+	height          int                       // Terminal height for responsive layout
+	showHelp        bool                      // Help overlay state
+	selectedItem    int                       // Currently selected item within sections
+	holdingsDisplay *holdings.HoldingsDisplay // Holdings component for portfolio management
+	overviewDisplay *overview.OverviewDisplay // Overview component for portfolio summary
 }
 
 // NewModelWithConfig prioritizes user workflow preferences over defaults
@@ -80,12 +84,31 @@ func NewModelWithConfig(cfg *config.Config) Model {
 		themeManager.SetTheme(themes.ThemeTokyoNight)
 	}
 
+	// Initialize holdings display with current theme
+	holdingsDisplay := holdings.NewHoldingsDisplay(themeManager.GetCurrentTheme())
+	holdingsDisplay.UpdateHoldings(holdings.GenerateSampleHoldings()) // TODO: Load from database
+
+	// Initialize overview display with current theme
+	overviewDisplay := overview.NewOverviewDisplay(themeManager.GetCurrentTheme())
+	// Calculate portfolio totals from holdings
+	portfolioTotal := holdingsDisplay.GetPortfolioTotal()
+	totalCost := portfolioTotal.MarketValue - portfolioTotal.TotalPL
+	overviewDisplay.UpdatePortfolioSummary(
+		portfolioTotal.MarketValue,
+		totalCost,
+		portfolioTotal.TotalPL,
+		portfolioTotal.DayPL,
+		len(holdingsDisplay.Holdings),
+	)
+
 	return Model{
-		currentSection: defaultSection,
-		ready:          false,
-		quitting:       false,
-		themeManager:   themeManager,
-		config:         cfg,
+		currentSection:  defaultSection,
+		ready:           false,
+		quitting:        false,
+		themeManager:    themeManager,
+		config:          cfg,
+		holdingsDisplay: holdingsDisplay,
+		overviewDisplay: overviewDisplay,
 	}
 }
 
@@ -105,8 +128,75 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 		m.ready = true
 
+		// Update holdings display size for responsive layout
+		if m.holdingsDisplay != nil {
+			m.holdingsDisplay.SetTerminalSize(msg.Width, msg.Height)
+		}
+		// Update overview display size for responsive layout
+		if m.overviewDisplay != nil {
+			m.overviewDisplay.SetTerminalSize(msg.Width, msg.Height)
+		}
+
 	case tea.KeyMsg:
-		// Vim-style navigation reduces hand movement during intensive analysis
+		// Holdings-specific navigation when in holdings section
+		if m.currentSection == SectionHoldings && m.holdingsDisplay != nil {
+			switch msg.String() {
+			case "up", "k":
+				m.holdingsDisplay.NavigateUp()
+				return m, nil
+			case "down", "j":
+				m.holdingsDisplay.NavigateDown()
+				return m, nil
+			case "g":
+				m.holdingsDisplay.NavigateTop()
+				return m, nil
+			case "G":
+				m.holdingsDisplay.NavigateBottom()
+				return m, nil
+			case "s":
+				m.holdingsDisplay.CycleSortColumn()
+				return m, nil
+			case "S":
+				m.holdingsDisplay.ToggleSortDirection()
+				return m, nil
+			case "a":
+				// TODO: Open add transaction dialog
+				return m, nil
+			case "d":
+				// TODO: Open holding details view
+				return m, nil
+			case "h":
+				// Move left (currently reserved for future use)
+				m.holdingsDisplay.NavigateLeft()
+				return m, nil
+			case "l":
+				// Move right (currently reserved for future use)
+				m.holdingsDisplay.NavigateRight()
+				return m, nil
+			case " ":
+				// Toggle multi-selection on current row
+				m.holdingsDisplay.ToggleSelection()
+				return m, nil
+			case "enter":
+				// Activate current row (show details)
+				holding := m.holdingsDisplay.ActivateCurrentRow()
+				if holding != nil {
+					// TODO: Open holding details view
+					// For now, just clear selections as placeholder
+					m.holdingsDisplay.ClearSelection()
+				}
+				return m, nil
+			case "escape":
+				// Clear multi-selection
+				m.holdingsDisplay.ClearSelection()
+				return m, nil
+			case "r":
+				// TODO: Refresh holdings data
+				return m, nil
+			}
+		}
+
+		// Global application shortcuts
 		switch msg.String() {
 		case "ctrl+c", "q":
 			// Clean shutdown prevents data corruption during portfolio updates
@@ -155,6 +245,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "t":
 			// Live theme switching accommodates changing lighting conditions during trading
 			m.themeManager.SwitchTheme()
+			// Update holdings display theme immediately
+			if m.holdingsDisplay != nil {
+				m.holdingsDisplay.SetTheme(m.themeManager.GetCurrentTheme())
+			}
+			// Update overview display theme immediately
+			if m.overviewDisplay != nil {
+				m.overviewDisplay.SetTheme(m.themeManager.GetCurrentTheme())
+			}
 			// Immediate persistence prevents theme reset during market volatility
 			if m.config != nil {
 				m.config.SetTheme(m.themeManager.GetCurrentThemeType())
@@ -162,31 +260,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				_ = config.Save(m.config)
 			}
 
-		// Vim-style navigation within sections
+		// Legacy vim-style navigation for non-holdings sections
 		case "h":
 			// Move left - for future multi-column layouts
 			// Currently no-op but reserved for holdings table navigation
 		case "j":
-			// Move down in current section
-			m.selectedItem++
-			// TODO: Add bounds checking when section content is implemented
+			if m.currentSection != SectionHoldings {
+				// Move down in current section
+				m.selectedItem++
+				// TODO: Add bounds checking when section content is implemented
+			}
 		case "k":
-			// Move up in current section
-			if m.selectedItem > 0 {
-				m.selectedItem--
+			if m.currentSection != SectionHoldings {
+				// Move up in current section
+				if m.selectedItem > 0 {
+					m.selectedItem--
+				}
 			}
 		case "l":
 			// Move right - for future multi-column layouts
 			// Currently no-op but reserved for holdings table navigation
-
-		// Additional vim-style navigation
-		case "g":
-			// Go to top of current section
-			m.selectedItem = 0
-		case "G":
-			// Go to bottom of current section
-			// TODO: Set to max items when section content is implemented
-			m.selectedItem = 10 // Placeholder
 		}
 	}
 
@@ -210,8 +303,49 @@ func (m Model) View() string {
 		return m.renderHelpOverlay()
 	}
 
+	// Holdings section uses dedicated component, others use legacy rendering
+	if m.currentSection == SectionHoldings {
+		return m.renderHoldingsSection()
+	}
+
 	// Structured layout ensures consistent information hierarchy for financial data
 	return m.renderMainInterface()
+}
+
+// renderHoldingsSection renders the btop-style holdings component with overview
+// Combines Portfolio Overview widget with holdings table for complete view
+func (m Model) renderHoldingsSection() string {
+	if m.holdingsDisplay == nil || m.overviewDisplay == nil {
+		// Fallback if components are not initialized
+		return "Holdings component not initialized"
+	}
+
+	// Minimum size check for holdings table
+	if m.width < 60 || m.height < 10 {
+		return m.renderMinimumSizeWarning()
+	}
+
+	// Update overview display with current portfolio data
+	portfolioTotal := m.holdingsDisplay.GetPortfolioTotal()
+	totalCost := portfolioTotal.MarketValue - portfolioTotal.TotalPL
+	m.overviewDisplay.UpdatePortfolioSummary(
+		portfolioTotal.MarketValue,
+		totalCost,
+		portfolioTotal.TotalPL,
+		portfolioTotal.DayPL,
+		len(m.holdingsDisplay.Holdings),
+	)
+
+	// Coordinate widths: Portfolio Overview should match Holdings table width
+	// Holdings table width may be adjusted due to minimum column width constraints
+	actualTableWidth := m.holdingsDisplay.GetActualTableWidth()
+	m.overviewDisplay.SetWidth(actualTableWidth)
+
+	// Render overview widget at top, then holdings table
+	overviewWidget := m.overviewDisplay.Render()
+	holdingsTable := m.holdingsDisplay.Render()
+
+	return overviewWidget + "\n" + holdingsTable
 }
 
 // renderMainInterface implements responsive layout optimized for portfolio monitoring
@@ -282,70 +416,6 @@ func (m Model) renderSectionHeader() string {
 		Width(headerWidth - 2)
 
 	return borderStyle.Render(header)
-}
-
-// renderSectionContent provides contextual placeholders during development phases
-// Consistent styling prepares layout for real financial data integration
-func (m Model) renderSectionContent() string {
-	theme := m.themeManager.GetCurrentTheme()
-
-	var content string
-	var sectionIcon string
-	var title string
-	var description string
-
-	switch m.currentSection {
-	case SectionOverview:
-		sectionIcon = "📊"
-		title = "Overview Section"
-		// NOTE: Portfolio aggregations will exclude T+3 pending NEPSE transactions
-		description = "Portfolio summary and key statistics will be displayed here.\n" +
-			"This section will show total portfolio value, daily changes, and performance metrics."
-
-	case SectionHoldings:
-		sectionIcon = "💼"
-		title = "Holdings Section"
-		// NOTE: P/L calculations will handle bonus shares per SEBON regulations
-		description = "Current positions and holdings table will be displayed here.\n" +
-			"This section will show individual stocks, quantities, current values, and P/L."
-
-	case SectionAnalysis:
-		sectionIcon = "📈"
-		title = "Analysis Section"
-		// TODO: RSI/MACD calculations adapted for NEPSE market characteristics
-		description = "Portfolio analysis and metrics will be displayed here.\n" +
-			"This section will show technical indicators, risk metrics, and performance analysis."
-
-	case SectionHistory:
-		sectionIcon = "📋"
-		title = "History Section"
-		// NOTE: Transaction timestamps will account for NEPSE trading hours (11:00-15:00 NPT)
-		description = "Transaction history will be displayed here.\n" +
-			"This section will show buy/sell transactions, dates, and historical performance."
-
-	case SectionMarket:
-		sectionIcon = "🌐"
-		title = "Market Section"
-		// TODO: Sharesansar integration with respectful rate limiting
-		description = "Market data and information will be displayed here.\n" +
-			"This section will show market indices, sector performance, and market news."
-
-	default:
-		sectionIcon = "❓"
-		title = "Unknown Section"
-		description = "This section is not recognized."
-	}
-
-	// Primary color styling establishes visual hierarchy for section identification
-	styledTitle := theme.HighlightStyle().Render(sectionIcon + " " + title)
-
-	// Content styling ensures readability across different theme palettes
-	styledDescription := theme.ContentStyle().Render(description)
-
-	// Consistent spacing prevents visual clutter during information scanning
-	content = styledTitle + "\n\n" + styledDescription
-
-	return content
 }
 
 // renderStatusBar provides persistent navigation context without cluttering main content
@@ -585,8 +655,7 @@ func (m Model) renderSectionContentResized(width int) string {
 	// Navigation hint for selected items (future use)
 	navHint := ""
 	if m.selectedItem > 0 {
-		navHint = fmt.Sprintf("\n\n[Item %d selected - hjkl to navigate]", m.selectedItem)
-		navHint = string(theme.Muted())
+		navHint = theme.MutedStyle().Render(fmt.Sprintf("\n\n[Item %d selected - hjkl to navigate]", m.selectedItem))
 	}
 
 	// Consistent spacing prevents visual clutter during information scanning
@@ -603,14 +672,14 @@ func (m Model) renderSidebar(width int) string {
 	sidebarTitle := theme.HighlightStyle().Render("📋 Quick Info")
 
 	sidebarContent := `Portfolio Status:
-• Total Value: ₹2,45,670 (+1.8%)
-• Today's Change: +₹5,620
+• Total Value: Rs.2,45,670 (+1.8%)
+• Today's Change: +Rs.5,620
 • Holdings: 5 stocks
 
 Recent Activity:
-• NABIL +10 @ ₹1,250
-• EBL -20 @ ₹700
-• HIDCL +50 @ ₹445
+• NABIL +10 @ Rs.1,250
+• EBL -20 @ Rs.700
+• HIDCL +50 @ Rs.445
 
 Market Status:
 • NEPSE Index: 2,089.5
@@ -631,8 +700,8 @@ func (m Model) renderCondensedSidebar(width int) string {
 
 	sidebarTitle := theme.HighlightStyle().Render("📊 Stats")
 
-	sidebarContent := `Total: ₹2,45,670 (+1.8%)
-Today: +₹5,620
+	sidebarContent := `Total: Rs.2,45,670 (+1.8%)
+Today: +Rs.5,620
 Holdings: 5 stocks
 
 NEPSE: 2,089.5
@@ -655,8 +724,8 @@ func (m Model) renderAnalyticsPanel(width int) string {
 	analyticsContent := `Technical:
 • RSI: 45.2
 • MACD: Bullish
-• MA(20): ₹1,245
-• Support: ₹2,050
+• MA(20): Rs.1,245
+• Support: Rs.2,050
 
 Risk:
 • Beta: 1.2

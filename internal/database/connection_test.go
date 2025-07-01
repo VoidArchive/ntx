@@ -51,13 +51,13 @@ func TestCreatePortfolio(t *testing.T) {
 	defer db.Close()
 
 	ctx := context.Background()
-	
+
 	portfolio, err := db.CreatePortfolio(ctx, CreatePortfolioParams{
 		Name:        "Test Portfolio",
 		Description: sql.NullString{String: "Test Description", Valid: true},
 		Currency:    sql.NullString{String: "NPR", Valid: true},
 	})
-	
+
 	if err != nil {
 		t.Fatalf("failed to create portfolio: %v", err)
 	}
@@ -76,7 +76,7 @@ func TestCreateHolding(t *testing.T) {
 	defer db.Close()
 
 	ctx := context.Background()
-	
+
 	// First create a portfolio
 	portfolio, err := db.CreatePortfolio(ctx, CreatePortfolioParams{
 		Name:     "Test Portfolio",
@@ -88,13 +88,13 @@ func TestCreateHolding(t *testing.T) {
 
 	// Create a holding
 	holding, err := db.CreateHolding(ctx, CreateHoldingParams{
-		PortfolioID:       portfolio.ID,
+		PortfolioID:      portfolio.ID,
 		Symbol:           "NABIL",
 		Quantity:         100,
-		AverageCostPaisa: 125000, // Rs. 1250.00
-		LastPricePaisa:   sql.NullInt64{Int64: 130000, Valid: true}, // Rs. 1300.00
+		AverageCostPaisa: 125000,                                    // Rs.1250.00
+		LastPricePaisa:   sql.NullInt64{Int64: 130000, Valid: true}, // Rs.1300.00
 	})
-	
+
 	if err != nil {
 		t.Fatalf("failed to create holding: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestPortfolioStats(t *testing.T) {
 	defer db.Close()
 
 	ctx := context.Background()
-	
+
 	// Create portfolio with holdings
 	portfolio, err := db.CreatePortfolio(ctx, CreatePortfolioParams{
 		Name:     "Test Portfolio",
@@ -130,14 +130,14 @@ func TestPortfolioStats(t *testing.T) {
 	// Create multiple holdings
 	holdings := []CreateHoldingParams{
 		{
-			PortfolioID:       portfolio.ID,
+			PortfolioID:      portfolio.ID,
 			Symbol:           "NABIL",
 			Quantity:         100,
 			AverageCostPaisa: 125000,
 			LastPricePaisa:   sql.NullInt64{Int64: 130000, Valid: true},
 		},
 		{
-			PortfolioID:       portfolio.ID,
+			PortfolioID:      portfolio.ID,
 			Symbol:           "EBL",
 			Quantity:         50,
 			AverageCostPaisa: 68000,

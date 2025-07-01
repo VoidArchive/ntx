@@ -99,8 +99,8 @@ func TestMoneyOperations(t *testing.T) {
 
 	// Test formatting
 	formatted := m1.FormatNPR()
-	if formatted != "₹1,250.5" {
-		t.Errorf("expected '₹1,250.5', got '%s'", formatted)
+	if formatted != "Rs.1,250.5" {
+		t.Errorf("expected 'Rs.1,250.5', got '%s'", formatted)
 	}
 }
 
@@ -213,7 +213,7 @@ func TestAverageCostCalculation(t *testing.T) {
 		t.Fatalf("failed to create portfolio: %v", err)
 	}
 
-	// First buy: 100 shares at Rs. 1250
+	// First buy: 100 shares at Rs.1250
 	transactionDate1 := time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC)
 	_, err = service.ExecuteTransaction(ctx, ExecuteTransactionRequest{
 		PortfolioID:     portfolio.ID,
@@ -229,7 +229,7 @@ func TestAverageCostCalculation(t *testing.T) {
 		t.Fatalf("failed to execute first transaction: %v", err)
 	}
 
-	// Second buy: 50 shares at Rs. 1300
+	// Second buy: 50 shares at Rs.1300
 	transactionDate2 := time.Date(2024, 12, 2, 0, 0, 0, 0, time.UTC)
 	result, err := service.ExecuteTransaction(ctx, ExecuteTransactionRequest{
 		PortfolioID:     portfolio.ID,
@@ -247,7 +247,7 @@ func TestAverageCostCalculation(t *testing.T) {
 
 	// Check average cost calculation
 	// (100 * 1250 + 50 * 1300) / 150 = (125000 + 65000) / 150 = 190000 / 150 = 1266.67
-	expectedAvgCost := models.NewMoneyFromPaisa(126667) // Rs. 1266.67 in paisa
+	expectedAvgCost := models.NewMoneyFromPaisa(126667) // Rs.1266.67 in paisa
 	actualAvgCost := result.Impact.NewHolding.AverageCost
 
 	// Allow small rounding differences
@@ -276,7 +276,7 @@ func TestSellTransaction(t *testing.T) {
 		t.Fatalf("failed to create portfolio: %v", err)
 	}
 
-	// Buy 100 shares at Rs. 1250
+	// Buy 100 shares at Rs.1250
 	buyDate := time.Date(2024, 12, 1, 0, 0, 0, 0, time.UTC)
 	_, err = service.ExecuteTransaction(ctx, ExecuteTransactionRequest{
 		PortfolioID:     portfolio.ID,
@@ -292,7 +292,7 @@ func TestSellTransaction(t *testing.T) {
 		t.Fatalf("failed to execute buy transaction: %v", err)
 	}
 
-	// Sell 30 shares at Rs. 1350
+	// Sell 30 shares at Rs.1350
 	sellDate := time.Date(2024, 12, 15, 0, 0, 0, 0, time.UTC)
 	result, err := service.ExecuteTransaction(ctx, ExecuteTransactionRequest{
 		PortfolioID:     portfolio.ID,
@@ -314,7 +314,7 @@ func TestSellTransaction(t *testing.T) {
 	// Realized P/L: 40,500 - 37,500 = 3,000
 	expectedRealizedPnL := models.NewMoney(3000.00)
 	if !result.Impact.RealizedPnL.Equal(expectedRealizedPnL) {
-		t.Errorf("expected realized P/L %s, got %s", 
+		t.Errorf("expected realized P/L %s, got %s",
 			expectedRealizedPnL.FormatSimple(), result.Impact.RealizedPnL.FormatSimple())
 	}
 
@@ -326,7 +326,7 @@ func TestSellTransaction(t *testing.T) {
 	// Average cost should remain the same
 	expectedAvgCost := models.NewMoney(1250.00)
 	if !result.Impact.NewHolding.AverageCost.Equal(expectedAvgCost) {
-		t.Errorf("expected average cost %s, got %s", 
+		t.Errorf("expected average cost %s, got %s",
 			expectedAvgCost.FormatSimple(), result.Impact.NewHolding.AverageCost.FormatSimple())
 	}
 }

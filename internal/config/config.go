@@ -97,7 +97,7 @@ func getConfigDir() (string, error) {
 	configDir := filepath.Join(homeDir, ".config", "ntx")
 
 	// Auto-create directory eliminates manual setup steps for users
-	if err := os.MkdirAll(configDir, 0755); err != nil {
+	if err := os.MkdirAll(configDir, 0750); err != nil {
 		return "", err
 	}
 
@@ -109,7 +109,7 @@ func setDefaults() {
 	viper.SetDefault("ui.theme", "tokyo_night")
 	viper.SetDefault("ui.default_section", "holdings")
 	viper.SetDefault("display.refresh_interval", 30)
-	viper.SetDefault("display.currency_symbol", "Rs.") // Standard Rs. format for better terminal compatibility
+	viper.SetDefault("display.currency_symbol", "Rs.") // Standard Rs.format for better terminal compatibility
 }
 
 // createDefaultConfigFile bootstraps user configuration with optimal defaults
@@ -131,7 +131,7 @@ refresh_interval = 30
 currency_symbol = "Rs."
 `
 
-	return os.WriteFile(configFile, []byte(defaultContent), 0644)
+	return os.WriteFile(configFile, []byte(defaultContent), 0600)
 }
 
 // GetTheme enables theme-aware component rendering

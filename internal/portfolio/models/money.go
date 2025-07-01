@@ -32,7 +32,7 @@ func NewMoneyFromString(s string) (Money, error) {
 	}
 
 	// Remove currency symbols and commas
-	s = strings.ReplaceAll(s, "₹", "")
+	s = strings.ReplaceAll(s, "Rs.", "")
 	s = strings.ReplaceAll(s, "Rs.", "")
 	s = strings.ReplaceAll(s, "Rs", "")
 	s = strings.ReplaceAll(s, ",", "")
@@ -100,7 +100,7 @@ func (m Money) PercentageChange(from Money) float64 {
 		}
 		return 100 // 100% gain from zero
 	}
-	
+
 	change := float64(m.Paisa - from.Paisa)
 	return (change / float64(from.Paisa)) * 100.0
 }
@@ -152,13 +152,13 @@ func (m Money) String() string {
 // FormatNPR formats as Nepali Rupees with proper formatting
 func (m Money) FormatNPR() string {
 	rupees := m.Rupees()
-	
+
 	// Handle negative values
 	if rupees < 0 {
-		return fmt.Sprintf("-₹%s", formatPositiveAmount(-rupees))
+		return fmt.Sprintf("-Rs.%s", formatPositiveAmount(-rupees))
 	}
-	
-	return fmt.Sprintf("₹%s", formatPositiveAmount(rupees))
+
+	return fmt.Sprintf("Rs.%s", formatPositiveAmount(rupees))
 }
 
 // FormatSimple returns simple decimal format (e.g., "1250.50")
@@ -178,12 +178,12 @@ func (m Money) FormatWithSign() string {
 func formatPositiveAmount(amount float64) string {
 	// Convert to string with 2 decimal places
 	str := fmt.Sprintf("%.2f", amount)
-	
+
 	// Split integer and decimal parts
 	parts := strings.Split(str, ".")
 	intPart := parts[0]
 	decPart := parts[1]
-	
+
 	// Add commas to integer part (Indian number system)
 	if len(intPart) > 3 {
 		// For amounts >= 1000, add commas
@@ -196,13 +196,13 @@ func formatPositiveAmount(amount float64) string {
 		}
 		intPart = result
 	}
-	
+
 	// Remove trailing zeros from decimal part
 	decPart = strings.TrimRight(decPart, "0")
 	if decPart == "" {
 		return intPart
 	}
-	
+
 	return intPart + "." + decPart
 }
 

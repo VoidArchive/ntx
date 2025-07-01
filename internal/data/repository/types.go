@@ -104,13 +104,6 @@ func nullStringFromPtr(s *string) sql.NullString {
 	return sql.NullString{String: *s, Valid: true}
 }
 
-func ptrFromNullString(ns sql.NullString) *string {
-	if !ns.Valid {
-		return nil
-	}
-	return &ns.String
-}
-
 func nullInt64FromPtr(i *int64) sql.NullInt64 {
 	if i == nil {
 		return sql.NullInt64{Valid: false}
@@ -118,23 +111,9 @@ func nullInt64FromPtr(i *int64) sql.NullInt64 {
 	return sql.NullInt64{Int64: *i, Valid: true}
 }
 
-func ptrFromNullInt64(ni sql.NullInt64) *int64 {
-	if !ni.Valid {
-		return nil
-	}
-	return &ni.Int64
-}
-
 func nullTimeFromPtr(t *time.Time) sql.NullTime {
 	if t == nil {
 		return sql.NullTime{Valid: false}
 	}
 	return sql.NullTime{Time: *t, Valid: true}
-}
-
-func ptrFromNullTime(nt sql.NullTime) *time.Time {
-	if !nt.Valid {
-		return nil
-	}
-	return &nt.Time
 }

@@ -27,7 +27,7 @@ func NewPortfolioService(repo *repository.Repository, transactor repository.Tran
 // CreatePortfolio creates a new portfolio with validation
 func (s *PortfolioService) CreatePortfolio(ctx context.Context, req CreatePortfolioRequest) (*models.Portfolio, error) {
 	// Validate request
-	if err := req.Validate(); err != nil {
+	if err := (&req).Validate(); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
@@ -183,7 +183,7 @@ type CreatePortfolioRequest struct {
 	Currency    string  `json:"currency"`
 }
 
-func (r CreatePortfolioRequest) Validate() error {
+func (r *CreatePortfolioRequest) Validate() error {
 	if r.Name == "" {
 		return fmt.Errorf("portfolio name is required")
 	}

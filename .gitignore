@@ -28,6 +28,9 @@ go.work.sum
 # env file
 .env
 
+# Project binary
+ntx
+
 # Editor/IDE
 # .idea/
 # .vscode/

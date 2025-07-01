@@ -32,8 +32,8 @@ func TestMoneyBasicOperations(t *testing.T) {
 
 func TestMoneyPrecision(t *testing.T) {
 	// Test precision with paisa
-	m := NewMoneyFromPaisa(125050) // Rs. 1250.50
-	
+	m := NewMoneyFromPaisa(125050) // Rs.1250.50
+
 	if m.Rupees() != 1250.50 {
 		t.Errorf("rupees conversion failed: expected 1250.50, got %.2f", m.Rupees())
 	}
@@ -48,12 +48,12 @@ func TestMoneyFormatting(t *testing.T) {
 		paisa    int64
 		expected string
 	}{
-		{125050, "₹1,250.5"},
-		{100000, "₹1,000"},
-		{99950, "₹999.5"},
-		{50, "₹0.5"},
-		{0, "₹0"},
-		{-125050, "-₹1,250.5"},
+		{125050, "Rs.1,250.5"},
+		{100000, "Rs.1,000"},
+		{99950, "Rs.999.5"},
+		{50, "Rs.0.5"},
+		{0, "Rs.0"},
+		{-125050, "-Rs.1,250.5"},
 	}
 
 	for _, tt := range tests {
@@ -80,7 +80,7 @@ func TestMoneyPercentageCalculations(t *testing.T) {
 	thirty_percent := current.Percentage(30.0)
 	expectedAmount := NewMoney(390.00)
 	if !thirty_percent.Equal(expectedAmount) {
-		t.Errorf("percentage amount failed: expected %s, got %s", 
+		t.Errorf("percentage amount failed: expected %s, got %s",
 			expectedAmount.FormatSimple(), thirty_percent.FormatSimple())
 	}
 }
@@ -119,8 +119,8 @@ func TestMoneyStringParsing(t *testing.T) {
 		expected Money
 	}{
 		{"1250.50", NewMoney(1250.50)},
-		{"₹1,250.50", NewMoney(1250.50)},
-		{"Rs. 1250", NewMoney(1250.00)},
+		{"Rs.1,250.50", NewMoney(1250.50)},
+		{"Rs.1250", NewMoney(1250.00)},
 		{"Rs 999.99", NewMoney(999.99)},
 		{"", Zero()},
 	}
@@ -133,7 +133,7 @@ func TestMoneyStringParsing(t *testing.T) {
 		}
 
 		if !actual.Equal(tt.expected) {
-			t.Errorf("parsing '%s': expected %s, got %s", 
+			t.Errorf("parsing '%s': expected %s, got %s",
 				tt.input, tt.expected.FormatSimple(), actual.FormatSimple())
 		}
 	}
@@ -179,7 +179,7 @@ func TestMoneySum(t *testing.T) {
 	expected := NewMoney(600.75)
 
 	if !total.Equal(expected) {
-		t.Errorf("sum failed: expected %s, got %s", 
+		t.Errorf("sum failed: expected %s, got %s",
 			expected.FormatSimple(), total.FormatSimple())
 	}
 
