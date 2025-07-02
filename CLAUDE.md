@@ -1,5 +1,7 @@
 # CLAUDE.md - NTX Project Specification
 
+USE sub-agent when appropriate.
+
 ## Project Overview
 
 **NTX (NEPSE Power Terminal)** - A beautiful, professional terminal-based portfolio management tool for Nepal Stock Exchange. Built with Go and Bubbletea, designed for speed, accuracy, and visual excellence.
@@ -367,9 +369,11 @@ ntx/
 Transform all codebase comments to explain WHY decisions were made, not WHAT the code does. Use todo-comments.nvim keywords for actionable items.
 
 ## Core Principle
+
 Comments explain context, reasoning, and business logic. Code should be self-documenting for functionality.
 
 ## todo-comments.nvim Keywords
+
 ```go
 // TODO: Implement real-time price updates via WebSocket
 // HACK: Using string concatenation for SQL - replace with SQLC
@@ -380,4 +384,3 @@ Comments explain context, reasoning, and business logic. Code should be self-doc
 // FIX: Race condition in price update goroutine
 // BUG: Incorrect P/L calculation for split-adjusted shares
 ```
-

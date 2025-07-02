@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 
+	"ntx/internal/ui/charts"
+
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -96,6 +98,7 @@ func (t *Table) calculateLayout() {
 		{"Day P/L", true, layoutConfig.ShowDayPL},
 		{"Total P/L", true, true},
 		{"%Chg", true, true},
+		{"Trend", false, layoutConfig.ShowTrend},
 		{"RSI", true, layoutConfig.ShowRSI},
 	}
 
@@ -158,16 +161,19 @@ func (t *Table) calculateLayout() {
 func (hd *HoldingsDisplay) getLayoutConfig() struct {
 	ShowRSI     bool
 	ShowDayPL   bool
+	ShowTrend   bool
 	CompactMode bool
 } {
 	width := hd.TerminalSize.Width
 	return struct {
 		ShowRSI     bool
 		ShowDayPL   bool
+		ShowTrend   bool
 		CompactMode bool
 	}{
 		ShowRSI:     width >= 120,
 		ShowDayPL:   true,
+		ShowTrend:   width >= 100, // Show trend sparklines on medium+ terminals
 		CompactMode: width < 80,
 	}
 }
@@ -216,20 +222,9 @@ func (t *Table) Render() string {
 	return output.String()
 }
 
-// RenderTopBorder creates top border with title using exact layout and theme colors
+// RenderTopBorder creates simple top border without title (overview widget serves as title)
 func (t *Table) RenderTopBorder() string {
-	title := "[2]Holdings"
-
-	if t.TotalWidth < len(title)+10 {
-		border := "┌" + strings.Repeat("─", t.TotalWidth-2) + "┐"
-		return lipgloss.NewStyle().Foreground(t.Display.Theme.Primary()).Render(border)
-	}
-
-	titleSection := "─" + title + "─"
-	remainingWidth := t.TotalWidth - len([]rune(titleSection)) - 2
-	leftPadding := strings.Repeat("─", remainingWidth)
-
-	border := "┌" + titleSection + leftPadding + "┐"
+	border := "┌" + strings.Repeat("─", t.TotalWidth-2) + "┐"
 	return lipgloss.NewStyle().Foreground(t.Display.Theme.Primary()).Render(border)
 }
 
@@ -428,6 +423,36 @@ func (t *Table) RenderFooter() string {
 	return coloredSeparator + styledContent + coloredSeparator
 }
 
+// renderTrendSparkline creates mini sparkline for holding price trend
+func (t *Table) renderTrendSparkline(holding Holding) string {
+	// Generate sample trend data based on holding performance
+	trendData := t.generateHoldingTrendData(holding)
+	
+	// Create compact sparkline for table cell
+	sparkline := charts.CreateTrendSparkline(trendData, 8, t.Display.Theme)
+	
+	return sparkline.Render()
+}
+
+// generateHoldingTrendData creates sample price trend for holding
+func (t *Table) generateHoldingTrendData(holding Holding) []float64 {
+	// Generate 7-day price trend based on current P/L and volatility
+	data := make([]float64, 7)
+	
+	// Calculate trend direction from total P/L
+	trendDirection := holding.PercentChange / 100 / 7 // Daily trend rate
+	basePrice := float64(holding.CurrentLTP) / 100    // Convert to rupees
+	
+	for i := range data {
+		// Apply trend and some realistic volatility
+		trend := trendDirection * float64(i)
+		volatility := (float64(i%3) - 1) * 0.02 // ±2% daily volatility
+		data[i] = basePrice * (1 - trend + volatility)
+	}
+	
+	return data
+}
+
 // getCellContent extracts content for specific column from holding data
 func (t *Table) getCellContent(holding Holding, columnTitle string) string {
 	switch columnTitle {
@@ -447,6 +472,8 @@ func (t *Table) getCellContent(holding Holding, columnTitle string) string {
 		return FormatPL(holding.TotalPL)
 	case "%Chg":
 		return FormatPercent(holding.PercentChange)
+	case "Trend":
+		return t.renderTrendSparkline(holding)
 	case "RSI":
 		return fmt.Sprintf("%.0f", holding.RSI)
 	default:
@@ -571,7 +598,7 @@ func (hd *HoldingsDisplay) renderEmptyState() string {
 	width := hd.getTableWidth()
 	message := "No holdings to display. Press 'a' to add a transaction."
 
-	topBorder := "┌─[2]Holdings─" + strings.Repeat("─", width-11) + "┐"
+	topBorder := "┌" + strings.Repeat("─", width-2) + "┐"
 	emptyLine := "│" + strings.Repeat(" ", width-2) + "│"
 
 	padding := max((width-len(message)-2)/2, 0)

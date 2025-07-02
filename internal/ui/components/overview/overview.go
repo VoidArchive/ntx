@@ -98,7 +98,7 @@ func (od *OverviewDisplay) Render() string {
 // renderTopBorder creates top border with title
 func (od *OverviewDisplay) renderTopBorder() string {
 	width := od.getOverviewWidth()
-	title := "[1]Portfolio Overview"
+	title := "[2]Holdings"
 	
 	if width < len(title)+10 {
 		border := "┌" + strings.Repeat("─", width-2) + "┐"

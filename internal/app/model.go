@@ -12,7 +12,9 @@ package app
 
 import (
 	"fmt"
+	"strings"
 	"ntx/internal/config"
+	"ntx/internal/ui/components/dashboard"
 	"ntx/internal/ui/components/holdings"
 	"ntx/internal/ui/components/overview"
 	"ntx/internal/ui/themes"
@@ -25,36 +27,37 @@ import (
 type Section int
 
 const (
-	SectionOverview Section = iota // Default focus optimizes for most common portfolio monitoring task
-	SectionHoldings                // Primary workflow - where financial decisions are made
-	SectionAnalysis                // TODO: Technical indicators for NEPSE market conditions
-	SectionHistory                 // TODO: T+3 settlement tracking for NEPSE transactions
-	SectionMarket                  // TODO: Sharesansar integration for price discovery
+	SectionDashboard Section = iota // Dashboard provides portfolio command center with overview
+	SectionHoldings                 // Primary workflow - where financial decisions are made
+	SectionAnalysis                 // TODO: Technical indicators for NEPSE market conditions
+	SectionHistory                  // TODO: T+3 settlement tracking for NEPSE transactions
+	SectionMarket                   // TODO: Sharesansar integration for price discovery
 )
 
 // sectionNames maps enable consistent UI labels and config validation
 var sectionNames = map[Section]string{
-	SectionOverview: "Overview",
-	SectionHoldings: "Holdings",
-	SectionAnalysis: "Analysis",
-	SectionHistory:  "History",
-	SectionMarket:   "Market",
+	SectionDashboard: "Dashboard",
+	SectionHoldings:  "Holdings",
+	SectionAnalysis:  "Analysis",
+	SectionHistory:   "History",
+	SectionMarket:    "Market",
 }
 
 // Model holds application state with strict separation of concerns
 // Ready/quitting flags prevent rendering during state transitions
 type Model struct {
-	currentSection  Section                   // Holdings default optimizes for primary use case
-	ready           bool                      // Terminal resize handling prevents corrupted layouts
-	quitting        bool                      // Graceful shutdown preserves data integrity
-	themeManager    *themes.ThemeManager      // Live theme switching for extended trading sessions
-	config          *config.Config            // Persistent preferences across market sessions
-	width           int                       // Terminal width for responsive layout
-	height          int                       // Terminal height for responsive layout
-	showHelp        bool                      // Help overlay state
-	selectedItem    int                       // Currently selected item within sections
-	holdingsDisplay *holdings.HoldingsDisplay // Holdings component for portfolio management
-	overviewDisplay *overview.OverviewDisplay // Overview component for portfolio summary
+	currentSection   Section                    // Holdings default optimizes for primary use case
+	ready            bool                       // Terminal resize handling prevents corrupted layouts
+	quitting         bool                       // Graceful shutdown preserves data integrity
+	themeManager     *themes.ThemeManager       // Live theme switching for extended trading sessions
+	config           *config.Config             // Persistent preferences across market sessions
+	width            int                        // Terminal width for responsive layout
+	height           int                        // Terminal height for responsive layout
+	showHelp         bool                       // Help overlay state
+	selectedItem     int                        // Currently selected item within sections
+	holdingsDisplay  *holdings.HoldingsDisplay  // Holdings component for portfolio management
+	overviewDisplay  *overview.OverviewDisplay  // Overview component for portfolio summary
+	dashboardDisplay *dashboard.DashboardDisplay // Dashboard component for portfolio command center
 }
 
 // NewModelWithConfig prioritizes user workflow preferences over defaults
@@ -63,8 +66,8 @@ func NewModelWithConfig(cfg *config.Config) Model {
 	// User-specified default section optimizes for individual trading patterns
 	var defaultSection Section
 	switch cfg.GetDefaultSection() {
-	case "overview":
-		defaultSection = SectionOverview
+	case "dashboard":
+		defaultSection = SectionDashboard
 	case "holdings":
 		defaultSection = SectionHoldings
 	case "analysis":
@@ -101,14 +104,25 @@ func NewModelWithConfig(cfg *config.Config) Model {
 		len(holdingsDisplay.Holdings),
 	)
 
+	// Initialize dashboard display with current theme and portfolio data
+	dashboardDisplay := dashboard.NewDashboardDisplay(themeManager.GetCurrentTheme())
+	dashboardDisplay.UpdatePortfolioMetrics(
+		portfolioTotal.MarketValue,
+		totalCost,
+		portfolioTotal.TotalPL,
+		portfolioTotal.DayPL,
+		len(holdingsDisplay.Holdings),
+	)
+
 	return Model{
-		currentSection:  defaultSection,
-		ready:           false,
-		quitting:        false,
-		themeManager:    themeManager,
-		config:          cfg,
-		holdingsDisplay: holdingsDisplay,
-		overviewDisplay: overviewDisplay,
+		currentSection:   defaultSection,
+		ready:            false,
+		quitting:         false,
+		themeManager:     themeManager,
+		config:           cfg,
+		holdingsDisplay:  holdingsDisplay,
+		overviewDisplay:  overviewDisplay,
+		dashboardDisplay: dashboardDisplay,
 	}
 }
 
@@ -135,6 +149,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Update overview display size for responsive layout
 		if m.overviewDisplay != nil {
 			m.overviewDisplay.SetTerminalSize(msg.Width, msg.Height)
+		}
+		// Update dashboard display size for responsive layout
+		if m.dashboardDisplay != nil {
+			m.dashboardDisplay.SetTerminalSize(msg.Width, msg.Height)
 		}
 
 	case tea.KeyMsg:
@@ -221,7 +239,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "1":
 			// Direct section access eliminates navigation latency during price monitoring
-			m.currentSection = SectionOverview
+			m.currentSection = SectionDashboard
 		case "2":
 			m.currentSection = SectionHoldings
 		case "3":
@@ -252,6 +270,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Update overview display theme immediately
 			if m.overviewDisplay != nil {
 				m.overviewDisplay.SetTheme(m.themeManager.GetCurrentTheme())
+			}
+			// Update dashboard display theme immediately
+			if m.dashboardDisplay != nil {
+				m.dashboardDisplay.SetTheme(m.themeManager.GetCurrentTheme())
 			}
 			// Immediate persistence prevents theme reset during market volatility
 			if m.config != nil {
@@ -303,13 +325,47 @@ func (m Model) View() string {
 		return m.renderHelpOverlay()
 	}
 
-	// Holdings section uses dedicated component, others use legacy rendering
+	// Dashboard and Holdings sections use dedicated components, others use legacy rendering
+	if m.currentSection == SectionDashboard {
+		return m.renderDashboardSection()
+	}
+	
 	if m.currentSection == SectionHoldings {
 		return m.renderHoldingsSection()
 	}
 
 	// Structured layout ensures consistent information hierarchy for financial data
 	return m.renderMainInterface()
+}
+
+// renderDashboardSection renders the comprehensive dashboard component
+// Provides portfolio command center with overview, market data, and analytics
+func (m Model) renderDashboardSection() string {
+	if m.dashboardDisplay == nil {
+		// Fallback if component is not initialized
+		return "Dashboard component not initialized"
+	}
+
+	// Minimum size check for dashboard
+	if m.width < 60 || m.height < 10 {
+		return m.renderMinimumSizeWarning()
+	}
+
+	// Update dashboard with current portfolio data
+	if m.holdingsDisplay != nil {
+		portfolioTotal := m.holdingsDisplay.GetPortfolioTotal()
+		totalCost := portfolioTotal.MarketValue - portfolioTotal.TotalPL
+		m.dashboardDisplay.UpdatePortfolioMetrics(
+			portfolioTotal.MarketValue,
+			totalCost,
+			portfolioTotal.TotalPL,
+			portfolioTotal.DayPL,
+			len(m.holdingsDisplay.Holdings),
+		)
+	}
+
+	// Render complete dashboard
+	return m.dashboardDisplay.Render()
 }
 
 // renderHoldingsSection renders the btop-style holdings component with overview
@@ -348,38 +404,167 @@ func (m Model) renderHoldingsSection() string {
 	return overviewWidget + "\n" + holdingsTable
 }
 
-// renderMainInterface implements responsive layout optimized for portfolio monitoring
-// Layout adapts to terminal width for optimal information density
+// renderMainInterface implements btop-style section rendering for non-dashboard/holdings sections
+// All sections now use consistent btop-style borders and layout
 func (m Model) renderMainInterface() string {
 	// Minimum size handling prevents corrupted layouts
-	if m.width < 60 || m.height < 24 {
+	if m.width < 60 || m.height < 10 {
 		return m.renderMinimumSizeWarning()
 	}
 
-	var content string
+	// Render section with btop-style borders
+	return m.renderStandardSection()
+}
 
-	// Header provides constant context awareness during section navigation
-	content += m.renderSectionHeader()
-	content += "\n\n"
+// renderStandardSection renders Analysis, History, and Market sections with btop-style borders
+// Provides consistent UI across all sections with professional appearance
+func (m Model) renderStandardSection() string {
+	width := m.width
 
-	// Responsive layout based on terminal width
-	if m.width >= 120 {
-		// Wide layout (3-pane): Main content + sidebar + analytics
-		content += m.renderThreePaneLayout()
-	} else if m.width >= 80 {
-		// Medium layout (2-pane): Main content + condensed sidebar
-		content += m.renderTwoPaneLayout()
-	} else {
-		// Narrow layout (1-pane): Single pane with tab-style navigation
-		content += m.renderSinglePaneLayout()
+	var sectionIcon string
+	var sectionName string
+	var sectionNumber string
+	var description string
+
+	switch m.currentSection {
+	case SectionAnalysis:
+		sectionIcon = "📈"
+		sectionName = "Analysis"
+		sectionNumber = "[3]"
+		description = `Portfolio Analysis & Technical Indicators
+
+• Technical Indicators: RSI, MACD, Moving Averages
+• Risk Metrics: Beta, VaR, Sharpe Ratio, Portfolio Correlation
+• Performance Analysis: Risk-adjusted returns, drawdown analysis
+• Sector Analysis: Industry allocation and performance comparison
+
+This section will provide comprehensive portfolio analytics
+for informed investment decisions on NEPSE.`
+
+	case SectionHistory:
+		sectionIcon = "📋"
+		sectionName = "History"
+		sectionNumber = "[4]"
+		description = `Transaction History & Performance Tracking
+
+• Complete Transaction Log: All buy/sell orders with timestamps
+• Performance Timeline: Portfolio value changes over time
+• Realized P/L Tracking: Completed trades and tax implications
+• Settlement Tracking: T+3 NEPSE settlement status
+
+This section will show detailed transaction history
+and historical performance metrics.`
+
+	case SectionMarket:
+		sectionIcon = "🌐"
+		sectionName = "Market"
+		sectionNumber = "[5]"
+		description = `Market Data & Sector Information
+
+• NEPSE Index: Real-time market index and daily changes
+• Sector Performance: Banking, Hydro, Manufacturing, Hotels
+• Market News: Latest NEPSE announcements and market updates
+• Stock Screener: Find stocks by criteria and watchlist management
+
+This section will provide market context for
+portfolio decisions and stock discovery.`
+
+	default:
+		sectionIcon = "❓"
+		sectionName = "Unknown"
+		sectionNumber = "[?]"
+		description = "This section is not recognized."
 	}
 
-	content += "\n\n"
+	// Create btop-style bordered section
+	title := sectionNumber + sectionName
+	
+	// Top border with integrated title
+	topBorder := m.renderSectionTopBorder(title, width)
+	
+	// Content area with proper padding and styling
+	content := m.renderSectionContent(sectionIcon, sectionName, description, width)
+	
+	// Bottom border
+	bottomBorder := m.renderSectionBottomBorder(width)
 
-	// Status bar enables rapid navigation without memorizing shortcuts
-	content += m.renderStatusBar()
+	return topBorder + "\n" + content + "\n" + bottomBorder
+}
 
-	return content
+// renderSectionTopBorder creates top border with integrated title (btop-style)
+func (m Model) renderSectionTopBorder(title string, width int) string {
+	theme := m.themeManager.GetCurrentTheme()
+	
+	if width < len(title)+10 {
+		border := "┌" + strings.Repeat("─", width-2) + "┐"
+		return lipgloss.NewStyle().Foreground(theme.Primary()).Render(border)
+	}
+	
+	titleSection := "─" + title + "─"
+	remainingWidth := width - len([]rune(titleSection)) - 2
+	leftPadding := strings.Repeat("─", remainingWidth)
+	
+	border := "┌" + titleSection + leftPadding + "┐"
+	return lipgloss.NewStyle().Foreground(theme.Primary()).Render(border)
+}
+
+// renderSectionBottomBorder creates bottom border
+func (m Model) renderSectionBottomBorder(width int) string {
+	theme := m.themeManager.GetCurrentTheme()
+	border := "└" + strings.Repeat("─", width-2) + "┘"
+	return lipgloss.NewStyle().Foreground(theme.Primary()).Render(border)
+}
+
+// renderSectionContent renders section content with proper styling and padding
+func (m Model) renderSectionContent(sectionIcon, sectionName, description string, width int) string {
+	theme := m.themeManager.GetCurrentTheme()
+	
+	// Format the content
+	headerText := sectionIcon + " " + sectionName + " Section"
+	styledHeader := theme.HighlightStyle().Render(headerText)
+	
+	// Style description with theme
+	styledDescription := theme.ContentStyle().Render(description)
+	
+	// Combine header and description
+	fullContent := styledHeader + "\n\n" + styledDescription
+	
+	// Split content into lines and apply borders
+	lines := strings.Split(fullContent, "\n")
+	var borderedLines []string
+	
+	for _, line := range lines {
+		// Calculate visual width for Unicode characters
+		visualWidth := lipgloss.Width(line)
+		contentWidth := width - 2 // Account for borders
+		
+		if visualWidth < contentWidth {
+			padding := strings.Repeat(" ", contentWidth-visualWidth)
+			line = line + padding
+		} else if visualWidth > contentWidth {
+			// Truncate if too long
+			line = line[:contentWidth-3] + "..."
+		}
+		
+		// Add borders
+		borderStyle := lipgloss.NewStyle().Foreground(theme.Primary())
+		leftBorder := borderStyle.Render("│")
+		rightBorder := borderStyle.Render("│")
+		
+		borderedLines = append(borderedLines, leftBorder+line+rightBorder)
+	}
+	
+	// Add some padding rows if needed
+	minHeight := 15 // Minimum content height
+	for len(borderedLines) < minHeight {
+		emptyLine := strings.Repeat(" ", width-2)
+		borderStyle := lipgloss.NewStyle().Foreground(theme.Primary())
+		leftBorder := borderStyle.Render("│")
+		rightBorder := borderStyle.Render("│")
+		borderedLines = append(borderedLines, leftBorder+emptyLine+rightBorder)
+	}
+	
+	return strings.Join(borderedLines, "\n")
 }
 
 // renderSectionHeader maintains visual continuity across theme changes
@@ -429,7 +614,7 @@ func (m Model) renderStatusBar() string {
 	var statusContent string
 	if m.width >= 120 {
 		// Wide layout - full navigation hints
-		statusContent = "[1]Overview [2]Holdings [3]Analysis [4]History [5]Market | " +
+		statusContent = "[1]Dashboard [2]Holdings [3]Analysis [4]History [5]Market | " +
 			"hjkl: Move | ?: Help | t: Theme | Current: " + currentSectionName + " (" + currentThemeName + ") | q: Quit"
 	} else if m.width >= 80 {
 		// Medium layout - condensed hints
@@ -470,7 +655,7 @@ func (m Model) renderHelpOverlay() string {
 
 	helpContent := `
 📍 SECTION NAVIGATION:
-  1-5           Switch to section directly (Overview, Holdings, Analysis, History, Market)
+  1-5           Switch to section directly (Dashboard, Holdings, Analysis, History, Market)
   Tab           Next section
   Shift+Tab     Previous section
 
@@ -494,11 +679,9 @@ func (m Model) renderHelpOverlay() string {
   Enter         Select/drill down
   Space         Multi-select
 
-📍 RESPONSIVE LAYOUT:
-  Wide (>120 cols)    3-pane layout with sidebar
-  Medium (80-120)     2-pane layout
-  Narrow (<80)        Single pane with tabs
-  Minimum (60x24)     Required for full functionality
+📍 TERMINAL REQUIREMENTS:
+  Minimum (60x10)     Required for basic functionality
+  Recommended (120x40) Optimal experience with full features
 
 Press '?' or 'Esc' to close this help.
 `
@@ -543,203 +726,3 @@ Press 'q' to quit.
 	return warningTitle + "\n" + theme.ContentStyle().Render(warningContent)
 }
 
-// renderThreePaneLayout creates wide-screen layout with main content, sidebar, and analytics
-// Optimized for large terminals (≥120 columns) with maximum information density
-func (m Model) renderThreePaneLayout() string {
-	// Main content takes 60% width, sidebar 25%, analytics 15%
-	mainWidth := (m.width * 60) / 100
-	sidebarWidth := (m.width * 25) / 100
-	analyticsWidth := m.width - mainWidth - sidebarWidth - 4 // Account for borders
-
-	mainContent := m.renderSectionContentResized(mainWidth)
-	sidebarContent := m.renderSidebar(sidebarWidth)
-	analyticsContent := m.renderAnalyticsPanel(analyticsWidth)
-
-	// Use lipgloss JoinHorizontal for side-by-side layout
-	return lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		mainContent,
-		" ", // Separator
-		sidebarContent,
-		" ", // Separator
-		analyticsContent,
-	)
-}
-
-// renderTwoPaneLayout creates medium-screen layout with main content and condensed info
-// Optimized for standard terminals (80-119 columns) balancing content and navigation
-func (m Model) renderTwoPaneLayout() string {
-	// Main content takes 70% width, sidebar 30%
-	mainWidth := (m.width * 70) / 100
-	sidebarWidth := m.width - mainWidth - 2 // Account for separator
-
-	mainContent := m.renderSectionContentResized(mainWidth)
-	sidebarContent := m.renderCondensedSidebar(sidebarWidth)
-
-	// Use lipgloss JoinHorizontal for side-by-side layout
-	return lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		mainContent,
-		" ", // Separator
-		sidebarContent,
-	)
-}
-
-// renderSinglePaneLayout creates narrow-screen layout with full-width content
-// Optimized for small terminals (<80 columns) with clear single-focus display
-func (m Model) renderSinglePaneLayout() string {
-	// Full width for main content, navigation via sections only
-	return m.renderSectionContentResized(m.width - 2)
-}
-
-// renderSectionContentResized provides section content adapted to specific width
-// Ensures consistent styling across different layout modes
-func (m Model) renderSectionContentResized(width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-
-	var content string
-	var sectionIcon string
-	var title string
-	var description string
-
-	switch m.currentSection {
-	case SectionOverview:
-		sectionIcon = "📊"
-		title = "Overview Section"
-		// NOTE: Portfolio aggregations will exclude T+3 pending NEPSE transactions
-		description = "Portfolio summary and key statistics will be displayed here.\n" +
-			"This section will show total portfolio value, daily changes, and performance metrics."
-
-	case SectionHoldings:
-		sectionIcon = "💼"
-		title = "Holdings Section"
-		// NOTE: P/L calculations will handle bonus shares per SEBON regulations
-		description = "Current positions and holdings table will be displayed here.\n" +
-			"This section will show individual stocks, quantities, current values, and P/L."
-
-	case SectionAnalysis:
-		sectionIcon = "📈"
-		title = "Analysis Section"
-		// TODO: RSI/MACD calculations adapted for NEPSE market characteristics
-		description = "Portfolio analysis and metrics will be displayed here.\n" +
-			"This section will show technical indicators, risk metrics, and performance analysis."
-
-	case SectionHistory:
-		sectionIcon = "📋"
-		title = "History Section"
-		// NOTE: Transaction timestamps will account for NEPSE trading hours (11:00-15:00 NPT)
-		description = "Transaction history will be displayed here.\n" +
-			"This section will show buy/sell transactions, dates, and historical performance."
-
-	case SectionMarket:
-		sectionIcon = "🌐"
-		title = "Market Section"
-		// TODO: Sharesansar integration with respectful rate limiting
-		description = "Market data and information will be displayed here.\n" +
-			"This section will show market indices, sector performance, and market news."
-
-	default:
-		sectionIcon = "❓"
-		title = "Unknown Section"
-		description = "This section is not recognized."
-	}
-
-	// Primary color styling establishes visual hierarchy for section identification
-	styledTitle := theme.HighlightStyle().Render(sectionIcon + " " + title)
-
-	// Content styling with width constraints for responsive layouts
-	styledDescription := theme.ContentStyle().
-		Width(width - 4). // Account for padding
-		Render(description)
-
-	// Navigation hint for selected items (future use)
-	navHint := ""
-	if m.selectedItem > 0 {
-		navHint = theme.MutedStyle().Render(fmt.Sprintf("\n\n[Item %d selected - hjkl to navigate]", m.selectedItem))
-	}
-
-	// Consistent spacing prevents visual clutter during information scanning
-	content = styledTitle + "\n\n" + styledDescription + navHint
-
-	return content
-}
-
-// renderSidebar provides supplementary information for wide layouts
-// Contains quick stats, recent activity, and navigation context
-func (m Model) renderSidebar(width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-
-	sidebarTitle := theme.HighlightStyle().Render("📋 Quick Info")
-
-	sidebarContent := `Portfolio Status:
-• Total Value: Rs.2,45,670 (+1.8%)
-• Today's Change: +Rs.5,620
-• Holdings: 5 stocks
-
-Recent Activity:
-• NABIL +10 @ Rs.1,250
-• EBL -20 @ Rs.700
-• HIDCL +50 @ Rs.445
-
-Market Status:
-• NEPSE Index: 2,089.5
-• Trading: Closed
-• Next Session: Tomorrow 11:00`
-
-	styledContent := theme.ContentStyle().
-		Width(width - 2).
-		Render(sidebarContent)
-
-	return sidebarTitle + "\n\n" + styledContent
-}
-
-// renderCondensedSidebar provides essential information for medium layouts
-// Condensed version focusing on most critical portfolio data
-func (m Model) renderCondensedSidebar(width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-
-	sidebarTitle := theme.HighlightStyle().Render("📊 Stats")
-
-	sidebarContent := `Total: Rs.2,45,670 (+1.8%)
-Today: +Rs.5,620
-Holdings: 5 stocks
-
-NEPSE: 2,089.5
-Status: Closed`
-
-	styledContent := theme.ContentStyle().
-		Width(width - 2).
-		Render(sidebarContent)
-
-	return sidebarTitle + "\n\n" + styledContent
-}
-
-// renderAnalyticsPanel provides technical analysis for wide layouts
-// Advanced metrics and indicators for professional users
-func (m Model) renderAnalyticsPanel(width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-
-	analyticsTitle := theme.HighlightStyle().Render("📈 Analytics")
-
-	analyticsContent := `Technical:
-• RSI: 45.2
-• MACD: Bullish
-• MA(20): Rs.1,245
-• Support: Rs.2,050
-
-Risk:
-• Beta: 1.2
-• VaR: 2.1%
-• Sharpe: 1.8
-
-Sectors:
-• Banking: 65%
-• Hydro: 25%
-• Others: 10%`
-
-	styledContent := theme.ContentStyle().
-		Width(width - 2).
-		Render(analyticsContent)
-
-	return analyticsTitle + "\n\n" + styledContent
-}

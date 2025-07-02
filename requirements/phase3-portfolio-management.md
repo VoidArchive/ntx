@@ -24,21 +24,21 @@ Build a feature-rich portfolio management TUI that includes:
 - **FR1.1**: Main dashboard showing portfolio summary:
 
   ```
-  ┌─ Portfolio Overview ────────────────────────────────────────────────┐
-  │ Total: Rs.2,45,670 (+1.8%) │ Today: +Rs.5,620 │ Unrealized: +Rs.12,340   │
+  ┌─ [2]Holding ────────────────────────────────────────────────────────┐
+  │ Total: Rs.2,45,670 (+1.8%) │ Today: +Rs.5,620 │ Unrealized: +Rs.123 │
   └─────────────────────────────────────────────────────────────────────┘
   ```
 
 - **FR1.2**: Holdings table with sortable columns:
 
   ```
-  ┌─ Holdings [4] ──────────────────────────────────────────────────────┐
-  │ Symbol │Qty│ Avg Cost │  LTP   │ Value │  P/L  │ %Change │ Weight  │
-  │►NABIL  │50 │  Rs.1,250  │ Rs.1,320 │ 66k   │ +3.5k │  +5.6%  │  28.5%  │
-  │ EBL    │30 │    Rs.680  │   Rs.710 │ 21k   │ +0.9k │  +4.4%  │   9.1%  │
-  │ HIDCL  │100│    Rs.420  │   Rs.445 │ 45k   │ +2.5k │  +6.0%  │  19.4%  │
-  │ KTM    │25 │    Rs.890  │   Rs.920 │ 23k   │ +0.8k │  +3.4%  │   9.9%  │
-  └─────────────────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │ Symbol │Qty│ Avg Cost   │  LTP     │ Value │  P/L  │ %Change │ Weight│
+  │►NABIL  │50 │  Rs.1,250  │ Rs.1,320 │ 66k   │ +3.5k │  +5.6%  │  28.5%│
+  │ EBL    │30 │    Rs.680  │   Rs.710 │ 21k   │ +0.9k │  +4.4%  │   9.1%│
+  │ HIDCL  │100│    Rs.420  │   Rs.445 │ 45k   │ +2.5k │  +6.0%  │  19.4%│
+  │ KTM    │25 │    Rs.890  │   Rs.920 │ 23k   │ +0.8k │  +3.4%  │   9.9%│
+  └──────────────────────────────────────────────────────────────────────┘
   ```
 
 - **FR1.3**: Real-time portfolio metrics calculation:
@@ -65,18 +65,18 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─ Add Transaction ───────────────────────────────────────────────────┐
   │                                                                     │
-  │ Portfolio: [NEPSE Growth Portfolio    ▼]                           │
+  │ Portfolio: [NEPSE Growth Portfolio    ▼]                            │
   │ Symbol:    [NABIL____________] (auto-complete from existing)        │
-  │ Type:      [Buy ▼] [Sell]                                          │
+  │ Type:      [Buy ▼] [Sell]                                           │
   │ Quantity:  [100_______] shares                                      │
-  │ Price:     [Rs.1,250.00_] per share                                   │
+  │ Price:     [Rs.1,250.00_] per share                                 │
   │                                                                     │
   │ Commission: [Rs.25.00____] (auto-calc: 0.2% of value)               │
   │ Tax:        [Rs.1.50_____] (auto-calc: 0.015% of value)             │
-  │ Date:       [2024-12-30] (today)                                   │
-  │ Notes:      [________________________]                             │
+  │ Date:       [2024-12-30] (today)                                    │
+  │ Notes:      [________________________]                              │
   │                                                                     │
-  │ Total Cost: Rs.125,026.50                                            │
+  │ Total Cost: Rs.125,026.50                                           │
   │                                                                     │
   │               [Save] [Cancel]                                       │
   └─────────────────────────────────────────────────────────────────────┘
