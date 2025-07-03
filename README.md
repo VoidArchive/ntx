@@ -45,7 +45,7 @@ A fast and intuitive portfolio management terminal application for the Nepal Sto
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/ntx.git
+git clone https://github.com/VoidArchive/ntx.git
 cd ntx
 
 # Build the application
@@ -56,11 +56,6 @@ go build -o bin/ntx
 
 # Start using NTX
 ./bin/ntx
-```
-
-You can also install directly from source:
-```bash
-go install github.com/your-username/ntx@latest
 ```
 
 ## How to Use NTX

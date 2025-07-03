@@ -90,7 +90,7 @@ func handleDatabaseCommand(command string) {
 			os.Exit(1)
 		}
 		defer db.Close()
-		
+
 		if err := data.RunMigrations(db.DB); err != nil {
 			fmt.Printf("Error running migrations: %v\n", err)
 			os.Exit(1)
@@ -105,7 +105,7 @@ func handleDatabaseCommand(command string) {
 			os.Exit(1)
 		}
 		defer db.Close()
-		
+
 		if err := data.MigrationStatus(db.DB); err != nil {
 			fmt.Printf("Error getting migration status: %v\n", err)
 			os.Exit(1)
@@ -129,7 +129,7 @@ func handleDatabaseCommand(command string) {
 			os.Exit(1)
 		}
 		defer db.Close()
-		
+
 		if err := data.SeedData(db); err != nil {
 			fmt.Printf("Error seeding database: %v\n", err)
 			os.Exit(1)
@@ -150,7 +150,7 @@ func handleDatabaseCommand(command string) {
 			os.Exit(1)
 		}
 		backupPath := os.Args[3]
-		
+
 		fmt.Printf("Restoring database from: %s\n", backupPath)
 		if err := data.RestoreDatabase(backupPath); err != nil {
 			fmt.Printf("Error restoring database: %v\n", err)
@@ -165,7 +165,7 @@ func handleDatabaseCommand(command string) {
 			fmt.Printf("Error listing backups: %v\n", err)
 			os.Exit(1)
 		}
-		
+
 		if len(backups) == 0 {
 			fmt.Println("  No backups found")
 		} else {

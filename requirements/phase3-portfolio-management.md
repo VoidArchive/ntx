@@ -65,15 +65,15 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─ Add Transaction ───────────────────────────────────────────────────┐
   │                                                                     │
-  │ Portfolio: [NEPSE Growth Portfolio    ▼]                            │
-  │ Symbol:    [NABIL____________] (auto-complete from existing)        │
+  │ Portfolio: [NEPSE Growth Portfolio ▼]                               │
+  │ Symbol:    [NABIL____________]                                      │
   │ Type:      [Buy ▼] [Sell]                                           │
   │ Quantity:  [100_______] shares                                      │
   │ Price:     [Rs.1,250.00_] per share                                 │
   │                                                                     │
-  │ Commission: [Rs.25.00____] (auto-calc: 0.2% of value)               │
-  │ Tax:        [Rs.1.50_____] (auto-calc: 0.015% of value)             │
-  │ Date:       [2024-12-30] (today)                                    │
+  │ Commission: [Rs.25.00____]                                          │
+  │ Tax:        [Rs.1.50_____]                                          │
+  │ Date:       [2024-12-30]                                            │
   │ Notes:      [________________________]                              │
   │                                                                     │
   │ Total Cost: Rs.125,026.50                                           │
@@ -97,13 +97,13 @@ Build a feature-rich portfolio management TUI that includes:
 - **FR2.4**: Transaction history view:
 
   ```
-  ┌─ Transaction History ───────────────────────────────────────────────┐
-  │ Date       │ Symbol │ Type │ Qty │ Price   │ Total     │ Notes       │
+  ┌─[4]History ──────────────────────────────────────────────────────────────┐
+  │ Date       │ Symbol │ Type │ Qty │ Price     │ Total       │ Notes       │
   │ 2024-12-30 │ NABIL  │ Buy  │ 50  │ Rs.1,250  │ Rs.62,513   │ Initial buy │
   │ 2024-12-25 │ EBL    │ Buy  │ 30  │ Rs.680    │ Rs.20,408   │ Diversify   │
   │ 2024-12-20 │ HIDCL  │ Buy  │ 100 │ Rs.420    │ Rs.42,063   │ Hydro exp.  │
   │ 2024-12-15 │ NABIL  │ Sell │ 25  │ Rs.1,300  │ Rs.32,435   │ Profit take │
-  └─────────────────────────────────────────────────────────────────────┘
+  └──────────────────────────────────────────────────────────────────────────┘
   ```
 
 - **FR2.5**: Transaction filtering and search:
@@ -118,15 +118,15 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─ Portfolio Performance ─────────────────────────────────────────────┐
   │                                                                     │
-  │ Total Investment:    Rs.2,30,050                                     │
-  │ Current Value:       Rs.2,45,670                                     │
+  │ Total Investment:    Rs.2,30,050                                    │
+  │ Current Value:       Rs.2,45,670                                    │
   │ Unrealized P/L:      +Rs.15,620 (+6.78%)                            │
   │ Realized P/L:        +Rs.2,150 (from 3 closed positions)            │
   │ Total Return:        +Rs.17,770 (+7.72%)                            │
   │                                                                     │
-  │ Best Performer:      HIDCL (+6.0%)                                 │
-  │ Worst Performer:     KTM (+3.4%)                                   │
-  │ Most Weighted:       NABIL (28.5%)                                 │
+  │ Best Performer:      HIDCL (+6.0%)                                  │
+  │ Worst Performer:     KTM (+3.4%)                                    │
+  │ Most Weighted:       NABIL (28.5%)                                  │
   │                                                                     │
   └─────────────────────────────────────────────────────────────────────┘
   ```
@@ -136,12 +136,12 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─ Sector Allocation ─────────────────────────────────────────────────┐
   │                                                                     │
-  │ Commercial Banking    ████████████████████████████ 65.2% Rs.1,60,170 │
-  │ Hydropower           ████████████████ 25.8% Rs.63,480                │
-  │ Manufacturing        ████ 9.0% Rs.22,020                             │
+  │ Commercial Banking   ████████████████████████████ 65.2% Rs.1,60,170 │
+  │ Hydropower           ████████████████ 25.8% Rs.63,480               │
+  │ Manufacturing        ████ 9.0% Rs.22,020                            │
   │                                                                     │
-  │ Diversification Score: 7.2/10 (Well Diversified)                   │
-  │ Risk Level: Medium (based on allocation)                           │
+  │ Diversification Score: 7.2/10 (Well Diversified)                    │
+  │ Risk Level: Medium (based on allocation)                            │
   │                                                                     │
   └─────────────────────────────────────────────────────────────────────┘
   ```
@@ -151,11 +151,11 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─ NABIL Details ─────────────────────────────────────────────────────┐
   │                                                                     │
-  │ Current Holdings: 50 shares                                        │
+  │ Current Holdings: 50 shares                                         │
   │ Average Cost:     Rs.1,250.00 per share                             │
   │ Current Price:    Rs.1,320.00 per share                             │
-  │ Market Value:     Rs.66,000                                          │
-  │ Total Cost:       Rs.62,500                                          │
+  │ Market Value:     Rs.66,000                                         │
+  │ Total Cost:       Rs.62,500                                         │
   │ Unrealized P/L:   +Rs.3,500 (+5.60%)                                │
   │                                                                     │
   │ Purchase History:                                                   │
@@ -163,7 +163,7 @@ Build a feature-rich portfolio management TUI that includes:
   │ 2024-12-01: +25 @ Rs.1,300                                          │
   │ 2024-11-15: -25 @ Rs.1,200 (sold)                                   │
   │                                                                     │
-  │ Portfolio Weight: 28.5%                                            │
+  │ Portfolio Weight: 28.5%                                             │
   │ Risk Contribution: Medium                                           │
   │                                                                     │
   └─────────────────────────────────────────────────────────────────────┘
@@ -182,13 +182,13 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─ Import Portfolio Data ─────────────────────────────────────────────┐
   │                                                                     │
-  │ Source: [Meroshare CSV ▼] [CDSC/TMS] [Manual CSV]                 │
-  │ File:   [/home/user/meroshare_portfolio.csv] [Browse...]           │
+  │ Source: [Meroshare CSV ▼] [CDSC/TMS] [Manual CSV]                   │
+  │ File:   [/home/user/meroshare_portfolio.csv] [Browse...]            │
   │                                                                     │
   │ Import Options:                                                     │
-  │ ☑ Create new portfolio: "Imported Portfolio"                       │
-  │ ☐ Merge with existing: [Select Portfolio ▼]                        │
-  │ ☑ Import transactions (if available)                               │
+  │ ☑ Create new portfolio: "Imported Portfolio"                        │
+  │ ☐ Merge with existing: [Select Portfolio ▼]                         │
+  │ ☑ Import transactions (if available)                                │
   │ ☐ Import only current holdings                                      │
   │                                                                     │
   │ Data Mapping Preview:                                               │
@@ -229,11 +229,11 @@ Build a feature-rich portfolio management TUI that includes:
   │                                                                     │
   │ Active Portfolios:                                                  │
   │                                                                     │
-  │ ►NEPSE Growth Portfolio    │ Rs.2,45,670 │ +6.78% │ 4 holdings       │
-  │  Conservative Holdings     │ Rs.1,85,420 │ +3.22% │ 6 holdings       │
-  │  Speculative Plays         │   Rs.45,230 │ -2.15% │ 2 holdings       │
+  │ ►NEPSE Growth Portfolio    │ Rs.2,45,670 │ +6.78% │ 4 holdings      │
+  │  Conservative Holdings     │ Rs.1,85,420 │ +3.22% │ 6 holdings      │
+  │  Speculative Plays         │   Rs.45,230 │ -2.15% │ 2 holdings      │
   │                                                                     │
-  │ Combined Total: Rs.4,76,320  │ +4.85%                                │
+  │ Combined Total: Rs.4,76,320  │ +4.85%                               │
   │                                                                     │
   │              [New Portfolio] [Settings]                             │
   └─────────────────────────────────────────────────────────────────────┘
@@ -286,15 +286,16 @@ Build a feature-rich portfolio management TUI that includes:
 
   ```
   Portfolio Operations:
-  a: Add transaction          e: Edit selected
-  d: Delete transaction       i: Import CSV
+  a: Add transaction         e: Edit selected
+  d: Delete transaction      i: Import CSV
   s: Sort options            f: Filter/search
   t: Theme switcher          r: Refresh data
   
   Navigation:
   1-5: Section switching     Tab: Next panel
   hjkl: Vim navigation       /: Quick search
-  Enter: Select/edit         Esc: Cancel/back
+  Space: Select/Choose
+  Enter: Enter               Esc: Cancel/back
   ```
 
 ### FR7: Section-Based Navigation Architecture
@@ -321,12 +322,12 @@ Build a feature-rich portfolio management TUI that includes:
   ```
   ┌─[1]Dashboard─────────────────────────────────────────────────────────┐
   │ Portfolio Overview                                                   │
-  │ Total: Rs.2,45,670 (+1.8%) │ Today: +Rs.5,620 │ Unrealized: +Rs.12K │
+  │ Total: Rs.2,45,670 (+1.8%) │ Today: +Rs.5,620 │ Unrealized: +Rs.12K  │
   ├──────────────────────────────────────────────────────────────────────┤
   │ Quick Market Stats          │ Recent Activity                        │
-  │ NEPSE: 2,089.5 (+0.8%)     │ NABIL +10 @ Rs.1,250                  │
-  │ Banking: +1.2%              │ EBL -20 @ Rs.700                      │
-  │ Hydro: +0.5%                │ HIDCL +50 @ Rs.445                    │
+  │ NEPSE: 2,089.5 (+0.8%)      │ NABIL +10 @ Rs.1,250                   │
+  │ Banking: +1.2%              │ EBL -20 @ Rs.700                       │
+  │ Hydro: +0.5%                │ HIDCL +50 @ Rs.445                     │
   └──────────────────────────────────────────────────────────────────────┘
   ```
 
