@@ -319,6 +319,7 @@ Build a feature-rich portfolio management TUI that includes:
 - **FR7.3**: Section-specific functionality:
 
   **Dashboard Section [1]:**
+
   ```
   ┌─[1]Dashboard─────────────────────────────────────────────────────────┐
   │ Portfolio Overview                                                   │
@@ -332,6 +333,7 @@ Build a feature-rich portfolio management TUI that includes:
   ```
 
   **Holdings Section [2]:**
+
   ```
   ┌─[2]Holdings─────────────────────────────────────────────────────────┐
   │ Symbol │ Qty │ Cost │ LTP │ Value │ Day P/L │ Total P/L │ %Chg │ RSI │
@@ -451,26 +453,28 @@ Build a feature-rich portfolio management TUI that includes:
 5. ✅ Fix border alignment issues (Unicode character handling)
 
 **Implementation Summary:**
+
 - **Holdings Display Component**: `internal/ui/components/holdings/display.go` - Complete btop-style holdings management with navigation, sorting, and responsive layout
 - **Table Renderer**: `internal/ui/components/holdings/table.go` - ASCII border table with integrated title, color-coded P/L, and footer shortcuts
 - **Overview Integration**: `internal/ui/components/overview/overview.go` - Portfolio summary widget with perfect border alignment
 - **Sample Data**: `internal/ui/components/holdings/sample_data.go` - Realistic NEPSE portfolio test data with various P/L scenarios
 - **Application Integration**: Updated main application model to use new holdings component with theme switching and keyboard navigation
-- **Critical Bug Fixes**: 
+- **Critical Bug Fixes**:
   - **Unicode Border Alignment**: Fixed Unicode character width calculation in border rendering (lines 109, 229, 391-392, 408-410)
   - **Component Spacing**: Corrected component spacing from double newline to single newline for seamless borders
   - **Footer Alignment**: Fixed footer content width calculations for perfect right border alignment
 
 **Features Delivered**:
-  - Btop-style integrated borders with component title and perfect alignment
-  - Responsive column layout (120+, 100+, 80+, 60+ width breakpoints)
-  - P/L color gradient system (green gains, red losses, gray neutral)
-  - Vim-style navigation (hjkl, g/G) with selection highlighting
-  - Portfolio totals calculation and display
-  - Sort functionality across all columns (Symbol, Qty, Cost, LTP, Value, Day P/L, Total P/L, %Change, RSI)
-  - Footer with contextual shortcuts and status information
-  - Theme integration with live switching support
-  - **Perfect border alignment** across all terminal sizes and themes
+
+- Btop-style integrated borders with component title and perfect alignment
+- Responsive column layout (120+, 100+, 80+, 60+ width breakpoints)
+- P/L color gradient system (green gains, red losses, gray neutral)
+- Vim-style navigation (hjkl, g/G) with selection highlighting
+- Portfolio totals calculation and display
+- Sort functionality across all columns (Symbol, Qty, Cost, LTP, Value, Day P/L, Total P/L, %Change, RSI)
+- Footer with contextual shortcuts and status information
+- Theme integration with live switching support
+- **Perfect border alignment** across all terminal sizes and themes
 
 ### Step 2: Section Restructure & UI Consistency (Week 2)
 
@@ -510,7 +514,7 @@ Build a feature-rich portfolio management TUI that includes:
 
 ### Step 7: Code Cleanup & Architecture Refinement (Week 7)
 
-1. Remove legacy rendering code (`renderMainInterface()` and related functions)
+1. Remove legacy code and unused functions
 2. Clean up redundant components and dead code paths
 3. Consolidate UI patterns and reduce code complexity
 4. Optimize component structure and dependencies
@@ -528,6 +532,7 @@ Build a feature-rich portfolio management TUI that includes:
 - [x] Sorting and filtering work properly
 
 **Verification Results:**
+
 - ✅ Btop-style table renders with proper borders and title integration
 - ✅ All columns display correctly (Symbol, Qty, Cost, LTP, Value, Day P/L, Total P/L, %Change, RSI)
 - ✅ Portfolio totals calculate accurately (Rs.214.7K total value, +Rs.7.9K total P/L, +3.8% return)
@@ -641,4 +646,3 @@ The portfolio management foundation should be extensible for market data integra
 - Extensive documentation and help system
 
 This Phase 3 implementation will deliver a **production-ready portfolio management TUI** that combines **functional excellence** with **beautiful design**, providing NEPSE investors with a powerful tool for tracking and managing their investments with precision and confidence.
-

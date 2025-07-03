@@ -18,7 +18,7 @@ ORDER BY transaction_date DESC, created_at DESC;
 
 -- name: ListTransactionsByDateRange :many
 SELECT * FROM transactions 
-WHERE portfolio_id = ? AND transaction_date BETWEEN ? AND ?
+WHERE portfolio_id = sqlc.arg(portfolio_id) AND transaction_date BETWEEN sqlc.arg(start_date) AND sqlc.arg(end_date)
 ORDER BY transaction_date DESC, created_at DESC;
 
 -- name: UpdateTransaction :one

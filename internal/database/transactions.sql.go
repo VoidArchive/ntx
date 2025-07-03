@@ -165,12 +165,18 @@ func (q *Queries) GetTransactionSummary(ctx context.Context, arg GetTransactionS
 
 const listTransactionsByDateRange = `-- name: ListTransactionsByDateRange :many
 SELECT id, portfolio_id, symbol, transaction_type, quantity, price_paisa, commission_paisa, tax_paisa, transaction_date, notes, created_at FROM transactions 
-WHERE portfolio_id = ? AND transaction_date BETWEEN ? AND ?
+WHERE portfolio_id = ?1 AND transaction_date BETWEEN ?2 AND ?3
 ORDER BY transaction_date DESC, created_at DESC
 `
 
-func (q *Queries) ListTransactionsByDateRange(ctx context.Context, portfolioID int64) ([]Transactions, error) {
-	rows, err := q.db.QueryContext(ctx, listTransactionsByDateRange, portfolioID)
+type ListTransactionsByDateRangeParams struct {
+	PortfolioID int64     `json:"portfolio_id"`
+	StartDate   time.Time `json:"start_date"`
+	EndDate     time.Time `json:"end_date"`
+}
+
+func (q *Queries) ListTransactionsByDateRange(ctx context.Context, arg ListTransactionsByDateRangeParams) ([]Transactions, error) {
+	rows, err := q.db.QueryContext(ctx, listTransactionsByDateRange, arg.PortfolioID, arg.StartDate, arg.EndDate)
 	if err != nil {
 		return nil, err
 	}

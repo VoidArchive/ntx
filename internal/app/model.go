@@ -12,10 +12,14 @@ package app
 
 import (
 	"fmt"
-	"strings"
 	"ntx/internal/config"
+	"ntx/internal/portfolio/services"
+	"ntx/internal/ui/components/analysis"
 	"ntx/internal/ui/components/dashboard"
+	"ntx/internal/ui/components/forms"
+	"ntx/internal/ui/components/history"
 	"ntx/internal/ui/components/holdings"
+	"ntx/internal/ui/components/market"
 	"ntx/internal/ui/components/overview"
 	"ntx/internal/ui/themes"
 
@@ -46,18 +50,23 @@ var sectionNames = map[Section]string{
 // Model holds application state with strict separation of concerns
 // Ready/quitting flags prevent rendering during state transitions
 type Model struct {
-	currentSection   Section                    // Holdings default optimizes for primary use case
-	ready            bool                       // Terminal resize handling prevents corrupted layouts
-	quitting         bool                       // Graceful shutdown preserves data integrity
-	themeManager     *themes.ThemeManager       // Live theme switching for extended trading sessions
-	config           *config.Config             // Persistent preferences across market sessions
-	width            int                        // Terminal width for responsive layout
-	height           int                        // Terminal height for responsive layout
-	showHelp         bool                       // Help overlay state
-	selectedItem     int                        // Currently selected item within sections
-	holdingsDisplay  *holdings.HoldingsDisplay  // Holdings component for portfolio management
-	overviewDisplay  *overview.OverviewDisplay  // Overview component for portfolio summary
-	dashboardDisplay *dashboard.DashboardDisplay // Dashboard component for portfolio command center
+	currentSection      Section                    // Holdings default optimizes for primary use case
+	ready               bool                       // Terminal resize handling prevents corrupted layouts
+	quitting            bool                       // Graceful shutdown preserves data integrity
+	themeManager        *themes.ThemeManager       // Live theme switching for extended trading sessions
+	config              *config.Config             // Persistent preferences across market sessions
+	width               int                        // Terminal width for responsive layout
+	height              int                        // Terminal height for responsive layout
+	showHelp            bool                       // Help overlay state
+	selectedItem        int                        // Currently selected item within sections
+	holdingsDisplay     *holdings.HoldingsDisplay  // Holdings component for portfolio management
+	overviewDisplay     *overview.OverviewDisplay  // Overview component for portfolio summary
+	dashboardDisplay    *dashboard.DashboardDisplay // Dashboard component for portfolio command center
+	analysisDisplay     *analysis.AnalysisDisplay  // Analysis component for technical indicators
+	historyDisplay      *history.HistoryDisplay    // History component for transaction history
+	marketDisplay       *market.MarketDisplay      // Market component for market data
+	transactionModal    *forms.Modal               // Modal for transaction entry
+	transactionForm     *forms.TransactionForm     // Transaction form component
 }
 
 // NewModelWithConfig prioritizes user workflow preferences over defaults
@@ -114,6 +123,15 @@ func NewModelWithConfig(cfg *config.Config) Model {
 		len(holdingsDisplay.Holdings),
 	)
 
+	// Initialize analysis display with current theme
+	analysisDisplay := analysis.NewAnalysisDisplay(themeManager.GetCurrentTheme())
+
+	// Initialize history display with current theme
+	historyDisplay := history.NewHistoryDisplay(themeManager.GetCurrentTheme())
+
+	// Initialize market display with current theme
+	marketDisplay := market.NewMarketDisplay(themeManager.GetCurrentTheme())
+
 	return Model{
 		currentSection:   defaultSection,
 		ready:            false,
@@ -123,6 +141,9 @@ func NewModelWithConfig(cfg *config.Config) Model {
 		holdingsDisplay:  holdingsDisplay,
 		overviewDisplay:  overviewDisplay,
 		dashboardDisplay: dashboardDisplay,
+		analysisDisplay:  analysisDisplay,
+		historyDisplay:   historyDisplay,
+		marketDisplay:    marketDisplay,
 	}
 }
 
@@ -154,8 +175,30 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.dashboardDisplay != nil {
 			m.dashboardDisplay.SetTerminalSize(msg.Width, msg.Height)
 		}
+		// Update analysis display size for responsive layout
+		if m.analysisDisplay != nil {
+			m.analysisDisplay.SetTerminalSize(msg.Width, msg.Height)
+		}
+		// Update history display size for responsive layout
+		if m.historyDisplay != nil {
+			m.historyDisplay.SetTerminalSize(msg.Width, msg.Height)
+		}
+		// Update market display size for responsive layout
+		if m.marketDisplay != nil {
+			m.marketDisplay.SetTerminalSize(msg.Width, msg.Height)
+		}
 
 	case tea.KeyMsg:
+		// Handle modal events first (when modal is active)
+		if m.transactionModal != nil && m.transactionModal.Active {
+			var cmd tea.Cmd
+			updatedModal, cmd := m.transactionModal.Update(msg)
+			if modal, ok := updatedModal.(*forms.Modal); ok {
+				m.transactionModal = modal
+			}
+			return m, cmd
+		}
+
 		// Holdings-specific navigation when in holdings section
 		if m.currentSection == SectionHoldings && m.holdingsDisplay != nil {
 			switch msg.String() {
@@ -178,7 +221,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.holdingsDisplay.ToggleSortDirection()
 				return m, nil
 			case "a":
-				// TODO: Open add transaction dialog
+				// Open add transaction dialog
+				m.showTransactionForm()
 				return m, nil
 			case "d":
 				// TODO: Open holding details view
@@ -210,6 +254,30 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			case "r":
 				// TODO: Refresh holdings data
+				return m, nil
+			}
+		}
+
+		// Analysis-specific navigation when in analysis section
+		if m.currentSection == SectionAnalysis && m.analysisDisplay != nil {
+			switch msg.String() {
+			case "up", "k":
+				m.analysisDisplay.NavigateUp()
+				return m, nil
+			case "down", "j":
+				m.analysisDisplay.NavigateDown()
+				return m, nil
+			case "left", "h":
+				m.analysisDisplay.NavigateLeft()
+				return m, nil
+			case "right", "l":
+				m.analysisDisplay.NavigateRight()
+				return m, nil
+			case "g":
+				m.analysisDisplay.NavigateTop()
+				return m, nil
+			case "G":
+				m.analysisDisplay.NavigateBottom()
 				return m, nil
 			}
 		}
@@ -275,6 +343,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.dashboardDisplay != nil {
 				m.dashboardDisplay.SetTheme(m.themeManager.GetCurrentTheme())
 			}
+			// Update analysis display theme immediately
+			if m.analysisDisplay != nil {
+				m.analysisDisplay.SetTheme(m.themeManager.GetCurrentTheme())
+			}
+			// Update history display theme immediately
+			if m.historyDisplay != nil {
+				m.historyDisplay.SetTheme(m.themeManager.GetCurrentTheme())
+			}
+			// Update market display theme immediately
+			if m.marketDisplay != nil {
+				m.marketDisplay.SetTheme(m.themeManager.GetCurrentTheme())
+			}
 			// Immediate persistence prevents theme reset during market volatility
 			if m.config != nil {
 				m.config.SetTheme(m.themeManager.GetCurrentThemeType())
@@ -308,6 +388,38 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+// showTransactionForm initializes and shows the transaction form modal
+func (m *Model) showTransactionForm() {
+	if m.transactionForm == nil {
+		// Use portfolio ID 1 for now (TODO: get from current portfolio context)
+		m.transactionForm = forms.NewTransactionForm(1, m.themeManager.GetCurrentTheme())
+		
+		// Set up callbacks
+		m.transactionForm.OnSubmit = func(req services.ExecuteTransactionRequest) error {
+			// TODO: Integrate with portfolio service
+			// For now, just hide the form to demonstrate it works
+			m.hideTransactionForm()
+			return nil
+		}
+		m.transactionForm.OnCancel = func() {
+			m.hideTransactionForm()
+		}
+	}
+	
+	if m.transactionModal == nil {
+		m.transactionModal = forms.NewModal("Add Transaction", m.transactionForm, m.themeManager.GetCurrentTheme())
+	}
+	
+	m.transactionModal.Show()
+}
+
+// hideTransactionForm hides the transaction form modal
+func (m *Model) hideTransactionForm() {
+	if m.transactionModal != nil {
+		m.transactionModal.Hide()
+	}
+}
+
 // View generates immutable UI representation preventing state corruption
 // String-based rendering ensures consistent display across terminal types
 func (m Model) View() string {
@@ -325,17 +437,39 @@ func (m Model) View() string {
 		return m.renderHelpOverlay()
 	}
 
-	// Dashboard and Holdings sections use dedicated components, others use legacy rendering
-	if m.currentSection == SectionDashboard {
-		return m.renderDashboardSection()
+	// Render main interface
+	var mainContent string
+	
+	// All sections now use dedicated components with btop-style borders
+	switch m.currentSection {
+	case SectionDashboard:
+		mainContent = m.renderDashboardSection()
+	case SectionHoldings:
+		mainContent = m.renderHoldingsSection()
+	case SectionAnalysis:
+		mainContent = m.renderAnalysisSection()
+	case SectionHistory:
+		mainContent = m.renderHistorySection()
+	case SectionMarket:
+		mainContent = m.renderMarketSection()
+	default:
+		mainContent = m.renderMinimumSizeWarning()
 	}
 	
-	if m.currentSection == SectionHoldings {
-		return m.renderHoldingsSection()
+	// Overlay modal if active
+	if m.transactionModal != nil && m.transactionModal.Active {
+		modalView := m.transactionModal.View()
+		// Layer modal over main content
+		return lipgloss.Place(
+			m.width, m.height,
+			lipgloss.Center, lipgloss.Center,
+			modalView,
+			lipgloss.WithWhitespaceChars(" "),
+			lipgloss.WithWhitespaceForeground(lipgloss.Color("240")),
+		)
 	}
-
-	// Structured layout ensures consistent information hierarchy for financial data
-	return m.renderMainInterface()
+	
+	return mainContent
 }
 
 // renderDashboardSection renders the comprehensive dashboard component
@@ -404,247 +538,58 @@ func (m Model) renderHoldingsSection() string {
 	return overviewWidget + "\n" + holdingsTable
 }
 
-// renderMainInterface implements btop-style section rendering for non-dashboard/holdings sections
-// All sections now use consistent btop-style borders and layout
-func (m Model) renderMainInterface() string {
-	// Minimum size handling prevents corrupted layouts
+// renderAnalysisSection renders the comprehensive analysis component
+// Provides technical indicators, risk metrics, and sector analysis
+func (m Model) renderAnalysisSection() string {
+	if m.analysisDisplay == nil {
+		// Fallback if component is not initialized
+		return "Analysis component not initialized"
+	}
+
+	// Minimum size check for analysis
 	if m.width < 60 || m.height < 10 {
 		return m.renderMinimumSizeWarning()
 	}
 
-	// Render section with btop-style borders
-	return m.renderStandardSection()
+	// Render complete analysis section
+	return m.analysisDisplay.Render()
 }
 
-// renderStandardSection renders Analysis, History, and Market sections with btop-style borders
-// Provides consistent UI across all sections with professional appearance
-func (m Model) renderStandardSection() string {
-	width := m.width
-
-	var sectionIcon string
-	var sectionName string
-	var sectionNumber string
-	var description string
-
-	switch m.currentSection {
-	case SectionAnalysis:
-		sectionIcon = "📈"
-		sectionName = "Analysis"
-		sectionNumber = "[3]"
-		description = `Portfolio Analysis & Technical Indicators
-
-• Technical Indicators: RSI, MACD, Moving Averages
-• Risk Metrics: Beta, VaR, Sharpe Ratio, Portfolio Correlation
-• Performance Analysis: Risk-adjusted returns, drawdown analysis
-• Sector Analysis: Industry allocation and performance comparison
-
-This section will provide comprehensive portfolio analytics
-for informed investment decisions on NEPSE.`
-
-	case SectionHistory:
-		sectionIcon = "📋"
-		sectionName = "History"
-		sectionNumber = "[4]"
-		description = `Transaction History & Performance Tracking
-
-• Complete Transaction Log: All buy/sell orders with timestamps
-• Performance Timeline: Portfolio value changes over time
-• Realized P/L Tracking: Completed trades and tax implications
-• Settlement Tracking: T+3 NEPSE settlement status
-
-This section will show detailed transaction history
-and historical performance metrics.`
-
-	case SectionMarket:
-		sectionIcon = "🌐"
-		sectionName = "Market"
-		sectionNumber = "[5]"
-		description = `Market Data & Sector Information
-
-• NEPSE Index: Real-time market index and daily changes
-• Sector Performance: Banking, Hydro, Manufacturing, Hotels
-• Market News: Latest NEPSE announcements and market updates
-• Stock Screener: Find stocks by criteria and watchlist management
-
-This section will provide market context for
-portfolio decisions and stock discovery.`
-
-	default:
-		sectionIcon = "❓"
-		sectionName = "Unknown"
-		sectionNumber = "[?]"
-		description = "This section is not recognized."
+// renderHistorySection renders the comprehensive history component
+// Provides transaction history, performance tracking, and P/L analysis
+func (m Model) renderHistorySection() string {
+	if m.historyDisplay == nil {
+		// Fallback if component is not initialized
+		return "History component not initialized"
 	}
 
-	// Create btop-style bordered section
-	title := sectionNumber + sectionName
-	
-	// Top border with integrated title
-	topBorder := m.renderSectionTopBorder(title, width)
-	
-	// Content area with proper padding and styling
-	content := m.renderSectionContent(sectionIcon, sectionName, description, width)
-	
-	// Bottom border
-	bottomBorder := m.renderSectionBottomBorder(width)
+	// Minimum size check for history
+	if m.width < 60 || m.height < 10 {
+		return m.renderMinimumSizeWarning()
+	}
 
-	return topBorder + "\n" + content + "\n" + bottomBorder
+	// Render complete history section
+	return m.historyDisplay.Render()
 }
 
-// renderSectionTopBorder creates top border with integrated title (btop-style)
-func (m Model) renderSectionTopBorder(title string, width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-	
-	if width < len(title)+10 {
-		border := "┌" + strings.Repeat("─", width-2) + "┐"
-		return lipgloss.NewStyle().Foreground(theme.Primary()).Render(border)
+// renderMarketSection renders the comprehensive market component
+// Provides market data, sector performance, and stock information
+func (m Model) renderMarketSection() string {
+	if m.marketDisplay == nil {
+		// Fallback if component is not initialized
+		return "Market component not initialized"
 	}
-	
-	titleSection := "─" + title + "─"
-	remainingWidth := width - len([]rune(titleSection)) - 2
-	leftPadding := strings.Repeat("─", remainingWidth)
-	
-	border := "┌" + titleSection + leftPadding + "┐"
-	return lipgloss.NewStyle().Foreground(theme.Primary()).Render(border)
+
+	// Minimum size check for market
+	if m.width < 60 || m.height < 10 {
+		return m.renderMinimumSizeWarning()
+	}
+
+	// Render complete market section
+	return m.marketDisplay.Render()
 }
 
-// renderSectionBottomBorder creates bottom border
-func (m Model) renderSectionBottomBorder(width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-	border := "└" + strings.Repeat("─", width-2) + "┘"
-	return lipgloss.NewStyle().Foreground(theme.Primary()).Render(border)
-}
 
-// renderSectionContent renders section content with proper styling and padding
-func (m Model) renderSectionContent(sectionIcon, sectionName, description string, width int) string {
-	theme := m.themeManager.GetCurrentTheme()
-	
-	// Format the content
-	headerText := sectionIcon + " " + sectionName + " Section"
-	styledHeader := theme.HighlightStyle().Render(headerText)
-	
-	// Style description with theme
-	styledDescription := theme.ContentStyle().Render(description)
-	
-	// Combine header and description
-	fullContent := styledHeader + "\n\n" + styledDescription
-	
-	// Split content into lines and apply borders
-	lines := strings.Split(fullContent, "\n")
-	var borderedLines []string
-	
-	for _, line := range lines {
-		// Calculate visual width for Unicode characters
-		visualWidth := lipgloss.Width(line)
-		contentWidth := width - 2 // Account for borders
-		
-		if visualWidth < contentWidth {
-			padding := strings.Repeat(" ", contentWidth-visualWidth)
-			line = line + padding
-		} else if visualWidth > contentWidth {
-			// Truncate if too long
-			line = line[:contentWidth-3] + "..."
-		}
-		
-		// Add borders
-		borderStyle := lipgloss.NewStyle().Foreground(theme.Primary())
-		leftBorder := borderStyle.Render("│")
-		rightBorder := borderStyle.Render("│")
-		
-		borderedLines = append(borderedLines, leftBorder+line+rightBorder)
-	}
-	
-	// Add some padding rows if needed
-	minHeight := 15 // Minimum content height
-	for len(borderedLines) < minHeight {
-		emptyLine := strings.Repeat(" ", width-2)
-		borderStyle := lipgloss.NewStyle().Foreground(theme.Primary())
-		leftBorder := borderStyle.Render("│")
-		rightBorder := borderStyle.Render("│")
-		borderedLines = append(borderedLines, leftBorder+emptyLine+rightBorder)
-	}
-	
-	return strings.Join(borderedLines, "\n")
-}
-
-// renderSectionHeader maintains visual continuity across theme changes
-// Consistent header reduces disorientation during rapid section switching
-func (m Model) renderSectionHeader() string {
-	theme := m.themeManager.GetCurrentTheme()
-	sectionName := sectionNames[m.currentSection]
-
-	// Responsive header content adapts to terminal width
-	var headerText string
-	if m.width >= 100 {
-		headerText = "NTX Portfolio Management - " + sectionName + " Section"
-	} else if m.width >= 80 {
-		headerText = "NTX - " + sectionName + " Section"
-	} else {
-		headerText = sectionName
-	}
-
-	// Theme-aware styling maintains readability across lighting conditions
-	header := theme.HeaderStyle().Render(headerText)
-
-	// Responsive width styling adapts to available terminal space
-	headerWidth := m.width
-	if headerWidth == 0 {
-		headerWidth = 78 // Fallback for initialization
-	}
-
-	// Visual separation prevents information bleeding between interface zones
-	borderStyle := theme.BorderStyle().
-		BorderTop(true).
-		BorderBottom(false).
-		BorderLeft(false).
-		BorderRight(false).
-		Width(headerWidth - 2)
-
-	return borderStyle.Render(header)
-}
-
-// renderStatusBar provides persistent navigation context without cluttering main content
-// Essential shortcuts remain visible during intensive portfolio analysis sessions
-func (m Model) renderStatusBar() string {
-	theme := m.themeManager.GetCurrentTheme()
-	currentSectionName := sectionNames[m.currentSection]
-	currentThemeName := m.themeManager.GetCurrentThemeName()
-
-	// Responsive status content adapts to terminal width
-	var statusContent string
-	if m.width >= 120 {
-		// Wide layout - full navigation hints
-		statusContent = "[1]Dashboard [2]Holdings [3]Analysis [4]History [5]Market | " +
-			"hjkl: Move | ?: Help | t: Theme | Current: " + currentSectionName + " (" + currentThemeName + ") | q: Quit"
-	} else if m.width >= 80 {
-		// Medium layout - condensed hints
-		statusContent = "[1-5]: Sections | hjkl: Move | ?: Help | t: Theme | " + currentSectionName + " | q: Quit"
-	} else {
-		// Narrow layout - minimal hints
-		statusContent = "1-5: Sections | ?: Help | " + currentSectionName + " | q: Quit"
-	}
-
-	// Responsive width styling adapts to available terminal space
-	statusWidth := m.width
-	if statusWidth == 0 {
-		statusWidth = 78 // Fallback for initialization
-	}
-
-	styledStatusBar := theme.StatusBarStyle().
-		Width(statusWidth - 2). // Account for padding
-		Render(statusContent)
-
-	// Theme-consistent separator maintains visual coherence across color schemes
-	separator := theme.BorderStyle().
-		BorderTop(true).
-		BorderBottom(false).
-		BorderLeft(false).
-		BorderRight(false).
-		Width(statusWidth - 2).
-		Render("")
-
-	return separator + "\n" + styledStatusBar
-}
 
 // renderHelpOverlay displays comprehensive keybinding reference
 // Overlay design maintains context while providing complete navigation help
