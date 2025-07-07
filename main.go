@@ -1,10 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"os"
+	"log/slog"
 	"ntx/internal/csv"
+	"os"
 )
 
 func main() {
@@ -43,20 +44,23 @@ func handleImport() {
 	csvFile := os.Args[2]
 	fmt.Printf("Importing transactions from %s...\n", csvFile)
 
-	transactions, err := csv.ParseCSV(csvFile)
+	ctx := context.Background()
+	transactions, err := csv.ParseCSV(ctx, csvFile)
 	if err != nil {
-		log.Printf("Error parsing CSV: %v", err)
+		slog.Error("Failed to parse CSV file",
+			"file", csvFile,
+			"error", err)
 		return
 	}
 
 	fmt.Printf("Successfully parsed %d transactions\n", len(transactions))
-	
+
 	// Count transaction types
 	typeCounts := make(map[string]int)
 	needsPriceCount := 0
-	
+
 	for _, tx := range transactions {
-		typeCounts[tx.TransactionType]++
+		typeCounts[tx.TransactionType.String()]++
 		if tx.NeedsPrice() {
 			needsPriceCount++
 		}
@@ -66,7 +70,7 @@ func handleImport() {
 	for txType, count := range typeCounts {
 		fmt.Printf("  %s: %d transactions\n", txType, count)
 	}
-	
+
 	fmt.Printf("\nTransactions needing price input: %d\n", needsPriceCount)
 	fmt.Println("\nNext steps:")
 	fmt.Println("1. Run 'ntx prices' to enter missing prices")
@@ -95,3 +99,4 @@ func handleHelp() {
 	fmt.Println("")
 	fmt.Println("Phase 1: CSV Import & Basic Portfolio Display")
 }
+

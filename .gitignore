@@ -48,4 +48,4 @@ ntx
 
 # CSV test files
 test_*.csv
-docs/
+*.csv
