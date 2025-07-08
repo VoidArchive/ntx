@@ -223,7 +223,7 @@ func (f *FIFOCalculator) CalculateWAC(scrip string) (float64, error) {
 
 At the end of Phase 1, you should be able to:
 
-- [ ] Import your Meroshare CSV file
+- [x] Import your Meroshare CSV file
 - [ ] Enter missing transaction prices
 - [ ] See your current holdings in a terminal table
 - [ ] Verify WAC calculations match your expectations

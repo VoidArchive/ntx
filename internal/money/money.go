@@ -16,8 +16,15 @@ const (
 )
 
 // NewMoney creates a Money value from rupees (supports fractional rupees).
+// Uses proper rounding to avoid floating point precision issues.
 func NewMoney(rupees float64) Money {
-	return Money(rupees * PaisaPerRupee)
+	// Add 0.5 for proper rounding before truncation
+	paisa := rupees * PaisaPerRupee
+	if paisa >= 0 {
+		return Money(paisa + 0.5)
+	} else {
+		return Money(paisa - 0.5)
+	}
 }
 
 // NewMoneyFromPaisa creates a Money value directly from paisa.
