@@ -99,4 +99,3 @@ func handleHelp() {
 	fmt.Println("")
 	fmt.Println("Phase 1: CSV Import & Basic Portfolio Display")
 }
-
