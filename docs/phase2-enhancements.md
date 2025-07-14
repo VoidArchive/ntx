@@ -1,7 +1,9 @@
 # Phase 2: Enhanced Features - Real-time Data & Analytics
 
 ## Learning Objectives
+
 By the end of Phase 2, you will understand:
+
 - Web scraping and API integration patterns
 - Concurrent programming with goroutines
 - Data caching strategies
@@ -15,9 +17,11 @@ By the end of Phase 2, you will understand:
 ## Socratic Questions for Deep Understanding
 
 ### Question 1: Data Freshness
+
 **Q**: If you're fetching stock prices from ShareSansar every time you open NTX, what problems might you encounter?
 
 **Think About**:
+
 - How often do stock prices change?
 - What happens if ShareSansar is down?
 - Is it fair to their servers to scrape every second?
@@ -28,9 +32,11 @@ By the end of Phase 2, you will understand:
 **Follow-up**: How would you design a caching system that balances freshness with performance?
 
 ### Question 2: User Experience
+
 **Q**: When prices are being fetched, what should the user see and experience?
 
 **Think About**:
+
 - Should the app freeze while fetching data?
 - How do you show loading states?
 - What if some prices fail to load?
@@ -41,9 +47,11 @@ By the end of Phase 2, you will understand:
 **Follow-up**: How would you implement non-blocking price updates in Go?
 
 ### Question 3: Data Reliability
+
 **Q**: What happens when ShareSansar changes their website structure?
 
 **Think About**:
+
 - How do you detect when scraping breaks?
 - Should you have fallback data sources?
 - How do you test scraping code?
@@ -54,9 +62,11 @@ By the end of Phase 2, you will understand:
 **Follow-up**: How would you design a robust scraping system that adapts to changes?
 
 ### Question 4: Portfolio Analytics
+
 **Q**: Beyond current value, what insights would be most valuable for a portfolio manager?
 
 **Think About**:
+
 - Which stocks are performing best/worst?
 - How is your money allocated across sectors?
 - What's your overall return since inception?
@@ -71,6 +81,7 @@ By the end of Phase 2, you will understand:
 ### 1. Real-time Price Integration
 
 #### ShareSansar Scraper
+
 ```go
 type PriceProvider interface {
     GetPrice(scrip string) (float64, error)
@@ -85,6 +96,7 @@ type ShareSansarScraper struct {
 ```
 
 **Key Design Questions**:
+
 - How do you handle rate limiting?
 - What's your retry strategy for failed requests?
 - How do you parse HTML reliably?
@@ -93,6 +105,7 @@ type ShareSansarScraper struct {
 ### 2. Concurrent Data Fetching
 
 #### Goroutine Pool Pattern
+
 ```go
 type PriceFetcher struct {
     workers    int
@@ -107,6 +120,7 @@ func (pf *PriceFetcher) FetchPrices(scrips []string) {
 ```
 
 **Key Design Questions**:
+
 - How many concurrent requests are appropriate?
 - How do you prevent overwhelming the target server?
 - What's your timeout strategy?
@@ -115,6 +129,7 @@ func (pf *PriceFetcher) FetchPrices(scrips []string) {
 ### 3. Advanced Portfolio Calculations
 
 #### Profit/Loss Calculations
+
 ```go
 type PerformanceCalculator struct {
     transactions []Transaction
@@ -131,6 +146,7 @@ func (pc *PerformanceCalculator) CalculateRealizedPL(scrip string) (float64, err
 ```
 
 **Key Design Questions**:
+
 - How do you handle different lot sales for P&L calculation?
 - What's the difference between realized and unrealized gains?
 - How do you account for dividends and bonuses?
@@ -139,6 +155,7 @@ func (pc *PerformanceCalculator) CalculateRealizedPL(scrip string) (float64, err
 ### 4. Enhanced TUI Components
 
 #### Multi-Panel Dashboard
+
 ```go
 type DashboardModel struct {
     portfolioView   PortfolioView
@@ -150,6 +167,7 @@ type DashboardModel struct {
 ```
 
 **Key Design Questions**:
+
 - How do users navigate between panels?
 - What keyboard shortcuts make sense?
 - How do you handle window resizing?
@@ -158,6 +176,7 @@ type DashboardModel struct {
 ## Phase 2 Implementation Steps
 
 ### 1. Price Data Layer
+
 ```bash
 # Add new dependencies
 go get github.com/PuerkitoBio/goquery  # HTML parsing
@@ -166,17 +185,20 @@ go get github.com/patrickmn/go-cache   # In-memory cache
 ```
 
 ### 2. Scraper Development
+
 - **Start with**: Single stock price scraping
 - **Ask**: How do you identify the price element on ShareSansar?
 - **Test**: What happens when the stock is not found?
 - **Extend**: Batch scraping with concurrency
 
 ### 3. Cache Implementation
+
 - **Design**: When do you refresh cached prices?
 - **Ask**: How do you handle cache misses?
 - **Test**: What's your cache invalidation strategy?
 
 ### 4. TUI Enhancements
+
 - **Start with**: Loading indicators
 - **Ask**: How do you show real-time updates?
 - **Test**: What happens with slow network?
@@ -185,6 +207,7 @@ go get github.com/patrickmn/go-cache   # In-memory cache
 ## Architecture Patterns
 
 ### 1. Repository Pattern
+
 ```go
 type PriceRepository interface {
     GetPrice(scrip string) (Price, error)
@@ -200,6 +223,7 @@ type CachedPriceRepository struct {
 ```
 
 ### 2. Observer Pattern
+
 ```go
 type PriceObserver interface {
     OnPriceUpdate(scrip string, price float64)
@@ -217,6 +241,7 @@ func (pn *PriceNotifier) NotifyPriceUpdate(scrip string, price float64) {
 ```
 
 ### 3. Command Pattern
+
 ```go
 type Command interface {
     Execute() error
@@ -231,6 +256,7 @@ type RefreshPricesCommand struct {
 ## Error Handling Strategy
 
 ### 1. Graceful Degradation
+
 ```go
 func (app *App) RefreshPrices() {
     for scrip := range app.holdings {
@@ -246,6 +272,7 @@ func (app *App) RefreshPrices() {
 ```
 
 ### 2. Circuit Breaker Pattern
+
 ```go
 type CircuitBreaker struct {
     failureThreshold int
@@ -258,6 +285,7 @@ type CircuitBreaker struct {
 ## Testing Strategy
 
 ### 1. Mock Price Provider
+
 ```go
 type MockPriceProvider struct {
     prices map[string]float64
@@ -274,6 +302,7 @@ func (m *MockPriceProvider) GetPrice(scrip string) (float64, error) {
 ```
 
 ### 2. Integration Tests
+
 ```go
 func TestRealPriceFetching(t *testing.T) {
     scraper := NewShareSansarScraper()
@@ -286,20 +315,24 @@ func TestRealPriceFetching(t *testing.T) {
 ## Performance Considerations
 
 ### 1. Concurrent Processing
+
 **Question**: How many goroutines should you use for price fetching?
 **Answer**: Consider server load, network latency, and your portfolio size
 
 ### 2. Memory Management
+
 **Question**: How do you prevent memory leaks with long-running goroutines?
 **Answer**: Use context cancellation and proper goroutine lifecycle management
 
 ### 3. Database Optimization
+
 **Question**: How do you optimize database queries for large portfolios?
 **Answer**: Use indexing, batch operations, and connection pooling
 
 ## Success Criteria
 
 At the end of Phase 2, you should be able to:
+
 - [ ] Automatically fetch current prices for all holdings
 - [ ] See real-time portfolio value updates
 - [ ] View profit/loss for individual holdings
@@ -310,6 +343,7 @@ At the end of Phase 2, you should be able to:
 ## Self-Assessment Questions
 
 Before moving to Phase 3, ask yourself:
+
 1. How would you debug a failing price scraper?
 2. What happens when you have 100 different stocks?
 3. How do you ensure data consistency across goroutines?
@@ -319,8 +353,10 @@ Before moving to Phase 3, ask yourself:
 ## Next Steps
 
 Once Phase 2 is complete, you'll be ready for Phase 3: Advanced Features
+
 - Portfolio optimization algorithms
 - Historical data analysis
 - Advanced charting and visualization
 - Export capabilities
 - Multi-user support
+

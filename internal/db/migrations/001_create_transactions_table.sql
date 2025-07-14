@@ -11,13 +11,11 @@ CREATE TABLE transactions (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_transactions_scrip ON transactions (scrip);
-
 CREATE INDEX idx_transactions_date ON transactions (date);
 
-CREATE INDEX idx_transactions_scrip_date ON transactions (scrip, date);
+CREATE INDEX idx_transactions_scrip_date ON transactions (scrip, date ASC);
+-- CREATE INDEX idx_transactions_date ON transactions (date);
 
 -- +goose Down
 DROP TABLE transactions;
-
 
