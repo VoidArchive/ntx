@@ -4,20 +4,20 @@
 
 ### Project Setup
 
-- [x] Initialize Go module: `go mod init ntx`
-- [x] Create directory structure: `internal/`, `cmd/`, `docs/`
-- [x] Setup dependencies: bubbletea, sqlx, goose, sqlite3
-- [x] Create `main.go` with basic CLI structure
-- [x] Setup `.gitignore` for Go projects
+- [ ] Initialize Go module: `go mod init ntx`
+- [ ] Create directory structure: `internal/`, `cmd/`, `docs/`
+- [ ] Setup dependencies: bubbletea, sqlx, goose, sqlite3
+- [ ] Create `main.go` with basic CLI structure
+- [ ] Setup `.gitignore` for Go projects
 
 ### CSV Parser (internal/csv/parser.go)
 
-- [x] Define `Transaction` struct with all required fields
-- [x] Implement `ParseCSV(filename string) ([]Transaction, error)`
-- [x] Handle transaction type detection (IPO, Bonus, Regular)
-- [x] Add validation for required fields
-- [x] Test with actual Meroshare CSV file
-- [x] Handle edge cases: empty rows, malformed data
+- [ ] Define `Transaction` struct with all required fields
+- [ ] Implement `ParseCSV(filename string) ([]Transaction, error)`
+- [ ] Handle transaction type detection (IPO, Bonus, Regular)
+- [ ] Add validation for required fields
+- [ ] Test with actual Meroshare CSV file
+- [ ] Handle edge cases: empty rows, malformed data
 
 ### Database Layer (internal/db/)
 
