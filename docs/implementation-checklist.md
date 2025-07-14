@@ -30,7 +30,7 @@
 - [ ] Implement `GetTransactionsByScrip(scrip string) ([]Transaction, error)`
 - [ ] Add proper error handling and logging
 
-### FIFO Calculator (internal/fifo/calculator.go)
+### WAC Calculator (internal/wac/calculator.go)
 
 - [ ] Define `ShareLot` struct (Quantity, Price, Date)
 - [ ] Define `Holding` struct (Scrip, TotalQuantity, WAC, Lots)
@@ -63,7 +63,7 @@
 
 - [ ] Connect all components in main.go
 - [ ] Test complete workflow: CSV → DB → Price Input → Portfolio Display
-- [ ] Add unit tests for FIFO calculator
+- [ ] Add unit tests for WAC calculator
 - [ ] Add integration tests with sample data
 - [ ] Test error scenarios: missing files, invalid data
 - [ ] Create sample CSV for testing

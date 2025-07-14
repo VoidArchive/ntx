@@ -47,7 +47,7 @@ Missing Prices → Group by Scrip → User Input → Update Database
 - What's the most efficient way to collect prices from user?
 - How do you validate price inputs?
 
-### Step 3: FIFO WAC Calculation
+### Step 3: WAC Calculation
 
 ```
 Transactions → Sort by Date → Process Queue → Calculate WAC
@@ -95,7 +95,7 @@ CREATE TABLE transactions (
 - **Auditable**: You can trace every calculation back to transactions
 - **Flexible**: Easy to add new transaction types
 
-## FIFO Algorithm (Explained Simply)
+## WAC Algorithm (Explained Simply)
 
 ### The Queue Concept
 
@@ -157,7 +157,7 @@ ntx/
 │   │   ├── models.go
 │   │   ├── queries.go
 │   │   └── migrations/
-│   ├── fifo/
+│   ├── wac/
 │   │   └── calculator.go
 │   └── tui/
 │       └── app.go
@@ -172,7 +172,7 @@ ntx/
 1. **CSV Parser** - Read and validate Meroshare CSV
 2. **Database** - Setup SQLite with migrations
 3. **Models** - Define transaction and holdings structs
-4. **FIFO Calculator** - Implement WAC calculation
+4. **WAC Calculator** - Implement WAC calculation
 5. **TUI** - Basic table display with bubbletea
 6. **Integration** - Connect all components
 
@@ -210,11 +210,11 @@ type Calculator interface {
     CalculateWAC(scrip string) (float64, error)
 }
 
-type FIFOCalculator struct {
+type WACCalculator struct {
     db *sql.DB
 }
 
-func (f *FIFOCalculator) CalculateWAC(scrip string) (float64, error) {
+func (f *WACCalculator) CalculateWAC(scrip string) (float64, error) {
     // Implementation
 }
 ```
