@@ -22,15 +22,15 @@ type Transaction struct {
 	Date        time.Time
 	Type        TransactionType
 	Quantity    int
-	Price       float64
-	Cost        float64
+	Price       Money
+	Cost        Money
 	Description string
 	Note        string
 }
 
 type Lot struct {
 	Quantity int
-	Price    float64
+	Price    Money
 	Date     time.Time
 }
 
@@ -38,16 +38,39 @@ type RealizedGain struct {
 	StockSymbol string
 	SaleDate    time.Time
 	Quantity    int
-	SalePrice   float64
-	CostBasis   float64
-	GainLoss    float64
+	SalePrice   Money
+	CostBasis   Money
+	GainLoss    Money
 	HoldingDays int
 	IsLongTerm  bool
 }
 
 type SaleResult struct {
-	RealizedGains []RealizedGain
-	TotalGainLoss float64
-	SharesSold    int
-	TotalProceeds
+	RealizedGains  []RealizedGain
+	TotalGainLoss  float64
+	SharesSold     int
+	TotalProceeds  Money
+	TotalCostBasis Money
+}
+
+type Holding struct {
+	StockSymbol        string
+	TotalShares        int
+	WeightedAvgCost    Money
+	TotalCost          Money
+	CurrentPrice       Money
+	MarketValue        Money
+	UnrealizedGainLoss Money
+	UnrealizedGainPct  float64
+	lastUpdated        time.Time
+}
+
+type PortfolioSummary struct {
+	TotalInvested     Money
+	TotalMarketValue  Money
+	TotalUnrealizedPL Money
+	TotalRealizedPL   Money
+	UnrealizedPLPct   float64
+	HoldingsCount     int
+	lastUpdated       time.Time
 }
