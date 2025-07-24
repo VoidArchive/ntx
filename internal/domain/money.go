@@ -51,7 +51,7 @@ func (m Money) Paisa() int64 {
 func (m Money) String() string {
 	rupees := m.Rupees()
 	if rupees < 0 {
-		return fmt.Sprint("-Rs. %s", formatRupees(-rupees))
+		return fmt.Sprintf("-Rs. %s", formatRupees(-rupees))
 	}
 
 	return fmt.Sprintf("Rs. %s", formatRupees(rupees))

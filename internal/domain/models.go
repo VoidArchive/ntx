@@ -1,3 +1,13 @@
+// Package domain contains the core business logic and domain models for NTX.
+//
+// This package implements the domain layer of clean architecture, providing:
+// - Core business entities (Transaction, Lot, Holding)
+// - Value objects (Money for precise financial calculations)
+// - Domain services (FIFO queue for cost basis calculations)
+// - Business rules for NEPSE stock portfolio management
+//
+// The domain layer has no external dependencies and contains pure business logic
+// that can be tested independently of infrastructure concerns.
 package domain
 
 import "time"
@@ -47,8 +57,8 @@ type RealizedGain struct {
 
 type SaleResult struct {
 	RealizedGains  []RealizedGain
-	TotalGainLoss  float64
 	SharesSold     int
+	TotalGainLoss  Money
 	TotalProceeds  Money
 	TotalCostBasis Money
 }
