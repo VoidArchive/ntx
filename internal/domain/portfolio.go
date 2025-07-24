@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -65,8 +66,7 @@ func (p *Portfolio) AddTransaction(transaction Transaction) error {
 		return nil
 
 	case TransactionMerger:
-		p.addWarning(fmt.Sprintf("Merger transaction for %s requires manual handling", symbol))
-		return nil
+		return p.processMergerTransaction(queue, transaction)
 
 	default:
 		return &PortfolioError{
@@ -144,6 +144,50 @@ func (p *Portfolio) processSplitTransaction(queue *FIFOQueue, transaction Transa
 	}
 
 	p.addWarning(fmt.Sprintf("Applied %d:1 stock split for %s", transaction.Quantity, transaction.StockSymbol))
+	p.LastUpdated = time.Now()
+	return nil
+}
+
+// processMergerTransaction handles merger/acquisition transactions
+func (p *Portfolio) processMergerTransaction(queue *FIFOQueue, transaction Transaction) error {
+	// NOTE: Distinguish between credit (receiving shares) and debit (giving up shares)
+	// based on transaction description patterns from MeroShare CSV
+	isCreditMerger := strings.Contains(transaction.Description, "Cr Current Balance") ||
+		strings.Contains(transaction.Description, "CREDIT")
+	
+	if isCreditMerger {
+		// HACK: Credit merger - receiving shares in new company (treat like bonus)  
+		err := queue.Buy(transaction.Quantity, Zero(), transaction.Date)
+		if err != nil {
+			return &PortfolioError{
+				Operation: "MergerCredit",
+				Symbol:    transaction.StockSymbol,
+				Message:   fmt.Sprintf("failed to add merger shares: %v", err),
+			}
+		}
+		p.addWarning(fmt.Sprintf("Merger: Received %d shares of %s", transaction.Quantity, transaction.StockSymbol))
+	} else {
+		// NOTE: Debit merger - giving up shares in old company (forced sale with no proceeds)
+		if queue.TotalShares() < transaction.Quantity {
+			return &PortfolioError{
+				Operation: "MergerDebit",
+				Symbol:    transaction.StockSymbol,
+				Message:   fmt.Sprintf("cannot process merger - insufficient shares: need %d, have %d", transaction.Quantity, queue.TotalShares()),
+			}
+		}
+		
+		// PERF: Sell shares at zero price (no proceeds from merger)
+		_, err := queue.Sell(transaction.Quantity, Zero(), transaction.Date)
+		if err != nil {
+			return &PortfolioError{
+				Operation: "MergerDebit",
+				Symbol:    transaction.StockSymbol,
+				Message:   fmt.Sprintf("failed to process merger sale: %v", err),
+			}
+		}
+		p.addWarning(fmt.Sprintf("Merger: Gave up %d shares of %s", transaction.Quantity, transaction.StockSymbol))
+	}
+	
 	p.LastUpdated = time.Now()
 	return nil
 }
