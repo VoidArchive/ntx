@@ -82,5 +82,5 @@ type PortfolioSummary struct {
 	TotalRealizedPL   Money
 	UnrealizedPLPct   float64
 	HoldingsCount     int
-	lastUpdated       time.Time
+	LastUpdated       time.Time
 }
