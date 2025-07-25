@@ -86,32 +86,31 @@ func (m *AnalysisModel) View() string {
 
 // renderPortfolioSummaryPanel renders the top portfolio summary panel
 func (m *AnalysisModel) renderPortfolioSummaryPanel() string {
-	summary := m.portfolio.GetPortfolioSummary()
-	holdings := m.portfolio.GetActiveHoldings()
+	// TODO: Get actual current prices from a price service
+	// For now, using empty map which will use default prices
+	currentPrices := make(map[string]domain.Money)
+	
+	summary := m.portfolio.GetPortfolioSummary(currentPrices)
+	holdings := m.portfolio.GetActiveHoldings(currentPrices)
 
-	// TODO: Calculate current market value properly
-	// For now, using total cost as market value
-	marketValue := summary.TotalCost
-	totalGainLoss := marketValue.Sub(summary.TotalCost)
+	// Calculate total gain/loss from market value vs invested
+	totalGainLoss := summary.TotalMarketValue.Subtract(summary.TotalInvested)
 	totalGainPercent := 0.0
-	if !summary.TotalCost.IsZero() {
-		totalGainPercent = float64(totalGainLoss.Paisa()) / float64(summary.TotalCost.Paisa()) * 100
+	if !summary.TotalInvested.IsZero() {
+		totalGainPercent = float64(totalGainLoss.Paisa()) / float64(summary.TotalInvested.Paisa()) * 100
 	}
 
-	// Calculate unrealized gain (difference between market value and cost, minus realized)
-	unrealizedGain := totalGainLoss.Sub(summary.TotalRealizedGain)
-
 	summaryItems := []string{
-		fmt.Sprintf("Total Invested: %s", MoneyStyle.Render(summary.TotalCost.String())),
-		fmt.Sprintf("Market Value: %s", MoneyStyle.Render(marketValue.String())),
+		fmt.Sprintf("Total Invested: %s", MoneyStyle.Render(summary.TotalInvested.String())),
+		fmt.Sprintf("Market Value: %s", MoneyStyle.Render(summary.TotalMarketValue.String())),
 		fmt.Sprintf("P&L: %s (%s)", 
 			StyleForMoney(!totalGainLoss.IsNegative(), totalGainLoss.IsZero()).Render(totalGainLoss.String()),
 			StyleForPercentage(totalGainPercent).Render(fmt.Sprintf("%.1f%%", totalGainPercent))),
 		fmt.Sprintf("Holdings: %s", InfoStyle.Render(fmt.Sprintf("%d stocks", len(holdings)))),
 		fmt.Sprintf("Realized P&L: %s", 
-			StyleForMoney(!summary.TotalRealizedGain.IsNegative(), summary.TotalRealizedGain.IsZero()).Render(summary.TotalRealizedGain.String())),
+			StyleForMoney(!summary.TotalRealizedPL.IsNegative(), summary.TotalRealizedPL.IsZero()).Render(summary.TotalRealizedPL.String())),
 		fmt.Sprintf("Unrealized: %s", 
-			StyleForMoney(!unrealizedGain.IsNegative(), unrealizedGain.IsZero()).Render(unrealizedGain.String())),
+			StyleForMoney(!summary.TotalUnrealizedPL.IsNegative(), summary.TotalUnrealizedPL.IsZero()).Render(summary.TotalUnrealizedPL.String())),
 	}
 
 	summaryText := strings.Join(summaryItems, "  |  ")
@@ -206,7 +205,8 @@ func (m *AnalysisModel) renderTaxSummaryPanel(width int) string {
 	content.WriteString("\n")
 
 	// Calculate tax implications
-	summary := m.portfolio.GetPortfolioSummary()
+	currentPrices := make(map[string]domain.Money)
+	summary := m.portfolio.GetPortfolioSummary(currentPrices)
 	
 	// For Nepal: 
 	// Short-term capital gains (≤ 365 days): 7.5%
@@ -216,14 +216,14 @@ func (m *AnalysisModel) renderTaxSummaryPanel(width int) string {
 
 	// TODO: Get actual short-term and long-term gains from portfolio
 	// For now, assume all realized gains are subject to tax
-	totalRealizedGain := summary.TotalRealizedGain
+	totalRealizedGain := summary.TotalRealizedPL
 	
 	// Placeholder calculations (need actual short/long term breakdown)
-	shortTermGain := totalRealizedGain.Multiply(0.6) // Assume 60% short-term
-	longTermGain := totalRealizedGain.Multiply(0.4)  // Assume 40% long-term
+	shortTermGain := totalRealizedGain.MultiplyFloat(0.6) // Assume 60% short-term
+	longTermGain := totalRealizedGain.MultiplyFloat(0.4)  // Assume 40% long-term
 
-	shortTermTax := shortTermGain.Multiply(shortTermRate)
-	longTermTax := longTermGain.Multiply(longTermRate)
+	shortTermTax := shortTermGain.MultiplyFloat(shortTermRate)
+	longTermTax := longTermGain.MultiplyFloat(longTermRate)
 	totalTax := shortTermTax.Add(longTermTax)
 
 	taxItems := []string{
@@ -258,8 +258,11 @@ func (m *AnalysisModel) renderAlertsPanel() string {
 	var alerts []string
 
 	// Check for common issues
-	holdings := m.portfolio.GetActiveHoldings()
-	transactions := m.portfolio.GetAllTransactions()
+	currentPrices := make(map[string]domain.Money)
+	holdings := m.portfolio.GetActiveHoldings(currentPrices)
+	// TODO: Add transaction storage to Portfolio or use alternative data source
+	// For now, using empty slice as placeholder
+	transactions := []domain.Transaction{}
 
 	// Count transactions with default prices (Rs. 100.00)
 	defaultPriceCount := 0
@@ -294,13 +297,13 @@ func (m *AnalysisModel) renderAlertsPanel() string {
 	})
 
 	for _, txn := range transactions {
-		stats := symbolStats[txn.Symbol]
-		if txn.Type == domain.Buy {
+		stats := symbolStats[txn.StockSymbol]
+		if txn.Type == domain.TransactionBuy {
 			stats.hasBuy = true
-		} else if txn.Type == domain.Sell {
+		} else if txn.Type == domain.TransactionSell {
 			stats.hasSell = true
 		}
-		symbolStats[txn.Symbol] = stats
+		symbolStats[txn.StockSymbol] = stats
 	}
 
 	for _, stats := range symbolStats {
@@ -342,26 +345,20 @@ func (m *AnalysisModel) refreshAnalysis() {
 
 // calculatePerformanceData calculates performance metrics for all holdings
 func (m *AnalysisModel) calculatePerformanceData() {
-	holdings := m.portfolio.GetActiveHoldings()
+	currentPrices := make(map[string]domain.Money)
+	holdings := m.portfolio.GetActiveHoldings(currentPrices)
 	var performances []PerformanceData
 
 	for _, holding := range holdings {
-		// TODO: Calculate actual current price and market value
-		// For now, using WAC as current price (no gain/loss)
-		currentPrice := holding.WeightedAverageCost
-		marketValue := domain.NewMoney(int64(holding.TotalShares) * currentPrice.Paisa())
-		gainLoss := marketValue.Sub(holding.TotalCost)
-		gainPercent := 0.0
-		
-		if !holding.TotalCost.IsZero() {
-			gainPercent = float64(gainLoss.Paisa()) / float64(holding.TotalCost.Paisa()) * 100
-		}
+		// Use the values from the holding struct which already has calculated values
+		gainLoss := holding.UnrealizedGainLoss
+		gainPercent := holding.UnrealizedGainPct
 
 		performances = append(performances, PerformanceData{
-			Symbol:      holding.Symbol,
+			Symbol:      holding.StockSymbol,
 			GainLoss:    gainLoss,
 			GainPercent: gainPercent,
-			MarketValue: marketValue,
+			MarketValue: holding.MarketValue,
 		})
 	}
 

@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -68,7 +69,9 @@ type RootModel struct {
 // NewRootModel creates a new root model
 func NewRootModel() *RootModel {
 	portfolio := domain.NewPortfolio()
-	csvImporter := importer.NewCSVImporter()
+	// Create CSV importer with default price of Rs. 100.00
+	defaultPrice := domain.NewMoney(10000) // Rs. 100.00 in paisa
+	csvImporter := importer.NewCSVImporter(defaultPrice)
 
 	m := &RootModel{
 		currentSection: PortfolioSection,
@@ -150,7 +153,7 @@ func (m *RootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.errorMsg = msg.Error.Error()
 		m.successMsg = ""
 		// Clear error after 5 seconds
-		cmd = tea.Tick(tea.Second*5, func(t tea.Time) tea.Msg {
+		cmd = tea.Tick(time.Second*5, func(t time.Time) tea.Msg {
 			return clearErrorMsg{}
 		})
 		cmds = append(cmds, cmd)
@@ -159,7 +162,7 @@ func (m *RootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.successMsg = msg.Message
 		m.errorMsg = ""
 		// Clear success message after 3 seconds
-		cmd = tea.Tick(tea.Second*3, func(t tea.Time) tea.Msg {
+		cmd = tea.Tick(time.Second*3, func(t time.Time) tea.Msg {
 			return clearSuccessMsg{}
 		})
 		cmds = append(cmds, cmd)
@@ -174,7 +177,7 @@ func (m *RootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// TODO: Implement portfolio refresh logic
 		// This could involve recalculating holdings, updating prices, etc.
 		m.successMsg = "Portfolio data refreshed"
-		cmd = tea.Tick(tea.Second*3, func(t tea.Time) tea.Msg {
+		cmd = tea.Tick(time.Second*3, func(t time.Time) tea.Msg {
 			return clearSuccessMsg{}
 		})
 		cmds = append(cmds, cmd)

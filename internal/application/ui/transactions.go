@@ -3,11 +3,9 @@ package ui
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -101,9 +99,9 @@ func (m *TransactionsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.importPath = ""
 		
 		// Process import result
-		if msg.Result.Error != nil {
+		if len(msg.Result.Errors) > 0 {
 			return m, func() tea.Msg {
-				return ErrorMsg{Error: msg.Result.Error}
+				return ErrorMsg{Error: fmt.Errorf("Import failed: %s", strings.Join(msg.Result.Errors, "; "))}
 			}
 		}
 
@@ -345,11 +343,11 @@ func (m *TransactionsModel) renderTransactionsTable(width int) string {
 		// Format type with color
 		typeStyle := rowStyle
 		switch txn.Type {
-		case domain.Buy:
+		case domain.TransactionBuy:
 			typeStyle = typeStyle.Foreground(ColorSuccess)
-		case domain.Sell:
+		case domain.TransactionSell:
 			typeStyle = typeStyle.Foreground(ColorDanger)
-		case domain.Bonus, domain.Rights:
+		case domain.TransactionBonus, domain.TransactionRights:
 			typeStyle = typeStyle.Foreground(ColorWarning)
 		}
 
@@ -371,8 +369,8 @@ func (m *TransactionsModel) renderTransactionsTable(width int) string {
 
 		cells := []string{
 			rowStyle.Width(colWidths[0]).Render(dateStr),
-			rowStyle.Width(colWidths[1]).Render(txn.Symbol),
-			typeStyle.Width(colWidths[2]).Render(txn.Type.String()),
+			rowStyle.Width(colWidths[1]).Render(txn.StockSymbol),
+			typeStyle.Width(colWidths[2]).Render(string(txn.Type)),
 			rowStyle.Width(colWidths[3]).Align(lipgloss.Right).Render(strconv.Itoa(txn.Quantity)),
 			rowStyle.Width(colWidths[4]).Align(lipgloss.Right).Render(priceText),
 			rowStyle.Width(colWidths[5]).Align(lipgloss.Right).Render(totalText),
@@ -504,8 +502,8 @@ func (m *TransactionsModel) startImport() tea.Cmd {
 		}
 		defer file.Close()
 
-		// Create progress callback
-		progressCallback := func(current, total int, message string) {
+		// Create progress callback matching the expected signature
+		progressCallback := func(processed int, stats importer.ImportStats) {
 			// Note: This won't work in bubbletea as expected
 			// We'd need to use tea.Cmd properly for real progress updates
 		}
@@ -513,7 +511,11 @@ func (m *TransactionsModel) startImport() tea.Cmd {
 		// Import with progress
 		result, err := m.importer.ImportFromReaderWithCallback(file, progressCallback)
 		if err != nil {
-			return ImportCompleteMsg{Result: &importer.ImportResult{Error: err}}
+			return ImportCompleteMsg{Result: &importer.ImportResult{
+				Transactions: []domain.Transaction{},
+				Warnings:     []string{},
+				Errors:       []string{err.Error()},
+			}}
 		}
 
 		return ImportCompleteMsg{Result: result}
@@ -522,8 +524,10 @@ func (m *TransactionsModel) startImport() tea.Cmd {
 
 // refreshTransactions updates the transactions list from the portfolio
 func (m *TransactionsModel) refreshTransactions() {
-	// Get all transactions from portfolio
-	m.transactions = m.portfolio.GetAllTransactions()
+	// TODO: Portfolio doesn't store transaction history by design
+	// Need to implement transaction storage or use alternative approach
+	// For now, using empty slice as placeholder
+	m.transactions = []domain.Transaction{}
 	
 	// Sort by date (newest first)
 	sort.Slice(m.transactions, func(i, j int) bool {
@@ -533,7 +537,7 @@ func (m *TransactionsModel) refreshTransactions() {
 	// Update available symbols
 	symbolMap := make(map[string]bool)
 	for _, txn := range m.transactions {
-		symbolMap[txn.Symbol] = true
+		symbolMap[txn.StockSymbol] = true
 	}
 	
 	m.symbols = make([]string, 0, len(symbolMap))
@@ -563,7 +567,7 @@ func (m *TransactionsModel) applyFilter() {
 
 	m.filteredTxns = make([]domain.Transaction, 0)
 	for _, txn := range m.transactions {
-		if m.filter.Symbol == "" || txn.Symbol == m.filter.Symbol {
+		if m.filter.Symbol == "" || txn.StockSymbol == m.filter.Symbol {
 			m.filteredTxns = append(m.filteredTxns, txn)
 		}
 	}
@@ -573,7 +577,7 @@ func (m *TransactionsModel) applyFilter() {
 func (m *TransactionsModel) countTransactionsForSymbol(symbol string) int {
 	count := 0
 	for _, txn := range m.transactions {
-		if txn.Symbol == symbol {
+		if txn.StockSymbol == symbol {
 			count++
 		}
 	}

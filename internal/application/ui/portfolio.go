@@ -97,7 +97,7 @@ func (m *PortfolioModel) handleTableKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		if len(m.holdings) > 0 && m.selectedIndex < len(m.holdings) {
 			m.showDetail = true
-			m.detailSymbol = m.holdings[m.selectedIndex].Symbol
+			m.detailSymbol = m.holdings[m.selectedIndex].StockSymbol
 		}
 	case "s":
 		// Cycle through sort modes
@@ -111,7 +111,7 @@ func (m *PortfolioModel) handleTableKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "e":
 		// TODO: Edit selected stock price
 		if len(m.holdings) > 0 && m.selectedIndex < len(m.holdings) {
-			symbol := m.holdings[m.selectedIndex].Symbol
+			symbol := m.holdings[m.selectedIndex].StockSymbol
 			return m, func() tea.Msg {
 				return SuccessMsg{Message: fmt.Sprintf("Edit price for %s (feature coming soon)", symbol)}
 			}
@@ -206,25 +206,19 @@ func (m *PortfolioModel) renderHoldingsTable() string {
 	rows = append(rows, headerRow)
 
 	for i, holding := range m.holdings {
-		// TODO: Calculate current price and market values properly
-		// For now, using WAC as current price
-		currentPrice := holding.WeightedAverageCost
-		marketValue := domain.NewMoney(int64(holding.TotalShares) * currentPrice.Paisa())
-		gainLoss := marketValue.Sub(holding.TotalCost)
-		gainPercent := 0.0
-		if !holding.TotalCost.IsZero() {
-			gainPercent = float64(gainLoss.Paisa()) / float64(holding.TotalCost.Paisa()) * 100
-		}
+		// Use values directly from the holding struct
+		gainLoss := holding.UnrealizedGainLoss
+		gainPercent := holding.UnrealizedGainPct
 
 		// Style based on selection
 		rowStyle := StyleForTableRow(i, i == m.selectedIndex)
 
 		cells := []string{
-			rowStyle.Width(colWidths[0]).Render(holding.Symbol),
+			rowStyle.Width(colWidths[0]).Render(holding.StockSymbol),
 			rowStyle.Width(colWidths[1]).Align(lipgloss.Right).Render(strconv.Itoa(holding.TotalShares)),
-			rowStyle.Width(colWidths[2]).Align(lipgloss.Right).Render(holding.WeightedAverageCost.String()),
-			rowStyle.Width(colWidths[3]).Align(lipgloss.Right).Render(currentPrice.String()),
-			rowStyle.Width(colWidths[4]).Align(lipgloss.Right).Render(marketValue.String()),
+			rowStyle.Width(colWidths[2]).Align(lipgloss.Right).Render(holding.WeightedAvgCost.String()),
+			rowStyle.Width(colWidths[3]).Align(lipgloss.Right).Render(holding.CurrentPrice.String()),
+			rowStyle.Width(colWidths[4]).Align(lipgloss.Right).Render(holding.MarketValue.String()),
 		}
 
 		// Style gain/loss based on value
@@ -262,21 +256,23 @@ func (m *PortfolioModel) renderHoldingsTable() string {
 
 // renderPortfolioSummary renders the portfolio summary at the bottom
 func (m *PortfolioModel) renderPortfolioSummary() string {
-	summary := m.portfolio.GetPortfolioSummary()
+	currentPrices := make(map[string]domain.Money)
+	summary := m.portfolio.GetPortfolioSummary(currentPrices)
 
-	// TODO: Calculate current market value properly
-	// For now, using total cost as market value
-	marketValue := summary.TotalCost
-	totalGainLoss := marketValue.Sub(summary.TotalCost)
+	// Calculate total gain/loss
+	totalGainLoss := summary.TotalMarketValue.Subtract(summary.TotalInvested)
 	totalGainPercent := 0.0
+	if !summary.TotalInvested.IsZero() {
+		totalGainPercent = float64(totalGainLoss.Paisa()) / float64(summary.TotalInvested.Paisa()) * 100
+	}
 
 	summaryItems := []string{
 		fmt.Sprintf("Holdings: %s", InfoStyle.Render(fmt.Sprintf("%d stocks", len(m.holdings)))),
-		fmt.Sprintf("Total Invested: %s", MoneyStyle.Render(summary.TotalCost.String())),
-		fmt.Sprintf("Market Value: %s", MoneyStyle.Render(marketValue.String())),
+		fmt.Sprintf("Total Invested: %s", MoneyStyle.Render(summary.TotalInvested.String())),
+		fmt.Sprintf("Market Value: %s", MoneyStyle.Render(summary.TotalMarketValue.String())),
 		fmt.Sprintf("Total P&L: %s", StyleForMoney(!totalGainLoss.IsNegative(), totalGainLoss.IsZero()).Render(totalGainLoss.String())),
 		fmt.Sprintf("Total Gain: %s", StyleForPercentage(totalGainPercent).Render(fmt.Sprintf("%.1f%%", totalGainPercent))),
-		fmt.Sprintf("Realized P&L: %s", StyleForMoney(!summary.TotalRealizedGain.IsNegative(), summary.TotalRealizedGain.IsZero()).Render(summary.TotalRealizedGain.String())),
+		fmt.Sprintf("Realized P&L: %s", StyleForMoney(!summary.TotalRealizedPL.IsNegative(), summary.TotalRealizedPL.IsZero()).Render(summary.TotalRealizedPL.String())),
 	}
 
 	summaryText := strings.Join(summaryItems, "  |  ")
@@ -291,7 +287,7 @@ func (m *PortfolioModel) renderDetailView() string {
 	// Find the holding for the selected symbol
 	var selectedHolding *domain.Holding
 	for _, holding := range m.holdings {
-		if holding.Symbol == m.detailSymbol {
+		if holding.StockSymbol == m.detailSymbol {
 			selectedHolding = &holding
 			break
 		}
@@ -304,14 +300,14 @@ func (m *PortfolioModel) renderDetailView() string {
 	var content strings.Builder
 
 	// Title
-	title := SectionTitleStyle.Render(fmt.Sprintf("📈 %s - Stock Detail", selectedHolding.Symbol))
+	title := SectionTitleStyle.Render(fmt.Sprintf("📈 %s - Stock Detail", selectedHolding.StockSymbol))
 	content.WriteString(title)
 	content.WriteString("\n\n")
 
 	// Stock details
 	details := []string{
 		fmt.Sprintf("Total Shares: %s", MoneyStyle.Render(strconv.Itoa(selectedHolding.TotalShares))),
-		fmt.Sprintf("Weighted Average Cost: %s", MoneyStyle.Render(selectedHolding.WeightedAverageCost.String())),
+		fmt.Sprintf("Weighted Average Cost: %s", MoneyStyle.Render(selectedHolding.WeightedAvgCost.String())),
 		fmt.Sprintf("Total Investment: %s", MoneyStyle.Render(selectedHolding.TotalCost.String())),
 		"",
 		"Recent Transactions:",
@@ -354,7 +350,8 @@ func (m *PortfolioModel) renderHelpText() string {
 
 // refreshHoldings updates the holdings list from the portfolio
 func (m *PortfolioModel) refreshHoldings() {
-	m.holdings = m.portfolio.GetActiveHoldings()
+	currentPrices := make(map[string]domain.Money)
+	m.holdings = m.portfolio.GetActiveHoldings(currentPrices)
 	m.sortHoldings()
 
 	// Adjust selected index if needed
@@ -371,22 +368,19 @@ func (m *PortfolioModel) sortHoldings() {
 	switch m.sortMode {
 	case SortBySymbol:
 		sort.Slice(m.holdings, func(i, j int) bool {
-			return m.holdings[i].Symbol < m.holdings[j].Symbol
+			return m.holdings[i].StockSymbol < m.holdings[j].StockSymbol
 		})
 	case SortByGainPercent:
 		sort.Slice(m.holdings, func(i, j int) bool {
-			// TODO: Calculate actual gain percentages
-			return m.holdings[i].Symbol < m.holdings[j].Symbol // Placeholder
+			return m.holdings[i].UnrealizedGainPct > m.holdings[j].UnrealizedGainPct
 		})
 	case SortByMarketValue:
 		sort.Slice(m.holdings, func(i, j int) bool {
-			// Sort by total cost for now (TODO: use market value)
-			return m.holdings[i].TotalCost.Paisa() > m.holdings[j].TotalCost.Paisa()
+			return m.holdings[i].MarketValue.Paisa() > m.holdings[j].MarketValue.Paisa()
 		})
 	case SortByGainLoss:
 		sort.Slice(m.holdings, func(i, j int) bool {
-			// TODO: Calculate actual gain/loss
-			return m.holdings[i].Symbol < m.holdings[j].Symbol // Placeholder
+			return m.holdings[i].UnrealizedGainLoss.Paisa() > m.holdings[j].UnrealizedGainLoss.Paisa()
 		})
 	}
 }
