@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/voidarchive/ntx/internal/domain/models"
 )
 
 func TestShareSansarScraper_GetAllQuotes(t *testing.T) {
@@ -21,7 +22,7 @@ func TestShareSansarScraper_GetAllQuotes(t *testing.T) {
 
 	// Test that we got some well-known stocks
 	knownStocks := []string{"NABIL", "ADBL", "HIDCL", "API", "CHCL"}
-	foundStocks := make(map[string]*Quote)
+	foundStocks := make(map[string]*models.Quote)
 
 	for _, quote := range quotes {
 		// Basic validation of each quote

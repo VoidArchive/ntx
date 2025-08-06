@@ -8,18 +8,8 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/voidarchive/ntx/internal/domain/models"
 )
-
-// Quote represents a single stock quote
-type Quote struct {
-	Symbol    string
-	Open      float64
-	High      float64
-	Low       float64
-	LTP       float64 // Last Traded Price
-	Volume    float64
-	PrevClose float64
-}
 
 // ShareSansarScraper implements stock data scraping from ShareSansar
 type ShareSansarScraper struct {
@@ -45,7 +35,7 @@ func NewShareSansarScraper() *ShareSansarScraper {
 }
 
 // GetQuote scrapes a single stock quote (inefficient - prefer GetAllQuotes)
-func (s *ShareSansarScraper) GetQuote(symbol string) (*Quote, error) {
+func (s *ShareSansarScraper) GetQuote(symbol string) (*models.Quote, error) {
 	// For single quotes, we'll scrape all and filter
 	// This is more efficient than making separate requests
 	allQuotes, err := s.GetAllQuotes()
@@ -63,8 +53,8 @@ func (s *ShareSansarScraper) GetQuote(symbol string) (*Quote, error) {
 }
 
 // GetAllQuotes scrapes all available stock quotes
-func (s *ShareSansarScraper) GetAllQuotes() ([]*Quote, error) {
-	var quotes []*Quote
+func (s *ShareSansarScraper) GetAllQuotes() ([]*models.Quote, error) {
+	var quotes []*models.Quote
 
 	// Clear visited URLs to allow re-scraping
 	s.collector.OnHTML("table tr", func(e *colly.HTMLElement) {
@@ -77,7 +67,7 @@ func (s *ShareSansarScraper) GetAllQuotes() ([]*Quote, error) {
 			return
 		}
 
-		quote := &Quote{Symbol: cellSymbol}
+		quote := &models.Quote{Symbol: cellSymbol}
 
 		if ltp, err := parseFloat(e.ChildText("td:nth-child(3)")); err == nil {
 			quote.LTP = ltp
