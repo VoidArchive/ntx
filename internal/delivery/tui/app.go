@@ -1,136 +1,166 @@
-// Package tui
+// Package tui provides terminal user interface
 package tui
 
 import (
 	"context"
 	"fmt"
-	"time"
+	"strings"
 
-	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
-
-	"github.com/voidarchive/ntx/internal/delivery/tui/components"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/voidarchive/ntx/internal/domain/models"
 	"github.com/voidarchive/ntx/internal/service/market"
 )
 
-const refreshInterval = 30 * time.Second
+// App is the main TUI application
+type App struct {
+	marketService market.Service
+	width         int
+	height        int
 
-type refreshMsg struct{}
+	// Data
+	overview *models.MarketOverview
+	quotes   []*models.Quote
 
-type quoteMsg struct {
-	quotes []*table.Row
-	err    error
+	// UI State
+	loading bool
+	err     error
 }
 
-type model struct {
-	svc    market.Service
-	table  table.Model
-	err    error
-	width  int
-	height int
+// NewApp creates a new TUI application
+func NewApp(marketService market.Service) *App {
+	return &App{
+		marketService: marketService,
+		loading:       true,
+	}
 }
 
-func New(svc market.Service) tea.Model {
-	t := components.New(nil)
-	return &model{svc: svc, table: t}
-}
-
-func (m *model) Init() tea.Cmd {
-	return tea.Batch(m.fetchCmd(),
-		tea.Tick(refreshInterval, func(time.Time) tea.Msg { return refreshMsg{} }),
+// Init starts the application
+func (a *App) Init() tea.Cmd {
+	return tea.Batch(
+		loadMarketOverview(a.marketService),
+		loadQuotes(a.marketService),
 	)
 }
 
-func (m *model) fetchCmd() tea.Cmd {
-	return func() tea.Msg {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		qs, err := m.svc.GetLiveQuotes(ctx)
-		if err != nil {
-			return quoteMsg{err: err}
-		}
-		rows := make([]*table.Row, len(qs))
-		for i, q := range qs {
-			r := components.QuoteRow(q)
-			rows[i] = &r
-		}
-		return quoteMsg{quotes: rows}
-	}
-}
-
-func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+// Update handles messages
+func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case quoteMsg:
-		if msg.err != nil {
-			m.err = msg.err
-			return m, nil
-		}
-		m.table.SetRows(deref(msg.quotes))
-		m.resizeCols(m.table.Width())
-		return m, nil
-	case refreshMsg:
-		return m, m.fetchCmd()
+	case tea.WindowSizeMsg:
+		a.width = msg.Width
+		a.height = msg.Height
+		return a, nil
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
-			return m, tea.Quit
-		case "r":
-			return m, m.fetchCmd()
+		case "ctrl+c", "q":
+			return a, tea.Quit
+		case "r", "F5":
+			a.loading = true
+			a.err = nil
+			return a, tea.Batch(
+				loadMarketOverview(a.marketService),
+				loadQuotes(a.marketService),
+			)
 		}
-	case tea.WindowSizeMsg:
-		m.table.SetWidth(msg.Width)
-		m.table.SetHeight(msg.Height - 2)
-		m.resizeCols(msg.Width)
-		return m, nil
+
+	case overviewMsg:
+		a.overview = msg.overview
+		a.loading = false
+		return a, nil
+
+	case quotesMsg:
+		a.quotes = msg.quotes
+		return a, nil
+
+	case errorMsg:
+		a.err = msg.err
+		a.loading = false
+		return a, nil
 	}
-	var cmd tea.Cmd
-	if m.table.Columns() != nil {
-		m.table, cmd = m.table.Update(msg)
-	}
-	return m, cmd
+
+	return a, nil
 }
 
-func (m *model) View() string {
-	if m.err != nil {
-		return fmt.Sprintf("Error: %v\n\n%s", m.err, m.table.View())
+// View renders the dashboard
+func (a *App) View() string {
+	if a.width == 0 || a.height == 0 {
+		return "Initializing..."
 	}
-	if len(m.table.Rows()) == 0 {
-		return "Loading quotes..."
-	}
-	return m.table.View()
+
+	// Calculate layout dimensions
+	leftWidth := a.width * 50 / 100       // 50% for indices
+	rightWidth := a.width - leftWidth - 3 // Rest for stocks table (minus borders)
+
+	// Build left panel (indices)
+	leftPanel := a.renderIndicesPanel(leftWidth, a.height-4)
+
+	// Build right panel (stocks)
+	rightPanel := a.renderStocksPanel(rightWidth, a.height-4)
+
+	// Combine panels side by side
+	return lipgloss.JoinHorizontal(
+		lipgloss.Top,
+		leftPanel,
+		rightPanel,
+	) + a.renderStatusBar()
 }
 
-func deref[T any](ptrs []*T) []T {
-	out := make([]T, len(ptrs))
-	for i, p := range ptrs {
-		out[i] = *p
+// renderStatusBar renders the bottom status bar
+func (a *App) renderStatusBar() string {
+	leftStatus := "r: Refresh • q: Quit"
+
+	var rightStatus string
+	if a.overview != nil {
+		rightStatus = fmt.Sprintf("Updated: %s", a.overview.LastUpdated)
 	}
-	return out
+
+	// Calculate spacing
+	totalWidth := a.width
+	statusWidth := totalWidth - len(leftStatus) - len(rightStatus)
+	spacing := ""
+	if statusWidth > 0 {
+		spacing = strings.Repeat(" ", statusWidth)
+	}
+
+	statusLine := leftStatus + spacing + rightStatus
+
+	return "\n" + lipgloss.NewStyle().
+		Foreground(lipgloss.Color("241")).
+		Width(totalWidth).
+		Render(statusLine)
 }
 
-func (m *model) resizeCols(total int) {
-	padding := 4 // gutters
-	avail := total - padding
-	widths := []int{8, 10, 10, 10, 12} // base widths
+// Messages for async operations
+type overviewMsg struct {
+	overview *models.MarketOverview
+}
 
-	sum := 0
-	for _, w := range widths {
-		sum += w
-	}
-	extra := avail - sum
-	if extra > 0 {
-		share := extra / len(widths)
-		for i := range widths {
-			widths[i] += share
+type quotesMsg struct {
+	quotes []*models.Quote
+}
+
+type errorMsg struct {
+	err error
+}
+
+// Commands for loading data
+func loadMarketOverview(service market.Service) tea.Cmd {
+	return func() tea.Msg {
+		overview, err := service.GetMarketOverview(context.TODO())
+		if err != nil {
+			return errorMsg{err}
 		}
-		widths[len(widths)-1] += extra % len(widths) // remainder
+		return overviewMsg{overview}
 	}
+}
 
-	cols := m.table.Columns()
-	for i, w := range widths {
-		cols[i].Width = w
+func loadQuotes(service market.Service) tea.Cmd {
+	return func() tea.Msg {
+		quotes, err := service.GetLiveQuotes(context.TODO())
+		if err != nil {
+			return errorMsg{err}
+		}
+		return quotesMsg{quotes}
 	}
-	m.table.SetColumns(cols)
 }

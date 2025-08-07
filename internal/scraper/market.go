@@ -10,31 +10,55 @@ import (
 	"github.com/voidarchive/ntx/internal/domain/models"
 )
 
+// MarketScraper handles scraping market overview data from ShareSansar
+type MarketScraper struct {
+	collector *colly.Collector
+}
+
+// NewMarketScraper creates a new market overview scraper
+func NewMarketScraper() *MarketScraper {
+	c := colly.NewCollector(
+		colly.AllowedDomains("www.sharesansar.com"),
+	)
+
+	c.UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
+
+	// Be nice to the server
+	c.OnRequest(func(r *colly.Request) {
+		time.Sleep(500 * time.Millisecond)
+	})
+
+	return &MarketScraper{
+		collector: c,
+	}
+}
+
 // GetMarketOverview scrapes main NEPSE index and all sub-indices
-func (s *ShareSansarScraper) GetMarketOverview() (*models.MarketOverview, error) {
+func (s *MarketScraper) GetMarketOverview() (*models.MarketOverview, error) {
 	overview := &models.MarketOverview{
 		SubIndices: make([]*models.Index, 0),
 	}
 
-	// Clear visited URLs for re-scraping
-	s.collector.OnHTML(".table-responsive table", func(e *colly.HTMLElement) {
-		// Check if this is the main NEPSE index table
-		if strings.Contains(e.Text, "NEPSE Index") || strings.Contains(e.Text, "Index Value") {
-			// Parse main NEPSE index
-			overview.MainIndex = s.parseMainIndex(e)
-		}
-	})
-
-	// Parse sub-indices table
+	// Parse all table rows - both main index and sub-indices
 	s.collector.OnHTML("table tr", func(e *colly.HTMLElement) {
-		// Look for sub-index rows (skip header)
-		if strings.Contains(e.ChildText("td:nth-child(1)"), "Index") ||
-			strings.Contains(e.ChildText("td:nth-child(1)"), "Subindex") {
+		nameText := strings.TrimSpace(e.ChildText("td:nth-child(1)"))
+		if nameText == "" {
+			return // Skip empty rows
+		}
 
-			index := s.parseSubIndexRow(e)
-			if index != nil {
-				overview.SubIndices = append(overview.SubIndices, index)
-			}
+		// Parse the row into an index
+		index := s.parseIndexRow(e)
+		if index == nil {
+			return
+		}
+
+		// Determine if this is main NEPSE index or sub-index
+		if nameText == "NEPSE Index" {
+			index.IsMain = true
+			overview.MainIndex = index
+		} else if strings.Contains(nameText, "Index") || strings.Contains(nameText, "SubIndex") {
+			index.IsMain = false
+			overview.SubIndices = append(overview.SubIndices, index)
 		}
 	})
 
@@ -47,34 +71,18 @@ func (s *ShareSansarScraper) GetMarketOverview() (*models.MarketOverview, error)
 	return overview, nil
 }
 
-// parseMainIndex extracts main NEPSE index data
-func (s *ShareSansarScraper) parseMainIndex(_ *colly.HTMLElement) *models.Index {
-	// This will need to be adjusted based on actual HTML structure
-	// For now, create a placeholder implementation
-	return &models.Index{
-		Name:        "NEPSE Index",
-		Open:        2650.0, // These will be parsed from actual HTML
-		High:        2670.0,
-		Low:         2640.0,
-		Close:       2656.67,
-		PointChange: 12.34,
-		IsMain:      true,
-	}
-}
-
-// parseSubIndexRow extracts sub-index data from table row
-func (s *ShareSansarScraper) parseSubIndexRow(e *colly.HTMLElement) *models.Index {
+// parseIndexRow extracts index data from table row (works for both main and sub-indices)
+func (s *MarketScraper) parseIndexRow(e *colly.HTMLElement) *models.Index {
 	nameText := strings.TrimSpace(e.ChildText("td:nth-child(1)"))
-	if nameText == "" || nameText == "Sub Index" {
-		return nil // Skip header or empty rows
+	if nameText == "" {
+		return nil // Skip empty rows
 	}
 
 	index := &models.Index{
-		Name:   nameText,
-		IsMain: false,
+		Name: nameText,
 	}
 
-	// Parse OHLC data
+	// Parse OHLC data based on the HTML structure you provided
 	if open, err := parseFloat(e.ChildText("td:nth-child(2)")); err == nil {
 		index.Open = open
 	}
@@ -89,6 +97,11 @@ func (s *ShareSansarScraper) parseSubIndexRow(e *colly.HTMLElement) *models.Inde
 	}
 	if pointChange, err := parseFloat(e.ChildText("td:nth-child(6)")); err == nil {
 		index.PointChange = pointChange
+	}
+
+	// Only return if we have the essential data
+	if index.Close == 0 {
+		return nil
 	}
 
 	return index

@@ -16,17 +16,12 @@ type Service interface {
 
 // ----- concrete implementation -----
 
-type marketSource interface { // expanded interface
-	GetAllQuotes() ([]*models.Quote, error)
-	GetMarketOverview() (*models.MarketOverview, error)
-}
-
 type marketService struct {
-	src marketSource // can be scraper, cache, mock…
+	src scraper.MarketDataSource // unified interface
 }
 
-// New wires any marketSource (start with the scraper).
-func New(src marketSource) Service {
+// New wires any MarketDataSource.
+func New(src scraper.MarketDataSource) Service {
 	return &marketService{src: src}
 }
 
@@ -42,5 +37,5 @@ func (s *marketService) GetMarketOverview(ctx context.Context) (*models.MarketOv
 
 // NewWithShareSansar Helper for production wiring
 func NewWithShareSansar() Service {
-	return New(scraper.NewShareSansarScraper())
+	return New(scraper.NewUnifiedScraper())
 }
