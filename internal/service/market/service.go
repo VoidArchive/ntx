@@ -11,26 +11,33 @@ import (
 // Service is what the TUI depends on.
 type Service interface {
 	GetLiveQuotes(ctx context.Context) ([]*models.Quote, error)
+	GetMarketOverview(ctx context.Context) (*models.MarketOverview, error)
 }
 
 // ----- concrete implementation -----
 
-type quoteSource interface { // tiny, unexported
+type marketSource interface { // expanded interface
 	GetAllQuotes() ([]*models.Quote, error)
+	GetMarketOverview() (*models.MarketOverview, error)
 }
 
 type marketService struct {
-	src quoteSource // can be scraper, cache, mock…
+	src marketSource // can be scraper, cache, mock…
 }
 
-// New wires any quoteSource (start with the scraper).
-func New(src quoteSource) Service {
+// New wires any marketSource (start with the scraper).
+func New(src marketSource) Service {
 	return &marketService{src: src}
 }
 
 func (s *marketService) GetLiveQuotes(ctx context.Context) ([]*models.Quote, error) {
 	// add ctx timeouts, logging, caching, etc. here if needed
 	return s.src.GetAllQuotes()
+}
+
+func (s *marketService) GetMarketOverview(ctx context.Context) (*models.MarketOverview, error) {
+	// add ctx timeouts, logging, caching, etc. here if needed
+	return s.src.GetMarketOverview()
 }
 
 // NewWithShareSansar Helper for production wiring
