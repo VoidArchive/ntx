@@ -20,6 +20,7 @@ type ShareSansarScraper struct {
 func NewShareSansarScraper() *ShareSansarScraper {
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.sharesansar.com"),
+		colly.AllowURLRevisit(),
 	)
 
 	c.UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
@@ -55,6 +56,8 @@ func (s *ShareSansarScraper) GetQuote(symbol string) (*models.Quote, error) {
 // GetAllQuotes scrapes all available stock quotes
 func (s *ShareSansarScraper) GetAllQuotes() ([]*models.Quote, error) {
 	var quotes []*models.Quote
+
+	s.collector = s.collector.Clone()
 
 	// Clear visited URLs to allow re-scraping
 	s.collector.OnHTML("table tr", func(e *colly.HTMLElement) {

@@ -3,8 +3,10 @@ module github.com/voidarchive/ntx
 go 1.24.5
 
 require (
+	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.6
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/dustin/go-humanize v1.0.1
 	github.com/gocolly/colly/v2 v2.2.0
 	github.com/stretchr/testify v1.10.0
 )
