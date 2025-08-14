@@ -19,6 +19,7 @@ type MarketScraper struct {
 func NewMarketScraper() *MarketScraper {
 	c := colly.NewCollector(
 		colly.AllowedDomains("www.sharesansar.com"),
+		colly.AllowURLRevisit(),
 	)
 
 	c.UserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"

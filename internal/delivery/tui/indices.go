@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/voidarchive/ntx/internal/domain/models"
 )
 
 // renderIndicesPanel renders the left panel with NEPSE overview and sub-indices
@@ -31,11 +32,25 @@ func (a *App) renderIndicesPanel(width, height int) string {
 	// Render sub-indices
 	subPanel := a.renderSubIndices(width, subHeight)
 
-	return lipgloss.JoinVertical(
-		lipgloss.Left,
-		mainPanel,
-		subPanel,
-	)
+	// Create clean panel with title
+	title := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("39")).
+		Render("NEPSE INDEX")
+		
+	combinedContent := mainPanel + "\n\n" + subPanel
+	
+	return lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderTop(true).
+		BorderLeft(true).
+		BorderRight(true).
+		BorderBottom(true).
+		Padding(1).
+		Width(width).
+		Height(height).
+		Render(lipgloss.JoinVertical(lipgloss.Left, title, "", combinedContent))
 }
 
 // renderMainIndex renders the main NEPSE index overview
@@ -48,45 +63,36 @@ func (a *App) renderMainIndex(width, height int) string {
 
 	// Determine color based on point change
 	changeColor := lipgloss.Color("196") // Red
-	changeSymbol := "▼"
 	if idx.PointChange >= 0 {
 		changeColor = lipgloss.Color("46") // Green
-		changeSymbol = "▲"
 	}
 
-	// Build content
+	// Build content - no duplicate title
 	var content strings.Builder
-	content.WriteString(lipgloss.NewStyle().
+
+	// Calculate percentage change
+	percentChange := 0.0
+	if idx.Open > 0 {
+		percentChange = ((idx.Close - idx.Open) / idx.Open) * 100
+	}
+
+	// Main index display with better formatting
+	mainIndexStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("39")).
-		Render("📈 NEPSE INDEX"))
+		Foreground(lipgloss.Color("226"))
+	
+	content.WriteString(mainIndexStyle.Render(fmt.Sprintf("%.2f", idx.Close)))
+	content.WriteString("  ")
+	
+	changeStyle := lipgloss.NewStyle().Foreground(changeColor)
+	content.WriteString(changeStyle.Render(fmt.Sprintf("%.2f (%.2f%%)", idx.PointChange, percentChange)))
 	content.WriteString("\n\n")
 
-	// Index value and change
-	indexValue := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("226")).
-		Render(fmt.Sprintf("%.2f", idx.Close))
+	// OHLC data in compact format
+	content.WriteString(fmt.Sprintf("Open: %.2f  |  High: %.2f\n", idx.Open, idx.High))
+	content.WriteString(fmt.Sprintf("Low: %.2f   |  Time: %s", idx.Low, a.overview.LastUpdated))
 
-	pointChange := lipgloss.NewStyle().
-		Foreground(changeColor).
-		Render(fmt.Sprintf("%s %.2f", changeSymbol, idx.PointChange))
-
-	content.WriteString(fmt.Sprintf("%s %s\n\n", indexValue, pointChange))
-
-	// OHLC data
-	content.WriteString(fmt.Sprintf("Open:  %.2f\n", idx.Open))
-	content.WriteString(fmt.Sprintf("High:  %.2f\n", idx.High))
-	content.WriteString(fmt.Sprintf("Low:   %.2f\n", idx.Low))
-	content.WriteString(fmt.Sprintf("Time:  %s", a.overview.LastUpdated))
-
-	return lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("62")).
-		Padding(1, 2).
-		Width(width).
-		Height(height).
-		Render(content.String())
+	return content.String()
 }
 
 // renderSubIndices renders all sub-indices in a scrollable list
@@ -99,51 +105,59 @@ func (a *App) renderSubIndices(width, height int) string {
 	content.WriteString(lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("33")).
-		Render("📊 SUB INDICES"))
+		Render("SUB INDICES"))
 	content.WriteString("\n\n")
 
-	// Create table-like format for sub-indices
+	// Filter and create table-like format for relevant sub-indices only
+	var relevantIndices []*models.Index
 	for _, idx := range a.overview.SubIndices {
+		// Only include proper sector indices, skip Sensitive, Float, etc.
+		name := strings.ToLower(idx.Name)
+		if strings.Contains(name, "sensitive") || 
+		   strings.Contains(name, "float") ||
+		   strings.Contains(name, "trading") ||
+		   strings.Contains(name, "others") {
+			continue // Skip these indices
+		}
+		relevantIndices = append(relevantIndices, idx)
+	}
+	
+	for _, idx := range relevantIndices {
 		// Determine color based on point change
 		changeColor := lipgloss.Color("196") // Red
-		changeSymbol := "▼"
 		if idx.PointChange >= 0 {
 			changeColor = lipgloss.Color("46") // Green
-			changeSymbol = "▲"
 		}
 
-		// Format name (truncate if too long)
-		name := idx.Name
-		if len(name) > 15 {
-			name = name[:12] + "..."
+		// Format name (clean up index names)
+		name := strings.ReplaceAll(idx.Name, "Index", "")
+		name = strings.ReplaceAll(name, "SubIndex", "")
+		name = strings.TrimSpace(name)
+		
+		if len(name) > 16 {
+			name = name[:13] + "..."
 		}
 
-		// Build row
+		// Build row with better spacing
 		nameStyle := lipgloss.NewStyle().Width(18).Render(name)
 		valueStyle := lipgloss.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.Color("226")).
-			Width(10).
+			Width(12).
 			Align(lipgloss.Right).
 			Render(fmt.Sprintf("%.2f", idx.Close))
 
 		changeStyle := lipgloss.NewStyle().
 			Foreground(changeColor).
-			Width(10).
+			Width(8).
 			Align(lipgloss.Right).
-			Render(fmt.Sprintf("%s%.1f", changeSymbol, idx.PointChange))
+			Render(fmt.Sprintf("%.1f", idx.PointChange))
 
 		row := lipgloss.JoinHorizontal(lipgloss.Top, nameStyle, valueStyle, changeStyle)
 		content.WriteString(row + "\n")
 	}
 
-	return lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("62")).
-		Padding(1, 2).
-		Width(width).
-		Height(height).
-		Render(content.String())
+	return content.String()
 }
 
 // Helper methods for loading and error states
@@ -170,3 +184,9 @@ func (a *App) renderErrorBox(message string, width, height int) string {
 		Foreground(lipgloss.Color("196")).
 		Render(message)
 }
+
+// The following helpers are declared in app.go but referenced here via methods
+// on App; keeping them in app.go maintains separation of concerns:
+// - initOrRefreshTable()
+// - syncTableSize()
+// - findQuoteBySymbol()

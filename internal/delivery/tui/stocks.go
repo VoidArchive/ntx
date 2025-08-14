@@ -2,133 +2,89 @@ package tui
 
 import (
 	"fmt"
-	"strings"
 
+	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/voidarchive/ntx/internal/delivery/tui/components"
 	"github.com/voidarchive/ntx/internal/domain/models"
 )
 
-// renderStocksPanel renders the right panel with all stocks table
+// renderStocksPanel renders the right panel with an interactive table of stocks.
 func (a *App) renderStocksPanel(width, height int) string {
 	if len(a.quotes) == 0 {
 		return a.renderLoadingBox("Loading stocks...", width, height)
 	}
 
-	var content strings.Builder
+	// Ensure table exists and is sized correctly.
+	if a.stockTable.Columns() == nil {
+		a.initOrRefreshTable()
+	}
+	
+	// Set proper table width accounting for borders and padding
+	tableWidth := width - 6 // account for border (2) + padding (4)
+	if tableWidth < 30 {
+		tableWidth = 30 // minimum table width
+	}
+	a.stockTable.SetWidth(tableWidth)
 
-	// Header
-	content.WriteString(lipgloss.NewStyle().
+	// Create clean title
+	title := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("39")).
-		Render("📋 ALL STOCKS"))
-	content.WriteString("\n\n")
-
-	// Table header
-	headerStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("240")).
-		Padding(0, 1)
-
-	symbolHeader := headerStyle.Copy().Width(8).Render("Symbol")
-	ltpHeader := headerStyle.Copy().Width(10).Align(lipgloss.Right).Render("LTP")
-	changeHeader := headerStyle.Copy().Width(12).Align(lipgloss.Right).Render("Change")
-	volumeHeader := headerStyle.Copy().Width(12).Align(lipgloss.Right).Render("Volume")
-
-	header := lipgloss.JoinHorizontal(lipgloss.Top,
-		symbolHeader, ltpHeader, changeHeader, volumeHeader)
-	content.WriteString(header + "\n")
-
-	// Separator line
-	separator := strings.Repeat("─", width-4)
-	content.WriteString(separator + "\n")
-
-	// Table rows (show only as many as fit in height)
-	maxRows := height - 8 // Reserve space for header, title, borders
-	displayQuotes := a.quotes
-	if len(displayQuotes) > maxRows {
-		displayQuotes = displayQuotes[:maxRows]
-	}
-
-	for _, quote := range displayQuotes {
-		content.WriteString(a.renderStockRow(quote) + "\n")
-	}
-
-	// Show count info at bottom if truncated
-	if len(a.quotes) > maxRows {
-		truncateInfo := fmt.Sprintf("Showing %d of %d stocks", maxRows, len(a.quotes))
-		content.WriteString("\n" + lipgloss.NewStyle().
-			Foreground(lipgloss.Color("241")).
-			Render(truncateInfo))
-	}
+		Render("ALL STOCKS")
 
 	return lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("62")).
-		Padding(1, 2).
+		Border(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderTop(true).
+		BorderLeft(true).
+		BorderRight(true).
+		BorderBottom(true).
+		Padding(1).
 		Width(width).
 		Height(height).
-		Render(content.String())
+		Render(lipgloss.JoinVertical(lipgloss.Left, title, "", a.stockTable.View()))
 }
 
-// renderStockRow renders a single stock row
-func (a *App) renderStockRow(quote *models.Quote) string {
-	// Calculate change
-	change := quote.LTP - quote.PrevClose
-	changePct := 0.0
-	if quote.PrevClose > 0 {
-		changePct = (change / quote.PrevClose) * 100
-	}
-
-	// Determine color based on change
-	changeColor := lipgloss.Color("196") // Red
-	changeSymbol := "▼"
-	if change >= 0 {
-		changeColor = lipgloss.Color("46") // Green
-		changeSymbol = "▲"
-	}
-
-	// Format columns
-	symbolStyle := lipgloss.NewStyle().
-		Width(8).
-		Foreground(lipgloss.Color("255")).
-		Render(truncateString(quote.Symbol, 7))
-
-	ltpStyle := lipgloss.NewStyle().
-		Width(10).
-		Align(lipgloss.Right).
-		Bold(true).
-		Foreground(lipgloss.Color("226")).
-		Render(fmt.Sprintf("%.2f", quote.LTP))
-
-	changeStyle := lipgloss.NewStyle().
-		Width(12).
-		Align(lipgloss.Right).
-		Foreground(changeColor).
-		Render(fmt.Sprintf("%s %.2f%%", changeSymbol, changePct))
-
-	volumeStyle := lipgloss.NewStyle().
-		Width(12).
-		Align(lipgloss.Right).
-		Foreground(lipgloss.Color("245")).
-		Render(formatVolume(quote.Volume))
-
-	return lipgloss.JoinHorizontal(lipgloss.Top,
-		symbolStyle, ltpStyle, changeStyle, volumeStyle)
+// newStockTable builds a fresh table.Model for the given quotes using our
+// components configuration to ensure consistent styling and behavior.
+func (a *App) newStockTable(quotes []*models.Quote) table.Model {
+	t := components.New(quotes)
+	return t
 }
 
-// Helper functions
-func truncateString(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	return s[:maxLen-1] + "…"
+// renderStockModal shows a centered overlay with details of the provided quote.
+func (a *App) renderStockModal(q *models.Quote, totalWidth, totalHeight int) string {
+	// Compose detail body with key fields so users can quickly inspect a symbol.
+	body := fmt.Sprintf(
+		"%s\n\nLTP: %.2f\nOpen: %.2f  High: %.2f  Low: %.2f\nPrev Close: %.2f\nVolume: %.0f\n\nPress ESC to close",
+		lipgloss.NewStyle().Bold(true).Render(q.Symbol),
+		q.LTP, q.Open, q.High, q.Low, q.PrevClose, q.Volume,
+	)
+
+	modalWidth := minInt(56, totalWidth-8)
+	modalHeight := 10
+
+	box := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("105")).
+		Background(lipgloss.Color("236")).
+		Padding(1, 2).
+		Width(modalWidth).
+		Height(modalHeight).
+		Render(body)
+
+	// Center the box in the available space
+	return lipgloss.Place(totalWidth, totalHeight,
+		lipgloss.Center, lipgloss.Center, box,
+		lipgloss.WithWhitespaceChars(" "),
+		lipgloss.WithWhitespaceForeground(lipgloss.Color("0")),
+	)
 }
 
-func formatVolume(volume float64) string {
-	if volume >= 1000000 {
-		return fmt.Sprintf("%.1fM", volume/1000000)
-	} else if volume >= 1000 {
-		return fmt.Sprintf("%.1fK", volume/1000)
+func minInt(a, b int) int {
+	if a < b {
+		return a
 	}
-	return fmt.Sprintf("%.0f", volume)
+	return b
 }

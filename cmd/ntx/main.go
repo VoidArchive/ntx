@@ -15,8 +15,8 @@ func main() {
 	// Create TUI app
 	app := tui.NewApp(marketService)
 
-	// Setup Bubble Tea program
-	p := tea.NewProgram(app, tea.WithAltScreen())
+	// Setup Bubble Tea program with alt-screen and mouse cell motion enabled
+	p := tea.NewProgram(app, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
 	// Run the program
 	if _, err := p.Run(); err != nil {

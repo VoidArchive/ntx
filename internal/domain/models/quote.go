@@ -12,3 +12,16 @@ type Quote struct {
 	Volume    float64
 	PrevClose float64
 }
+
+// PercentageChange calculates percentage change from previous close
+func (q *Quote) PercentageChange() float64 {
+	if q.PrevClose == 0 {
+		return 0
+	}
+	return ((q.LTP - q.PrevClose) / q.PrevClose) * 100
+}
+
+// IsPositive returns true if the stock is trading higher than previous close
+func (q *Quote) IsPositive() bool {
+	return q.LTP >= q.PrevClose
+}
