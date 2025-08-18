@@ -19,12 +19,13 @@ func (a *App) renderStocksPanel(width, height int) string {
 	if a.stockTable.Columns() == nil {
 		a.initOrRefreshTable()
 	}
-	
+
 	// Set proper table width accounting for borders and padding
-	tableWidth := width - 6 // account for border (2) + padding (4)
-	if tableWidth < 30 {
-		tableWidth = 30 // minimum table width
-	}
+	tableWidth := max(
+		// account for border (2) + padding (4)
+		width-6,
+		// minimum table width
+		30)
 	a.stockTable.SetWidth(tableWidth)
 
 	// Create clean title
