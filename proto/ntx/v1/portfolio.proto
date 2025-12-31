@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+import "google/protobuf/timestamp.proto";
+import "ntx/v1/common.proto";
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+service PortfolioService {
+  rpc ListHoldings(ListHoldingsRequest) returns (ListHoldingsResponse);
+  rpc GetHolding(GetHoldingRequest) returns (GetHoldingResponse);
+  rpc Summary(SummaryRequest) returns (SummaryResponse);
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+  rpc Import(ImportRequest) returns (ImportResponse);
+}
+
+// Holding represents current position in a stock.
+message Holding {
+  Stock stock = 1;
+  double quantity = 2;
+  Money average_cost = 3;      // per unit
+  Money total_cost = 4;
+  Money current_price = 5;     // per unit
+  Money current_value = 6;
+  Money unrealized_pnl = 7;
+  double unrealized_pnl_percent = 8;
+}
+
+// Transaction represents a single portfolio transaction.
+message Transaction {
+  string id = 1;
+  string symbol = 2;
+  TransactionType type = 3;
+  double quantity = 4;
+  Money price = 5;             // per unit (if applicable)
+  Money total = 6;
+  google.protobuf.Timestamp date = 7;
+  string description = 8;      // raw description from source
+}
+
+enum TransactionType {
+  TRANSACTION_TYPE_UNSPECIFIED = 0;
+  TRANSACTION_TYPE_BUY = 1;
+  TRANSACTION_TYPE_SELL = 2;
+  TRANSACTION_TYPE_BONUS = 3;
+  TRANSACTION_TYPE_RIGHTS = 4;
+  TRANSACTION_TYPE_IPO = 5;
+  TRANSACTION_TYPE_MERGER_IN = 6;
+  TRANSACTION_TYPE_MERGER_OUT = 7;
+  TRANSACTION_TYPE_DEMAT = 8;
+  TRANSACTION_TYPE_REARRANGEMENT = 9;
+}
+
+// PortfolioSummary holds aggregate portfolio metrics.
+message PortfolioSummary {
+  Money total_investment = 1;
+  Money current_value = 2;
+  Money total_unrealized_pnl = 3;
+  double total_unrealized_pnl_percent = 4;
+  Money total_realized_pnl = 5;
+  int32 holdings_count = 6;
+  google.protobuf.Timestamp last_updated = 7;
+}
+
+// Request/Response messages
+
+message ListHoldingsRequest {
+  Sector sector = 1;  // optional filter
+}
+
+message ListHoldingsResponse {
+  repeated Holding holdings = 1;
+}
+
+message GetHoldingRequest {
+  string symbol = 1;
+}
+
+message GetHoldingResponse {
+  Holding holding = 1;
+}
+
+message SummaryRequest {}
+
+message SummaryResponse {
+  PortfolioSummary summary = 1;
+}
+
+message ListTransactionsRequest {
+  string symbol = 1;         // optional filter
+  TransactionType type = 2;  // optional filter
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+  int32 total = 2;
+}
+
+message ImportRequest {
+  bytes csv_data = 1;
+}
+
+message ImportResponse {
+  int32 imported = 1;
+  int32 skipped = 2;
+  repeated string errors = 3;
+}

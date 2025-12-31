@@ -1,0 +1,106 @@
+version: "2"
+
+run:
+  timeout: 5m
+  go: "1.25"
+
+formatters:
+  enable:
+    - gci
+    - gofumpt
+    - golines
+
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/voidarchive/ntx)
+        - blank
+        - dot
+    gofumpt:
+      module-path: github.com/voidarchive/ntx
+    golines:
+      max-len: 120
+
+linters:
+  enable:
+    # Critical errors
+    - errcheck
+    - govet
+    - staticcheck
+    - gosec
+    - unused
+    - ineffassign
+
+    # Code quality
+    - revive
+    - gocyclo
+    - dupl
+    - unconvert
+    - unparam
+    - errorlint
+    - copyloopvar
+
+    # Project-specific
+    - sqlclosecheck
+
+    # Security & correctness
+    - bodyclose
+    - nilnil
+    - noctx
+
+    # Formatting
+    - whitespace
+
+  settings:
+    errcheck:
+      exclude-functions:
+        - io.Close
+        - (*os.File).Close
+        - (*database/sql.DB).Close
+        - (*database/sql.Rows).Close
+        - (io.Closer).Close
+
+    gocyclo:
+      min-complexity: 15
+
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+        - shadow
+
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: var-naming
+        - name: error-return
+        - name: error-naming
+        - name: context-as-argument
+        - name: error-strings
+        - name: indent-error-flow
+        - name: errorf
+
+    staticcheck:
+      checks:
+        - all
+        - -ST1016  # Receiver naming (too pedantic)
+        - -ST1020  # Comment on exported function
+        - -ST1021  # Comment on exported type
+        - -ST1022  # Comment on exported var
+
+  exclusions:
+    rules:
+      - path: '_test\.go'
+        linters:
+          - dupl
+          - gosec
+      - path: 'cmd/debug/'
+        linters:
+          - errcheck
+          - gosec
+      - linters:
+          - gosec
+        text: "G304"  # File path from variable - intentional for user input

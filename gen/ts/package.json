@@ -1,0 +1,27 @@
+{
+  "name": "@ntx/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./ntx/v1/common_pb": {
+      "types": "./ntx/v1/common_pb.d.ts",
+      "import": "./ntx/v1/common_pb.js"
+    },
+    "./ntx/v1/portfolio_pb": {
+      "types": "./ntx/v1/portfolio_pb.d.ts",
+      "import": "./ntx/v1/portfolio_pb.js"
+    },
+    "./ntx/v1/market_pb": {
+      "types": "./ntx/v1/market_pb.d.ts",
+      "import": "./ntx/v1/market_pb.js"
+    },
+    "./ntx/v1/analyzer_pb": {
+      "types": "./ntx/v1/analyzer_pb.d.ts",
+      "import": "./ntx/v1/analyzer_pb.js"
+    }
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.0.0"
+  }
+}

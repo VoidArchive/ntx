@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+// Stock represents a NEPSE listed security.
+message Stock {
+  string symbol = 1;
+  string name = 2;
+  Sector sector = 3;
+}
+
+enum Sector {
+  SECTOR_UNSPECIFIED = 0;
+  SECTOR_COMMERCIAL_BANK = 1;
+  SECTOR_DEVELOPMENT_BANK = 2;
+  SECTOR_FINANCE = 3;
+  SECTOR_MICROFINANCE = 4;
+  SECTOR_LIFE_INSURANCE = 5;
+  SECTOR_NON_LIFE_INSURANCE = 6;
+  SECTOR_HYDROPOWER = 7;
+  SECTOR_MANUFACTURING = 8;
+  SECTOR_HOTEL = 9;
+  SECTOR_TRADING = 10;
+  SECTOR_INVESTMENT = 11;
+  SECTOR_MUTUAL_FUND = 12;
+  SECTOR_OTHERS = 99;
+}
+
+// Price represents current or historical price data.
+message Price {
+  string symbol = 1;
+  double ltp = 2;               // last traded price
+  double change = 3;            // price change
+  double percent_change = 4;
+  double open = 5;
+  double high = 6;
+  double low = 7;
+  double previous_close = 8;
+  int64 volume = 9;
+  int64 turnover = 10;
+  google.protobuf.Timestamp timestamp = 11;
+}
+
+// Money represents a monetary value in NPR.
+message Money {
+  int64 paisa = 1;  // store as paisa to avoid float precision issues
+}

@@ -1,2 +1,6 @@
+packages:
+  - web
+  - gen/ts
+
 onlyBuiltDependencies:
   - esbuild

@@ -1,0 +1,21 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/ntx ./cmd/ntx"
+bin = "./tmp/ntx"
+include_ext = ["go", "toml"]
+exclude_dir = ["tmp", "bin", "web", "gen", "proto", "node_modules"]
+delay = 1000
+
+[log]
+time = false
+
+[color]
+main = "cyan"
+watcher = "magenta"
+build = "yellow"
+runner = "green"
+
+[misc]
+clean_on_exit = true
