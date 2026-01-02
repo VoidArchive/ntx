@@ -1,5 +1,15 @@
 # NTX - Portfolio Management & Stock Analyzer
 
+## Development Methodology
+
+This project uses **Shape Up** for feature development. See `.claude/skills/shape-up.md` for the full workflow.
+
+**Quick version:**
+1. Write a pitch in `docs/pitches/` before building anything significant
+2. Bet on pitches at cycle start (tracked in `docs/cycles/TRACKER.md`)
+3. Build with autonomy, cut scope to ship on time
+4. Cooldown week after shipping for bugs and exploration
+
 ## Project Structure
 
 ```

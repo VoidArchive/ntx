@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/alecthomas/kong"
 
 	"github.com/voidarchive/ntx/cmd/ntx/cli"
+	"github.com/voidarchive/ntx/cmd/ntx/tui"
 	"github.com/voidarchive/ntx/internal/database"
 	"github.com/voidarchive/ntx/internal/portfolio"
 )
@@ -35,6 +37,25 @@ var cmd struct {
 }
 
 func main() {
+	// Check if no args - launch TUI directly
+	if len(os.Args) == 1 {
+		db, err := database.OpenDB()
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+
+		if err := database.AutoMigrate(db); err != nil {
+			log.Fatal(err)
+		}
+
+		service := portfolio.NewService(db)
+		if err := tui.Run(service); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	ctx := kong.Parse(&cmd)
 
 	db, err := database.OpenDB()
@@ -81,6 +102,9 @@ func main() {
 		cli.Sync(service)
 
 	default:
-		ctx.FatalIfErrorf(fmt.Errorf("unknown command: %s", ctx.Command()))
+		// No command given - launch TUI
+		if err := tui.Run(service); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
