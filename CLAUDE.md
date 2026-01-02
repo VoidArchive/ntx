@@ -1,30 +1,15 @@
-# NTX - Portfolio Management & Stock Analyzer
-
-## Development Methodology
-
-This project uses **Shape Up** for feature development. See `.claude/skills/shape-up.md` for the full workflow.
-
-**Quick version:**
-1. Write a pitch in `docs/pitches/` before building anything significant
-2. Bet on pitches at cycle start (tracked in `docs/cycles/TRACKER.md`)
-3. Build with autonomy, cut scope to ship on time
-4. Cooldown week after shipping for bugs and exploration
+# NTX - NEPSE Stock Aggregator
 
 ## Project Structure
 
 ```
 cmd/
-  ntx/              # Main app
+  ntx/              # CLI application
     main.go         # Entry point
-    cli/            # CLI commands (package cli)
-    tui/            # TUI views (package tui)
   ntxd/             # ConnectRPC server
-  debug/            # Debug/test tools
 internal/           # Shared business logic
-  meroshare/        # Transaction parser
-  portfolio/        # Holdings, P&L
   nepse/            # Market data (go-nepse wrapper)
-  analyzer/         # Stock analysis
+  database/         # SQLite + migrations + SQLC
 gen/
   go/               # Generated Go (protobuf + connect)
   ts/               # Generated TypeScript (protobuf)
@@ -34,37 +19,20 @@ web/                # SvelteKit frontend
 
 ### Package Placement
 
-- `cmd/ntx/cli/` and `cmd/ntx/tui/` - code specific to this binary
+- `cmd/ntx/` - CLI-specific code
+- `cmd/ntxd/` - Server-specific code
 - `internal/` - shared across binaries, not importable externally
-
-### CLI + TUI in Same Binary
-
-```bash
-ntx              # no args → TUI
-ntx holdings     # subcommand → CLI output
-ntx price NABIL  # CLI for scripting/piping
-```
 
 ## Conventions
 
 ### Comments
 Write **why**, not what. Skip obvious comments.
 
-```go
-// Bad
-// parseQuantity parses the quantity string
-func parseQuantity(s string) float64
-
-// Good
-// Meroshare uses "-" for zero quantities
-func parseQuantity(s string) float64
-```
-
 ### Go Naming
 No `Get` prefix on struct getters:
 ```go
-func (u *User) Name() string    // good
-func (u *User) GetName() string // bad
+func (s *Stock) Symbol() string    // good
+func (s *Stock) GetSymbol() string // bad
 ```
 
 ### Proto/RPC Naming
@@ -72,29 +40,10 @@ Keep names short. Follow Google API conventions:
 
 | Pattern | Use Case | Example |
 |---------|----------|---------|
-| `Get*` | Single resource | `GetStock`, `GetHolding` |
-| `List*` | Collection | `ListStocks`, `ListHoldings` |
-| Verb | Action | `Import`, `Analyze`, `Compare` |
-| Noun | Simple getter | `Summary`, `Status`, `Sector` |
-
-Avoid verbose Java-style names:
-```proto
-// Bad
-rpc GetPortfolioSummaryDetails(...)
-rpc FetchAllTransactionHistory(...)
-
-// Good
-rpc Summary(...)
-rpc ListTransactions(...)
-```
-
-### Request/Response Messages
-Match the RPC name:
-```proto
-rpc ListHoldings(ListHoldingsRequest) returns (ListHoldingsResponse);
-rpc Summary(SummaryRequest) returns (SummaryResponse);
-rpc Import(ImportRequest) returns (ImportResponse);
-```
+| `Get*` | Single resource | `GetStock`, `GetPrice` |
+| `List*` | Collection | `ListStocks`, `ListPrices` |
+| Verb | Action | `Analyze`, `Compare` |
+| Noun | Simple getter | `Status`, `Sector` |
 
 ## Commands
 
@@ -119,11 +68,9 @@ cd web && pnpm check
 - SQLite (data storage)
 - go-nepse (market data)
 
-**CLI/TUI**
+**CLI**
 - kong (CLI parsing)
-- bubbletea (TUI framework)
-- lipgloss (styling - shared across CLI/TUI)
-- bubbles (TUI components)
+- lipgloss (styling)
 
 **Web**
 - SvelteKit + Tailwind + shadcn
@@ -132,30 +79,10 @@ cd web && pnpm check
 
 ```
 ~/.local/share/ntx/
-    ntx.db              # SQLite - transactions, holdings
+    ntx.db              # SQLite - stocks, market data cache
 
 ~/.config/ntx/
     config.toml         # User settings
 ```
 
 Use `adrg/xdg` for cross-platform paths.
-
-## Security
-
-### File Path Handling
-
-Server never opens file paths from client input (path traversal risk).
-
-```
-CLI:  reads file locally → sends bytes
-Web:  uploads file       → sends bytes
-Server: receives bytes only
-```
-
-```proto
-message ImportRequest {
-  bytes csv_data = 1;  // No file_path field
-}
-```
-
-G304 exclusion in golangci is for local CLI tools only, not server code.

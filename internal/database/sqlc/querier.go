@@ -9,27 +9,9 @@ import (
 )
 
 type Querier interface {
-	CountTransactions(ctx context.Context) (int64, error)
-	CountTransactionsFiltered(ctx context.Context, arg CountTransactionsFilteredParams) (int64, error)
-	CreateTransaction(ctx context.Context, arg CreateTransactionParams) error
-	DeleteAllTransactions(ctx context.Context) error
-	DeleteHolding(ctx context.Context, symbol string) error
-	GetHolding(ctx context.Context, symbol string) (Holding, error)
 	GetStock(ctx context.Context, symbol string) (Stock, error)
-	GetTransaction(ctx context.Context, id string) (Transaction, error)
-	ListHoldings(ctx context.Context) ([]Holding, error)
 	ListStocks(ctx context.Context) ([]Stock, error)
 	ListStocksBySector(ctx context.Context, sector int64) ([]Stock, error)
-	ListTransactions(ctx context.Context, arg ListTransactionsParams) ([]Transaction, error)
-	ListTransactionsBySymbol(ctx context.Context, symbol string) ([]Transaction, error)
-	ListTransactionsBySymbolChronological(ctx context.Context, symbol string) ([]Transaction, error)
-	ListTransactionsFiltered(ctx context.Context, arg ListTransactionsFilteredParams) ([]Transaction, error)
-	ListTransactionsWithoutPrices(ctx context.Context) ([]Transaction, error)
-	TransactionExists(ctx context.Context, arg TransactionExistsParams) (int64, error)
-	UpdateHoldingCosts(ctx context.Context, arg UpdateHoldingCostsParams) error
-	UpdateHoldingPrices(ctx context.Context, arg UpdateHoldingPricesParams) error
-	UpdateTransactionPrices(ctx context.Context, arg UpdateTransactionPricesParams) (int64, error)
-	UpsertHolding(ctx context.Context, arg UpsertHoldingParams) error
 	UpsertStock(ctx context.Context, arg UpsertStockParams) error
 }
 

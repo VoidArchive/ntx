@@ -2,124 +2,34 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/alecthomas/kong"
-
-	"github.com/voidarchive/ntx/cmd/ntx/cli"
-	"github.com/voidarchive/ntx/cmd/ntx/tui"
-	"github.com/voidarchive/ntx/internal/database"
-	"github.com/voidarchive/ntx/internal/portfolio"
 )
 
 var cmd struct {
-	Import struct {
-		File string `arg:"" help:"Path to Meroshare CSV file" type:"path"`
-	} `cmd:"" help:"Import transactions from Meroshare CSV file"`
-
-	ImportWacc struct {
-		File string `arg:"" help:"Path to Meroshare WACC Report CSV file" type:"path"`
-	} `cmd:"" name:"import-wacc" help:"Import cost data from Meroshare WACC Report"`
-
-	ImportTms struct {
-		File string `arg:"" help:"Path to TMS Trade Book CSV file" type:"path"`
-	} `cmd:"" name:"import-tms" help:"Import prices from TMS Trade Book"`
-
-	Holdings struct{} `cmd:"" help:"List all holdings"`
-
-	Summary struct{} `cmd:"" help:"Show portfolio summary"`
-
-	Pnl struct{} `cmd:"" help:"Show profit & loss breakdown"`
-
-	Transactions struct {
-		Symbol string `short:"s" help:"Filter by symbol"`
-		Type   string `short:"t" help:"Filter by type" enum:",buy,sell,ipo,bonus,rights,merger_in,merger_out,demat,rearrangement" default:""`
-		Limit  int    `short:"l" default:"10" help:"Limit results"`
-		Offset int    `short:"o" default:"0" help:"Offset for pagination"`
-	} `cmd:"" help:"List transactions"`
-
-	Sync struct{} `cmd:"" help:"Fetch latest prices and update holdings"`
+	Version struct{} `cmd:"" help:"Show version information"`
 }
 
 func main() {
-	// Check if no args - launch TUI directly
-	if len(os.Args) == 1 {
-		db, err := database.OpenDB()
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer db.Close()
-
-		if err := database.AutoMigrate(db); err != nil {
-			log.Fatal(err)
-		}
-
-		service := portfolio.NewService(db)
-		if err := tui.Run(service); err != nil {
-			log.Fatal(err)
-		}
-		return
-	}
-
-	ctx := kong.Parse(&cmd)
-
-	db, err := database.OpenDB()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	if err := database.AutoMigrate(db); err != nil {
-		log.Fatal(err)
-	}
-
-	service := portfolio.NewService(db)
+	ctx := kong.Parse(&cmd,
+		kong.Name("ntx"),
+		kong.Description("NEPSE Stock Aggregator - Market data, analysis, and insights"),
+		kong.UsageOnError(),
+	)
 
 	switch ctx.Command() {
-	case "import <file>":
-		if cmd.Import.File == "" {
-			ctx.FatalIfErrorf(fmt.Errorf("file path required"))
-		}
-		cli.Import(service, cmd.Import.File)
-
-	case "import-wacc <file>":
-		if cmd.ImportWacc.File == "" {
-			ctx.FatalIfErrorf(fmt.Errorf("file path required"))
-		}
-		cli.ImportWacc(service, cmd.ImportWacc.File)
-
-	case "import-tms <file>":
-		if cmd.ImportTms.File == "" {
-			ctx.FatalIfErrorf(fmt.Errorf("file path required"))
-		}
-		cli.ImportTms(service, cmd.ImportTms.File)
-
-	case "holdings":
-		cli.Holdings(service)
-
-	case "summary":
-		cli.Summary(service)
-
-	case "pnl":
-		cli.Pnl(service)
-
-	case "transactions":
-		cli.Transactions(
-			service,
-			cmd.Transactions.Symbol,
-			cmd.Transactions.Type,
-			cmd.Transactions.Limit,
-			cmd.Transactions.Offset,
-		)
-
-	case "sync":
-		cli.Sync(service)
-
+	case "version":
+		fmt.Println("ntx v0.1.0")
 	default:
-		// No command given - launch TUI
-		if err := tui.Run(service); err != nil {
-			log.Fatal(err)
-		}
+		fmt.Println("ntx - NEPSE Stock Aggregator")
+		fmt.Println()
+		fmt.Println("Commands coming soon:")
+		fmt.Println("  ntx market      # Market overview")
+		fmt.Println("  ntx price NABIL # Get stock price")
+		fmt.Println("  ntx analyze     # Stock analysis")
+		fmt.Println()
+		fmt.Println("Run 'ntx --help' for more information.")
+		os.Exit(0)
 	}
 }

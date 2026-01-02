@@ -17,9 +17,9 @@ func TestAutoMigrate(t *testing.T) {
 	require.NoError(t, err)
 
 	var tableName string
-	err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='transactions'").Scan(&tableName)
+	err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'").Scan(&tableName)
 	require.NoError(t, err)
-	require.Equal(t, "transactions", tableName)
+	require.Equal(t, "stocks", tableName)
 }
 
 func TestQueryGeneration(t *testing.T) {

@@ -4,38 +4,9 @@
 
 package sqlc
 
-import (
-	"database/sql"
-)
-
-type Holding struct {
-	Symbol               string          `json:"symbol"`
-	Quantity             float64         `json:"quantity"`
-	AverageCostPaisa     int64           `json:"average_cost_paisa"`
-	TotalCostPaisa       int64           `json:"total_cost_paisa"`
-	CurrentPricePaisa    sql.NullInt64   `json:"current_price_paisa"`
-	CurrentValuePaisa    sql.NullInt64   `json:"current_value_paisa"`
-	UnrealizedPnlPaisa   sql.NullInt64   `json:"unrealized_pnl_paisa"`
-	UnrealizedPnlPercent sql.NullFloat64 `json:"unrealized_pnl_percent"`
-	LastUpdated          string          `json:"last_updated"`
-	RealizedPnlPaisa     int64           `json:"realized_pnl_paisa"`
-}
-
 type Stock struct {
 	Symbol     string `json:"symbol"`
 	Name       string `json:"name"`
 	Sector     int64  `json:"sector"`
 	LastSynced string `json:"last_synced"`
-}
-
-type Transaction struct {
-	ID          string         `json:"id"`
-	Symbol      string         `json:"symbol"`
-	Type        int64          `json:"type"`
-	Quantity    float64        `json:"quantity"`
-	PricePaisa  int64          `json:"price_paisa"`
-	TotalPaisa  int64          `json:"total_paisa"`
-	Date        string         `json:"date"`
-	Description sql.NullString `json:"description"`
-	CreatedAt   string         `json:"created_at"`
 }
