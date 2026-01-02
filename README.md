@@ -2,11 +2,7 @@
 
 > NEPSE Stock Aggregator - Market data, analysis, and insights
 
-**NTX** is a fast, offline-first stock aggregator and analyzer built specifically for Nepal Stock Exchange (NEPSE). Get real-time market data, analyze stocks, compare sectors, and make better investment decisions.
-
-**Your Data, Your Machine** - No accounts, no cloud, no subscriptions. Everything runs locally.
-
----
+Fast, offline-first stock aggregator for Nepal Stock Exchange (NEPSE). 
 
 ## Features (In Development)
 
@@ -27,8 +23,6 @@
 - **Web** - SvelteKit dashboard
 - **API** - ConnectRPC for integrations
 
----
-
 ## Installation
 
 ### Prerequisites
@@ -40,8 +34,6 @@ git clone https://github.com/voidarchive/ntx.git
 cd ntx
 go build -o ntx ./cmd/ntx
 ```
-
----
 
 ## Usage
 
@@ -59,25 +51,6 @@ ntx market
 ntx analyze NABIL
 ```
 
----
-
-## Project Structure
-
-```
-ntx/
-├── cmd/
-│   ├── ntx/              # CLI application
-│   └── ntxd/             # ConnectRPC server
-├── internal/
-│   ├── nepse/            # Market data client
-│   └── database/         # SQLite + SQLC
-├── proto/                # Protocol Buffer definitions
-├── gen/                  # Generated code (Go + TypeScript)
-└── web/                  # SvelteKit frontend
-```
-
----
-
 ## Development
 
 ### Prerequisites
@@ -94,17 +67,12 @@ go build ./...
 # Test
 go test ./...
 
-# Generate protos
-cd proto && buf generate
-
-# Generate SQLC
-sqlc generate
-
 # Run web dev server
-cd web && pnpm dev
-```
+make web && pnpm dev
 
----
+# Run server
+make dev
+```
 
 ## Tech Stack
 
@@ -117,12 +85,6 @@ cd web && pnpm dev
 | **Market Data** | go-nepse |
 | **Web** | SvelteKit + Tailwind + shadcn |
 
----
-
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-**Made for Nepali investors**
+MIT

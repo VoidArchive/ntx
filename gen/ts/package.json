@@ -8,10 +8,6 @@
       "types": "./ntx/v1/common_pb.d.ts",
       "import": "./ntx/v1/common_pb.js"
     },
-    "./ntx/v1/portfolio_pb": {
-      "types": "./ntx/v1/portfolio_pb.d.ts",
-      "import": "./ntx/v1/portfolio_pb.js"
-    },
     "./ntx/v1/market_pb": {
       "types": "./ntx/v1/market_pb.d.ts",
       "import": "./ntx/v1/market_pb.js"

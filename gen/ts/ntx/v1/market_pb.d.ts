@@ -2,10 +2,10 @@
 // @generated from file ntx/v1/market.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
 import type { Message } from "@bufbuild/protobuf";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import type { Price, Sector, Stock } from "./common_pb";
+import type { Index, SectorSummary } from "./common_pb";
 
 /**
  * Describes the file ntx/v1/market.proto.
@@ -13,46 +13,6 @@ import type { Price, Sector, Stock } from "./common_pb";
 export declare const file_ntx_v1_market: GenFile;
 
 /**
- * Index represents a market index.
- *
- * @generated from message ntx.v1.Index
- */
-export declare type Index = Message<"ntx.v1.Index"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: double value = 2;
-   */
-  value: number;
-
-  /**
-   * @generated from field: double change = 3;
-   */
-  change: number;
-
-  /**
-   * @generated from field: double percent_change = 4;
-   */
-  percentChange: number;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp timestamp = 5;
-   */
-  timestamp?: Timestamp;
-};
-
-/**
- * Describes the message ntx.v1.Index.
- * Use `create(IndexSchema)` to create a new message.
- */
-export declare const IndexSchema: GenMessage<Index>;
-
-/**
- * MarketStatus represents current market state.
- *
  * @generated from message ntx.v1.MarketStatus
  */
 export declare type MarketStatus = Message<"ntx.v1.MarketStatus"> & {
@@ -62,11 +22,11 @@ export declare type MarketStatus = Message<"ntx.v1.MarketStatus"> & {
   isOpen: boolean;
 
   /**
-   * "open", "closed", "pre-open", etc.
+   * "open", "closed", "pre-open"
    *
-   * @generated from field: string status = 2;
+   * @generated from field: string state = 2;
    */
-  status: string;
+  state: string;
 
   /**
    * @generated from field: google.protobuf.Timestamp as_of = 3;
@@ -79,231 +39,6 @@ export declare type MarketStatus = Message<"ntx.v1.MarketStatus"> & {
  * Use `create(MarketStatusSchema)` to create a new message.
  */
 export declare const MarketStatusSchema: GenMessage<MarketStatus>;
-
-/**
- * OHLC represents a single candlestick.
- *
- * @generated from message ntx.v1.OHLC
- */
-export declare type OHLC = Message<"ntx.v1.OHLC"> & {
-  /**
-   * @generated from field: google.protobuf.Timestamp date = 1;
-   */
-  date?: Timestamp;
-
-  /**
-   * @generated from field: double open = 2;
-   */
-  open: number;
-
-  /**
-   * @generated from field: double high = 3;
-   */
-  high: number;
-
-  /**
-   * @generated from field: double low = 4;
-   */
-  low: number;
-
-  /**
-   * @generated from field: double close = 5;
-   */
-  close: number;
-
-  /**
-   * @generated from field: int64 volume = 6;
-   */
-  volume: bigint;
-};
-
-/**
- * Describes the message ntx.v1.OHLC.
- * Use `create(OHLCSchema)` to create a new message.
- */
-export declare const OHLCSchema: GenMessage<OHLC>;
-
-/**
- * @generated from message ntx.v1.GetStockRequest
- */
-export declare type GetStockRequest = Message<"ntx.v1.GetStockRequest"> & {
-  /**
-   * @generated from field: string symbol = 1;
-   */
-  symbol: string;
-};
-
-/**
- * Describes the message ntx.v1.GetStockRequest.
- * Use `create(GetStockRequestSchema)` to create a new message.
- */
-export declare const GetStockRequestSchema: GenMessage<GetStockRequest>;
-
-/**
- * @generated from message ntx.v1.GetStockResponse
- */
-export declare type GetStockResponse = Message<"ntx.v1.GetStockResponse"> & {
-  /**
-   * @generated from field: ntx.v1.Stock stock = 1;
-   */
-  stock?: Stock;
-};
-
-/**
- * Describes the message ntx.v1.GetStockResponse.
- * Use `create(GetStockResponseSchema)` to create a new message.
- */
-export declare const GetStockResponseSchema: GenMessage<GetStockResponse>;
-
-/**
- * @generated from message ntx.v1.ListStocksRequest
- */
-export declare type ListStocksRequest = Message<"ntx.v1.ListStocksRequest"> & {
-  /**
-   * @generated from field: ntx.v1.Sector sector = 1;
-   */
-  sector: Sector;
-
-  /**
-   * search by symbol or name
-   *
-   * @generated from field: string query = 2;
-   */
-  query: string;
-};
-
-/**
- * Describes the message ntx.v1.ListStocksRequest.
- * Use `create(ListStocksRequestSchema)` to create a new message.
- */
-export declare const ListStocksRequestSchema: GenMessage<ListStocksRequest>;
-
-/**
- * @generated from message ntx.v1.ListStocksResponse
- */
-export declare type ListStocksResponse = Message<"ntx.v1.ListStocksResponse"> & {
-  /**
-   * @generated from field: repeated ntx.v1.Stock stocks = 1;
-   */
-  stocks: Stock[];
-};
-
-/**
- * Describes the message ntx.v1.ListStocksResponse.
- * Use `create(ListStocksResponseSchema)` to create a new message.
- */
-export declare const ListStocksResponseSchema: GenMessage<ListStocksResponse>;
-
-/**
- * @generated from message ntx.v1.GetPriceRequest
- */
-export declare type GetPriceRequest = Message<"ntx.v1.GetPriceRequest"> & {
-  /**
-   * @generated from field: string symbol = 1;
-   */
-  symbol: string;
-};
-
-/**
- * Describes the message ntx.v1.GetPriceRequest.
- * Use `create(GetPriceRequestSchema)` to create a new message.
- */
-export declare const GetPriceRequestSchema: GenMessage<GetPriceRequest>;
-
-/**
- * @generated from message ntx.v1.GetPriceResponse
- */
-export declare type GetPriceResponse = Message<"ntx.v1.GetPriceResponse"> & {
-  /**
-   * @generated from field: ntx.v1.Price price = 1;
-   */
-  price?: Price;
-};
-
-/**
- * Describes the message ntx.v1.GetPriceResponse.
- * Use `create(GetPriceResponseSchema)` to create a new message.
- */
-export declare const GetPriceResponseSchema: GenMessage<GetPriceResponse>;
-
-/**
- * @generated from message ntx.v1.ListPricesRequest
- */
-export declare type ListPricesRequest = Message<"ntx.v1.ListPricesRequest"> & {
-  /**
-   * @generated from field: repeated string symbols = 1;
-   */
-  symbols: string[];
-};
-
-/**
- * Describes the message ntx.v1.ListPricesRequest.
- * Use `create(ListPricesRequestSchema)` to create a new message.
- */
-export declare const ListPricesRequestSchema: GenMessage<ListPricesRequest>;
-
-/**
- * @generated from message ntx.v1.ListPricesResponse
- */
-export declare type ListPricesResponse = Message<"ntx.v1.ListPricesResponse"> & {
-  /**
-   * @generated from field: repeated ntx.v1.Price prices = 1;
-   */
-  prices: Price[];
-};
-
-/**
- * Describes the message ntx.v1.ListPricesResponse.
- * Use `create(ListPricesResponseSchema)` to create a new message.
- */
-export declare const ListPricesResponseSchema: GenMessage<ListPricesResponse>;
-
-/**
- * @generated from message ntx.v1.ListHistoryRequest
- */
-export declare type ListHistoryRequest = Message<"ntx.v1.ListHistoryRequest"> & {
-  /**
-   * @generated from field: string symbol = 1;
-   */
-  symbol: string;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp from = 2;
-   */
-  from?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp to = 3;
-   */
-  to?: Timestamp;
-
-  /**
-   * @generated from field: ntx.v1.TimeFrame time_frame = 4;
-   */
-  timeFrame: TimeFrame;
-};
-
-/**
- * Describes the message ntx.v1.ListHistoryRequest.
- * Use `create(ListHistoryRequestSchema)` to create a new message.
- */
-export declare const ListHistoryRequestSchema: GenMessage<ListHistoryRequest>;
-
-/**
- * @generated from message ntx.v1.ListHistoryResponse
- */
-export declare type ListHistoryResponse = Message<"ntx.v1.ListHistoryResponse"> & {
-  /**
-   * @generated from field: repeated ntx.v1.OHLC candles = 1;
-   */
-  candles: OHLC[];
-};
-
-/**
- * Describes the message ntx.v1.ListHistoryResponse.
- * Use `create(ListHistoryResponseSchema)` to create a new message.
- */
-export declare const ListHistoryResponseSchema: GenMessage<ListHistoryResponse>;
 
 /**
  * @generated from message ntx.v1.StatusRequest
@@ -334,21 +69,21 @@ export declare type StatusResponse = Message<"ntx.v1.StatusResponse"> & {
 export declare const StatusResponseSchema: GenMessage<StatusResponse>;
 
 /**
- * @generated from message ntx.v1.ListIndicesRequest
+ * @generated from message ntx.v1.GetIndicesRequest
  */
-export declare type ListIndicesRequest = Message<"ntx.v1.ListIndicesRequest"> & {
+export declare type GetIndicesRequest = Message<"ntx.v1.GetIndicesRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.ListIndicesRequest.
- * Use `create(ListIndicesRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.GetIndicesRequest.
+ * Use `create(GetIndicesRequestSchema)` to create a new message.
  */
-export declare const ListIndicesRequestSchema: GenMessage<ListIndicesRequest>;
+export declare const GetIndicesRequestSchema: GenMessage<GetIndicesRequest>;
 
 /**
- * @generated from message ntx.v1.ListIndicesResponse
+ * @generated from message ntx.v1.GetIndicesResponse
  */
-export declare type ListIndicesResponse = Message<"ntx.v1.ListIndicesResponse"> & {
+export declare type GetIndicesResponse = Message<"ntx.v1.GetIndicesResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.Index indices = 1;
    */
@@ -356,149 +91,43 @@ export declare type ListIndicesResponse = Message<"ntx.v1.ListIndicesResponse"> 
 };
 
 /**
- * Describes the message ntx.v1.ListIndicesResponse.
- * Use `create(ListIndicesResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.GetIndicesResponse.
+ * Use `create(GetIndicesResponseSchema)` to create a new message.
  */
-export declare const ListIndicesResponseSchema: GenMessage<ListIndicesResponse>;
+export declare const GetIndicesResponseSchema: GenMessage<GetIndicesResponse>;
 
 /**
- * @generated from message ntx.v1.TopGainersRequest
+ * @generated from message ntx.v1.GetSectorsRequest
  */
-export declare type TopGainersRequest = Message<"ntx.v1.TopGainersRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
+export declare type GetSectorsRequest = Message<"ntx.v1.GetSectorsRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.TopGainersRequest.
- * Use `create(TopGainersRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.GetSectorsRequest.
+ * Use `create(GetSectorsRequestSchema)` to create a new message.
  */
-export declare const TopGainersRequestSchema: GenMessage<TopGainersRequest>;
+export declare const GetSectorsRequestSchema: GenMessage<GetSectorsRequest>;
 
 /**
- * @generated from message ntx.v1.TopGainersResponse
+ * @generated from message ntx.v1.GetSectorsResponse
  */
-export declare type TopGainersResponse = Message<"ntx.v1.TopGainersResponse"> & {
+export declare type GetSectorsResponse = Message<"ntx.v1.GetSectorsResponse"> & {
   /**
-   * @generated from field: repeated ntx.v1.Price stocks = 1;
+   * @generated from field: repeated ntx.v1.SectorSummary sectors = 1;
    */
-  stocks: Price[];
+  sectors: SectorSummary[];
 };
 
 /**
- * Describes the message ntx.v1.TopGainersResponse.
- * Use `create(TopGainersResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.GetSectorsResponse.
+ * Use `create(GetSectorsResponseSchema)` to create a new message.
  */
-export declare const TopGainersResponseSchema: GenMessage<TopGainersResponse>;
-
-/**
- * @generated from message ntx.v1.TopLosersRequest
- */
-export declare type TopLosersRequest = Message<"ntx.v1.TopLosersRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-};
-
-/**
- * Describes the message ntx.v1.TopLosersRequest.
- * Use `create(TopLosersRequestSchema)` to create a new message.
- */
-export declare const TopLosersRequestSchema: GenMessage<TopLosersRequest>;
-
-/**
- * @generated from message ntx.v1.TopLosersResponse
- */
-export declare type TopLosersResponse = Message<"ntx.v1.TopLosersResponse"> & {
-  /**
-   * @generated from field: repeated ntx.v1.Price stocks = 1;
-   */
-  stocks: Price[];
-};
-
-/**
- * Describes the message ntx.v1.TopLosersResponse.
- * Use `create(TopLosersResponseSchema)` to create a new message.
- */
-export declare const TopLosersResponseSchema: GenMessage<TopLosersResponse>;
-
-/**
- * @generated from enum ntx.v1.TimeFrame
- */
-export enum TimeFrame {
-  /**
-   * @generated from enum value: TIME_FRAME_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: TIME_FRAME_DAILY = 1;
-   */
-  DAILY = 1,
-
-  /**
-   * @generated from enum value: TIME_FRAME_WEEKLY = 2;
-   */
-  WEEKLY = 2,
-
-  /**
-   * @generated from enum value: TIME_FRAME_MONTHLY = 3;
-   */
-  MONTHLY = 3,
-}
-
-/**
- * Describes the enum ntx.v1.TimeFrame.
- */
-export declare const TimeFrameSchema: GenEnum<TimeFrame>;
+export declare const GetSectorsResponseSchema: GenMessage<GetSectorsResponse>;
 
 /**
  * @generated from service ntx.v1.MarketService
  */
 export declare const MarketService: GenService<{
-  /**
-   * @generated from rpc ntx.v1.MarketService.GetStock
-   */
-  getStock: {
-    methodKind: "unary";
-    input: typeof GetStockRequestSchema;
-    output: typeof GetStockResponseSchema;
-  },
-  /**
-   * @generated from rpc ntx.v1.MarketService.ListStocks
-   */
-  listStocks: {
-    methodKind: "unary";
-    input: typeof ListStocksRequestSchema;
-    output: typeof ListStocksResponseSchema;
-  },
-  /**
-   * @generated from rpc ntx.v1.MarketService.GetPrice
-   */
-  getPrice: {
-    methodKind: "unary";
-    input: typeof GetPriceRequestSchema;
-    output: typeof GetPriceResponseSchema;
-  },
-  /**
-   * @generated from rpc ntx.v1.MarketService.ListPrices
-   */
-  listPrices: {
-    methodKind: "unary";
-    input: typeof ListPricesRequestSchema;
-    output: typeof ListPricesResponseSchema;
-  },
-  /**
-   * @generated from rpc ntx.v1.MarketService.ListHistory
-   */
-  listHistory: {
-    methodKind: "unary";
-    input: typeof ListHistoryRequestSchema;
-    output: typeof ListHistoryResponseSchema;
-  },
   /**
    * @generated from rpc ntx.v1.MarketService.Status
    */
@@ -508,28 +137,20 @@ export declare const MarketService: GenService<{
     output: typeof StatusResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.MarketService.ListIndices
+   * @generated from rpc ntx.v1.MarketService.GetIndices
    */
-  listIndices: {
+  getIndices: {
     methodKind: "unary";
-    input: typeof ListIndicesRequestSchema;
-    output: typeof ListIndicesResponseSchema;
+    input: typeof GetIndicesRequestSchema;
+    output: typeof GetIndicesResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.MarketService.TopGainers
+   * @generated from rpc ntx.v1.MarketService.GetSectors
    */
-  topGainers: {
+  getSectors: {
     methodKind: "unary";
-    input: typeof TopGainersRequestSchema;
-    output: typeof TopGainersResponseSchema;
-  },
-  /**
-   * @generated from rpc ntx.v1.MarketService.TopLosers
-   */
-  topLosers: {
-    methodKind: "unary";
-    input: typeof TopLosersRequestSchema;
-    output: typeof TopLosersResponseSchema;
+    input: typeof GetSectorsRequestSchema;
+    output: typeof GetSectorsResponseSchema;
   },
 }>;
 

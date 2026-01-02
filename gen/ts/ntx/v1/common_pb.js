@@ -9,13 +9,13 @@ import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
  * Describes the file ntx/v1/common.proto.
  */
 export const file_ntx_v1_common = /*@__PURE__*/
-  fileDesc("ChNudHgvdjEvY29tbW9uLnByb3RvEgZudHgudjEiRQoFU3RvY2sSDgoGc3ltYm9sGAEgASgJEgwKBG5hbWUYAiABKAkSHgoGc2VjdG9yGAMgASgOMg4ubnR4LnYxLlNlY3RvciLeAQoFUHJpY2USDgoGc3ltYm9sGAEgASgJEgsKA2x0cBgCIAEoARIOCgZjaGFuZ2UYAyABKAESFgoOcGVyY2VudF9jaGFuZ2UYBCABKAESDAoEb3BlbhgFIAEoARIMCgRoaWdoGAYgASgBEgsKA2xvdxgHIAEoARIWCg5wcmV2aW91c19jbG9zZRgIIAEoARIOCgZ2b2x1bWUYCSABKAMSEAoIdHVybm92ZXIYCiABKAMSLQoJdGltZXN0YW1wGAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIWCgVNb25leRINCgVwYWlzYRgBIAEoAyrZAgoGU2VjdG9yEhYKElNFQ1RPUl9VTlNQRUNJRklFRBAAEhoKFlNFQ1RPUl9DT01NRVJDSUFMX0JBTksQARIbChdTRUNUT1JfREVWRUxPUE1FTlRfQkFOSxACEhIKDlNFQ1RPUl9GSU5BTkNFEAMSFwoTU0VDVE9SX01JQ1JPRklOQU5DRRAEEhkKFVNFQ1RPUl9MSUZFX0lOU1VSQU5DRRAFEh0KGVNFQ1RPUl9OT05fTElGRV9JTlNVUkFOQ0UQBhIVChFTRUNUT1JfSFlEUk9QT1dFUhAHEhgKFFNFQ1RPUl9NQU5VRkFDVFVSSU5HEAgSEAoMU0VDVE9SX0hPVEVMEAkSEgoOU0VDVE9SX1RSQURJTkcQChIVChFTRUNUT1JfSU5WRVNUTUVOVBALEhYKElNFQ1RPUl9NVVRVQUxfRlVORBAMEhEKDVNFQ1RPUl9PVEhFUlMQY0IwWi5naXRodWIuY29tL3ZvaWRhcmNoaXZlL250eC9nZW4vZ28vbnR4L3YxO250eHYxYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("ChNudHgvdjEvY29tbW9uLnByb3RvEgZudHgudjEibgoHQ29tcGFueRIOCgZzeW1ib2wYASABKAkSDAoEbmFtZRgCIAEoCRIeCgZzZWN0b3IYAyABKA4yDi5udHgudjEuU2VjdG9yEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhAKCGxvZ29fdXJsGAUgASgJIokCCgVQcmljZRIOCgZzeW1ib2wYASABKAkSCwoDbHRwGAIgASgBEg4KBmNoYW5nZRgDIAEoARIWCg5wZXJjZW50X2NoYW5nZRgEIAEoARIMCgRvcGVuGAUgASgBEgwKBGhpZ2gYBiABKAESCwoDbG93GAcgASgBEhYKDnByZXZpb3VzX2Nsb3NlGAggASgBEg4KBnZvbHVtZRgJIAEoAxIQCgh0dXJub3ZlchgKIAEoAxIUCgx3ZWVrXzUyX2hpZ2gYCyABKAESEwoLd2Vla181Ml9sb3cYDCABKAESLQoJdGltZXN0YW1wGA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKsAQoMRnVuZGFtZW50YWxzEg4KBnN5bWJvbBgBIAEoCRIKCgJwZRgCIAEoARIKCgJwYhgDIAEoARILCgNlcHMYBCABKAESEgoKYm9va192YWx1ZRgFIAEoARISCgptYXJrZXRfY2FwGAYgASgBEhYKDmRpdmlkZW5kX3lpZWxkGAcgASgBEgsKA3JvZRgIIAEoARIaChJzaGFyZXNfb3V0c3RhbmRpbmcYCSABKAMieQoFT0hMQ1YSKAoEZGF0ZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDAoEb3BlbhgCIAEoARIMCgRoaWdoGAMgASgBEgsKA2xvdxgEIAEoARINCgVjbG9zZRgFIAEoARIOCgZ2b2x1bWUYBiABKAMi6wEKBlJlcG9ydBIOCgZzeW1ib2wYASABKAkSIAoEdHlwZRgCIAEoDjISLm50eC52MS5SZXBvcnRUeXBlEhMKC2Zpc2NhbF95ZWFyGAMgASgFEg8KB3F1YXJ0ZXIYBCABKAUSDwoHcmV2ZW51ZRgFIAEoARISCgpuZXRfaW5jb21lGAYgASgBEgsKA2VwcxgHIAEoARISCgpib29rX3ZhbHVlGAggASgBEhEKCW5wbF9yYXRpbxgJIAEoARIwCgxwdWJsaXNoZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wInsKBUluZGV4EgwKBG5hbWUYASABKAkSDQoFdmFsdWUYAiABKAESDgoGY2hhbmdlGAMgASgBEhYKDnBlcmNlbnRfY2hhbmdlGAQgASgBEi0KCXRpbWVzdGFtcBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAijAEKDVNlY3RvclN1bW1hcnkSHgoGc2VjdG9yGAEgASgOMg4ubnR4LnYxLlNlY3RvchIMCgRuYW1lGAIgASgJEhMKC3N0b2NrX2NvdW50GAMgASgFEhAKCHR1cm5vdmVyGAQgASgDEg4KBmNoYW5nZRgFIAEoARIWCg5wZXJjZW50X2NoYW5nZRgGIAEoASIWCgVNb25leRINCgVwYWlzYRgBIAEoAyrZAgoGU2VjdG9yEhYKElNFQ1RPUl9VTlNQRUNJRklFRBAAEhoKFlNFQ1RPUl9DT01NRVJDSUFMX0JBTksQARIbChdTRUNUT1JfREVWRUxPUE1FTlRfQkFOSxACEhIKDlNFQ1RPUl9GSU5BTkNFEAMSFwoTU0VDVE9SX01JQ1JPRklOQU5DRRAEEhkKFVNFQ1RPUl9MSUZFX0lOU1VSQU5DRRAFEh0KGVNFQ1RPUl9OT05fTElGRV9JTlNVUkFOQ0UQBhIVChFTRUNUT1JfSFlEUk9QT1dFUhAHEhgKFFNFQ1RPUl9NQU5VRkFDVFVSSU5HEAgSEAoMU0VDVE9SX0hPVEVMEAkSEgoOU0VDVE9SX1RSQURJTkcQChIVChFTRUNUT1JfSU5WRVNUTUVOVBALEhYKElNFQ1RPUl9NVVRVQUxfRlVORBAMEhEKDVNFQ1RPUl9PVEhFUlMQDSpcCgpSZXBvcnRUeXBlEhsKF1JFUE9SVF9UWVBFX1VOU1BFQ0lGSUVEEAASGQoVUkVQT1JUX1RZUEVfUVVBUlRFUkxZEAESFgoSUkVQT1JUX1RZUEVfQU5OVUFMEAJCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
- * Describes the message ntx.v1.Stock.
- * Use `create(StockSchema)` to create a new message.
+ * Describes the message ntx.v1.Company.
+ * Use `create(CompanySchema)` to create a new message.
  */
-export const StockSchema = /*@__PURE__*/
+export const CompanySchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_common, 0);
 
 /**
@@ -26,11 +26,46 @@ export const PriceSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_common, 1);
 
 /**
+ * Describes the message ntx.v1.Fundamentals.
+ * Use `create(FundamentalsSchema)` to create a new message.
+ */
+export const FundamentalsSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 2);
+
+/**
+ * Describes the message ntx.v1.OHLCV.
+ * Use `create(OHLCVSchema)` to create a new message.
+ */
+export const OHLCVSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 3);
+
+/**
+ * Describes the message ntx.v1.Report.
+ * Use `create(ReportSchema)` to create a new message.
+ */
+export const ReportSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 4);
+
+/**
+ * Describes the message ntx.v1.Index.
+ * Use `create(IndexSchema)` to create a new message.
+ */
+export const IndexSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 5);
+
+/**
+ * Describes the message ntx.v1.SectorSummary.
+ * Use `create(SectorSummarySchema)` to create a new message.
+ */
+export const SectorSummarySchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 6);
+
+/**
  * Describes the message ntx.v1.Money.
  * Use `create(MoneySchema)` to create a new message.
  */
 export const MoneySchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_common, 2);
+  messageDesc(file_ntx_v1_common, 7);
 
 /**
  * Describes the enum ntx.v1.Sector.
@@ -39,8 +74,22 @@ export const SectorSchema = /*@__PURE__*/
   enumDesc(file_ntx_v1_common, 0);
 
 /**
+ * Sector represents NEPSE sector classification.
+ *
  * @generated from enum ntx.v1.Sector
  */
 export const Sector = /*@__PURE__*/
   tsEnum(SectorSchema);
+
+/**
+ * Describes the enum ntx.v1.ReportType.
+ */
+export const ReportTypeSchema = /*@__PURE__*/
+  enumDesc(file_ntx_v1_common, 1);
+
+/**
+ * @generated from enum ntx.v1.ReportType
+ */
+export const ReportType = /*@__PURE__*/
+  tsEnum(ReportTypeSchema);
 

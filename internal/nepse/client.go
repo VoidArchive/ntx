@@ -7,18 +7,15 @@ import (
 	"github.com/voidarchive/go-nepse"
 )
 
-// Client wraps the go-nepse client for fetching market data.
 type Client struct {
 	client *nepse.Client
 }
 
-// Price represents the last traded price for a symbol.
 type Price struct {
 	Symbol string
 	LTP    float64 // Last traded price in NPR
 }
 
-// NewClient creates a new NEPSE client.
 func NewClient() (*Client, error) {
 	opts := nepse.DefaultOptions()
 	// NEPSE server has TLS issues
@@ -32,12 +29,10 @@ func NewClient() (*Client, error) {
 	return &Client{client: client}, nil
 }
 
-// Close releases resources used by the client.
 func (c *Client) Close() error {
 	return c.client.Close()
 }
 
-// GetPrice fetches the current price for a single symbol.
 func (c *Client) GetPrice(ctx context.Context, symbol string) (*Price, error) {
 	details, err := c.client.CompanyBySymbol(ctx, symbol)
 	if err != nil {
@@ -50,8 +45,7 @@ func (c *Client) GetPrice(ctx context.Context, symbol string) (*Price, error) {
 	}, nil
 }
 
-// GetPrices fetches current prices for multiple symbols.
-// Returns a map of symbol -> price. Missing symbols are omitted.
+// Missing symbols are omitted from the result.
 func (c *Client) GetPrices(ctx context.Context, symbols []string) (map[string]*Price, error) {
 	prices := make(map[string]*Price, len(symbols))
 

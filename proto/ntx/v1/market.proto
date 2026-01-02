@@ -8,94 +8,15 @@ import "ntx/v1/common.proto";
 option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
 service MarketService {
-  rpc GetStock(GetStockRequest) returns (GetStockResponse);
-  rpc ListStocks(ListStocksRequest) returns (ListStocksResponse);
-  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
-  rpc ListPrices(ListPricesRequest) returns (ListPricesResponse);
-  rpc ListHistory(ListHistoryRequest) returns (ListHistoryResponse);
   rpc Status(StatusRequest) returns (StatusResponse);
-  rpc ListIndices(ListIndicesRequest) returns (ListIndicesResponse);
-  rpc TopGainers(TopGainersRequest) returns (TopGainersResponse);
-  rpc TopLosers(TopLosersRequest) returns (TopLosersResponse);
+  rpc GetIndices(GetIndicesRequest) returns (GetIndicesResponse);
+  rpc GetSectors(GetSectorsRequest) returns (GetSectorsResponse);
 }
 
-// Index represents a market index.
-message Index {
-  string name = 1;
-  double value = 2;
-  double change = 3;
-  double percent_change = 4;
-  google.protobuf.Timestamp timestamp = 5;
-}
-
-// MarketStatus represents current market state.
 message MarketStatus {
   bool is_open = 1;
-  string status = 2;  // "open", "closed", "pre-open", etc.
+  string state = 2; // "open", "closed", "pre-open"
   google.protobuf.Timestamp as_of = 3;
-}
-
-// OHLC represents a single candlestick.
-message OHLC {
-  google.protobuf.Timestamp date = 1;
-  double open = 2;
-  double high = 3;
-  double low = 4;
-  double close = 5;
-  int64 volume = 6;
-}
-
-// Request/Response messages
-
-message GetStockRequest {
-  string symbol = 1;
-}
-
-message GetStockResponse {
-  Stock stock = 1;
-}
-
-message ListStocksRequest {
-  Sector sector = 1;
-  string query = 2;  // search by symbol or name
-}
-
-message ListStocksResponse {
-  repeated Stock stocks = 1;
-}
-
-message GetPriceRequest {
-  string symbol = 1;
-}
-
-message GetPriceResponse {
-  Price price = 1;
-}
-
-message ListPricesRequest {
-  repeated string symbols = 1;
-}
-
-message ListPricesResponse {
-  repeated Price prices = 1;
-}
-
-message ListHistoryRequest {
-  string symbol = 1;
-  google.protobuf.Timestamp from = 2;
-  google.protobuf.Timestamp to = 3;
-  TimeFrame time_frame = 4;
-}
-
-enum TimeFrame {
-  TIME_FRAME_UNSPECIFIED = 0;
-  TIME_FRAME_DAILY = 1;
-  TIME_FRAME_WEEKLY = 2;
-  TIME_FRAME_MONTHLY = 3;
-}
-
-message ListHistoryResponse {
-  repeated OHLC candles = 1;
 }
 
 message StatusRequest {}
@@ -104,24 +25,14 @@ message StatusResponse {
   MarketStatus status = 1;
 }
 
-message ListIndicesRequest {}
+message GetIndicesRequest {}
 
-message ListIndicesResponse {
+message GetIndicesResponse {
   repeated Index indices = 1;
 }
 
-message TopGainersRequest {
-  int32 limit = 1;
-}
+message GetSectorsRequest {}
 
-message TopGainersResponse {
-  repeated Price stocks = 1;
-}
-
-message TopLosersRequest {
-  int32 limit = 1;
-}
-
-message TopLosersResponse {
-  repeated Price stocks = 1;
+message GetSectorsResponse {
+  repeated SectorSummary sectors = 1;
 }

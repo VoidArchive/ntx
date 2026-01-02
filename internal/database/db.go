@@ -34,7 +34,6 @@ func OpenDB() (*sql.DB, error) {
 	return db, nil
 }
 
-// OpenTestDB opens an in-memory SQLite database for testing.
 func OpenTestDB() (*sql.DB, error) {
 	db, err := sql.Open("sqlite", ":memory:")
 	if err != nil {

@@ -4,7 +4,7 @@ import { MarketService } from '@ntx/api/ntx/v1/market_pb';
 import { AnalyzerService } from '@ntx/api/ntx/v1/analyzer_pb';
 
 const transport = createConnectTransport({
-	baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
+  baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 });
 
 export const market = createClient(MarketService, transport);
