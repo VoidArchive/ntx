@@ -1,10 +1,11 @@
 -- name: UpsertHolding :exec
-INSERT INTO holdings (symbol, quantity, average_cost_paisa, total_cost_paisa, last_updated)
-VALUES (?, ?, ?, ?, datetime('now'))
+INSERT INTO holdings (symbol, quantity, average_cost_paisa, total_cost_paisa, realized_pnl_paisa, last_updated)
+VALUES (?, ?, ?, ?, ?, datetime('now'))
 ON CONFLICT(symbol) DO UPDATE SET
     quantity = excluded.quantity,
     average_cost_paisa = excluded.average_cost_paisa,
     total_cost_paisa = excluded.total_cost_paisa,
+    realized_pnl_paisa = excluded.realized_pnl_paisa,
     last_updated = excluded.last_updated;
 
 -- name: GetHolding :one

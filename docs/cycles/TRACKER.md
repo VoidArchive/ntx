@@ -1,7 +1,7 @@
 # Cycle Tracker: 2026 Q1
 
 **Cycle**: Jan 6 - Feb 16
-**Current Week**: 1
+**Current Week**: 2
 
 ---
 
@@ -22,8 +22,8 @@
 
 | Bet | Position | Status |
 |-----|----------|--------|
-| Realized P&L | ◐ Uphill | Figuring out |
-| TUI Dashboard | ○ Start | Not started |
+| Realized P&L | ◑ Downhill | Executing |
+| TUI Dashboard | ● Top | Completed |
 | Dividend Tracking | — | Descoped |
 
 **Legend**: ○ Start → ◐ Uphill → ● Top → ◑ Downhill → ◉ Done
@@ -65,14 +65,18 @@
 
 ## Week 2 (Jan 13-19)
 
-### Realized P&L with FIFO
-- **Position**:
+### Realized P&L with Average Cost
+- **Position**: Downhill - Executing
 - **Progress**:
-  - [ ] Implement FIFO matching in portfolio service
-  - [ ] Add database migration
-  - [ ] Unit tests for matching logic
-- **Blockers**:
-- **Scope cuts**:
+  - [x] Add database migration for realized_pnl_paisa
+  - [x] Update SQLC queries for realized P&L
+  - [x] Add Holding.realized_pnl to proto
+  - [x] Fix recalculateHoldings with average cost P&L logic
+  - [x] Update Summary to include total realized P&L
+  - [x] Add unit tests for P&L calculation
+  - [x] Add `ntx pnl` CLI command
+- **Blockers**: None
+- **Scope cuts**: FIFO → Average cost (matches Meroshare WACC)
 
 ### TUI Dashboard
 - **Position**:
@@ -94,12 +98,12 @@
 
 ## Week 3 (Jan 20-26)
 
-### Realized P&L with FIFO
+### Realized P&L with Average Cost
 - **Position**:
 - **Progress**:
-  - [ ] `ntx pnl` command
-  - [ ] Update summary with realized P&L
-  - [ ] Integration tests
+  - [ ] Integration tests with real Meroshare data
+  - [ ] Edge case handling (partial sells, splits)
+  - [ ] Polish CLI output formatting
 - **Blockers**:
 - **Scope cuts**:
 
@@ -124,12 +128,11 @@
 
 ## Week 4 (Jan 27 - Feb 2)
 
-### Realized P&L with FIFO
+### Realized P&L with Average Cost
 - **Position**:
 - **Progress**:
-  - [ ] Edge case handling
-  - [ ] Polish CLI output
   - [ ] Documentation
+  - [ ] Final polish
 - **Blockers**:
 - **Scope cuts**:
 

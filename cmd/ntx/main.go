@@ -22,9 +22,15 @@ var cmd struct {
 		File string `arg:"" help:"Path to Meroshare WACC Report CSV file" type:"path"`
 	} `cmd:"" name:"import-wacc" help:"Import cost data from Meroshare WACC Report"`
 
+	ImportTms struct {
+		File string `arg:"" help:"Path to TMS Trade Book CSV file" type:"path"`
+	} `cmd:"" name:"import-tms" help:"Import prices from TMS Trade Book"`
+
 	Holdings struct{} `cmd:"" help:"List all holdings"`
 
 	Summary struct{} `cmd:"" help:"Show portfolio summary"`
+
+	Pnl struct{} `cmd:"" help:"Show profit & loss breakdown"`
 
 	Transactions struct {
 		Symbol string `short:"s" help:"Filter by symbol"`
@@ -83,11 +89,20 @@ func main() {
 		}
 		cli.ImportWacc(service, cmd.ImportWacc.File)
 
+	case "import-tms <file>":
+		if cmd.ImportTms.File == "" {
+			ctx.FatalIfErrorf(fmt.Errorf("file path required"))
+		}
+		cli.ImportTms(service, cmd.ImportTms.File)
+
 	case "holdings":
 		cli.Holdings(service)
 
 	case "summary":
 		cli.Summary(service)
+
+	case "pnl":
+		cli.Pnl(service)
 
 	case "transactions":
 		cli.Transactions(

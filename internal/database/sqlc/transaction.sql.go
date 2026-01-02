@@ -189,6 +189,45 @@ func (q *Queries) ListTransactionsBySymbol(ctx context.Context, symbol string) (
 	return items, nil
 }
 
+const listTransactionsBySymbolChronological = `-- name: ListTransactionsBySymbolChronological :many
+SELECT id, symbol, type, quantity, price_paisa, total_paisa, date, description, created_at FROM transactions
+WHERE symbol = ?
+ORDER BY date ASC, created_at ASC
+`
+
+func (q *Queries) ListTransactionsBySymbolChronological(ctx context.Context, symbol string) ([]Transaction, error) {
+	rows, err := q.db.QueryContext(ctx, listTransactionsBySymbolChronological, symbol)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Transaction
+	for rows.Next() {
+		var i Transaction
+		if err := rows.Scan(
+			&i.ID,
+			&i.Symbol,
+			&i.Type,
+			&i.Quantity,
+			&i.PricePaisa,
+			&i.TotalPaisa,
+			&i.Date,
+			&i.Description,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTransactionsFiltered = `-- name: ListTransactionsFiltered :many
 SELECT id, symbol, type, quantity, price_paisa, total_paisa, date, description, created_at FROM transactions
 WHERE (? = '' OR symbol = ?)
@@ -246,6 +285,46 @@ func (q *Queries) ListTransactionsFiltered(ctx context.Context, arg ListTransact
 	return items, nil
 }
 
+const listTransactionsWithoutPrices = `-- name: ListTransactionsWithoutPrices :many
+SELECT id, symbol, type, quantity, price_paisa, total_paisa, date, description, created_at FROM transactions
+WHERE total_paisa = 0
+  AND type IN (1, 2)  -- BUY and SELL only
+ORDER BY date ASC
+`
+
+func (q *Queries) ListTransactionsWithoutPrices(ctx context.Context) ([]Transaction, error) {
+	rows, err := q.db.QueryContext(ctx, listTransactionsWithoutPrices)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Transaction
+	for rows.Next() {
+		var i Transaction
+		if err := rows.Scan(
+			&i.ID,
+			&i.Symbol,
+			&i.Type,
+			&i.Quantity,
+			&i.PricePaisa,
+			&i.TotalPaisa,
+			&i.Date,
+			&i.Description,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const transactionExists = `-- name: TransactionExists :one
 SELECT EXISTS(
     SELECT 1 FROM transactions
@@ -264,4 +343,36 @@ func (q *Queries) TransactionExists(ctx context.Context, arg TransactionExistsPa
 	var exists_flag int64
 	err := row.Scan(&exists_flag)
 	return exists_flag, err
+}
+
+const updateTransactionPrices = `-- name: UpdateTransactionPrices :execrows
+UPDATE transactions
+SET price_paisa = ?,
+    total_paisa = ?
+WHERE symbol = ?
+  AND type = ?
+  AND quantity = ?
+  AND total_paisa = 0
+`
+
+type UpdateTransactionPricesParams struct {
+	PricePaisa int64   `json:"price_paisa"`
+	TotalPaisa int64   `json:"total_paisa"`
+	Symbol     string  `json:"symbol"`
+	Type       int64   `json:"type"`
+	Quantity   float64 `json:"quantity"`
+}
+
+func (q *Queries) UpdateTransactionPrices(ctx context.Context, arg UpdateTransactionPricesParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateTransactionPrices,
+		arg.PricePaisa,
+		arg.TotalPaisa,
+		arg.Symbol,
+		arg.Type,
+		arg.Quantity,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

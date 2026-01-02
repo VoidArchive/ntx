@@ -20,7 +20,7 @@ func (q *Queries) DeleteHolding(ctx context.Context, symbol string) error {
 }
 
 const getHolding = `-- name: GetHolding :one
-SELECT symbol, quantity, average_cost_paisa, total_cost_paisa, current_price_paisa, current_value_paisa, unrealized_pnl_paisa, unrealized_pnl_percent, last_updated FROM holdings WHERE symbol = ? LIMIT 1
+SELECT symbol, quantity, average_cost_paisa, total_cost_paisa, current_price_paisa, current_value_paisa, unrealized_pnl_paisa, unrealized_pnl_percent, last_updated, realized_pnl_paisa FROM holdings WHERE symbol = ? LIMIT 1
 `
 
 func (q *Queries) GetHolding(ctx context.Context, symbol string) (Holding, error) {
@@ -36,12 +36,13 @@ func (q *Queries) GetHolding(ctx context.Context, symbol string) (Holding, error
 		&i.UnrealizedPnlPaisa,
 		&i.UnrealizedPnlPercent,
 		&i.LastUpdated,
+		&i.RealizedPnlPaisa,
 	)
 	return i, err
 }
 
 const listHoldings = `-- name: ListHoldings :many
-SELECT symbol, quantity, average_cost_paisa, total_cost_paisa, current_price_paisa, current_value_paisa, unrealized_pnl_paisa, unrealized_pnl_percent, last_updated FROM holdings ORDER BY symbol
+SELECT symbol, quantity, average_cost_paisa, total_cost_paisa, current_price_paisa, current_value_paisa, unrealized_pnl_paisa, unrealized_pnl_percent, last_updated, realized_pnl_paisa FROM holdings ORDER BY symbol
 `
 
 func (q *Queries) ListHoldings(ctx context.Context) ([]Holding, error) {
@@ -63,6 +64,7 @@ func (q *Queries) ListHoldings(ctx context.Context) ([]Holding, error) {
 			&i.UnrealizedPnlPaisa,
 			&i.UnrealizedPnlPercent,
 			&i.LastUpdated,
+			&i.RealizedPnlPaisa,
 		); err != nil {
 			return nil, err
 		}
@@ -126,12 +128,13 @@ func (q *Queries) UpdateHoldingPrices(ctx context.Context, arg UpdateHoldingPric
 }
 
 const upsertHolding = `-- name: UpsertHolding :exec
-INSERT INTO holdings (symbol, quantity, average_cost_paisa, total_cost_paisa, last_updated)
-VALUES (?, ?, ?, ?, datetime('now'))
+INSERT INTO holdings (symbol, quantity, average_cost_paisa, total_cost_paisa, realized_pnl_paisa, last_updated)
+VALUES (?, ?, ?, ?, ?, datetime('now'))
 ON CONFLICT(symbol) DO UPDATE SET
     quantity = excluded.quantity,
     average_cost_paisa = excluded.average_cost_paisa,
     total_cost_paisa = excluded.total_cost_paisa,
+    realized_pnl_paisa = excluded.realized_pnl_paisa,
     last_updated = excluded.last_updated
 `
 
@@ -140,6 +143,7 @@ type UpsertHoldingParams struct {
 	Quantity         float64 `json:"quantity"`
 	AverageCostPaisa int64   `json:"average_cost_paisa"`
 	TotalCostPaisa   int64   `json:"total_cost_paisa"`
+	RealizedPnlPaisa int64   `json:"realized_pnl_paisa"`
 }
 
 func (q *Queries) UpsertHolding(ctx context.Context, arg UpsertHoldingParams) error {
@@ -148,6 +152,7 @@ func (q *Queries) UpsertHolding(ctx context.Context, arg UpsertHoldingParams) er
 		arg.Quantity,
 		arg.AverageCostPaisa,
 		arg.TotalCostPaisa,
+		arg.RealizedPnlPaisa,
 	)
 	return err
 }

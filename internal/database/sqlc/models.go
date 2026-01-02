@@ -18,6 +18,7 @@ type Holding struct {
 	UnrealizedPnlPaisa   sql.NullInt64   `json:"unrealized_pnl_paisa"`
 	UnrealizedPnlPercent sql.NullFloat64 `json:"unrealized_pnl_percent"`
 	LastUpdated          string          `json:"last_updated"`
+	RealizedPnlPaisa     int64           `json:"realized_pnl_paisa"`
 }
 
 type Stock struct {

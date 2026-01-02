@@ -3,6 +3,7 @@ package meroshare
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -288,6 +289,82 @@ func TestParseTransactions(t *testing.T) {
 	})
 }
 
+func TestParseTMSTradeDate(t *testing.T) {
+	tests := []struct {
+		name    string
+		tradeID string
+		want    time.Time
+	}{
+		{
+			name:    "parses BS date from trade ID",
+			tradeID: "20810910SEQUENCE",
+			want:    time.Date(2081, 9, 10, 0, 0, 0, 0, time.UTC),
+		},
+		{
+			name:    "parses BS date 2081/04/01",
+			tradeID: "20810401SEQUENCE",
+			want:    time.Date(2081, 4, 1, 0, 0, 0, 0, time.UTC),
+		},
+		{
+			name:    "short trade ID returns zero time",
+			tradeID: "208109",
+			want:    time.Time{},
+		},
+		{
+			name:    "parses BS date 2080/12/15",
+			tradeID: "20801215SEQUENCE",
+			want:    time.Date(2080, 12, 15, 0, 0, 0, 0, time.UTC),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := parseTMSTradeDate(tt.tradeID)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestParseTMSTradeBook(t *testing.T) {
+	t.Run("parses TMS CSV with BS dates", func(t *testing.T) {
+		csvContent := `"CLIENT","CLIENT NAME","SYMBOL","EXCHANGE TRADE ID","TRADE DATE","TRADE TIME","BUY/SELL","TRADE QTY","PRICE(NPR)","Value(NPR)"
+"001234","John Doe","NABIL","20810401123456","2081-04-01","14:30:00","Buy","10","500.00","5000.00"
+"001234","John Doe","NABIL","20810910789123","2081-09-10","15:00:00","Sell","5","600.00","3000.00"
+`
+		reader := strings.NewReader(csvContent)
+
+		trades, err := ParseTMSTradeBook(reader)
+		require.NoError(t, err)
+		require.Len(t, trades, 2)
+
+		assert.Equal(t, "NABIL", trades[0].Symbol)
+		assert.Equal(t, "20810401123456", trades[0].TradeID)
+		assert.Equal(t, true, trades[0].IsBuy)
+		assert.Equal(t, 10.0, trades[0].Quantity)
+		assert.Equal(t, 500.0, trades[0].Price)
+		assert.Equal(t, 5000.0, trades[0].Value)
+		assert.Equal(t, time.Date(2081, 4, 1, 0, 0, 0, 0, time.UTC), trades[0].TradeDate)
+
+		assert.Equal(t, "NABIL", trades[1].Symbol)
+		assert.Equal(t, "20810910789123", trades[1].TradeID)
+		assert.Equal(t, false, trades[1].IsBuy)
+		assert.Equal(t, 5.0, trades[1].Quantity)
+		assert.Equal(t, 600.0, trades[1].Price)
+		assert.Equal(t, 3000.0, trades[1].Value)
+		assert.Equal(t, time.Date(2081, 9, 10, 0, 0, 0, 0, time.UTC), trades[1].TradeDate)
+	})
+
+	t.Run("handles empty CSV", func(t *testing.T) {
+		csvContent := `"CLIENT","CLIENT NAME","SYMBOL","EXCHANGE TRADE ID","TRADE DATE","TRADE TIME","BUY/SELL","TRADE QTY","PRICE(NPR)","Value(NPR)"
+`
+		reader := strings.NewReader(csvContent)
+
+		trades, err := ParseTMSTradeBook(reader)
+		require.NoError(t, err)
+		assert.Empty(t, trades)
+	})
+}
+
 func TestParseTransactions_RealData(t *testing.T) {
 	// Skip if real data file doesn't exist
 	realPath := "../../data/transaction.csv"
@@ -303,7 +380,7 @@ func TestParseTransactions_RealData(t *testing.T) {
 	for _, tx := range txs {
 		assert.NotEmpty(t, tx.Scrip, "scrip should not be empty")
 		assert.NotEmpty(t, tx.HistoryDescription.Type, "type should not be empty")
-		assert.NotEmpty(t, tx.HistoryDescription.RawDescription, "raw description should be preserved")
+		assert.NotEmpty(t, tx.HistoryDescription.RawDescription, "raw description should not be preserved")
 	}
 }
 

@@ -61,6 +61,13 @@ export declare type Holding = Message<"ntx.v1.Holding"> & {
    * @generated from field: double unrealized_pnl_percent = 8;
    */
   unrealizedPnlPercent: number;
+
+  /**
+   * cumulative realized P&L from sells
+   *
+   * @generated from field: ntx.v1.Money realized_pnl = 9;
+   */
+  realizedPnl?: Money;
 };
 
 /**

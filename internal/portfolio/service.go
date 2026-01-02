@@ -109,30 +109,42 @@ func (s *Service) ImportCSV(ctx context.Context, csvData []byte) (*ImportResult,
 
 func (s *Service) recalculateHoldings(ctx context.Context, symbols map[string]struct{}) error {
 	for symbol := range symbols {
-		txs, err := s.queries.ListTransactionsBySymbol(ctx, symbol)
+		// Process chronologically for proper average cost tracking
+		txs, err := s.queries.ListTransactionsBySymbolChronological(ctx, symbol)
 		if err != nil {
 			return fmt.Errorf("failed to list transactions for %s: %w", symbol, err)
 		}
 
 		var quantity float64
 		var totalCostPaisa int64
+		var realizedPnlPaisa int64
 
 		for _, tx := range txs {
 			switch tx.Type {
 			case int64(v1.TransactionType_TRANSACTION_TYPE_BUY),
 				int64(v1.TransactionType_TRANSACTION_TYPE_IPO),
 				int64(v1.TransactionType_TRANSACTION_TYPE_RIGHTS),
-				int64(v1.TransactionType_TRANSACTION_TYPE_BONUS),
 				int64(v1.TransactionType_TRANSACTION_TYPE_MERGER_IN),
 				int64(v1.TransactionType_TRANSACTION_TYPE_REARRANGEMENT):
 				quantity += tx.Quantity
 				totalCostPaisa += tx.TotalPaisa
+			case int64(v1.TransactionType_TRANSACTION_TYPE_BONUS):
+				// Bonus shares have zero cost, just add quantity
+				quantity += tx.Quantity
 			case int64(v1.TransactionType_TRANSACTION_TYPE_SELL),
 				int64(v1.TransactionType_TRANSACTION_TYPE_MERGER_OUT):
-				// Quantity is stored as positive for sells, subtract here
+				// Average cost method: calculate realized P&L based on current avg cost
+				if quantity > 0 {
+					avgCostPaisa := float64(totalCostPaisa) / quantity
+					costBasisPaisa := int64(avgCostPaisa * tx.Quantity)
+					sellProceedsPaisa := tx.TotalPaisa
+					realizedPnlPaisa += sellProceedsPaisa - costBasisPaisa
+					// Reduce total cost by the cost basis of sold shares
+					totalCostPaisa -= costBasisPaisa
+				}
 				quantity -= tx.Quantity
 			case int64(v1.TransactionType_TRANSACTION_TYPE_DEMAT):
-				// Demat doesn't affect quantity
+				// Demat doesn't affect quantity or cost
 			}
 		}
 
@@ -143,12 +155,26 @@ func (s *Service) recalculateHoldings(ctx context.Context, symbols map[string]st
 				Quantity:         quantity,
 				AverageCostPaisa: avgCostPaisa,
 				TotalCostPaisa:   totalCostPaisa,
+				RealizedPnlPaisa: realizedPnlPaisa,
 			}); err != nil {
 				return fmt.Errorf("failed to upsert holding for %s: %w", symbol, err)
 			}
 		} else {
-			if err := s.queries.DeleteHolding(ctx, symbol); err != nil {
-				slog.Warn("failed to delete zero-quantity holding", "symbol", symbol, "error", err)
+			// Even with zero quantity, preserve realized P&L if any
+			if realizedPnlPaisa != 0 {
+				if err := s.queries.UpsertHolding(ctx, sqlc.UpsertHoldingParams{
+					Symbol:           symbol,
+					Quantity:         0,
+					AverageCostPaisa: 0,
+					TotalCostPaisa:   0,
+					RealizedPnlPaisa: realizedPnlPaisa,
+				}); err != nil {
+					return fmt.Errorf("failed to upsert holding for %s: %w", symbol, err)
+				}
+			} else {
+				if err := s.queries.DeleteHolding(ctx, symbol); err != nil {
+					slog.Warn("failed to delete zero-quantity holding", "symbol", symbol, "error", err)
+				}
 			}
 		}
 	}
@@ -276,6 +302,7 @@ func (s *Service) ListHoldings(ctx context.Context) ([]*v1.Holding, error) {
 			CurrentValue:         moneyFromPaisaOpt(h.CurrentValuePaisa),
 			UnrealizedPnl:        moneyFromPaisaOpt(h.UnrealizedPnlPaisa),
 			UnrealizedPnlPercent: h.UnrealizedPnlPercent.Float64,
+			RealizedPnl:          moneyFromPaisa(h.RealizedPnlPaisa),
 		}
 		holdings = append(holdings, holding)
 	}
@@ -298,6 +325,7 @@ func (s *Service) GetHolding(ctx context.Context, symbol string) (*v1.Holding, e
 		CurrentValue:         moneyFromPaisaOpt(h.CurrentValuePaisa),
 		UnrealizedPnl:        moneyFromPaisaOpt(h.UnrealizedPnlPaisa),
 		UnrealizedPnlPercent: h.UnrealizedPnlPercent.Float64,
+		RealizedPnl:          moneyFromPaisa(h.RealizedPnlPaisa),
 	}, nil
 }
 
@@ -310,14 +338,20 @@ func (s *Service) Summary(ctx context.Context) (*v1.PortfolioSummary, error) {
 	var totalInvestmentPaisa int64
 	var currentValuePaisa int64
 	var totalUnrealizedPnlPaisa int64
+	var totalRealizedPnlPaisa int64
+	var activeHoldingsCount int32
 
 	for _, h := range holdings {
 		totalInvestmentPaisa += h.TotalCostPaisa
+		totalRealizedPnlPaisa += h.RealizedPnlPaisa
 		if h.CurrentValuePaisa.Valid {
 			currentValuePaisa += h.CurrentValuePaisa.Int64
 		}
 		if h.UnrealizedPnlPaisa.Valid {
 			totalUnrealizedPnlPaisa += h.UnrealizedPnlPaisa.Int64
+		}
+		if h.Quantity > 0 {
+			activeHoldingsCount++
 		}
 	}
 
@@ -331,7 +365,8 @@ func (s *Service) Summary(ctx context.Context) (*v1.PortfolioSummary, error) {
 		CurrentValue:              moneyFromPaisa(currentValuePaisa),
 		TotalUnrealizedPnl:        moneyFromPaisa(totalUnrealizedPnlPaisa),
 		TotalUnrealizedPnlPercent: totalUnrealizedPnlPercent,
-		HoldingsCount:             int32(len(holdings)),
+		TotalRealizedPnl:          moneyFromPaisa(totalRealizedPnlPaisa),
+		HoldingsCount:             activeHoldingsCount,
 		LastUpdated:               timestamppb.Now(),
 	}
 
@@ -532,11 +567,11 @@ func (s *Service) SyncPrices(ctx context.Context) (*SyncResult, error) {
 		}
 
 		if err := s.queries.UpdateHoldingPrices(ctx, sqlc.UpdateHoldingPricesParams{
-			CurrentPricePaisa:   sql.NullInt64{Int64: currentPricePaisa, Valid: true},
-			CurrentValuePaisa:   sql.NullInt64{Int64: currentValuePaisa, Valid: true},
-			UnrealizedPnlPaisa:  sql.NullInt64{Int64: unrealizedPnlPaisa, Valid: true},
+			CurrentPricePaisa:    sql.NullInt64{Int64: currentPricePaisa, Valid: true},
+			CurrentValuePaisa:    sql.NullInt64{Int64: currentValuePaisa, Valid: true},
+			UnrealizedPnlPaisa:   sql.NullInt64{Int64: unrealizedPnlPaisa, Valid: true},
 			UnrealizedPnlPercent: sql.NullFloat64{Float64: unrealizedPnlPercent, Valid: true},
-			Symbol:              h.Symbol,
+			Symbol:               h.Symbol,
 		}); err != nil {
 			slog.Warn("failed to update holding prices", "symbol", h.Symbol, "error", err)
 			result.Failed++
@@ -545,6 +580,73 @@ func (s *Service) SyncPrices(ctx context.Context) (*SyncResult, error) {
 		}
 
 		result.Updated++
+	}
+
+	return result, nil
+}
+
+// TMSImportResult contains the result of importing TMS trade data.
+type TMSImportResult struct {
+	Updated int
+	Skipped int
+}
+
+// ImportTMS updates transaction prices from TMS Trade Book export.
+// Matches trades by symbol, type, and quantity to existing transactions.
+func (s *Service) ImportTMS(ctx context.Context, csvData []byte) (*TMSImportResult, error) {
+	trades, err := meroshare.ParseTMSTradeBook(strings.NewReader(string(csvData)))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse TMS trade book: %w", err)
+	}
+
+	result := &TMSImportResult{}
+	symbolsToRecalculate := make(map[string]struct{})
+
+	for _, trade := range trades {
+		txType := int64(v1.TransactionType_TRANSACTION_TYPE_BUY)
+		if !trade.IsBuy {
+			txType = int64(v1.TransactionType_TRANSACTION_TYPE_SELL)
+		}
+
+		pricePaisa := int64(trade.Price * 100)
+		totalPaisa := int64(trade.Value * 100)
+
+		rowsAffected, err := s.queries.UpdateTransactionPrices(ctx, sqlc.UpdateTransactionPricesParams{
+			PricePaisa: pricePaisa,
+			TotalPaisa: totalPaisa,
+			Symbol:     trade.Symbol,
+			Type:       txType,
+			Quantity:   trade.Quantity,
+		})
+		if err != nil {
+			slog.Debug("TMS import error",
+				"symbol", trade.Symbol,
+				"qty", trade.Quantity,
+				"type", txType,
+				"error", err)
+			result.Skipped++
+			continue
+		}
+
+		if rowsAffected == 0 {
+			slog.Debug("no matching transaction for TMS trade",
+				"symbol", trade.Symbol,
+				"date", trade.TradeDate.Format("2006-01-02"),
+				"qty", trade.Quantity,
+				"type", txType)
+			result.Skipped++
+			continue
+		}
+
+		symbolsToRecalculate[trade.Symbol] = struct{}{}
+		result.Updated++
+	}
+
+	// Recalculate holdings for affected symbols
+	if len(symbolsToRecalculate) > 0 {
+		if err := s.recalculateHoldings(ctx, symbolsToRecalculate); err != nil {
+			return result, fmt.Errorf("failed to recalculate holdings: %w", err)
+		}
 	}
 
 	return result, nil

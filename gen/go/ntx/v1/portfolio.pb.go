@@ -103,6 +103,7 @@ type Holding struct {
 	CurrentValue         *Money                 `protobuf:"bytes,6,opt,name=current_value,json=currentValue,proto3" json:"current_value,omitempty"`
 	UnrealizedPnl        *Money                 `protobuf:"bytes,7,opt,name=unrealized_pnl,json=unrealizedPnl,proto3" json:"unrealized_pnl,omitempty"`
 	UnrealizedPnlPercent float64                `protobuf:"fixed64,8,opt,name=unrealized_pnl_percent,json=unrealizedPnlPercent,proto3" json:"unrealized_pnl_percent,omitempty"`
+	RealizedPnl          *Money                 `protobuf:"bytes,9,opt,name=realized_pnl,json=realizedPnl,proto3" json:"realized_pnl,omitempty"` // cumulative realized P&L from sells
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -191,6 +192,13 @@ func (x *Holding) GetUnrealizedPnlPercent() float64 {
 		return x.UnrealizedPnlPercent
 	}
 	return 0
+}
+
+func (x *Holding) GetRealizedPnl() *Money {
+	if x != nil {
+		return x.RealizedPnl
+	}
+	return nil
 }
 
 // Transaction represents a single portfolio transaction.
@@ -871,7 +879,7 @@ var File_ntx_v1_portfolio_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\n" +
-	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13ntx/v1/common.proto\"\xfe\x02\n" +
+	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13ntx/v1/common.proto\"\xb0\x03\n" +
 	"\aHolding\x12#\n" +
 	"\x05stock\x18\x01 \x01(\v2\r.ntx.v1.StockR\x05stock\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\x120\n" +
@@ -881,7 +889,8 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\rcurrent_price\x18\x05 \x01(\v2\r.ntx.v1.MoneyR\fcurrentPrice\x122\n" +
 	"\rcurrent_value\x18\x06 \x01(\v2\r.ntx.v1.MoneyR\fcurrentValue\x124\n" +
 	"\x0eunrealized_pnl\x18\a \x01(\v2\r.ntx.v1.MoneyR\runrealizedPnl\x124\n" +
-	"\x16unrealized_pnl_percent\x18\b \x01(\x01R\x14unrealizedPnlPercent\"\x9a\x02\n" +
+	"\x16unrealized_pnl_percent\x18\b \x01(\x01R\x14unrealizedPnlPercent\x120\n" +
+	"\frealized_pnl\x18\t \x01(\v2\r.ntx.v1.MoneyR\vrealizedPnl\"\x9a\x02\n" +
 	"\vTransaction\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12+\n" +
@@ -984,36 +993,37 @@ var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	15, // 3: ntx.v1.Holding.current_price:type_name -> ntx.v1.Money
 	15, // 4: ntx.v1.Holding.current_value:type_name -> ntx.v1.Money
 	15, // 5: ntx.v1.Holding.unrealized_pnl:type_name -> ntx.v1.Money
-	0,  // 6: ntx.v1.Transaction.type:type_name -> ntx.v1.TransactionType
-	15, // 7: ntx.v1.Transaction.price:type_name -> ntx.v1.Money
-	15, // 8: ntx.v1.Transaction.total:type_name -> ntx.v1.Money
-	16, // 9: ntx.v1.Transaction.date:type_name -> google.protobuf.Timestamp
-	15, // 10: ntx.v1.PortfolioSummary.total_investment:type_name -> ntx.v1.Money
-	15, // 11: ntx.v1.PortfolioSummary.current_value:type_name -> ntx.v1.Money
-	15, // 12: ntx.v1.PortfolioSummary.total_unrealized_pnl:type_name -> ntx.v1.Money
-	15, // 13: ntx.v1.PortfolioSummary.total_realized_pnl:type_name -> ntx.v1.Money
-	16, // 14: ntx.v1.PortfolioSummary.last_updated:type_name -> google.protobuf.Timestamp
-	17, // 15: ntx.v1.ListHoldingsRequest.sector:type_name -> ntx.v1.Sector
-	1,  // 16: ntx.v1.ListHoldingsResponse.holdings:type_name -> ntx.v1.Holding
-	1,  // 17: ntx.v1.GetHoldingResponse.holding:type_name -> ntx.v1.Holding
-	3,  // 18: ntx.v1.SummaryResponse.summary:type_name -> ntx.v1.PortfolioSummary
-	0,  // 19: ntx.v1.ListTransactionsRequest.type:type_name -> ntx.v1.TransactionType
-	2,  // 20: ntx.v1.ListTransactionsResponse.transactions:type_name -> ntx.v1.Transaction
-	4,  // 21: ntx.v1.PortfolioService.ListHoldings:input_type -> ntx.v1.ListHoldingsRequest
-	6,  // 22: ntx.v1.PortfolioService.GetHolding:input_type -> ntx.v1.GetHoldingRequest
-	8,  // 23: ntx.v1.PortfolioService.Summary:input_type -> ntx.v1.SummaryRequest
-	10, // 24: ntx.v1.PortfolioService.ListTransactions:input_type -> ntx.v1.ListTransactionsRequest
-	12, // 25: ntx.v1.PortfolioService.Import:input_type -> ntx.v1.ImportRequest
-	5,  // 26: ntx.v1.PortfolioService.ListHoldings:output_type -> ntx.v1.ListHoldingsResponse
-	7,  // 27: ntx.v1.PortfolioService.GetHolding:output_type -> ntx.v1.GetHoldingResponse
-	9,  // 28: ntx.v1.PortfolioService.Summary:output_type -> ntx.v1.SummaryResponse
-	11, // 29: ntx.v1.PortfolioService.ListTransactions:output_type -> ntx.v1.ListTransactionsResponse
-	13, // 30: ntx.v1.PortfolioService.Import:output_type -> ntx.v1.ImportResponse
-	26, // [26:31] is the sub-list for method output_type
-	21, // [21:26] is the sub-list for method input_type
-	21, // [21:21] is the sub-list for extension type_name
-	21, // [21:21] is the sub-list for extension extendee
-	0,  // [0:21] is the sub-list for field type_name
+	15, // 6: ntx.v1.Holding.realized_pnl:type_name -> ntx.v1.Money
+	0,  // 7: ntx.v1.Transaction.type:type_name -> ntx.v1.TransactionType
+	15, // 8: ntx.v1.Transaction.price:type_name -> ntx.v1.Money
+	15, // 9: ntx.v1.Transaction.total:type_name -> ntx.v1.Money
+	16, // 10: ntx.v1.Transaction.date:type_name -> google.protobuf.Timestamp
+	15, // 11: ntx.v1.PortfolioSummary.total_investment:type_name -> ntx.v1.Money
+	15, // 12: ntx.v1.PortfolioSummary.current_value:type_name -> ntx.v1.Money
+	15, // 13: ntx.v1.PortfolioSummary.total_unrealized_pnl:type_name -> ntx.v1.Money
+	15, // 14: ntx.v1.PortfolioSummary.total_realized_pnl:type_name -> ntx.v1.Money
+	16, // 15: ntx.v1.PortfolioSummary.last_updated:type_name -> google.protobuf.Timestamp
+	17, // 16: ntx.v1.ListHoldingsRequest.sector:type_name -> ntx.v1.Sector
+	1,  // 17: ntx.v1.ListHoldingsResponse.holdings:type_name -> ntx.v1.Holding
+	1,  // 18: ntx.v1.GetHoldingResponse.holding:type_name -> ntx.v1.Holding
+	3,  // 19: ntx.v1.SummaryResponse.summary:type_name -> ntx.v1.PortfolioSummary
+	0,  // 20: ntx.v1.ListTransactionsRequest.type:type_name -> ntx.v1.TransactionType
+	2,  // 21: ntx.v1.ListTransactionsResponse.transactions:type_name -> ntx.v1.Transaction
+	4,  // 22: ntx.v1.PortfolioService.ListHoldings:input_type -> ntx.v1.ListHoldingsRequest
+	6,  // 23: ntx.v1.PortfolioService.GetHolding:input_type -> ntx.v1.GetHoldingRequest
+	8,  // 24: ntx.v1.PortfolioService.Summary:input_type -> ntx.v1.SummaryRequest
+	10, // 25: ntx.v1.PortfolioService.ListTransactions:input_type -> ntx.v1.ListTransactionsRequest
+	12, // 26: ntx.v1.PortfolioService.Import:input_type -> ntx.v1.ImportRequest
+	5,  // 27: ntx.v1.PortfolioService.ListHoldings:output_type -> ntx.v1.ListHoldingsResponse
+	7,  // 28: ntx.v1.PortfolioService.GetHolding:output_type -> ntx.v1.GetHoldingResponse
+	9,  // 29: ntx.v1.PortfolioService.Summary:output_type -> ntx.v1.SummaryResponse
+	11, // 30: ntx.v1.PortfolioService.ListTransactions:output_type -> ntx.v1.ListTransactionsResponse
+	13, // 31: ntx.v1.PortfolioService.Import:output_type -> ntx.v1.ImportResponse
+	27, // [27:32] is the sub-list for method output_type
+	22, // [22:27] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_portfolio_proto_init() }

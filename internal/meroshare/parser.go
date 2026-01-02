@@ -222,6 +222,80 @@ func parsePurchaseDate(details *HistoryDetails, desc string) {
 	}
 }
 
+// TMSTrade represents a row from TMS Trade Book export.
+type TMSTrade struct {
+	Symbol    string
+	TradeID   string
+	TradeDate time.Time
+	IsBuy     bool
+	Quantity  float64
+	Price     float64 // per share in NPR
+	Value     float64 // total value in NPR
+}
+
+// ParseTMSTradeBook parses TMS Trade Book CSV export.
+// CSV format: CLIENT, CLIENT NAME, SYMBOL, EXCHANGE TRADE ID, TRADE DATE, TRADE TIME, BUY/SELL, TRADE QTY, PRICE(NPR), Value(NPR)
+func ParseTMSTradeBook(r io.Reader) ([]TMSTrade, error) {
+	reader := csv.NewReader(r)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(records) < 2 {
+		return []TMSTrade{}, nil
+	}
+
+	trades := make([]TMSTrade, 0, len(records)-1)
+
+	for i := 1; i < len(records); i++ {
+		rec := records[i]
+		if len(rec) < 10 {
+			continue
+		}
+
+		symbol := strings.TrimSpace(rec[2])
+		if symbol == "" {
+			continue
+		}
+
+		tradeID := strings.TrimSpace(rec[3])
+		// Date is embedded in trade ID: YYYYMMDD followed by sequence
+		tradeDate := parseTMSTradeDate(tradeID)
+
+		buySell := strings.TrimSpace(rec[6])
+		isBuy := strings.EqualFold(buySell, "Buy")
+
+		quantity, _ := strconv.ParseFloat(strings.TrimSpace(rec[7]), 64)
+		price, _ := strconv.ParseFloat(strings.TrimSpace(rec[8]), 64)
+		value, _ := strconv.ParseFloat(strings.TrimSpace(rec[9]), 64)
+
+		trades = append(trades, TMSTrade{
+			Symbol:    symbol,
+			TradeID:   tradeID,
+			TradeDate: tradeDate,
+			IsBuy:     isBuy,
+			Quantity:  quantity,
+			Price:     price,
+			Value:     value,
+		})
+	}
+
+	return trades, nil
+}
+
+// parseTMSTradeDate extracts date from TMS trade ID (format: YYYYMMDD...)
+// TMS uses Bikram Sambat (BS) dates embedded in the trade ID
+// These are kept in BS format to match Meroshare exports which also use BS
+func parseTMSTradeDate(tradeID string) time.Time {
+	if len(tradeID) < 8 {
+		return time.Time{}
+	}
+	dateStr := tradeID[:8]
+	t, _ := time.Parse("20060102", dateStr)
+	return t
+}
+
 // WAC represents a row from Meroshare's WACC Report CSV export.
 type WAC struct {
 	Symbol       string

@@ -25,6 +25,7 @@ message Holding {
   Money current_value = 6;
   Money unrealized_pnl = 7;
   double unrealized_pnl_percent = 8;
+  Money realized_pnl = 9;      // cumulative realized P&L from sells
 }
 
 // Transaction represents a single portfolio transaction.

@@ -10,6 +10,11 @@ SELECT * FROM transactions
 WHERE symbol = ?
 ORDER BY date DESC;
 
+-- name: ListTransactionsBySymbolChronological :many
+SELECT * FROM transactions
+WHERE symbol = ?
+ORDER BY date ASC, created_at ASC;
+
 -- name: ListTransactions :many
 SELECT * FROM transactions
 ORDER BY date DESC
@@ -38,3 +43,18 @@ SELECT EXISTS(
 
 -- name: DeleteAllTransactions :exec
 DELETE FROM transactions;
+
+-- name: UpdateTransactionPrices :execrows
+UPDATE transactions
+SET price_paisa = ?,
+    total_paisa = ?
+WHERE symbol = ?
+  AND type = ?
+  AND quantity = ?
+  AND total_paisa = 0;
+
+-- name: ListTransactionsWithoutPrices :many
+SELECT * FROM transactions
+WHERE total_paisa = 0
+  AND type IN (1, 2)  -- BUY and SELL only
+ORDER BY date ASC;

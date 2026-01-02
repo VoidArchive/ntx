@@ -52,6 +52,26 @@ func Import(service *portfolio.Service, filepath string) {
 	}
 }
 
+func ImportTms(service *portfolio.Service, filepath string) {
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		log.Fatalf("failed to read file: %v", err)
+	}
+
+	ctx := context.Background()
+	result, err := service.ImportTMS(ctx, data)
+	if err != nil {
+		log.Fatalf("import failed: %v", err)
+	}
+
+	if result.Updated > 0 {
+		fmt.Println(profitStyle.Render(fmt.Sprintf("Updated %d transactions with prices", result.Updated)))
+	}
+	if result.Skipped > 0 {
+		fmt.Printf("Skipped %d trades (no matching transactions)\n", result.Skipped)
+	}
+}
+
 func ImportWacc(service *portfolio.Service, filepath string) {
 	data, err := os.ReadFile(filepath)
 	if err != nil {
@@ -177,8 +197,9 @@ func Summary(service *portfolio.Service) {
 
 	totalInv := float64(summary.TotalInvestment.Paisa) / 100
 	currVal := float64(summary.CurrentValue.Paisa) / 100
-	pnl := float64(summary.TotalUnrealizedPnl.Paisa) / 100
-	pnlPct := summary.TotalUnrealizedPnlPercent
+	unrealizedPnl := float64(summary.TotalUnrealizedPnl.Paisa) / 100
+	unrealizedPnlPct := summary.TotalUnrealizedPnlPercent
+	realizedPnl := float64(summary.TotalRealizedPnl.Paisa) / 100
 
 	fmt.Println(titleStyle.Render("Portfolio Summary"))
 	fmt.Println(dimStyle.Render(strings.Repeat("─", 30)))
@@ -188,8 +209,8 @@ func Summary(service *portfolio.Service) {
 	if currVal > 0 {
 		fmt.Printf("%-18s Rs.%12.2f\n", "Current Value", currVal)
 
-		pnlStr := fmt.Sprintf("Rs.%12.2f (%+.2f%%)", pnl, pnlPct)
-		if pnl >= 0 {
+		pnlStr := fmt.Sprintf("Rs.%12.2f (%+.2f%%)", unrealizedPnl, unrealizedPnlPct)
+		if unrealizedPnl >= 0 {
 			pnlStr = profitStyle.Render(pnlStr)
 		} else {
 			pnlStr = lossStyle.Render(pnlStr)
@@ -197,7 +218,88 @@ func Summary(service *portfolio.Service) {
 		fmt.Printf("%-18s %s\n", "Unrealized P&L", pnlStr)
 	}
 
+	// Show realized P&L if any
+	if realizedPnl != 0 {
+		realizedPnlStr := fmt.Sprintf("Rs.%12.2f", realizedPnl)
+		if realizedPnl >= 0 {
+			realizedPnlStr = profitStyle.Render(realizedPnlStr)
+		} else {
+			realizedPnlStr = lossStyle.Render(realizedPnlStr)
+		}
+		fmt.Printf("%-18s %s\n", "Realized P&L", realizedPnlStr)
+	}
+
 	fmt.Printf("%-18s %d\n", "Holdings", summary.HoldingsCount)
+}
+
+func Pnl(service *portfolio.Service) {
+	ctx := context.Background()
+
+	holdings, err := service.ListHoldings(ctx)
+	if err != nil {
+		log.Fatalf("failed to list holdings: %v", err)
+	}
+
+	summary, err := service.Summary(ctx)
+	if err != nil {
+		log.Fatalf("failed to get summary: %v", err)
+	}
+
+	fmt.Println(titleStyle.Render("Profit & Loss"))
+	fmt.Println(dimStyle.Render(strings.Repeat("─", 60)))
+
+	// Filter holdings with realized P&L
+	hasRealizedPnl := false
+	for _, h := range holdings {
+		if h.RealizedPnl != nil && h.RealizedPnl.Paisa != 0 {
+			hasRealizedPnl = true
+			break
+		}
+	}
+
+	if hasRealizedPnl {
+		header := fmt.Sprintf("%-8s %14s", "SYMBOL", "REALIZED P&L")
+		fmt.Println(headerStyle.Render(header))
+		fmt.Println(dimStyle.Render(strings.Repeat("─", 24)))
+
+		for _, h := range holdings {
+			if h.RealizedPnl == nil || h.RealizedPnl.Paisa == 0 {
+				continue
+			}
+			pnl := float64(h.RealizedPnl.Paisa) / 100
+			pnlStr := fmt.Sprintf("Rs.%10.2f", pnl)
+			if pnl >= 0 {
+				pnlStr = profitStyle.Render(pnlStr)
+			} else {
+				pnlStr = lossStyle.Render(pnlStr)
+			}
+			fmt.Printf("%-8s %s\n", h.Stock.Symbol, pnlStr)
+		}
+		fmt.Println(dimStyle.Render(strings.Repeat("─", 24)))
+	}
+
+	// Total realized P&L
+	totalRealized := float64(summary.TotalRealizedPnl.Paisa) / 100
+	totalRealizedStr := fmt.Sprintf("Rs.%10.2f", totalRealized)
+	if totalRealized >= 0 {
+		totalRealizedStr = profitStyle.Render(totalRealizedStr)
+	} else {
+		totalRealizedStr = lossStyle.Render(totalRealizedStr)
+	}
+	fmt.Printf("%-8s %s\n", "TOTAL", totalRealizedStr)
+
+	// Show unrealized if prices available
+	if summary.CurrentValue != nil && summary.CurrentValue.Paisa > 0 {
+		fmt.Println()
+		unrealized := float64(summary.TotalUnrealizedPnl.Paisa) / 100
+		unrealizedStr := fmt.Sprintf("Rs.%10.2f (%+.2f%%)", unrealized, summary.TotalUnrealizedPnlPercent)
+		if unrealized >= 0 {
+			unrealizedStr = profitStyle.Render(unrealizedStr)
+		} else {
+			unrealizedStr = lossStyle.Render(unrealizedStr)
+		}
+		fmt.Printf("%-8s %s\n", "UNREALIZED", unrealizedStr)
+	}
 }
 
 func Sync(service *portfolio.Service) {
