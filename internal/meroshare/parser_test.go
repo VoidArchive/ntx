@@ -26,7 +26,7 @@ func TestParseQuantity(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := parseQuantity(tt.input)
+			got := ParseQuantity(tt.input)
 			assert.Equal(t, tt.want, got)
 		})
 	}

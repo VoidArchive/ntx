@@ -116,7 +116,7 @@ cd web && pnpm check
 - bubbles (TUI components)
 
 **Web**
-- SvelteKit + Tailwind
+- SvelteKit + Tailwind + shadcn
 
 ## Data Storage
 

@@ -3,6 +3,7 @@ package meroshare
 
 import (
 	"encoding/csv"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -81,8 +82,8 @@ func ParseTransactions(filepath string) ([]Transaction, error) {
 		sn, _ := strconv.Atoi(strings.TrimSpace(rec[0]))
 		scrip := strings.TrimSpace(rec[1])
 		date, _ := time.Parse("2006-01-02", strings.TrimSpace(rec[2]))
-		creditQty := parseQuantity(rec[3])
-		debitQty := parseQuantity(rec[4])
+		creditQty := ParseQuantity(rec[3])
+		debitQty := ParseQuantity(rec[4])
 		balance, _ := strconv.ParseFloat(strings.TrimSpace(rec[5]), 64)
 		history := parseHistoryDescription(rec[6])
 
@@ -99,8 +100,8 @@ func ParseTransactions(filepath string) ([]Transaction, error) {
 	return transactions, nil
 }
 
-// parseQuantity handles Meroshare's quantity format where "-" means zero.
-func parseQuantity(s string) float64 {
+// ParseQuantity handles Meroshare's quantity format where "-" means zero.
+func ParseQuantity(s string) float64 {
 	s = strings.TrimSpace(s)
 	if s == "-" || s == "" {
 		return 0
@@ -219,4 +220,56 @@ func parsePurchaseDate(details *HistoryDetails, desc string) {
 	if found && len(after) >= 10 {
 		details.PurchaseDate = after[:10]
 	}
+}
+
+// WAC represents a row from Meroshare's WACC Report CSV export.
+type WAC struct {
+	Symbol       string
+	Quantity     float64
+	Rate         float64 // Average cost per share
+	TotalCost    float64
+	LastModified time.Time
+}
+
+// ParseWACCReport parses Meroshare's WACC Report CSV from a reader.
+// CSV format: S.N, Demat, Scrip Name, WACC Calculated Quantity, WACC Rate, Total Cost of Capital, Last Modification Date
+func ParseWACCReport(r io.Reader) ([]WAC, error) {
+	reader := csv.NewReader(r)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(records) < 2 {
+		return []WAC{}, nil
+	}
+
+	wacs := make([]WAC, 0, len(records)-1)
+
+	for i := 1; i < len(records); i++ {
+		rec := records[i]
+		if len(rec) < 7 {
+			continue
+		}
+
+		symbol := strings.TrimSpace(rec[2])
+		if symbol == "" {
+			continue
+		}
+
+		quantity, _ := strconv.ParseFloat(strings.TrimSpace(rec[3]), 64)
+		rate, _ := strconv.ParseFloat(strings.TrimSpace(rec[4]), 64)
+		totalCost, _ := strconv.ParseFloat(strings.TrimSpace(rec[5]), 64)
+		lastMod, _ := time.Parse("2006-01-02 15:04:05", strings.TrimSpace(rec[6]))
+
+		wacs = append(wacs, WAC{
+			Symbol:       symbol,
+			Quantity:     quantity,
+			Rate:         rate,
+			TotalCost:    totalCost,
+			LastModified: lastMod,
+		})
+	}
+
+	return wacs, nil
 }
