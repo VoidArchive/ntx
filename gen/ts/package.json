@@ -12,9 +12,17 @@
       "types": "./ntx/v1/market_pb.d.ts",
       "import": "./ntx/v1/market_pb.js"
     },
-    "./ntx/v1/analyzer_pb": {
-      "types": "./ntx/v1/analyzer_pb.d.ts",
-      "import": "./ntx/v1/analyzer_pb.js"
+    "./ntx/v1/company_pb": {
+      "types": "./ntx/v1/company_pb.d.ts",
+      "import": "./ntx/v1/company_pb.js"
+    },
+    "./ntx/v1/price_pb": {
+      "types": "./ntx/v1/price_pb.d.ts",
+      "import": "./ntx/v1/price_pb.js"
+    },
+    "./ntx/v1/screener_pb": {
+      "types": "./ntx/v1/screener_pb.d.ts",
+      "import": "./ntx/v1/screener_pb.js"
     }
   },
   "dependencies": {

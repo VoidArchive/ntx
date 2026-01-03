@@ -36,18 +36,18 @@
 - [x] Historical price backfill (one-time)
 
 ### ConnectRPC Handlers
-- [ ] CompanyService.ListCompanies
-- [ ] CompanyService.GetCompany
-- [ ] CompanyService.GetFundamentals
-- [ ] CompanyService.ListReports
-- [ ] PriceService.GetPrice
-- [ ] PriceService.ListCandles
-- [ ] MarketService.GetStatus
-- [ ] MarketService.ListIndices
-- [ ] MarketService.ListSectors
-- [ ] ScreenerService.Screen
-- [ ] ScreenerService.ListTopGainers
-- [ ] ScreenerService.ListTopLosers
+- [x] CompanyService.ListCompanies
+- [x] CompanyService.GetCompany
+- [x] CompanyService.GetFundamentals
+- [x] CompanyService.ListReports
+- [x] PriceService.GetPrice
+- [x] PriceService.ListCandles
+- [x] MarketService.GetStatus
+- [x] MarketService.ListIndices
+- [x] MarketService.ListSectors
+- [x] ScreenerService.Screen
+- [x] ScreenerService.ListTopGainers
+- [x] ScreenerService.ListTopLosers
 
 ### Server Infrastructure
 - [ ] HTTP server setup (port 8080)
