@@ -21,7 +21,7 @@ type Querier interface {
 	GetLatestReport(ctx context.Context, symbol string) (Report, error)
 	GetPriceHistory(ctx context.Context, arg GetPriceHistoryParams) ([]Price, error)
 	GetPricesForDate(ctx context.Context, date string) ([]Price, error)
-	GetReports(ctx context.Context, symbol string) ([]Report, error)
+	GetReports(ctx context.Context, arg GetReportsParams) ([]Report, error)
 	GetReportsByType(ctx context.Context, arg GetReportsByTypeParams) ([]Report, error)
 	// Returns all data needed for screening: company + latest price + fundamentals
 	// Filtering and sorting will be done in Go for flexibility
@@ -44,6 +44,8 @@ type Querier interface {
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpdateCompanyDescription(ctx context.Context, arg UpdateCompanyDescriptionParams) error
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
+	// Updates company info without overwriting description/logo
+	UpsertCompanyBasic(ctx context.Context, arg UpsertCompanyBasicParams) error
 	UpsertDividend(ctx context.Context, arg UpsertDividendParams) error
 	UpsertFundamentals(ctx context.Context, arg UpsertFundamentalsParams) error
 	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error

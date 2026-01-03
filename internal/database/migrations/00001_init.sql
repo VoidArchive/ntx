@@ -36,6 +36,8 @@ CREATE TABLE prices (
     volume INTEGER NOT NULL,
     turnover INTEGER,
     is_complete INTEGER NOT NULL DEFAULT 0,
+    week_52_high REAL,
+    week_52_low REAL,
     PRIMARY KEY (symbol, date)
 );
 
@@ -60,6 +62,20 @@ CREATE TABLE reports (
 
 CREATE INDEX idx_reports_symbol ON reports(symbol);
 
+-- Dividends: dividend declarations history
+CREATE TABLE dividends (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    symbol TEXT NOT NULL REFERENCES companies(symbol) ON DELETE CASCADE,
+    fiscal_year TEXT NOT NULL,
+    cash_percent REAL NOT NULL DEFAULT 0,
+    bonus_percent REAL NOT NULL DEFAULT 0,
+    headline TEXT,
+    published_at TEXT,
+    UNIQUE(symbol, fiscal_year)
+);
+
+CREATE INDEX idx_dividends_symbol ON dividends(symbol);
+
 -- Trading days: track market open/close status
 CREATE TABLE trading_days (
     date TEXT PRIMARY KEY,
@@ -70,6 +86,7 @@ CREATE TABLE trading_days (
 -- +goose Down
 
 DROP TABLE IF EXISTS trading_days;
+DROP TABLE IF EXISTS dividends;
 DROP TABLE IF EXISTS reports;
 DROP TABLE IF EXISTS prices;
 DROP TABLE IF EXISTS fundamentals;

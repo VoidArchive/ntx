@@ -14,23 +14,6 @@ import (
 	"github.com/voidarchive/ntx/internal/nepse"
 )
 
-// Sector names by ID.
-var sectorNames = map[int64]string{
-	1:  "Commercial Banks",
-	2:  "Development Banks",
-	3:  "Finance",
-	4:  "Microfinance",
-	5:  "Life Insurance",
-	6:  "Non Life Insurance",
-	7:  "Hydro Power",
-	8:  "Manufacturing And Processing",
-	9:  "Hotels And Tourism",
-	10: "Trading",
-	11: "Investment",
-	12: "Mutual Fund",
-	13: "Others",
-}
-
 // MarketService implements the MarketService RPC handlers.
 type MarketService struct {
 	ntxv1connect.UnimplementedMarketServiceHandler
@@ -131,10 +114,7 @@ func (s *MarketService) ListSectors(
 
 	sectors := make([]*ntxv1.SectorSummary, len(rows))
 	for i, row := range rows {
-		name := sectorNames[row.Sector]
-		if name == "" {
-			name = "Unknown"
-		}
+		name := nepse.SectorToName(row.Sector)
 
 		turnover := int64(0)
 		switch t := row.Turnover.(type) {

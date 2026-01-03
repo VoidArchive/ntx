@@ -40,32 +40,52 @@ type Company struct {
 	Shares    int64
 }
 
-// Companies returns all listed companies.
+// Companies returns all listed companies (excluding mutual funds, bonds, promoter shares).
+// Uses Securities API for active status, enriched with sector data from Companies API.
 func (c *Client) Companies(ctx context.Context) ([]Company, error) {
-	list, err := c.api.Companies(ctx)
+	// Get companies for sector info
+	companyList, err := c.api.Companies(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("fetch companies: %w", err)
 	}
 
+	// Build sector map from companies
+	sectorMap := make(map[string]string)
+	for _, co := range companyList {
+		sectorMap[co.Symbol] = co.SectorName
+	}
+
+	// Get securities for active status
+	securities, err := c.api.Securities(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("fetch securities: %w", err)
+	}
+
 	var out []Company
-	for _, co := range list {
-		if !co.HasTradingPermission {
+	for _, s := range securities {
+		if s.ActiveStatus != "A" {
 			continue
 		}
-		if co.SectorName == "Mutual Fund" {
+		if isPromoterShare(s.Symbol) {
 			continue
 		}
-		if isDebentureOrBond(co.SecurityName) {
+		if isDebentureOrBond(s.SecurityName) {
+			continue
+		}
+
+		sector := sectorMap[s.Symbol]
+		if sector == "" {
+			sector = "Others"
+		}
+		if sector == "Mutual Fund" {
 			continue
 		}
 
 		out = append(out, Company{
-			ID:        co.ID,
-			Symbol:    co.Symbol,
-			Name:      co.SecurityName,
-			Sector:    co.SectorName,
-			MarketCap: co.MarketCapitalization,
-			Shares:    co.ShareOutstanding,
+			ID:     s.ID,
+			Symbol: s.Symbol,
+			Name:   s.SecurityName,
+			Sector: sector,
 		})
 	}
 	return out, nil

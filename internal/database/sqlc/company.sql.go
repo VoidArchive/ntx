@@ -192,3 +192,24 @@ func (q *Queries) UpsertCompany(ctx context.Context, arg UpsertCompanyParams) er
 	)
 	return err
 }
+
+const upsertCompanyBasic = `-- name: UpsertCompanyBasic :exec
+INSERT INTO companies (symbol, name, sector, description, logo_url, last_synced)
+VALUES (?, ?, ?, '', '', datetime('now'))
+ON CONFLICT(symbol) DO UPDATE SET
+    name = excluded.name,
+    sector = excluded.sector,
+    last_synced = excluded.last_synced
+`
+
+type UpsertCompanyBasicParams struct {
+	Symbol string `json:"symbol"`
+	Name   string `json:"name"`
+	Sector int64  `json:"sector"`
+}
+
+// Updates company info without overwriting description/logo
+func (q *Queries) UpsertCompanyBasic(ctx context.Context, arg UpsertCompanyBasicParams) error {
+	_, err := q.db.ExecContext(ctx, upsertCompanyBasic, arg.Symbol, arg.Name, arg.Sector)
+	return err
+}

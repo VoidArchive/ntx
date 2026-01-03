@@ -57,10 +57,7 @@ func (s *ScreenerService) Screen(
 
 	// Apply pagination
 	offset := int(req.Msg.GetOffset())
-	limit := int(req.Msg.GetLimit())
-	if limit <= 0 {
-		limit = 50
-	}
+	limit := int(clampLimit(int64(req.Msg.GetLimit()), defaultLimit))
 
 	if offset > len(filtered) {
 		filtered = nil
@@ -91,10 +88,7 @@ type topMoversParams struct {
 func (s *ScreenerService) fetchTopMovers(
 	ctx context.Context, sector ntxv1.Sector, limit int32, params topMoversParams,
 ) ([]*ntxv1.Price, error) {
-	lim := int64(limit)
-	if lim <= 0 {
-		lim = 10
-	}
+	lim := clampLimit(int64(limit), 10)
 
 	var prices []sqlc.Price
 	var err error
@@ -308,28 +302,43 @@ func filterData(data []screenerRow, req *ntxv1.ScreenRequest) []screenerRow {
 	return filtered
 }
 
+// sortableRow pairs a screenerRow with pre-calculated values for sorting.
+type sortableRow struct {
+	row           screenerRow
+	percentChange float64
+}
+
 func sortData(data []screenerRow, sortBy ntxv1.SortBy, order ntxv1.SortOrder) {
 	desc := order == ntxv1.SortOrder_SORT_ORDER_DESC
 
-	sort.Slice(data, func(i, j int) bool {
+	// Wrap rows with pre-calculated percent change
+	rows := make([]sortableRow, len(data))
+	for i := range data {
+		rows[i] = sortableRow{
+			row:           data[i],
+			percentChange: data[i].percentChange(),
+		}
+	}
+
+	sort.Slice(rows, func(i, j int) bool {
 		var less bool
 		switch sortBy {
 		case ntxv1.SortBy_SORT_BY_SYMBOL:
-			less = data[i].Symbol < data[j].Symbol
+			less = rows[i].row.Symbol < rows[j].row.Symbol
 		case ntxv1.SortBy_SORT_BY_PRICE:
-			less = data[i].Close < data[j].Close
+			less = rows[i].row.Close < rows[j].row.Close
 		case ntxv1.SortBy_SORT_BY_CHANGE:
-			less = data[i].percentChange() < data[j].percentChange()
+			less = rows[i].percentChange < rows[j].percentChange
 		case ntxv1.SortBy_SORT_BY_VOLUME:
-			less = data[i].Volume < data[j].Volume
+			less = rows[i].row.Volume < rows[j].row.Volume
 		case ntxv1.SortBy_SORT_BY_TURNOVER:
-			less = data[i].Turnover < data[j].Turnover
+			less = rows[i].row.Turnover < rows[j].row.Turnover
 		case ntxv1.SortBy_SORT_BY_MARKET_CAP:
-			less = data[i].MarketCap < data[j].MarketCap
+			less = rows[i].row.MarketCap < rows[j].row.MarketCap
 		case ntxv1.SortBy_SORT_BY_PE:
-			// Handle 0/NaN PE values
-			iPE := data[i].PE
-			jPE := data[j].PE
+			// Handle 0/NaN PE values - push them to the end
+			iPE := rows[i].row.PE
+			jPE := rows[j].row.PE
 			if iPE == 0 || math.IsNaN(iPE) {
 				less = false
 			} else if jPE == 0 || math.IsNaN(jPE) {
@@ -338,13 +347,18 @@ func sortData(data []screenerRow, sortBy ntxv1.SortBy, order ntxv1.SortOrder) {
 				less = iPE < jPE
 			}
 		default:
-			less = data[i].Symbol < data[j].Symbol
+			less = rows[i].row.Symbol < rows[j].row.Symbol
 		}
 		if desc {
 			return !less
 		}
 		return less
 	})
+
+	// Copy sorted rows back
+	for i := range rows {
+		data[i] = rows[i].row
+	}
 }
 
 func rowToScreenResult(row screenerRow) *ntxv1.ScreenResult {

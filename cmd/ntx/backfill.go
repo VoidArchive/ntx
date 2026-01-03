@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/voidarchive/ntx/internal/database"
@@ -46,39 +47,31 @@ func (c *BackfillCmd) Run() error {
 	}
 	defer func() { _ = client.Close() }()
 
-	// Fetch companies (for sync - has sector, market cap, etc.)
+	// Fetch companies (has sector, filters out mutual funds, bonds, etc.)
 	fmt.Println("Fetching company list...")
 	companies, err := client.Companies(ctx)
 	if err != nil {
 		return fmt.Errorf("fetch companies: %w", err)
 	}
-	fmt.Printf("Found %d companies\n", len(companies))
-
-	// Fetch securities (actively tradable - use for price/reports/dividends)
-	fmt.Println("Fetching securities list...")
-	securities, err := client.Securities(ctx)
-	if err != nil {
-		return fmt.Errorf("fetch securities: %w", err)
-	}
-	fmt.Printf("Found %d tradable securities\n\n", len(securities))
+	fmt.Printf("Found %d companies\n\n", len(companies))
 
 	// Always sync companies first (required for foreign keys)
 	syncCompanies(ctx, queries, companies)
 
 	if c.Prices {
-		backfillPrices(ctx, client, queries, securities)
+		backfillPrices(ctx, db, client, queries, companies)
 	}
 
 	if c.Reports {
-		backfillReports(ctx, client, queries, securities)
+		backfillReports(ctx, client, queries, companies)
 	}
 
 	if c.Dividends {
-		backfillDividends(ctx, client, queries, securities)
+		backfillDividends(ctx, client, queries, companies)
 	}
 
 	if c.Profiles {
-		backfillProfiles(ctx, client, queries, securities)
+		backfillProfiles(ctx, client, queries, companies)
 	}
 
 	fmt.Println("\nBackfill complete!")
@@ -89,12 +82,10 @@ func syncCompanies(ctx context.Context, queries *sqlc.Queries, companies []nepse
 	fmt.Println("=== Syncing Companies ===")
 
 	for _, c := range companies {
-		err := queries.UpsertCompany(ctx, sqlc.UpsertCompanyParams{
-			Symbol:      c.Symbol,
-			Name:        c.Name,
-			Sector:      nepse.SectorToInt(c.Sector),
-			Description: "",
-			LogoUrl:     "",
+		err := queries.UpsertCompanyBasic(ctx, sqlc.UpsertCompanyBasicParams{
+			Symbol: c.Symbol,
+			Name:   c.Name,
+			Sector: nepse.SectorToInt(c.Sector),
 		})
 		if err != nil {
 			slog.Error("failed to upsert company", "symbol", c.Symbol, "error", err)
@@ -104,7 +95,48 @@ func syncCompanies(ctx context.Context, queries *sqlc.Queries, companies []nepse
 	fmt.Printf("Synced %d companies\n\n", len(companies))
 }
 
-func backfillPrices(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, securities []nepse.Security) {
+// worker runs tasks from a channel with rate limiting
+type worker struct {
+	workers     int
+	rateLimit   time.Duration
+	progressLog bool
+}
+
+func (w *worker) run(total int, task func(idx int) string) {
+	var wg sync.WaitGroup
+	semaphore := make(chan struct{}, w.workers)
+	progressChan := make(chan string, total)
+
+	progressDone := make(chan struct{})
+	go func() {
+		for msg := range progressChan {
+			if w.progressLog {
+				fmt.Println(msg)
+			}
+		}
+		close(progressDone)
+	}()
+
+	for i := 0; i < total; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			semaphore <- struct{}{}
+			defer func() { <-semaphore }()
+
+			msg := task(idx)
+			if msg != "" {
+				progressChan <- msg
+			}
+		}(i)
+	}
+
+	wg.Wait()
+	close(progressChan)
+	<-progressDone
+}
+
+func backfillPrices(ctx context.Context, db *sql.DB, client *nepse.Client, queries *sqlc.Queries, companies []nepse.Company) {
 	now := time.Now()
 	defaultFrom := now.AddDate(-1, 0, 0).Format("2006-01-02")
 	to := now.Format("2006-01-02")
@@ -126,410 +158,229 @@ func backfillPrices(ctx context.Context, client *nepse.Client, queries *sqlc.Que
 		}
 	}
 
-	total := len(securities)
-	priceCount := int64(0)
-	errorCount := int64(0)
-	skipped := int64(0)
-	mu := sync.Mutex{}
-	wg := sync.WaitGroup{}
-	semaphore := make(chan struct{}, 5)
-	progressChan := make(chan string, total)
+	total := len(companies)
+	var priceCount, errorCount, skipped atomic.Int64
 
-	// Progress printer goroutine
-	progressDone := make(chan struct{})
-	go func() {
-		for msg := range progressChan {
-			fmt.Println(msg)
-		}
-		close(progressDone)
-	}()
+	w := &worker{workers: 5, rateLimit: 200 * time.Millisecond, progressLog: true}
+	w.run(total, func(idx int) string {
+		c := companies[idx]
+		symbol := c.Symbol
+		from := defaultFrom
 
-	for i, sec := range securities {
-		wg.Add(1)
-		go func(idx int, s nepse.Security) {
-			defer wg.Done()
-			semaphore <- struct{}{}
-			defer func() { <-semaphore }()
-
-			symbol := s.Symbol
-
-			if err := ensureCompanyExists(ctx, queries, symbol, s.Name); err != nil {
-				slog.Error("failed to ensure company exists", "symbol", symbol, "error", err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				return
+		if latest, ok := latestMap[symbol]; ok {
+			if latest >= to {
+				skipped.Add(1)
+				return fmt.Sprintf("[%d/%d] %s skipped (up to date)", idx+1, total, symbol)
 			}
-
-			from := defaultFrom
-
-			if latest, ok := latestMap[symbol]; ok {
-				if latest >= to {
-					progressChan <- fmt.Sprintf("[%d/%d] %s skipped (up to date)", idx+1, total, symbol)
-					mu.Lock()
-					skipped++
-					mu.Unlock()
-					return
-				}
-				// Start from the day after the latest
-				t, err := time.Parse("2006-01-02", latest)
-				if err == nil {
-					from = t.AddDate(0, 0, 1).Format("2006-01-02")
-				}
-			}
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s fetching (%s to %s)...", idx+1, total, symbol, from, to)
-
-			history, err := client.PriceHistory(ctx, symbol, from, to)
-			if err != nil {
-				if strings.Contains(err.Error(), "not found") {
-					progressChan <- fmt.Sprintf("[%d/%d] %s not found", idx+1, total, symbol)
-				} else {
-					progressChan <- fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
-					mu.Lock()
-					errorCount++
-					mu.Unlock()
-				}
-				time.Sleep(200 * time.Millisecond)
-				return
-			}
-
-			localCount := int64(0)
-			for _, candle := range history {
-				err := queries.UpsertPrice(ctx, sqlc.UpsertPriceParams{
-					Symbol:        symbol,
-					Date:          candle.Date,
-					Open:          candle.Open,
-					High:          candle.High,
-					Low:           candle.Low,
-					Close:         candle.Close,
-					PreviousClose: sql.NullFloat64{Valid: false},
-					Volume:        candle.Volume,
-					Turnover:      sql.NullInt64{Int64: int64(candle.Turnover), Valid: true},
-					IsComplete:    1,
-					Week52High:    sql.NullFloat64{Valid: false},
-					Week52Low:     sql.NullFloat64{Valid: false},
-				})
-				if err != nil {
-					slog.Error("failed to upsert price", "symbol", symbol, "date", candle.Date, "error", err)
-					continue
-				}
-				localCount++
-			}
-
-			mu.Lock()
-			priceCount += localCount
-			mu.Unlock()
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s done (%d records)", idx+1, total, symbol, len(history))
-			time.Sleep(200 * time.Millisecond)
-		}(i, sec)
-	}
-
-	wg.Wait()
-	close(progressChan)
-	<-progressDone
-
-	fmt.Printf("\nPrices: %d new records, %d skipped, %d errors\n\n", priceCount, skipped, errorCount)
-}
-
-func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, securities []nepse.Security) {
-	fmt.Println("=== Backfilling Reports (parallel, 5 workers) ===")
-
-	total := len(securities)
-	reportCount := int64(0)
-	errorCount := int64(0)
-	skipped := int64(0)
-	mu := sync.Mutex{}
-	wg := sync.WaitGroup{}
-	semaphore := make(chan struct{}, 5)
-	progressChan := make(chan string, total)
-
-	// Progress printer goroutine
-	progressDone := make(chan struct{})
-	go func() {
-		for msg := range progressChan {
-			fmt.Println(msg)
-		}
-		close(progressDone)
-	}()
-
-	for i, sec := range securities {
-		wg.Add(1)
-		go func(idx int, s nepse.Security) {
-			defer wg.Done()
-			semaphore <- struct{}{}
-			defer func() { <-semaphore }()
-
-			symbol := s.Symbol
-
-			if err := ensureCompanyExists(ctx, queries, symbol, s.Name); err != nil {
-				slog.Error("failed to ensure company exists", "symbol", symbol, "error", err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				return
-			}
-
-			latest, err := queries.GetLatestReport(ctx, symbol)
+			t, err := time.Parse("2006-01-02", latest)
 			if err == nil {
-				latestFY := latest.FiscalYear
-				progressChan <- fmt.Sprintf("[%d/%d] %s skipped (has data through FY %d)", idx+1, total, symbol, latestFY)
-				mu.Lock()
-				skipped++
-				mu.Unlock()
-				return
+				from = t.AddDate(0, 0, 1).Format("2006-01-02")
 			}
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s fetching reports...", idx+1, total, symbol)
-
-			reports, err := client.Reports(ctx, symbol)
-			if err != nil {
-				progressChan <- fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				time.Sleep(200 * time.Millisecond)
-				return
-			}
-
-			localCount := int64(0)
-			for _, r := range reports {
-				reportType := int64(1)
-				if r.ReportType == "annual" {
-					reportType = 2
-				}
-
-				fiscalYear := parseFiscalYear(r.FiscalYear)
-
-				err := queries.InsertReport(ctx, sqlc.InsertReportParams{
-					Symbol:      symbol,
-					Type:        reportType,
-					FiscalYear:  fiscalYear,
-					Quarter:     int64(r.Quarter),
-					Eps:         sql.NullFloat64{Float64: r.EPS, Valid: r.EPS != 0},
-					BookValue:   sql.NullFloat64{Float64: r.BookValue, Valid: r.BookValue != 0},
-					NetIncome:   sql.NullFloat64{Float64: r.Profit, Valid: r.Profit != 0},
-					PublishedAt: sql.NullString{String: r.PublishedAt, Valid: r.PublishedAt != ""},
-				})
-				if err != nil {
-					slog.Error("failed to insert report", "symbol", symbol, "fy", r.FiscalYear, "error", err)
-					continue
-				}
-				localCount++
-			}
-
-			mu.Lock()
-			reportCount += localCount
-			mu.Unlock()
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s done (%d reports)", idx+1, total, symbol, len(reports))
-			time.Sleep(200 * time.Millisecond)
-		}(i, sec)
-	}
-
-	wg.Wait()
-	close(progressChan)
-	<-progressDone
-
-	fmt.Printf("\nReports: %d skipped, %d records, %d errors\n\n", skipped, reportCount, errorCount)
-}
-
-func backfillDividends(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, securities []nepse.Security) {
-	fmt.Println("=== Backfilling Dividends (parallel, 5 workers) ===")
-
-	total := len(securities)
-	divCount := int64(0)
-	errorCount := int64(0)
-	skipped := int64(0)
-	mu := sync.Mutex{}
-	wg := sync.WaitGroup{}
-	semaphore := make(chan struct{}, 5)
-	progressChan := make(chan string, total)
-
-	// Progress printer goroutine
-	progressDone := make(chan struct{})
-	go func() {
-		for msg := range progressChan {
-			fmt.Println(msg)
 		}
-		close(progressDone)
-	}()
 
-	for i, sec := range securities {
-		wg.Add(1)
-		go func(idx int, s nepse.Security) {
-			defer wg.Done()
-			semaphore <- struct{}{}
-			defer func() { <-semaphore }()
-
-			symbol := s.Symbol
-
-			if err := ensureCompanyExists(ctx, queries, symbol, s.Name); err != nil {
-				slog.Error("failed to ensure company exists", "symbol", symbol, "error", err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				return
-			}
-
-			latest, err := queries.GetLatestDividend(ctx, symbol)
-			if err == nil {
-				latestFY := latest.FiscalYear
-				progressChan <- fmt.Sprintf("[%d/%d] %s skipped (has data through FY %s)", idx+1, total, symbol, latestFY)
-				mu.Lock()
-				skipped++
-				mu.Unlock()
-				return
-			}
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s fetching dividends...", idx+1, total, symbol)
-
-			dividends, err := client.Dividends(ctx, symbol)
-			if err != nil {
-				progressChan <- fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				time.Sleep(200 * time.Millisecond)
-				return
-			}
-
-			localCount := int64(0)
-			for _, d := range dividends {
-				err := queries.UpsertDividend(ctx, sqlc.UpsertDividendParams{
-					Symbol:       symbol,
-					FiscalYear:   d.FiscalYear,
-					CashPercent:  d.CashPercent,
-					BonusPercent: d.BonusPercent,
-					Headline:     sql.NullString{String: d.Headline, Valid: d.Headline != ""},
-					PublishedAt:  sql.NullString{String: d.PublishedAt, Valid: d.PublishedAt != ""},
-				})
-				if err != nil {
-					slog.Error("failed to upsert dividend", "symbol", symbol, "fy", d.FiscalYear, "error", err)
-					continue
-				}
-				localCount++
-			}
-
-			mu.Lock()
-			divCount += localCount
-			mu.Unlock()
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s done (%d dividends)", idx+1, total, symbol, len(dividends))
+		history, err := client.PriceHistory(ctx, symbol, from, to)
+		if err != nil {
 			time.Sleep(200 * time.Millisecond)
-		}(i, sec)
-	}
-
-	wg.Wait()
-	close(progressChan)
-	<-progressDone
-
-	fmt.Printf("\nDividends: %d skipped, %d records, %d errors\n\n", skipped, divCount, errorCount)
-}
-
-func backfillProfiles(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, securities []nepse.Security) {
-	fmt.Println("=== Backfilling Company Profiles (parallel, 5 workers) ===")
-
-	total := len(securities)
-	profileCount := int64(0)
-	errorCount := int64(0)
-	skipped := int64(0)
-	mu := sync.Mutex{}
-	wg := sync.WaitGroup{}
-	semaphore := make(chan struct{}, 5)
-	progressChan := make(chan string, total)
-
-	// Progress printer goroutine
-	progressDone := make(chan struct{})
-	go func() {
-		for msg := range progressChan {
-			fmt.Println(msg)
+			if strings.Contains(err.Error(), "not found") {
+				return fmt.Sprintf("[%d/%d] %s not found", idx+1, total, symbol)
+			}
+			errorCount.Add(1)
+			return fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
 		}
-		close(progressDone)
-	}()
 
-	for i, sec := range securities {
-		wg.Add(1)
-		go func(idx int, s nepse.Security) {
-			defer wg.Done()
-			semaphore <- struct{}{}
-			defer func() { <-semaphore }()
+		if len(history) == 0 {
+			time.Sleep(200 * time.Millisecond)
+			return fmt.Sprintf("[%d/%d] %s no new data", idx+1, total, symbol)
+		}
 
-			symbol := s.Symbol
+		// Batch insert with transaction
+		tx, err := db.BeginTx(ctx, nil)
+		if err != nil {
+			errorCount.Add(1)
+			return fmt.Sprintf("[%d/%d] %s tx error: %v", idx+1, total, symbol, err)
+		}
 
-			if err := ensureCompanyExists(ctx, queries, symbol, s.Name); err != nil {
-				slog.Error("failed to ensure company exists", "symbol", symbol, "error", err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				return
-			}
-
-			company, err := queries.GetCompany(ctx, symbol)
-			if err == nil && company.Description != "" {
-				progressChan <- fmt.Sprintf("[%d/%d] %s skipped (has description)", idx+1, total, symbol)
-				mu.Lock()
-				skipped++
-				mu.Unlock()
-				return
-			}
-
-			progressChan <- fmt.Sprintf("[%d/%d] %s fetching profile...", idx+1, total, symbol)
-
-			profile, err := client.CompanyProfile(ctx, symbol)
-			if err != nil {
-				progressChan <- fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
-				mu.Lock()
-				errorCount++
-				mu.Unlock()
-				time.Sleep(200 * time.Millisecond)
-				return
-			}
-
-			if profile.Profile == "" {
-				progressChan <- fmt.Sprintf("[%d/%d] %s empty", idx+1, total, symbol)
-				time.Sleep(200 * time.Millisecond)
-				return
-			}
-
-			err = queries.UpdateCompanyDescription(ctx, sqlc.UpdateCompanyDescriptionParams{
-				Description: profile.Profile,
-				Symbol:      symbol,
+		qtx := queries.WithTx(tx)
+		localCount := int64(0)
+		for _, candle := range history {
+			err := qtx.UpsertPrice(ctx, sqlc.UpsertPriceParams{
+				Symbol:        symbol,
+				Date:          candle.Date,
+				Open:          candle.Open,
+				High:          candle.High,
+				Low:           candle.Low,
+				Close:         candle.Close,
+				PreviousClose: sql.NullFloat64{Valid: false},
+				Volume:        candle.Volume,
+				Turnover:      sql.NullInt64{Int64: int64(candle.Turnover), Valid: true},
+				IsComplete:    1,
+				Week52High:    sql.NullFloat64{Valid: false},
+				Week52Low:     sql.NullFloat64{Valid: false},
 			})
 			if err != nil {
-				slog.Error("failed to update description", "symbol", symbol, "error", err)
-				time.Sleep(200 * time.Millisecond)
-				return
+				slog.Error("failed to upsert price", "symbol", symbol, "date", candle.Date, "error", err)
+				continue
+			}
+			localCount++
+		}
+
+		if err := tx.Commit(); err != nil {
+			_ = tx.Rollback()
+			errorCount.Add(1)
+			return fmt.Sprintf("[%d/%d] %s commit error: %v", idx+1, total, symbol, err)
+		}
+
+		priceCount.Add(localCount)
+		time.Sleep(200 * time.Millisecond)
+		return fmt.Sprintf("[%d/%d] %s done (%d records)", idx+1, total, symbol, len(history))
+	})
+
+	fmt.Printf("\nPrices: %d new records, %d skipped, %d errors\n\n", priceCount.Load(), skipped.Load(), errorCount.Load())
+}
+
+func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, companies []nepse.Company) {
+	fmt.Println("=== Backfilling Reports (parallel, 5 workers) ===")
+
+	total := len(companies)
+	var reportCount, errorCount atomic.Int64
+
+	w := &worker{workers: 5, rateLimit: 200 * time.Millisecond, progressLog: true}
+	w.run(total, func(idx int) string {
+		c := companies[idx]
+		symbol := c.Symbol
+
+		reports, err := client.Reports(ctx, symbol)
+		if err != nil {
+			errorCount.Add(1)
+			time.Sleep(200 * time.Millisecond)
+			return fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
+		}
+
+		localCount := int64(0)
+		for _, r := range reports {
+			reportType := int64(1)
+			if r.ReportType == "annual" {
+				reportType = 2
 			}
 
-			progressChan <- fmt.Sprintf("[%d/%d] %s done", idx+1, total, symbol)
-			mu.Lock()
-			profileCount++
-			mu.Unlock()
+			fiscalYear := parseFiscalYear(r.FiscalYear)
+
+			err := queries.InsertReport(ctx, sqlc.InsertReportParams{
+				Symbol:      symbol,
+				Type:        reportType,
+				FiscalYear:  fiscalYear,
+				Quarter:     int64(r.Quarter),
+				Eps:         sql.NullFloat64{Float64: r.EPS, Valid: r.EPS != 0},
+				BookValue:   sql.NullFloat64{Float64: r.BookValue, Valid: r.BookValue != 0},
+				NetIncome:   sql.NullFloat64{Float64: r.Profit, Valid: r.Profit != 0},
+				PublishedAt: sql.NullString{String: r.PublishedAt, Valid: r.PublishedAt != ""},
+			})
+			if err != nil {
+				slog.Error("failed to insert report", "symbol", symbol, "fy", r.FiscalYear, "error", err)
+				continue
+			}
+			localCount++
+		}
+
+		reportCount.Add(localCount)
+		time.Sleep(200 * time.Millisecond)
+		return fmt.Sprintf("[%d/%d] %s done (%d reports)", idx+1, total, symbol, len(reports))
+	})
+
+	fmt.Printf("\nReports: %d records, %d errors\n\n", reportCount.Load(), errorCount.Load())
+}
+
+func backfillDividends(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, companies []nepse.Company) {
+	fmt.Println("=== Backfilling Dividends (parallel, 5 workers) ===")
+
+	total := len(companies)
+	var divCount, errorCount atomic.Int64
+
+	w := &worker{workers: 5, rateLimit: 200 * time.Millisecond, progressLog: true}
+	w.run(total, func(idx int) string {
+		c := companies[idx]
+		symbol := c.Symbol
+
+		dividends, err := client.Dividends(ctx, symbol)
+		if err != nil {
+			errorCount.Add(1)
 			time.Sleep(200 * time.Millisecond)
-		}(i, sec)
-	}
+			return fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
+		}
 
-	wg.Wait()
-	close(progressChan)
-	<-progressDone
+		localCount := int64(0)
+		for _, d := range dividends {
+			err := queries.UpsertDividend(ctx, sqlc.UpsertDividendParams{
+				Symbol:       symbol,
+				FiscalYear:   d.FiscalYear,
+				CashPercent:  d.CashPercent,
+				BonusPercent: d.BonusPercent,
+				Headline:     sql.NullString{String: d.Headline, Valid: d.Headline != ""},
+				PublishedAt:  sql.NullString{String: d.PublishedAt, Valid: d.PublishedAt != ""},
+			})
+			if err != nil {
+				slog.Error("failed to upsert dividend", "symbol", symbol, "fy", d.FiscalYear, "error", err)
+				continue
+			}
+			localCount++
+		}
 
-	fmt.Printf("\nProfiles: %d skipped, %d updated, %d errors\n\n", skipped, profileCount, errorCount)
+		divCount.Add(localCount)
+		time.Sleep(200 * time.Millisecond)
+		return fmt.Sprintf("[%d/%d] %s done (%d dividends)", idx+1, total, symbol, len(dividends))
+	})
+
+	fmt.Printf("\nDividends: %d records, %d errors\n\n", divCount.Load(), errorCount.Load())
+}
+
+func backfillProfiles(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, companies []nepse.Company) {
+	fmt.Println("=== Backfilling Company Profiles (parallel, 5 workers) ===")
+
+	total := len(companies)
+	var profileCount, errorCount, skipped atomic.Int64
+
+	w := &worker{workers: 5, rateLimit: 200 * time.Millisecond, progressLog: true}
+	w.run(total, func(idx int) string {
+		c := companies[idx]
+		symbol := c.Symbol
+
+		company, err := queries.GetCompany(ctx, symbol)
+		if err == nil && company.Description != "" {
+			skipped.Add(1)
+			return fmt.Sprintf("[%d/%d] %s skipped (has description)", idx+1, total, symbol)
+		}
+
+		profile, err := client.CompanyProfile(ctx, symbol)
+		if err != nil {
+			errorCount.Add(1)
+			time.Sleep(200 * time.Millisecond)
+			return fmt.Sprintf("[%d/%d] %s error: %v", idx+1, total, symbol, err)
+		}
+
+		if profile.Profile == "" {
+			time.Sleep(200 * time.Millisecond)
+			return fmt.Sprintf("[%d/%d] %s empty", idx+1, total, symbol)
+		}
+
+		err = queries.UpdateCompanyDescription(ctx, sqlc.UpdateCompanyDescriptionParams{
+			Description: profile.Profile,
+			Symbol:      symbol,
+		})
+		if err != nil {
+			slog.Error("failed to update description", "symbol", symbol, "error", err)
+			time.Sleep(200 * time.Millisecond)
+			return fmt.Sprintf("[%d/%d] %s db error: %v", idx+1, total, symbol, err)
+		}
+
+		profileCount.Add(1)
+		time.Sleep(200 * time.Millisecond)
+		return fmt.Sprintf("[%d/%d] %s done", idx+1, total, symbol)
+	})
+
+	fmt.Printf("\nProfiles: %d skipped, %d updated, %d errors\n\n", skipped.Load(), profileCount.Load(), errorCount.Load())
 }
 
 // parseFiscalYear extracts numeric year from Nepali fiscal year format (e.g., "2080/81" -> 2080).
-func ensureCompanyExists(ctx context.Context, queries *sqlc.Queries, symbol, name string) error {
-	err := queries.UpsertCompany(ctx, sqlc.UpsertCompanyParams{
-		Symbol:      symbol,
-		Name:        name,
-		Sector:      13, // Others
-		Description: "",
-		LogoUrl:     "",
-	})
-	return err
-}
-
 func parseFiscalYear(fy string) int64 {
 	fy = strings.TrimSpace(fy)
 	if fy == "" {

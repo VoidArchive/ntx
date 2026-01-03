@@ -8,6 +8,15 @@ ON CONFLICT(symbol) DO UPDATE SET
     logo_url = excluded.logo_url,
     last_synced = excluded.last_synced;
 
+-- name: UpsertCompanyBasic :exec
+-- Updates company info without overwriting description/logo
+INSERT INTO companies (symbol, name, sector, description, logo_url, last_synced)
+VALUES (?, ?, ?, '', '', datetime('now'))
+ON CONFLICT(symbol) DO UPDATE SET
+    name = excluded.name,
+    sector = excluded.sector,
+    last_synced = excluded.last_synced;
+
 -- name: GetCompany :one
 SELECT * FROM companies WHERE symbol = ? LIMIT 1;
 

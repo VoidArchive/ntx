@@ -40,10 +40,16 @@ const getReports = `-- name: GetReports :many
 SELECT id, symbol, type, fiscal_year, quarter, revenue, net_income, eps, book_value, npl_ratio, published_at FROM reports
 WHERE symbol = ?
 ORDER BY fiscal_year DESC, quarter DESC
+LIMIT ?
 `
 
-func (q *Queries) GetReports(ctx context.Context, symbol string) ([]Report, error) {
-	rows, err := q.db.QueryContext(ctx, getReports, symbol)
+type GetReportsParams struct {
+	Symbol string `json:"symbol"`
+	Limit  int64  `json:"limit"`
+}
+
+func (q *Queries) GetReports(ctx context.Context, arg GetReportsParams) ([]Report, error) {
+	rows, err := q.db.QueryContext(ctx, getReports, arg.Symbol, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

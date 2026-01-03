@@ -12,7 +12,8 @@ ON CONFLICT(symbol, type, fiscal_year, quarter) DO UPDATE SET
 -- name: GetReports :many
 SELECT * FROM reports
 WHERE symbol = ?
-ORDER BY fiscal_year DESC, quarter DESC;
+ORDER BY fiscal_year DESC, quarter DESC
+LIMIT ?;
 
 -- name: GetReportsByType :many
 SELECT * FROM reports

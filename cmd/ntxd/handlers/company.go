@@ -119,10 +119,7 @@ func (s *CompanyService) ListReports(
 		return nil, connect.NewError(connect.CodeInvalidArgument, errSymbolRequired)
 	}
 
-	limit := int64(req.Msg.GetLimit())
-	if limit <= 0 {
-		limit = 20
-	}
+	limit := clampLimit(int64(req.Msg.GetLimit()), 20)
 
 	reportType := req.Msg.GetType()
 
@@ -136,10 +133,10 @@ func (s *CompanyService) ListReports(
 			Limit:  limit,
 		})
 	} else {
-		reports, err = s.queries.GetReports(ctx, symbol)
-		if len(reports) > int(limit) {
-			reports = reports[:limit]
-		}
+		reports, err = s.queries.GetReports(ctx, sqlc.GetReportsParams{
+			Symbol: symbol,
+			Limit:  limit,
+		})
 	}
 
 	if err != nil {
