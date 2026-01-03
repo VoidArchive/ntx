@@ -4,7 +4,6 @@ import (
 	"context"
 	"math"
 	"sort"
-	"time"
 
 	"connectrpc.com/connect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -39,13 +38,13 @@ func (s *ScreenerService) Screen(
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
-		data = convertBySectorRows(rows)
+		data = convertScreenerRows(rows)
 	} else {
 		rows, err := s.queries.GetScreenerData(ctx)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
-		data = convertRows(rows)
+		data = convertScreenerRows(rows)
 	}
 
 	// Apply filters
@@ -81,8 +80,39 @@ func (s *ScreenerService) Screen(
 
 	return connect.NewResponse(&ntxv1.ScreenResponse{
 		Results: results,
-		Total:   int32(total),
+		Total:   safeIntToInt32(total),
 	}), nil
+}
+
+// topMoversParams holds the query functions for fetching top movers.
+type topMoversParams struct {
+	getAll      func(ctx context.Context, limit int64) ([]sqlc.Price, error)
+	getBySector func(ctx context.Context, sector, limit int64) ([]sqlc.Price, error)
+}
+
+// fetchTopMovers is a shared helper for ListTopGainers and ListTopLosers.
+func (s *ScreenerService) fetchTopMovers(
+	ctx context.Context, sector ntxv1.Sector, limit int32, params topMoversParams,
+) ([]*ntxv1.Price, error) {
+	lim := int64(limit)
+	if lim <= 0 {
+		lim = 10
+	}
+
+	var prices []sqlc.Price
+	var err error
+
+	if sector != ntxv1.Sector_SECTOR_UNSPECIFIED {
+		prices, err = params.getBySector(ctx, int64(sector), lim)
+	} else {
+		prices, err = params.getAll(ctx, lim)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return s.pricesToProto(prices), nil
 }
 
 // ListTopGainers returns top gaining stocks.
@@ -90,37 +120,16 @@ func (s *ScreenerService) ListTopGainers(
 	ctx context.Context,
 	req *connect.Request[ntxv1.ListTopGainersRequest],
 ) (*connect.Response[ntxv1.ListTopGainersResponse], error) {
-	limit := int64(req.Msg.GetLimit())
-	if limit <= 0 {
-		limit = 10
-	}
-
-	sector := req.Msg.GetSector()
-
-	var prices []sqlc.Price
-	var err error
-
-	if sector != ntxv1.Sector_SECTOR_UNSPECIFIED {
-		prices, err = s.queries.GetTopGainersBySector(ctx, sqlc.GetTopGainersBySectorParams{
-			Sector: int64(sector),
-			Limit:  limit,
-		})
-	} else {
-		prices, err = s.queries.GetTopGainers(ctx, limit)
-	}
-
+	stocks, err := s.fetchTopMovers(ctx, req.Msg.GetSector(), req.Msg.GetLimit(), topMoversParams{
+		getAll: s.queries.GetTopGainers,
+		getBySector: func(ctx context.Context, sector, limit int64) ([]sqlc.Price, error) {
+			return s.queries.GetTopGainersBySector(ctx, sqlc.GetTopGainersBySectorParams{Sector: sector, Limit: limit})
+		},
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-
-	stocks := make([]*ntxv1.Price, len(prices))
-	for i, p := range prices {
-		stocks[i] = priceToProto(p)
-	}
-
-	return connect.NewResponse(&ntxv1.ListTopGainersResponse{
-		Stocks: stocks,
-	}), nil
+	return connect.NewResponse(&ntxv1.ListTopGainersResponse{Stocks: stocks}), nil
 }
 
 // ListTopLosers returns top losing stocks.
@@ -128,37 +137,24 @@ func (s *ScreenerService) ListTopLosers(
 	ctx context.Context,
 	req *connect.Request[ntxv1.ListTopLosersRequest],
 ) (*connect.Response[ntxv1.ListTopLosersResponse], error) {
-	limit := int64(req.Msg.GetLimit())
-	if limit <= 0 {
-		limit = 10
-	}
-
-	sector := req.Msg.GetSector()
-
-	var prices []sqlc.Price
-	var err error
-
-	if sector != ntxv1.Sector_SECTOR_UNSPECIFIED {
-		prices, err = s.queries.GetTopLosersBySector(ctx, sqlc.GetTopLosersBySectorParams{
-			Sector: int64(sector),
-			Limit:  limit,
-		})
-	} else {
-		prices, err = s.queries.GetTopLosers(ctx, limit)
-	}
-
+	stocks, err := s.fetchTopMovers(ctx, req.Msg.GetSector(), req.Msg.GetLimit(), topMoversParams{
+		getAll: s.queries.GetTopLosers,
+		getBySector: func(ctx context.Context, sector, limit int64) ([]sqlc.Price, error) {
+			return s.queries.GetTopLosersBySector(ctx, sqlc.GetTopLosersBySectorParams{Sector: sector, Limit: limit})
+		},
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	return connect.NewResponse(&ntxv1.ListTopLosersResponse{Stocks: stocks}), nil
+}
 
-	stocks := make([]*ntxv1.Price, len(prices))
+func (s *ScreenerService) pricesToProto(prices []sqlc.Price) []*ntxv1.Price {
+	result := make([]*ntxv1.Price, len(prices))
 	for i, p := range prices {
-		stocks[i] = priceToProto(p)
+		result[i] = priceToProto(p)
 	}
-
-	return connect.NewResponse(&ntxv1.ListTopLosersResponse{
-		Stocks: stocks,
-	}), nil
+	return result
 }
 
 // screenerRow is a unified type for screener data.
@@ -167,7 +163,7 @@ type screenerRow struct {
 	Name              string
 	Sector            int64
 	Description       string
-	LogoUrl           string
+	LogoURL           string
 	PriceDate         string
 	Open              float64
 	High              float64
@@ -202,142 +198,116 @@ func (r screenerRow) percentChange() float64 {
 	return 0
 }
 
-func convertRows(rows []sqlc.GetScreenerDataRow) []screenerRow {
+// screenerDataRow is an interface for sqlc row types with screener data.
+type screenerDataRow interface {
+	sqlc.GetScreenerDataRow | sqlc.GetScreenerDataBySectorRow
+}
+
+// toScreenerRow converts any screener data row type to a unified screenerRow.
+func toScreenerRow[T screenerDataRow](r T) screenerRow {
+	// Use type assertion via any to access fields (both types have identical fields)
+	switch v := any(r).(type) {
+	case sqlc.GetScreenerDataRow:
+		return screenerRow{
+			Symbol: v.Symbol, Name: v.Name, Sector: v.Sector, Description: v.Description,
+			LogoURL: v.LogoUrl, PriceDate: v.PriceDate, Open: v.Open, High: v.High,
+			Low: v.Low, Close: v.Close, PreviousClose: nullFloat64(v.PreviousClose),
+			Volume: v.Volume, Turnover: nullInt64(v.Turnover),
+			Week52High: nullFloat64(v.Week52High), Week52Low: nullFloat64(v.Week52Low),
+			PE: nullFloat64(v.Pe), PB: nullFloat64(v.Pb), EPS: nullFloat64(v.Eps),
+			BookValue: nullFloat64(v.BookValue), MarketCap: nullFloat64(v.MarketCap),
+			DividendYield: nullFloat64(v.DividendYield), ROE: nullFloat64(v.Roe),
+			SharesOutstanding: nullInt64(v.SharesOutstanding),
+		}
+	case sqlc.GetScreenerDataBySectorRow:
+		return screenerRow{
+			Symbol: v.Symbol, Name: v.Name, Sector: v.Sector, Description: v.Description,
+			LogoURL: v.LogoUrl, PriceDate: v.PriceDate, Open: v.Open, High: v.High,
+			Low: v.Low, Close: v.Close, PreviousClose: nullFloat64(v.PreviousClose),
+			Volume: v.Volume, Turnover: nullInt64(v.Turnover),
+			Week52High: nullFloat64(v.Week52High), Week52Low: nullFloat64(v.Week52Low),
+			PE: nullFloat64(v.Pe), PB: nullFloat64(v.Pb), EPS: nullFloat64(v.Eps),
+			BookValue: nullFloat64(v.BookValue), MarketCap: nullFloat64(v.MarketCap),
+			DividendYield: nullFloat64(v.DividendYield), ROE: nullFloat64(v.Roe),
+			SharesOutstanding: nullInt64(v.SharesOutstanding),
+		}
+	}
+	return screenerRow{}
+}
+
+// convertScreenerRows converts a slice of screener data rows to unified screenerRows.
+func convertScreenerRows[T screenerDataRow](rows []T) []screenerRow {
 	out := make([]screenerRow, len(rows))
 	for i, r := range rows {
-		out[i] = screenerRow{
-			Symbol:            r.Symbol,
-			Name:              r.Name,
-			Sector:            r.Sector,
-			Description:       r.Description,
-			LogoUrl:           r.LogoUrl,
-			PriceDate:         r.PriceDate,
-			Open:              r.Open,
-			High:              r.High,
-			Low:               r.Low,
-			Close:             r.Close,
-			PreviousClose:     nullFloat64(r.PreviousClose),
-			Volume:            r.Volume,
-			Turnover:          nullInt64(r.Turnover),
-			Week52High:        nullFloat64(r.Week52High),
-			Week52Low:         nullFloat64(r.Week52Low),
-			PE:                nullFloat64(r.Pe),
-			PB:                nullFloat64(r.Pb),
-			EPS:               nullFloat64(r.Eps),
-			BookValue:         nullFloat64(r.BookValue),
-			MarketCap:         nullFloat64(r.MarketCap),
-			DividendYield:     nullFloat64(r.DividendYield),
-			ROE:               nullFloat64(r.Roe),
-			SharesOutstanding: nullInt64(r.SharesOutstanding),
-		}
+		out[i] = toScreenerRow(r)
 	}
 	return out
 }
 
-func convertBySectorRows(rows []sqlc.GetScreenerDataBySectorRow) []screenerRow {
-	out := make([]screenerRow, len(rows))
-	for i, r := range rows {
-		out[i] = screenerRow{
-			Symbol:            r.Symbol,
-			Name:              r.Name,
-			Sector:            r.Sector,
-			Description:       r.Description,
-			LogoUrl:           r.LogoUrl,
-			PriceDate:         r.PriceDate,
-			Open:              r.Open,
-			High:              r.High,
-			Low:               r.Low,
-			Close:             r.Close,
-			PreviousClose:     nullFloat64(r.PreviousClose),
-			Volume:            r.Volume,
-			Turnover:          nullInt64(r.Turnover),
-			Week52High:        nullFloat64(r.Week52High),
-			Week52Low:         nullFloat64(r.Week52Low),
-			PE:                nullFloat64(r.Pe),
-			PB:                nullFloat64(r.Pb),
-			EPS:               nullFloat64(r.Eps),
-			BookValue:         nullFloat64(r.BookValue),
-			MarketCap:         nullFloat64(r.MarketCap),
-			DividendYield:     nullFloat64(r.DividendYield),
-			ROE:               nullFloat64(r.Roe),
-			SharesOutstanding: nullInt64(r.SharesOutstanding),
+type filterFunc func(row screenerRow) bool
+
+// rangeFilter creates a filter that checks if value is within optional min/max bounds.
+func rangeFilter(getValue func(screenerRow) float64, minVal, maxVal *float64) filterFunc {
+	return func(r screenerRow) bool {
+		v := getValue(r)
+		return (minVal == nil || v >= *minVal) && (maxVal == nil || v <= *maxVal)
+	}
+}
+
+// addRangeFilter appends a range filter if min or max is set.
+func addRangeFilter(
+	filters *[]filterFunc, getValue func(screenerRow) float64, minVal, maxVal *float64,
+) {
+	if minVal != nil || maxVal != nil {
+		*filters = append(*filters, rangeFilter(getValue, minVal, maxVal))
+	}
+}
+
+// buildFilters constructs all filter functions from a screen request.
+func buildFilters(req *ntxv1.ScreenRequest) []filterFunc {
+	var filters []filterFunc
+
+	addRangeFilter(&filters, func(r screenerRow) float64 { return r.Close }, req.MinPrice, req.MaxPrice)
+	addRangeFilter(&filters, func(r screenerRow) float64 { return r.PE }, req.MinPe, req.MaxPe)
+	addRangeFilter(&filters, func(r screenerRow) float64 { return r.PB }, req.MinPb, req.MaxPb)
+	addRangeFilter(&filters, func(r screenerRow) float64 { return r.percentChange() }, req.MinChange, req.MaxChange)
+	addRangeFilter(&filters, func(r screenerRow) float64 { return r.MarketCap }, req.MinMarketCap, req.MaxMarketCap)
+
+	if req.MinVolume != nil {
+		filters = append(filters, func(r screenerRow) bool { return r.Volume >= *req.MinVolume })
+	}
+	if req.Near_52WHigh {
+		filters = append(filters, func(r screenerRow) bool { return r.Week52High <= 0 || r.Close >= r.Week52High*0.95 })
+	}
+	if req.Near_52WLow {
+		filters = append(filters, func(r screenerRow) bool { return r.Week52Low <= 0 || r.Close <= r.Week52Low*1.05 })
+	}
+
+	return filters
+}
+
+// passesFilters checks if a row passes all filter functions.
+func passesFilters(row screenerRow, filters []filterFunc) bool {
+	for _, f := range filters {
+		if !f(row) {
+			return false
 		}
 	}
-	return out
+	return true
 }
 
 func filterData(data []screenerRow, req *ntxv1.ScreenRequest) []screenerRow {
-	var filtered []screenerRow
+	filters := buildFilters(req)
 
+	var filtered []screenerRow
 	for _, row := range data {
-		// Skip rows without price data
 		if row.Close == 0 {
 			continue
 		}
-
-		// Price filters
-		if req.MinPrice != nil && row.Close < *req.MinPrice {
-			continue
+		if passesFilters(row, filters) {
+			filtered = append(filtered, row)
 		}
-		if req.MaxPrice != nil && row.Close > *req.MaxPrice {
-			continue
-		}
-
-		// PE filters
-		if req.MinPe != nil && row.PE < *req.MinPe {
-			continue
-		}
-		if req.MaxPe != nil && row.PE > *req.MaxPe {
-			continue
-		}
-
-		// PB filters
-		if req.MinPb != nil && row.PB < *req.MinPb {
-			continue
-		}
-		if req.MaxPb != nil && row.PB > *req.MaxPb {
-			continue
-		}
-
-		// Change filters
-		pctChange := row.percentChange()
-		if req.MinChange != nil && pctChange < *req.MinChange {
-			continue
-		}
-		if req.MaxChange != nil && pctChange > *req.MaxChange {
-			continue
-		}
-
-		// Market cap filters
-		if req.MinMarketCap != nil && row.MarketCap < *req.MinMarketCap {
-			continue
-		}
-		if req.MaxMarketCap != nil && row.MarketCap > *req.MaxMarketCap {
-			continue
-		}
-
-		// Volume filter
-		if req.MinVolume != nil && row.Volume < *req.MinVolume {
-			continue
-		}
-
-		// 52-week high/low proximity filters
-		if req.Near_52WHigh && row.Week52High > 0 {
-			threshold := row.Week52High * 0.95
-			if row.Close < threshold {
-				continue
-			}
-		}
-		if req.Near_52WLow && row.Week52Low > 0 {
-			threshold := row.Week52Low * 1.05
-			if row.Close > threshold {
-				continue
-			}
-		}
-
-		filtered = append(filtered, row)
 	}
-
 	return filtered
 }
 
@@ -381,15 +351,15 @@ func sortData(data []screenerRow, sortBy ntxv1.SortBy, order ntxv1.SortOrder) {
 }
 
 func rowToScreenResult(row screenerRow) *ntxv1.ScreenResult {
-	date, _ := time.Parse("2006-01-02", row.PriceDate)
+	date := parseDate(row.PriceDate)
 
 	return &ntxv1.ScreenResult{
 		Company: &ntxv1.Company{
 			Symbol:      row.Symbol,
 			Name:        row.Name,
-			Sector:      ntxv1.Sector(row.Sector),
+			Sector:      ntxv1.Sector(safeInt32(row.Sector)),
 			Description: row.Description,
-			LogoUrl:     row.LogoUrl,
+			LogoUrl:     row.LogoURL,
 		},
 		Price: &ntxv1.Price{
 			Symbol:        row.Symbol,

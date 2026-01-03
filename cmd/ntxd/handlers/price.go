@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"strings"
 	"time"
 
@@ -36,7 +38,10 @@ func (s *PriceService) GetPrice(
 
 	price, err := s.queries.GetLatestPrice(ctx, symbol)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeNotFound, err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return connect.NewResponse(&ntxv1.GetPriceResponse{
@@ -101,7 +106,7 @@ func priceToProto(p sqlc.Price) *ntxv1.Price {
 		percentChange = (change / prevClose) * 100
 	}
 
-	date, _ := time.Parse("2006-01-02", p.Date)
+	date := parseDate(p.Date)
 
 	return &ntxv1.Price{
 		Symbol:        p.Symbol,
@@ -121,7 +126,7 @@ func priceToProto(p sqlc.Price) *ntxv1.Price {
 }
 
 func ohlcvToProto(p sqlc.Price) *ntxv1.OHLCV {
-	date, _ := time.Parse("2006-01-02", p.Date)
+	date := parseDate(p.Date)
 	return &ntxv1.OHLCV{
 		Date:     timestamppb.New(date),
 		Open:     p.Open,

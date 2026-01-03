@@ -1,7 +1,10 @@
+// Package handlers implements the RPC request and response from the proto file.
 package handlers
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"strings"
 
 	"connectrpc.com/connect"
@@ -72,7 +75,10 @@ func (s *CompanyService) GetCompany(
 
 	company, err := s.queries.GetCompany(ctx, symbol)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeNotFound, err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return connect.NewResponse(&ntxv1.GetCompanyResponse{
@@ -92,7 +98,10 @@ func (s *CompanyService) GetFundamentals(
 
 	fundamentals, err := s.queries.GetFundamentals(ctx, symbol)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeNotFound, err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return connect.NewResponse(&ntxv1.GetFundamentalsResponse{
@@ -151,7 +160,7 @@ func companyToProto(c sqlc.Company) *ntxv1.Company {
 	return &ntxv1.Company{
 		Symbol:      c.Symbol,
 		Name:        c.Name,
-		Sector:      ntxv1.Sector(c.Sector),
+		Sector:      ntxv1.Sector(safeInt32(c.Sector)),
 		Description: c.Description,
 		LogoUrl:     c.LogoUrl,
 	}
@@ -174,9 +183,9 @@ func fundamentalsToProto(f sqlc.Fundamental) *ntxv1.Fundamentals {
 func reportToProto(r sqlc.Report) *ntxv1.Report {
 	return &ntxv1.Report{
 		Symbol:     r.Symbol,
-		Type:       ntxv1.ReportType(r.Type),
-		FiscalYear: int32(r.FiscalYear),
-		Quarter:    int32(r.Quarter),
+		Type:       ntxv1.ReportType(safeInt32(r.Type)),
+		FiscalYear: safeInt32(r.FiscalYear),
+		Quarter:    safeInt32(r.Quarter),
 		Revenue:    nullFloat64(r.Revenue),
 		NetIncome:  nullFloat64(r.NetIncome),
 		Eps:        nullFloat64(r.Eps),

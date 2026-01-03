@@ -36,23 +36,23 @@
 - [x] Historical price backfill (one-time)
 
 ### ConnectRPC Handlers
-- [x] CompanyService.ListCompanies
-- [x] CompanyService.GetCompany
-- [x] CompanyService.GetFundamentals
-- [x] CompanyService.ListReports
-- [x] PriceService.GetPrice
-- [x] PriceService.ListCandles
-- [x] MarketService.GetStatus
-- [x] MarketService.ListIndices
-- [x] MarketService.ListSectors
-- [x] ScreenerService.Screen
-- [x] ScreenerService.ListTopGainers
-- [x] ScreenerService.ListTopLosers
+- [ ] CompanyService.ListCompanies
+- [ ] CompanyService.GetCompany
+- [ ] CompanyService.GetFundamentals
+- [ ] CompanyService.ListReports
+- [ ] PriceService.GetPrice
+- [ ] PriceService.ListCandles
+- [ ] MarketService.GetStatus
+- [ ] MarketService.ListIndices
+- [ ] MarketService.ListSectors
+- [ ] ScreenerService.Screen
+- [ ] ScreenerService.ListTopGainers
+- [ ] ScreenerService.ListTopLosers
 
 ### Server Infrastructure
-- [x] HTTP server setup (port 8080)
-- [x] Health check endpoint (/health)
-- [x] Graceful shutdown
+- [ ] HTTP server setup (port 8080)
+- [ ] Health check endpoint (/health)
+- [ ] Graceful shutdown
 - [ ] Embed SvelteKit static files
 
 ---
@@ -85,6 +85,8 @@
 ---
 
 ## Phase 4: CLI (ntx)
+
+// Need to decide if i want to implement the portfolio management or not, it looks simple but is complex in nature. Just having a simple stock aggregator and screener is good. Let's not feature creep it. NTX will do one thing, and one thing really well. And that's stock screening with fundamentals.
 
 ### Database Schema (ntx.db)
 - [ ] Create `portfolios` table

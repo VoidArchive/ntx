@@ -137,16 +137,17 @@ func (s *MarketService) ListSectors(
 		}
 
 		turnover := int64(0)
-		if t, ok := row.Turnover.(int64); ok {
+		switch t := row.Turnover.(type) {
+		case int64:
 			turnover = t
-		} else if t, ok := row.Turnover.(float64); ok {
+		case float64:
 			turnover = int64(t)
 		}
 
 		sectors[i] = &ntxv1.SectorSummary{
-			Sector:     ntxv1.Sector(row.Sector),
+			Sector:     ntxv1.Sector(safeInt32(row.Sector)),
 			Name:       name,
-			StockCount: int32(row.StockCount),
+			StockCount: safeInt32(row.StockCount),
 			Turnover:   turnover,
 		}
 	}
