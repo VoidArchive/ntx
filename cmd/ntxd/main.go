@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/voidarchive/ntx/cmd/ntxd/handlers"
+	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/database"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 	"github.com/voidarchive/ntx/internal/market"
@@ -62,8 +65,33 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// TODO: Register MarketService handler
-	// TODO: Register AnalyzerService handler
+	// Health check endpoint
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	})
+
+	// Register RPC handlers
+	companyPath, companyHandler := ntxv1connect.NewCompanyServiceHandler(
+		handlers.NewCompanyService(queries),
+	)
+	mux.Handle(companyPath, companyHandler)
+
+	pricePath, priceHandler := ntxv1connect.NewPriceServiceHandler(
+		handlers.NewPriceService(queries),
+	)
+	mux.Handle(pricePath, priceHandler)
+
+	marketPath, marketHandler := ntxv1connect.NewMarketServiceHandler(
+		handlers.NewMarketService(queries, mkt, nepseClient),
+	)
+	mux.Handle(marketPath, marketHandler)
+
+	screenerPath, screenerHandler := ntxv1connect.NewScreenerServiceHandler(
+		handlers.NewScreenerService(queries),
+	)
+	mux.Handle(screenerPath, screenerHandler)
 
 	addr := ":8080"
 	server := &http.Server{

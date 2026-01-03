@@ -85,30 +85,6 @@ func (c *BackfillCmd) Run() error {
 	return nil
 }
 
-// Sector name mapping from NEPSE API to database integers.
-var sectorMap = map[string]int64{
-	"Commercial Banks":             1,
-	"Development Banks":            2,
-	"Finance":                      3,
-	"Microfinance":                 4,
-	"Life Insurance":               5,
-	"Non Life Insurance":           6,
-	"Hydro Power":                  7,
-	"Manufacturing And Processing": 8,
-	"Hotels And Tourism":           9,
-	"Trading":                      10,
-	"Investment":                   11,
-	"Mutual Fund":                  12,
-	"Others":                       13,
-}
-
-func sectorToInt(name string) int64 {
-	if id, ok := sectorMap[name]; ok {
-		return id
-	}
-	return 0
-}
-
 func syncCompanies(ctx context.Context, queries *sqlc.Queries, companies []nepse.Company) {
 	fmt.Println("=== Syncing Companies ===")
 
@@ -116,7 +92,7 @@ func syncCompanies(ctx context.Context, queries *sqlc.Queries, companies []nepse
 		err := queries.UpsertCompany(ctx, sqlc.UpsertCompanyParams{
 			Symbol:      c.Symbol,
 			Name:        c.Name,
-			Sector:      sectorToInt(c.Sector),
+			Sector:      nepse.SectorToInt(c.Sector),
 			Description: "",
 			LogoUrl:     "",
 		})
@@ -160,11 +136,12 @@ func backfillPrices(ctx context.Context, client *nepse.Client, queries *sqlc.Que
 	progressChan := make(chan string, total)
 
 	// Progress printer goroutine
+	progressDone := make(chan struct{})
 	go func() {
 		for msg := range progressChan {
 			fmt.Println(msg)
 		}
-		close(progressChan)
+		close(progressDone)
 	}()
 
 	for i, sec := range securities {
@@ -217,6 +194,7 @@ func backfillPrices(ctx context.Context, client *nepse.Client, queries *sqlc.Que
 				return
 			}
 
+			localCount := int64(0)
 			for _, candle := range history {
 				err := queries.UpsertPrice(ctx, sqlc.UpsertPriceParams{
 					Symbol:        symbol,
@@ -229,13 +207,19 @@ func backfillPrices(ctx context.Context, client *nepse.Client, queries *sqlc.Que
 					Volume:        candle.Volume,
 					Turnover:      sql.NullInt64{Int64: int64(candle.Turnover), Valid: true},
 					IsComplete:    1,
+					Week52High:    sql.NullFloat64{Valid: false},
+					Week52Low:     sql.NullFloat64{Valid: false},
 				})
 				if err != nil {
 					slog.Error("failed to upsert price", "symbol", symbol, "date", candle.Date, "error", err)
 					continue
 				}
-				priceCount++
+				localCount++
 			}
+
+			mu.Lock()
+			priceCount += localCount
+			mu.Unlock()
 
 			progressChan <- fmt.Sprintf("[%d/%d] %s done (%d records)", idx+1, total, symbol, len(history))
 			time.Sleep(200 * time.Millisecond)
@@ -244,6 +228,7 @@ func backfillPrices(ctx context.Context, client *nepse.Client, queries *sqlc.Que
 
 	wg.Wait()
 	close(progressChan)
+	<-progressDone
 
 	fmt.Printf("\nPrices: %d new records, %d skipped, %d errors\n\n", priceCount, skipped, errorCount)
 }
@@ -261,11 +246,12 @@ func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Qu
 	progressChan := make(chan string, total)
 
 	// Progress printer goroutine
+	progressDone := make(chan struct{})
 	go func() {
 		for msg := range progressChan {
 			fmt.Println(msg)
 		}
-		close(progressChan)
+		close(progressDone)
 	}()
 
 	for i, sec := range securities {
@@ -307,6 +293,7 @@ func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Qu
 				return
 			}
 
+			localCount := int64(0)
 			for _, r := range reports {
 				reportType := int64(1)
 				if r.ReportType == "annual" {
@@ -329,8 +316,12 @@ func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Qu
 					slog.Error("failed to insert report", "symbol", symbol, "fy", r.FiscalYear, "error", err)
 					continue
 				}
-				reportCount++
+				localCount++
 			}
+
+			mu.Lock()
+			reportCount += localCount
+			mu.Unlock()
 
 			progressChan <- fmt.Sprintf("[%d/%d] %s done (%d reports)", idx+1, total, symbol, len(reports))
 			time.Sleep(200 * time.Millisecond)
@@ -339,6 +330,7 @@ func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Qu
 
 	wg.Wait()
 	close(progressChan)
+	<-progressDone
 
 	fmt.Printf("\nReports: %d skipped, %d records, %d errors\n\n", skipped, reportCount, errorCount)
 }
@@ -356,11 +348,12 @@ func backfillDividends(ctx context.Context, client *nepse.Client, queries *sqlc.
 	progressChan := make(chan string, total)
 
 	// Progress printer goroutine
+	progressDone := make(chan struct{})
 	go func() {
 		for msg := range progressChan {
 			fmt.Println(msg)
 		}
-		close(progressChan)
+		close(progressDone)
 	}()
 
 	for i, sec := range securities {
@@ -402,6 +395,7 @@ func backfillDividends(ctx context.Context, client *nepse.Client, queries *sqlc.
 				return
 			}
 
+			localCount := int64(0)
 			for _, d := range dividends {
 				err := queries.UpsertDividend(ctx, sqlc.UpsertDividendParams{
 					Symbol:       symbol,
@@ -415,8 +409,12 @@ func backfillDividends(ctx context.Context, client *nepse.Client, queries *sqlc.
 					slog.Error("failed to upsert dividend", "symbol", symbol, "fy", d.FiscalYear, "error", err)
 					continue
 				}
-				divCount++
+				localCount++
 			}
+
+			mu.Lock()
+			divCount += localCount
+			mu.Unlock()
 
 			progressChan <- fmt.Sprintf("[%d/%d] %s done (%d dividends)", idx+1, total, symbol, len(dividends))
 			time.Sleep(200 * time.Millisecond)
@@ -425,6 +423,7 @@ func backfillDividends(ctx context.Context, client *nepse.Client, queries *sqlc.
 
 	wg.Wait()
 	close(progressChan)
+	<-progressDone
 
 	fmt.Printf("\nDividends: %d skipped, %d records, %d errors\n\n", skipped, divCount, errorCount)
 }
@@ -442,11 +441,12 @@ func backfillProfiles(ctx context.Context, client *nepse.Client, queries *sqlc.Q
 	progressChan := make(chan string, total)
 
 	// Progress printer goroutine
+	progressDone := make(chan struct{})
 	go func() {
 		for msg := range progressChan {
 			fmt.Println(msg)
 		}
-		close(progressChan)
+		close(progressDone)
 	}()
 
 	for i, sec := range securities {
@@ -513,6 +513,7 @@ func backfillProfiles(ctx context.Context, client *nepse.Client, queries *sqlc.Q
 
 	wg.Wait()
 	close(progressChan)
+	<-progressDone
 
 	fmt.Printf("\nProfiles: %d skipped, %d updated, %d errors\n\n", skipped, profileCount, errorCount)
 }

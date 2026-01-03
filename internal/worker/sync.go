@@ -8,30 +8,8 @@ import (
 
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 	"github.com/voidarchive/ntx/internal/market"
+	"github.com/voidarchive/ntx/internal/nepse"
 )
-
-var sectorMap = map[string]int64{
-	"Commercial Banks":             1,
-	"Development Banks":            2,
-	"Finance":                      3,
-	"Microfinance":                 4,
-	"Life Insurance":               5,
-	"Non Life Insurance":           6,
-	"Hydro Power":                  7,
-	"Manufacturing And Processing": 8,
-	"Hotels And Tourism":           9,
-	"Trading":                      10,
-	"Investment":                   11,
-	"Mutual Fund":                  12,
-	"Others":                       13,
-}
-
-func sectorToInt(name string) int64 {
-	if id, ok := sectorMap[name]; ok {
-		return id
-	}
-	return 0
-}
 
 func (w *Worker) syncCompanies(ctx context.Context) error {
 	start := time.Now()
@@ -45,7 +23,7 @@ func (w *Worker) syncCompanies(ctx context.Context) error {
 		err := w.queries.UpsertCompany(ctx, sqlc.UpsertCompanyParams{
 			Symbol:      c.Symbol,
 			Name:        c.Name,
-			Sector:      sectorToInt(c.Sector),
+			Sector:      nepse.SectorToInt(c.Sector),
 			Description: "",
 			LogoUrl:     "",
 		})
@@ -91,10 +69,12 @@ func (w *Worker) syncFundamentals(ctx context.Context) error {
 		reports, err := w.nepse.Reports(ctx, symbol)
 		if err != nil {
 			slog.Error("failed to fetch reports", "symbol", symbol, "error", err)
+			time.Sleep(100 * time.Millisecond)
 			continue
 		}
 
 		if len(reports) == 0 {
+			time.Sleep(100 * time.Millisecond)
 			continue
 		}
 
@@ -106,9 +86,12 @@ func (w *Worker) syncFundamentals(ctx context.Context) error {
 		dividends, err := w.nepse.Dividends(ctx, symbol)
 		if err == nil && len(dividends) > 0 {
 			latestDiv := dividends[0]
-			latestDivCash := latestDiv.CashPercent + latestDiv.BonusPercent
-			if latestDivCash > 0 && price > 0 {
-				dividendYield = (latestDivCash / price) * 100
+			// CashPercent is percentage of face value (Rs. 100 in NEPSE)
+			// e.g., CashPercent=10 means Rs. 10 cash dividend per share
+			// Dividend yield = (cash per share / price) * 100
+			cashPerShare := latestDiv.CashPercent // Already represents Rs. per share (% of Rs.100 face value)
+			if cashPerShare > 0 && price > 0 {
+				dividendYield = (cashPerShare / price) * 100
 			}
 		}
 
@@ -133,6 +116,9 @@ func (w *Worker) syncFundamentals(ctx context.Context) error {
 		}
 
 		count++
+
+		// Rate limit API calls to avoid overwhelming NEPSE servers
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	slog.Info("fundamentals sync complete", "count", count, "duration", time.Since(start))
