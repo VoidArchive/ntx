@@ -51,6 +51,8 @@ type Price struct {
 	Volume        int64           `json:"volume"`
 	Turnover      sql.NullInt64   `json:"turnover"`
 	IsComplete    int64           `json:"is_complete"`
+	Week52High    sql.NullFloat64 `json:"week_52_high"`
+	Week52Low     sql.NullFloat64 `json:"week_52_low"`
 }
 
 type Report struct {

@@ -27,6 +27,8 @@ type Querier interface {
 	// Filtering and sorting will be done in Go for flexibility
 	GetScreenerData(ctx context.Context) ([]GetScreenerDataRow, error)
 	GetScreenerDataBySector(ctx context.Context, sector int64) ([]GetScreenerDataBySectorRow, error)
+	// Returns aggregated sector-level data for ListSectors endpoint
+	GetSectorSummary(ctx context.Context) ([]GetSectorSummaryRow, error)
 	GetTopGainers(ctx context.Context, limit int64) ([]Price, error)
 	GetTopGainersBySector(ctx context.Context, arg GetTopGainersBySectorParams) ([]Price, error)
 	GetTopLosers(ctx context.Context, limit int64) ([]Price, error)

@@ -25,6 +25,8 @@ SELECT
     p.previous_close,
     p.volume,
     p.turnover,
+    p.week_52_high,
+    p.week_52_low,
     f.pe,
     f.pb,
     f.eps,
@@ -35,7 +37,7 @@ SELECT
     f.shares_outstanding
 FROM companies c
 LEFT JOIN (
-    SELECT p1.symbol, p1.date, p1.open, p1.high, p1.low, p1.close, p1.previous_close, p1.volume, p1.turnover, p1.is_complete
+    SELECT p1.symbol, p1.date, p1.open, p1.high, p1.low, p1.close, p1.previous_close, p1.volume, p1.turnover, p1.is_complete, p1.week_52_high, p1.week_52_low
     FROM prices p1
     INNER JOIN (
         SELECT symbol, MAX(date) as max_date
@@ -61,6 +63,8 @@ type GetScreenerDataRow struct {
 	PreviousClose     sql.NullFloat64 `json:"previous_close"`
 	Volume            int64           `json:"volume"`
 	Turnover          sql.NullInt64   `json:"turnover"`
+	Week52High        sql.NullFloat64 `json:"week_52_high"`
+	Week52Low         sql.NullFloat64 `json:"week_52_low"`
 	Pe                sql.NullFloat64 `json:"pe"`
 	Pb                sql.NullFloat64 `json:"pb"`
 	Eps               sql.NullFloat64 `json:"eps"`
@@ -96,6 +100,8 @@ func (q *Queries) GetScreenerData(ctx context.Context) ([]GetScreenerDataRow, er
 			&i.PreviousClose,
 			&i.Volume,
 			&i.Turnover,
+			&i.Week52High,
+			&i.Week52Low,
 			&i.Pe,
 			&i.Pb,
 			&i.Eps,
@@ -133,6 +139,8 @@ SELECT
     p.previous_close,
     p.volume,
     p.turnover,
+    p.week_52_high,
+    p.week_52_low,
     f.pe,
     f.pb,
     f.eps,
@@ -143,7 +151,7 @@ SELECT
     f.shares_outstanding
 FROM companies c
 LEFT JOIN (
-    SELECT p1.symbol, p1.date, p1.open, p1.high, p1.low, p1.close, p1.previous_close, p1.volume, p1.turnover, p1.is_complete
+    SELECT p1.symbol, p1.date, p1.open, p1.high, p1.low, p1.close, p1.previous_close, p1.volume, p1.turnover, p1.is_complete, p1.week_52_high, p1.week_52_low
     FROM prices p1
     INNER JOIN (
         SELECT symbol, MAX(date) as max_date
@@ -170,6 +178,8 @@ type GetScreenerDataBySectorRow struct {
 	PreviousClose     sql.NullFloat64 `json:"previous_close"`
 	Volume            int64           `json:"volume"`
 	Turnover          sql.NullInt64   `json:"turnover"`
+	Week52High        sql.NullFloat64 `json:"week_52_high"`
+	Week52Low         sql.NullFloat64 `json:"week_52_low"`
 	Pe                sql.NullFloat64 `json:"pe"`
 	Pb                sql.NullFloat64 `json:"pb"`
 	Eps               sql.NullFloat64 `json:"eps"`
@@ -203,6 +213,8 @@ func (q *Queries) GetScreenerDataBySector(ctx context.Context, sector int64) ([]
 			&i.PreviousClose,
 			&i.Volume,
 			&i.Turnover,
+			&i.Week52High,
+			&i.Week52Low,
 			&i.Pe,
 			&i.Pb,
 			&i.Eps,

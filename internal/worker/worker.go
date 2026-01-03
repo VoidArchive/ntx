@@ -18,10 +18,11 @@ type Worker struct {
 	market  *market.Market
 
 	// Daily state (reset each trading day)
-	currentDate   string
-	companySynced bool
-	snapshotDone  bool
-	lastPriceSync time.Time
+	currentDate        string
+	companySynced      bool
+	fundamentalsSynced bool
+	snapshotDone       bool
+	lastPriceSync      time.Time
 }
 
 // New creates a new Worker.
@@ -60,6 +61,7 @@ func (w *Worker) tick(ctx context.Context) error {
 	if today != w.currentDate {
 		w.currentDate = today
 		w.companySynced = false
+		w.fundamentalsSynced = false
 		w.snapshotDone = false
 		slog.Info("new trading day", "date", today)
 	}
@@ -71,6 +73,15 @@ func (w *Worker) tick(ctx context.Context) error {
 			// Continue - don't block other jobs
 		} else {
 			w.companySynced = true
+		}
+	}
+
+	// Fundamentals sync once per day
+	if !w.fundamentalsSynced && w.companySynced {
+		if err := w.syncFundamentals(ctx); err != nil {
+			slog.Error("fundamentals sync failed", "error", err)
+		} else {
+			w.fundamentalsSynced = true
 		}
 	}
 

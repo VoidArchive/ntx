@@ -32,7 +32,7 @@ func (q *Queries) Get52WeekHighLow(ctx context.Context, symbol string) (Get52Wee
 }
 
 const getLatestPrice = `-- name: GetLatestPrice :one
-SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete FROM prices
+SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete, week_52_high, week_52_low FROM prices
 WHERE symbol = ?
 ORDER BY date DESC
 LIMIT 1
@@ -52,6 +52,8 @@ func (q *Queries) GetLatestPrice(ctx context.Context, symbol string) (Price, err
 		&i.Volume,
 		&i.Turnover,
 		&i.IsComplete,
+		&i.Week52High,
+		&i.Week52Low,
 	)
 	return i, err
 }
@@ -89,7 +91,7 @@ func (q *Queries) GetLatestPriceDates(ctx context.Context) ([]GetLatestPriceDate
 }
 
 const getPriceHistory = `-- name: GetPriceHistory :many
-SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete FROM prices
+SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete, week_52_high, week_52_low FROM prices
 WHERE symbol = ?
   AND date >= ?
   AND date <= ?
@@ -122,6 +124,8 @@ func (q *Queries) GetPriceHistory(ctx context.Context, arg GetPriceHistoryParams
 			&i.Volume,
 			&i.Turnover,
 			&i.IsComplete,
+			&i.Week52High,
+			&i.Week52Low,
 		); err != nil {
 			return nil, err
 		}
@@ -137,7 +141,7 @@ func (q *Queries) GetPriceHistory(ctx context.Context, arg GetPriceHistoryParams
 }
 
 const getPricesForDate = `-- name: GetPricesForDate :many
-SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete FROM prices
+SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete, week_52_high, week_52_low FROM prices
 WHERE date = ?
 ORDER BY symbol
 `
@@ -162,6 +166,8 @@ func (q *Queries) GetPricesForDate(ctx context.Context, date string) ([]Price, e
 			&i.Volume,
 			&i.Turnover,
 			&i.IsComplete,
+			&i.Week52High,
+			&i.Week52Low,
 		); err != nil {
 			return nil, err
 		}
@@ -177,7 +183,7 @@ func (q *Queries) GetPricesForDate(ctx context.Context, date string) ([]Price, e
 }
 
 const getTopGainers = `-- name: GetTopGainers :many
-SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete FROM prices p
+SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete, p.week_52_high, p.week_52_low FROM prices p
 INNER JOIN (
     SELECT symbol, MAX(date) as max_date
     FROM prices
@@ -208,6 +214,8 @@ func (q *Queries) GetTopGainers(ctx context.Context, limit int64) ([]Price, erro
 			&i.Volume,
 			&i.Turnover,
 			&i.IsComplete,
+			&i.Week52High,
+			&i.Week52Low,
 		); err != nil {
 			return nil, err
 		}
@@ -223,7 +231,7 @@ func (q *Queries) GetTopGainers(ctx context.Context, limit int64) ([]Price, erro
 }
 
 const getTopGainersBySector = `-- name: GetTopGainersBySector :many
-SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete FROM prices p
+SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete, p.week_52_high, p.week_52_low FROM prices p
 INNER JOIN companies c ON p.symbol = c.symbol
 INNER JOIN (
     SELECT symbol, MAX(date) as max_date
@@ -260,6 +268,8 @@ func (q *Queries) GetTopGainersBySector(ctx context.Context, arg GetTopGainersBy
 			&i.Volume,
 			&i.Turnover,
 			&i.IsComplete,
+			&i.Week52High,
+			&i.Week52Low,
 		); err != nil {
 			return nil, err
 		}
@@ -275,7 +285,7 @@ func (q *Queries) GetTopGainersBySector(ctx context.Context, arg GetTopGainersBy
 }
 
 const getTopLosers = `-- name: GetTopLosers :many
-SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete FROM prices p
+SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete, p.week_52_high, p.week_52_low FROM prices p
 INNER JOIN (
     SELECT symbol, MAX(date) as max_date
     FROM prices
@@ -306,6 +316,8 @@ func (q *Queries) GetTopLosers(ctx context.Context, limit int64) ([]Price, error
 			&i.Volume,
 			&i.Turnover,
 			&i.IsComplete,
+			&i.Week52High,
+			&i.Week52Low,
 		); err != nil {
 			return nil, err
 		}
@@ -321,7 +333,7 @@ func (q *Queries) GetTopLosers(ctx context.Context, limit int64) ([]Price, error
 }
 
 const getTopLosersBySector = `-- name: GetTopLosersBySector :many
-SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete FROM prices p
+SELECT p.symbol, p.date, p.open, p.high, p.low, p.close, p.previous_close, p.volume, p.turnover, p.is_complete, p.week_52_high, p.week_52_low FROM prices p
 INNER JOIN companies c ON p.symbol = c.symbol
 INNER JOIN (
     SELECT symbol, MAX(date) as max_date
@@ -358,6 +370,8 @@ func (q *Queries) GetTopLosersBySector(ctx context.Context, arg GetTopLosersBySe
 			&i.Volume,
 			&i.Turnover,
 			&i.IsComplete,
+			&i.Week52High,
+			&i.Week52Low,
 		); err != nil {
 			return nil, err
 		}
@@ -382,8 +396,8 @@ func (q *Queries) MarkPricesComplete(ctx context.Context, date string) error {
 }
 
 const upsertPrice = `-- name: UpsertPrice :exec
-INSERT INTO prices (symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO prices (symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete, week_52_high, week_52_low)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(symbol, date) DO UPDATE SET
     open = excluded.open,
     high = excluded.high,
@@ -392,7 +406,9 @@ ON CONFLICT(symbol, date) DO UPDATE SET
     previous_close = excluded.previous_close,
     volume = excluded.volume,
     turnover = excluded.turnover,
-    is_complete = excluded.is_complete
+    is_complete = excluded.is_complete,
+    week_52_high = excluded.week_52_high,
+    week_52_low = excluded.week_52_low
 `
 
 type UpsertPriceParams struct {
@@ -406,6 +422,8 @@ type UpsertPriceParams struct {
 	Volume        int64           `json:"volume"`
 	Turnover      sql.NullInt64   `json:"turnover"`
 	IsComplete    int64           `json:"is_complete"`
+	Week52High    sql.NullFloat64 `json:"week_52_high"`
+	Week52Low     sql.NullFloat64 `json:"week_52_low"`
 }
 
 func (q *Queries) UpsertPrice(ctx context.Context, arg UpsertPriceParams) error {
@@ -420,6 +438,8 @@ func (q *Queries) UpsertPrice(ctx context.Context, arg UpsertPriceParams) error 
 		arg.Volume,
 		arg.Turnover,
 		arg.IsComplete,
+		arg.Week52High,
+		arg.Week52Low,
 	)
 	return err
 }
