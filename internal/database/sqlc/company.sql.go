@@ -149,6 +149,20 @@ func (q *Queries) SearchCompanies(ctx context.Context, arg SearchCompaniesParams
 	return items, nil
 }
 
+const updateCompanyDescription = `-- name: UpdateCompanyDescription :exec
+UPDATE companies SET description = ? WHERE symbol = ?
+`
+
+type UpdateCompanyDescriptionParams struct {
+	Description string `json:"description"`
+	Symbol      string `json:"symbol"`
+}
+
+func (q *Queries) UpdateCompanyDescription(ctx context.Context, arg UpdateCompanyDescriptionParams) error {
+	_, err := q.db.ExecContext(ctx, updateCompanyDescription, arg.Description, arg.Symbol)
+	return err
+}
+
 const upsertCompany = `-- name: UpsertCompany :exec
 INSERT INTO companies (symbol, name, sector, description, logo_url, last_synced)
 VALUES (?, ?, ?, ?, ?, datetime('now'))

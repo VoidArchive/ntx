@@ -8,7 +8,7 @@ require (
 	github.com/alecthomas/kong v1.13.0
 	github.com/pressly/goose/v3 v3.26.0
 	github.com/stretchr/testify v1.11.1
-	github.com/voidarchive/go-nepse v0.1.2
+	github.com/voidarchive/go-nepse v0.2.1
 	google.golang.org/protobuf v1.36.11
 	modernc.org/sqlite v1.38.2
 )

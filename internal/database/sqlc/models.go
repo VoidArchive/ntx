@@ -17,6 +17,16 @@ type Company struct {
 	LastSynced  string `json:"last_synced"`
 }
 
+type Dividend struct {
+	ID           int64          `json:"id"`
+	Symbol       string         `json:"symbol"`
+	FiscalYear   string         `json:"fiscal_year"`
+	CashPercent  float64        `json:"cash_percent"`
+	BonusPercent float64        `json:"bonus_percent"`
+	Headline     sql.NullString `json:"headline"`
+	PublishedAt  sql.NullString `json:"published_at"`
+}
+
 type Fundamental struct {
 	Symbol            string          `json:"symbol"`
 	Pe                sql.NullFloat64 `json:"pe"`

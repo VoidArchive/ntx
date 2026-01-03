@@ -56,6 +56,38 @@ func (q *Queries) GetLatestPrice(ctx context.Context, symbol string) (Price, err
 	return i, err
 }
 
+const getLatestPriceDates = `-- name: GetLatestPriceDates :many
+SELECT symbol, MAX(date) as latest_date FROM prices GROUP BY symbol
+`
+
+type GetLatestPriceDatesRow struct {
+	Symbol     string      `json:"symbol"`
+	LatestDate interface{} `json:"latest_date"`
+}
+
+func (q *Queries) GetLatestPriceDates(ctx context.Context) ([]GetLatestPriceDatesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLatestPriceDates)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetLatestPriceDatesRow
+	for rows.Next() {
+		var i GetLatestPriceDatesRow
+		if err := rows.Scan(&i.Symbol, &i.LatestDate); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPriceHistory = `-- name: GetPriceHistory :many
 SELECT symbol, date, open, high, low, close, previous_close, volume, turnover, is_complete FROM prices
 WHERE symbol = ?

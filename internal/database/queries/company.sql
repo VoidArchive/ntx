@@ -25,3 +25,6 @@ LIMIT ?;
 
 -- name: CountCompanies :one
 SELECT COUNT(*) FROM companies;
+
+-- name: UpdateCompanyDescription :exec
+UPDATE companies SET description = ? WHERE symbol = ?;

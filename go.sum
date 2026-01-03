@@ -38,8 +38,8 @@ github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
 github.com/tetratelabs/wazero v1.9.0 h1:IcZ56OuxrtaEz8UYNRHBrUa9bYeX9oVY93KspZZBf/I=
 github.com/tetratelabs/wazero v1.9.0/go.mod h1:TSbcXCfFP0L2FGkRPxHphadXPjo1T6W+CseNNY7EkjM=
-github.com/voidarchive/go-nepse v0.1.2 h1:JjsI99iAeitYQ1G4fQkNMpTaPaW3u89Ed/UDFDnwTYA=
-github.com/voidarchive/go-nepse v0.1.2/go.mod h1:ur9feDnXDFfw1MHx/2fo4O66TLrEguZqxC4BfPGOYHY=
+github.com/voidarchive/go-nepse v0.2.1 h1:WP1Hu7kuzrf169rn2MLmgOOjNEW/VF29GqnXN6YSjX4=
+github.com/voidarchive/go-nepse v0.2.1/go.mod h1:ur9feDnXDFfw1MHx/2fo4O66TLrEguZqxC4BfPGOYHY=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b h1:M2rDM6z3Fhozi9O7NWsxAkg/yqS/lQJ6PmkyIV3YP+o=

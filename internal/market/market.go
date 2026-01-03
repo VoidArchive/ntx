@@ -133,7 +133,7 @@ func (m *Market) NextOpenFrom(ctx context.Context, t time.Time) time.Time {
 	}
 
 	// Find next trading day (max 10 days to avoid infinite loop)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		if m.IsTradingDay(ctx, open) {
 			return open
 		}
@@ -162,7 +162,7 @@ func (m *Market) NextCloseFrom(ctx context.Context, t time.Time) time.Time {
 	}
 
 	// Find next trading day (max 10 days to avoid infinite loop)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		if m.IsTradingDay(ctx, close) {
 			return close
 		}

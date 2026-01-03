@@ -12,9 +12,12 @@ type Querier interface {
 	CountCompanies(ctx context.Context) (int64, error)
 	Get52WeekHighLow(ctx context.Context, symbol string) (Get52WeekHighLowRow, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
+	GetDividends(ctx context.Context, symbol string) ([]Dividend, error)
 	GetFundamentals(ctx context.Context, symbol string) (Fundamental, error)
 	GetLastTradingDay(ctx context.Context) (TradingDay, error)
+	GetLatestDividend(ctx context.Context, symbol string) (Dividend, error)
 	GetLatestPrice(ctx context.Context, symbol string) (Price, error)
+	GetLatestPriceDates(ctx context.Context) ([]GetLatestPriceDatesRow, error)
 	GetLatestReport(ctx context.Context, symbol string) (Report, error)
 	GetPriceHistory(ctx context.Context, arg GetPriceHistoryParams) ([]Price, error)
 	GetPricesForDate(ctx context.Context, date string) ([]Price, error)
@@ -32,11 +35,14 @@ type Querier interface {
 	InsertReport(ctx context.Context, arg InsertReportParams) error
 	ListCompanies(ctx context.Context) ([]Company, error)
 	ListCompaniesBySector(ctx context.Context, sector int64) ([]Company, error)
+	ListDividends(ctx context.Context) ([]Dividend, error)
 	ListFundamentals(ctx context.Context) ([]Fundamental, error)
 	ListTradingDays(ctx context.Context, arg ListTradingDaysParams) ([]TradingDay, error)
 	MarkPricesComplete(ctx context.Context, date string) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
+	UpdateCompanyDescription(ctx context.Context, arg UpdateCompanyDescriptionParams) error
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
+	UpsertDividend(ctx context.Context, arg UpsertDividendParams) error
 	UpsertFundamentals(ctx context.Context, arg UpsertFundamentalsParams) error
 	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
 	UpsertTradingDay(ctx context.Context, arg UpsertTradingDayParams) error

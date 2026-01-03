@@ -17,6 +17,9 @@ WHERE symbol = ?
 ORDER BY date DESC
 LIMIT 1;
 
+-- name: GetLatestPriceDates :many
+SELECT symbol, MAX(date) as latest_date FROM prices GROUP BY symbol;
+
 -- name: GetPriceHistory :many
 SELECT * FROM prices
 WHERE symbol = ?

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -10,6 +11,10 @@ import (
 	"time"
 
 	"github.com/voidarchive/ntx/internal/database"
+	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/market"
+	"github.com/voidarchive/ntx/internal/nepse"
+	"github.com/voidarchive/ntx/internal/worker"
 )
 
 func main() {
@@ -30,6 +35,31 @@ func main() {
 
 	slog.Info("database initialized")
 
+	queries := sqlc.New(db)
+	mkt := market.New(queries)
+
+	// Create NEPSE client
+	nepseClient, err := nepse.NewClient()
+	if err != nil {
+		slog.Error("failed to create nepse client", "error", err)
+		os.Exit(1)
+	}
+	defer func() { _ = nepseClient.Close() }()
+
+	// Create worker
+	w := worker.New(nepseClient, queries, mkt)
+
+	// Context for graceful shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Start worker in background
+	go func() {
+		if err := w.Run(ctx); err != nil && !errors.Is(err, context.Canceled) {
+			slog.Error("worker error", "error", err)
+		}
+	}()
+
 	mux := http.NewServeMux()
 
 	// TODO: Register MarketService handler
@@ -49,10 +79,15 @@ func main() {
 
 	go func() {
 		<-done
-		slog.Info("shutting down server")
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		if err := server.Shutdown(ctx); err != nil {
+		slog.Info("shutting down")
+
+		// Cancel worker context first
+		cancel()
+
+		// Then shutdown HTTP server
+		shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer shutdownCancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
 			slog.Error("server shutdown error", "error", err)
 		}
 	}()
