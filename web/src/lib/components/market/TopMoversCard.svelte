@@ -15,7 +15,7 @@
 		href?: string;
 	} = $props();
 
-	const isGainer = type === 'gainers';
+	const isGainer = $derived(type === 'gainers');
 </script>
 
 <div class="rounded-xl border bg-card">

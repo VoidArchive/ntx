@@ -4,6 +4,7 @@ package nepse
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/voidarchive/go-nepse"
@@ -46,16 +47,26 @@ func (c *Client) Companies(ctx context.Context) ([]Company, error) {
 		return nil, fmt.Errorf("fetch companies: %w", err)
 	}
 
-	out := make([]Company, len(list))
-	for i, co := range list {
-		out[i] = Company{
+	var out []Company
+	for _, co := range list {
+		if !co.HasTradingPermission {
+			continue
+		}
+		if co.SectorName == "Mutual Fund" {
+			continue
+		}
+		if isDebentureOrBond(co.SecurityName) {
+			continue
+		}
+
+		out = append(out, Company{
 			ID:        co.ID,
 			Symbol:    co.Symbol,
 			Name:      co.SecurityName,
 			Sector:    co.SectorName,
 			MarketCap: co.MarketCapitalization,
 			Shares:    co.ShareOutstanding,
-		}
+		})
 	}
 	return out, nil
 }
@@ -74,15 +85,41 @@ func (c *Client) Securities(ctx context.Context) ([]Security, error) {
 		return nil, fmt.Errorf("fetch securities: %w", err)
 	}
 
-	out := make([]Security, len(list))
-	for i, s := range list {
-		out[i] = Security{
+	var out []Security
+	for _, s := range list {
+		if s.ActiveStatus != "A" {
+			continue
+		}
+		if isPromoterShare(s.Symbol) {
+			continue
+		}
+		if isDebentureOrBond(s.SecurityName) {
+			continue
+		}
+
+		out = append(out, Security{
 			ID:     s.ID,
 			Symbol: s.Symbol,
 			Name:   s.SecurityName,
-		}
+		})
 	}
 	return out, nil
+}
+
+// isPromoterShare checks if a symbol is a promoter share.
+// Promoter shares typically have suffix "P" or "PO".
+func isPromoterShare(symbol string) bool {
+	if len(symbol) < 2 {
+		return false
+	}
+	return strings.HasSuffix(symbol, "P") || strings.HasSuffix(symbol, "PO")
+}
+
+// isDebentureOrBond checks if a name is a debenture or bond.
+// Case-insensitive check for "debenture" or "bond" in the name.
+func isDebentureOrBond(name string) bool {
+	name = strings.ToLower(name)
+	return strings.Contains(name, "debenture") || strings.Contains(name, "bond")
 }
 
 // CompanyDetail contains full company info with current price.

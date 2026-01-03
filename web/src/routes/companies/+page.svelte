@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { PageContainer } from '$lib/components/layout';
-	import { StockCard } from '$lib/components/stock';
 	import { Input } from '$lib/components/ui/input';
 	import * as Select from '$lib/components/ui/select';
+	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
-	import { getSectorName, getAllSectors } from '$lib/utils/sector';
+	import { getSectorName, getAllSectors, getSectorColor } from '$lib/utils/sector';
+	import { formatPriceCompact, formatChange, formatVolume } from '$lib/utils/format';
 	import { Sector } from '@ntx/api/ntx/v1/common_pb';
 	import { SearchIcon, Building2Icon, XIcon } from '@lucide/svelte';
 	import { debounce } from '$lib/utils/debounce';
@@ -15,22 +15,17 @@
 	let { data }: { data: PageData } = $props();
 
 	let searchInput = $state(data.query);
+	let sectorValue = $state(data.sector !== Sector.UNSPECIFIED ? String(data.sector) : '');
 
 	const sectors = getAllSectors();
 
-	const selectedSector = $derived(
-		data.sector !== Sector.UNSPECIFIED
-			? { value: String(data.sector), label: getSectorName(data.sector) }
-			: undefined
-	);
-
-	function updateFilters(newQuery?: string, newSector?: Sector) {
+	function updateFilters(newQuery?: string, newSector?: string) {
 		const params = new URLSearchParams();
 		const q = newQuery ?? searchInput;
-		const s = newSector ?? data.sector;
+		const s = newSector ?? sectorValue;
 
 		if (q) params.set('q', q);
-		if (s !== Sector.UNSPECIFIED) params.set('sector', String(s));
+		if (s) params.set('sector', s);
 
 		const search = params.toString();
 		goto(search ? `?${search}` : '/companies', { invalidateAll: true });
@@ -46,20 +41,23 @@
 		debouncedSearch(value);
 	}
 
-	function onSectorChange(selected: { value: string; label: string } | undefined) {
-		const sector = selected ? (parseInt(selected.value, 10) as Sector) : Sector.UNSPECIFIED;
-		updateFilters(undefined, sector);
+	function onSectorChange(value: string | undefined) {
+		sectorValue = value ?? '';
+		updateFilters(undefined, value);
 	}
 
 	function clearFilters() {
 		searchInput = '';
+		sectorValue = '';
 		goto('/companies', { invalidateAll: true });
 	}
+
+	const hasFilters = $derived(data.query || data.sector !== Sector.UNSPECIFIED);
 </script>
 
 <svelte:head>
 	<title>Companies | NTX</title>
-	<meta name="description" content="Browse all NEPSE listed companies. Filter by sector or search by symbol and name." />
+	<meta name="description" content="Browse all NEPSE listed companies with live prices. Filter by sector or search by symbol and name." />
 </svelte:head>
 
 <section class="py-8">
@@ -68,7 +66,7 @@
 		<div class="mb-8">
 			<h1 class="text-2xl font-bold md:text-3xl">Companies</h1>
 			<p class="mt-1 text-muted-foreground">
-				Browse all {data.companies.length} NEPSE listed companies
+				{data.total} NEPSE listed companies
 			</p>
 		</div>
 
@@ -84,12 +82,12 @@
 					oninput={onSearchInput}
 				/>
 			</div>
-			<Select.Root selected={selectedSector} onSelectedChange={onSectorChange}>
+			<Select.Root type="single" value={sectorValue} onValueChange={onSectorChange}>
 				<Select.Trigger class="w-full sm:w-48">
-					<Select.Value placeholder="All Sectors" />
+					{sectorValue ? getSectorName(parseInt(sectorValue, 10) as Sector) : 'All Sectors'}
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value={String(Sector.UNSPECIFIED)}>All Sectors</Select.Item>
+					<Select.Item value="">All Sectors</Select.Item>
 					{#each sectors as sector}
 						<Select.Item value={String(sector)}>{getSectorName(sector)}</Select.Item>
 					{/each}
@@ -98,7 +96,7 @@
 		</div>
 
 		<!-- Active filters -->
-		{#if data.query || data.sector !== Sector.UNSPECIFIED}
+		{#if hasFilters}
 			<div class="mb-6 flex flex-wrap items-center gap-2">
 				<span class="text-sm text-muted-foreground">Filters:</span>
 				{#if data.query}
@@ -112,7 +110,7 @@
 				{#if data.sector !== Sector.UNSPECIFIED}
 					<Badge variant="secondary" class="flex items-center gap-1">
 						{getSectorName(data.sector)}
-						<button onclick={() => updateFilters(undefined, Sector.UNSPECIFIED)} class="ml-1">
+						<button onclick={() => onSectorChange('')} class="ml-1">
 							<XIcon class="h-3 w-3" />
 						</button>
 					</Badge>
@@ -123,19 +121,58 @@
 			</div>
 		{/if}
 
-		<!-- Companies Grid -->
-		{#if data.companies.length > 0}
-			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-				{#each data.companies as company}
-					<StockCard
-						symbol={company.symbol}
-						name={company.name}
-						price={0}
-						change={0}
-						percentChange={0}
-						href="/company/{company.symbol}"
-					/>
-				{/each}
+		<!-- Companies Table -->
+		{#if data.results.length > 0}
+			<div class="rounded-lg border">
+				<Table.Root>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head>Company</Table.Head>
+							<Table.Head>Sector</Table.Head>
+							<Table.Head class="text-right">Price</Table.Head>
+							<Table.Head class="text-right">Change</Table.Head>
+							<Table.Head class="hidden text-right md:table-cell">Volume</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each data.results as result}
+							{@const isPositive = result.price && result.price.change > 0}
+							{@const isNegative = result.price && result.price.change < 0}
+							<Table.Row 
+								class="cursor-pointer hover:bg-accent/50" 
+								onclick={() => goto(`/company/${result.company?.symbol}`)}
+							>
+								<Table.Cell>
+									<div class="flex items-center gap-3">
+										<div class="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-xs font-bold text-primary">
+											{result.company?.symbol.slice(0, 2)}
+										</div>
+										<div>
+											<div class="font-mono font-medium">{result.company?.symbol}</div>
+											<div class="text-xs text-muted-foreground line-clamp-1 max-w-[200px]">{result.company?.name}</div>
+										</div>
+									</div>
+								</Table.Cell>
+								<Table.Cell>
+									{#if result.company?.sector}
+										<Badge variant="outline" class={getSectorColor(result.company.sector)}>
+											{getSectorName(result.company.sector)}
+										</Badge>
+									{/if}
+								</Table.Cell>
+								<Table.Cell class="text-right font-mono tabular-nums">
+									{result.price?.ltp ? formatPriceCompact(result.price.ltp) : '-'}
+								</Table.Cell>
+								<Table.Cell class="text-right font-mono tabular-nums {isPositive ? 'text-positive' : isNegative ? 'text-negative' : ''}">
+									{result.price?.percentChange !== undefined ? formatChange(result.price.percentChange) : '-'}
+								</Table.Cell>
+								<Table.Cell class="hidden text-right font-mono tabular-nums md:table-cell">
+									{result.price?.volume ? formatVolume(result.price.volume) : '-'}
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
 			</div>
 		{:else}
 			<div class="rounded-lg border bg-muted/30 py-16 text-center">

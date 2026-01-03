@@ -20,10 +20,9 @@
 	}
 
 	const navItems = [
-		{ href: '/', label: 'Home' },
+		{ href: '/screener', label: 'Screener' },
 		{ href: '/companies', label: 'Companies' },
-		{ href: '/sectors', label: 'Sectors' },
-		{ href: '/screener', label: 'Screener' }
+		{ href: '/sectors', label: 'Sectors' }
 	];
 
 	function isActive(href: string): boolean {
@@ -91,7 +90,7 @@
 			</Button>
 
 			<!-- GitHub Link -->
-			<Button variant="ghost" size="icon" href="https://github.com/your-repo/ntx" target="_blank">
+			<Button variant="ghost" size="icon" href="https://github.com/voidarchive/ntx" target="_blank">
 				<GithubIcon class="h-5 w-5" />
 				<span class="sr-only">GitHub</span>
 			</Button>

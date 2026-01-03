@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { screener } from '$lib/api/client';
-import { Sector, SortBy, SortOrder } from '@ntx/api/ntx/v1/common_pb';
+import { Sector } from '@ntx/api/ntx/v1/common_pb';
+import { SortBy, SortOrder } from '@ntx/api/ntx/v1/screener_pb';
 
 export const load: PageServerLoad = async ({ url }) => {
 	// Parse URL parameters

@@ -14,8 +14,8 @@
 		percentChange: number;
 	} = $props();
 
-	const isPositive = change > 0;
-	const isNegative = change < 0;
+	const isPositive = $derived(change > 0);
+	const isNegative = $derived(change < 0);
 </script>
 
 <div class="rounded-xl border bg-card p-4">

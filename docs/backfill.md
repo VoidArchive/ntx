@@ -143,3 +143,23 @@ Prices: 145,230 new records, 12 skipped, 5 errors
    - If rate limits → decrease to 3 workers or increase sleep to 300ms
 
 4. **After backfill complete**, worker sync jobs handle updates automatically
+
+
+## Issue 
+Nepse has 613 companies, 542 active. But when doing the backfill my companies table had 719 rows, something not right. 
+We also don't need the Promoter share companies.. need to filter on that as well.. we can reduce the API calls that way. Also, we don't need the companies that are closed or merged. It's useless data that can and should filtered. 
+When doing the API call i have found that, mutual funds are also being filled.
+we don't need mutual fund as well. Have to code review it deeply. 
+The active companies I have found to be are 323. That's our target goal. 
+
+Remove mutual funds as sectors we don't need it. 
+
+Removing Mutual fund, it will be 264, that's our Target. 
+
+264 are the listed companies, what's a concrete way to filter this? 
+A json file for 264 companies, with it's description, logo_url and sector, feels okay here, the json can be updated with backfill.. We can then simplify the database call here. 
+
+Simplify, simplify. 
+Do one thing well. One thing and One thing really well. Instead of doing many things. Features creep is getting to us. We are going to be the companies best screener.
+Not mutual fund, and no any fucking thing that everyone does. no promoter share, no mutual fund, no bonds or debenture. Companies and companies alone. 
+Json might be infecient, i think we need to fix our backfill. 

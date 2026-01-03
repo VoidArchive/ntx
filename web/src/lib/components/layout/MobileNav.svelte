@@ -4,9 +4,9 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home', icon: HomeIcon },
+		{ href: '/screener', label: 'Screener', icon: SlidersHorizontalIcon },
 		{ href: '/companies', label: 'Companies', icon: Building2Icon },
-		{ href: '/sectors', label: 'Sectors', icon: PieChartIcon },
-		{ href: '/screener', label: 'Screener', icon: SlidersHorizontalIcon }
+		{ href: '/sectors', label: 'Sectors', icon: PieChartIcon }
 	];
 
 	function isActive(href: string): boolean {
