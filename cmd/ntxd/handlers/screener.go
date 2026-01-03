@@ -65,10 +65,7 @@ func (s *ScreenerService) Screen(
 	if offset > len(filtered) {
 		filtered = nil
 	} else {
-		end := offset + limit
-		if end > len(filtered) {
-			end = len(filtered)
-		}
+		end := min(offset+limit, len(filtered))
 		filtered = filtered[offset:end]
 	}
 
