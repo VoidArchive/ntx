@@ -220,6 +220,11 @@ export declare type OHLCV = Message<"ntx.v1.OHLCV"> & {
    * @generated from field: int64 volume = 6;
    */
   volume: bigint;
+
+  /**
+   * @generated from field: int64 turnover = 7;
+   */
+  turnover: bigint;
 };
 
 /**

@@ -10,7 +10,7 @@ import { file_ntx_v1_common } from "./common_pb";
  * Describes the file ntx/v1/price.proto.
  */
 export const file_ntx_v1_price = /*@__PURE__*/
-  fileDesc("ChJudHgvdjEvcHJpY2UucHJvdG8SBm50eC52MSIhCg9HZXRQcmljZVJlcXVlc3QSDgoGc3ltYm9sGAEgASgJIjAKEEdldFByaWNlUmVzcG9uc2USHAoFcHJpY2UYASABKAsyDS5udHgudjEuUHJpY2UinAEKEUdldEhpc3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRIoCgRmcm9tGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBImCgJ0bxgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASJQoKdGltZV9mcmFtZRgEIAEoDjIRLm50eC52MS5UaW1lRnJhbWUiNAoSR2V0SGlzdG9yeVJlc3BvbnNlEh4KB2NhbmRsZXMYASADKAsyDS5udHgudjEuT0hMQ1YqbAoJVGltZUZyYW1lEhoKFlRJTUVfRlJBTUVfVU5TUEVDSUZJRUQQABIUChBUSU1FX0ZSQU1FX0RBSUxZEAESFQoRVElNRV9GUkFNRV9XRUVLTFkQAhIWChJUSU1FX0ZSQU1FX01PTlRITFkQAzKSAQoMUHJpY2VTZXJ2aWNlEj0KCEdldFByaWNlEhcubnR4LnYxLkdldFByaWNlUmVxdWVzdBoYLm50eC52MS5HZXRQcmljZVJlc3BvbnNlEkMKCkdldEhpc3RvcnkSGS5udHgudjEuR2V0SGlzdG9yeVJlcXVlc3QaGi5udHgudjEuR2V0SGlzdG9yeVJlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw", [file_google_protobuf_timestamp, file_ntx_v1_common]);
+  fileDesc("ChJudHgvdjEvcHJpY2UucHJvdG8SBm50eC52MSIhCg9HZXRQcmljZVJlcXVlc3QSDgoGc3ltYm9sGAEgASgJIjAKEEdldFByaWNlUmVzcG9uc2USHAoFcHJpY2UYASABKAsyDS5udHgudjEuUHJpY2UinQEKEkxpc3RDYW5kbGVzUmVxdWVzdBIOCgZzeW1ib2wYASABKAkSKAoEZnJvbRgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASJgoCdG8YAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiUKCnRpbWVfZnJhbWUYBCABKA4yES5udHgudjEuVGltZUZyYW1lIjUKE0xpc3RDYW5kbGVzUmVzcG9uc2USHgoHY2FuZGxlcxgBIAMoCzINLm50eC52MS5PSExDVipsCglUaW1lRnJhbWUSGgoWVElNRV9GUkFNRV9VTlNQRUNJRklFRBAAEhQKEFRJTUVfRlJBTUVfREFJTFkQARIVChFUSU1FX0ZSQU1FX1dFRUtMWRACEhYKElRJTUVfRlJBTUVfTU9OVEhMWRADMpUBCgxQcmljZVNlcnZpY2USPQoIR2V0UHJpY2USFy5udHgudjEuR2V0UHJpY2VSZXF1ZXN0GhgubnR4LnYxLkdldFByaWNlUmVzcG9uc2USRgoLTGlzdENhbmRsZXMSGi5udHgudjEuTGlzdENhbmRsZXNSZXF1ZXN0GhsubnR4LnYxLkxpc3RDYW5kbGVzUmVzcG9uc2VCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z", [file_google_protobuf_timestamp, file_ntx_v1_common]);
 
 /**
  * Describes the message ntx.v1.GetPriceRequest.
@@ -27,17 +27,17 @@ export const GetPriceResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_price, 1);
 
 /**
- * Describes the message ntx.v1.GetHistoryRequest.
- * Use `create(GetHistoryRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListCandlesRequest.
+ * Use `create(ListCandlesRequestSchema)` to create a new message.
  */
-export const GetHistoryRequestSchema = /*@__PURE__*/
+export const ListCandlesRequestSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_price, 2);
 
 /**
- * Describes the message ntx.v1.GetHistoryResponse.
- * Use `create(GetHistoryResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListCandlesResponse.
+ * Use `create(ListCandlesResponseSchema)` to create a new message.
  */
-export const GetHistoryResponseSchema = /*@__PURE__*/
+export const ListCandlesResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_price, 3);
 
 /**

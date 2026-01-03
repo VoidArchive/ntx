@@ -33,21 +33,21 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// MarketServiceStatusProcedure is the fully-qualified name of the MarketService's Status RPC.
-	MarketServiceStatusProcedure = "/ntx.v1.MarketService/Status"
-	// MarketServiceGetIndicesProcedure is the fully-qualified name of the MarketService's GetIndices
+	// MarketServiceGetStatusProcedure is the fully-qualified name of the MarketService's GetStatus RPC.
+	MarketServiceGetStatusProcedure = "/ntx.v1.MarketService/GetStatus"
+	// MarketServiceListIndicesProcedure is the fully-qualified name of the MarketService's ListIndices
 	// RPC.
-	MarketServiceGetIndicesProcedure = "/ntx.v1.MarketService/GetIndices"
-	// MarketServiceGetSectorsProcedure is the fully-qualified name of the MarketService's GetSectors
+	MarketServiceListIndicesProcedure = "/ntx.v1.MarketService/ListIndices"
+	// MarketServiceListSectorsProcedure is the fully-qualified name of the MarketService's ListSectors
 	// RPC.
-	MarketServiceGetSectorsProcedure = "/ntx.v1.MarketService/GetSectors"
+	MarketServiceListSectorsProcedure = "/ntx.v1.MarketService/ListSectors"
 )
 
 // MarketServiceClient is a client for the ntx.v1.MarketService service.
 type MarketServiceClient interface {
-	Status(context.Context, *connect.Request[v1.StatusRequest]) (*connect.Response[v1.StatusResponse], error)
-	GetIndices(context.Context, *connect.Request[v1.GetIndicesRequest]) (*connect.Response[v1.GetIndicesResponse], error)
-	GetSectors(context.Context, *connect.Request[v1.GetSectorsRequest]) (*connect.Response[v1.GetSectorsResponse], error)
+	GetStatus(context.Context, *connect.Request[v1.GetStatusRequest]) (*connect.Response[v1.GetStatusResponse], error)
+	ListIndices(context.Context, *connect.Request[v1.ListIndicesRequest]) (*connect.Response[v1.ListIndicesResponse], error)
+	ListSectors(context.Context, *connect.Request[v1.ListSectorsRequest]) (*connect.Response[v1.ListSectorsResponse], error)
 }
 
 // NewMarketServiceClient constructs a client for the ntx.v1.MarketService service. By default, it
@@ -61,22 +61,22 @@ func NewMarketServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 	baseURL = strings.TrimRight(baseURL, "/")
 	marketServiceMethods := v1.File_ntx_v1_market_proto.Services().ByName("MarketService").Methods()
 	return &marketServiceClient{
-		status: connect.NewClient[v1.StatusRequest, v1.StatusResponse](
+		getStatus: connect.NewClient[v1.GetStatusRequest, v1.GetStatusResponse](
 			httpClient,
-			baseURL+MarketServiceStatusProcedure,
-			connect.WithSchema(marketServiceMethods.ByName("Status")),
+			baseURL+MarketServiceGetStatusProcedure,
+			connect.WithSchema(marketServiceMethods.ByName("GetStatus")),
 			connect.WithClientOptions(opts...),
 		),
-		getIndices: connect.NewClient[v1.GetIndicesRequest, v1.GetIndicesResponse](
+		listIndices: connect.NewClient[v1.ListIndicesRequest, v1.ListIndicesResponse](
 			httpClient,
-			baseURL+MarketServiceGetIndicesProcedure,
-			connect.WithSchema(marketServiceMethods.ByName("GetIndices")),
+			baseURL+MarketServiceListIndicesProcedure,
+			connect.WithSchema(marketServiceMethods.ByName("ListIndices")),
 			connect.WithClientOptions(opts...),
 		),
-		getSectors: connect.NewClient[v1.GetSectorsRequest, v1.GetSectorsResponse](
+		listSectors: connect.NewClient[v1.ListSectorsRequest, v1.ListSectorsResponse](
 			httpClient,
-			baseURL+MarketServiceGetSectorsProcedure,
-			connect.WithSchema(marketServiceMethods.ByName("GetSectors")),
+			baseURL+MarketServiceListSectorsProcedure,
+			connect.WithSchema(marketServiceMethods.ByName("ListSectors")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -84,31 +84,31 @@ func NewMarketServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 
 // marketServiceClient implements MarketServiceClient.
 type marketServiceClient struct {
-	status     *connect.Client[v1.StatusRequest, v1.StatusResponse]
-	getIndices *connect.Client[v1.GetIndicesRequest, v1.GetIndicesResponse]
-	getSectors *connect.Client[v1.GetSectorsRequest, v1.GetSectorsResponse]
+	getStatus   *connect.Client[v1.GetStatusRequest, v1.GetStatusResponse]
+	listIndices *connect.Client[v1.ListIndicesRequest, v1.ListIndicesResponse]
+	listSectors *connect.Client[v1.ListSectorsRequest, v1.ListSectorsResponse]
 }
 
-// Status calls ntx.v1.MarketService.Status.
-func (c *marketServiceClient) Status(ctx context.Context, req *connect.Request[v1.StatusRequest]) (*connect.Response[v1.StatusResponse], error) {
-	return c.status.CallUnary(ctx, req)
+// GetStatus calls ntx.v1.MarketService.GetStatus.
+func (c *marketServiceClient) GetStatus(ctx context.Context, req *connect.Request[v1.GetStatusRequest]) (*connect.Response[v1.GetStatusResponse], error) {
+	return c.getStatus.CallUnary(ctx, req)
 }
 
-// GetIndices calls ntx.v1.MarketService.GetIndices.
-func (c *marketServiceClient) GetIndices(ctx context.Context, req *connect.Request[v1.GetIndicesRequest]) (*connect.Response[v1.GetIndicesResponse], error) {
-	return c.getIndices.CallUnary(ctx, req)
+// ListIndices calls ntx.v1.MarketService.ListIndices.
+func (c *marketServiceClient) ListIndices(ctx context.Context, req *connect.Request[v1.ListIndicesRequest]) (*connect.Response[v1.ListIndicesResponse], error) {
+	return c.listIndices.CallUnary(ctx, req)
 }
 
-// GetSectors calls ntx.v1.MarketService.GetSectors.
-func (c *marketServiceClient) GetSectors(ctx context.Context, req *connect.Request[v1.GetSectorsRequest]) (*connect.Response[v1.GetSectorsResponse], error) {
-	return c.getSectors.CallUnary(ctx, req)
+// ListSectors calls ntx.v1.MarketService.ListSectors.
+func (c *marketServiceClient) ListSectors(ctx context.Context, req *connect.Request[v1.ListSectorsRequest]) (*connect.Response[v1.ListSectorsResponse], error) {
+	return c.listSectors.CallUnary(ctx, req)
 }
 
 // MarketServiceHandler is an implementation of the ntx.v1.MarketService service.
 type MarketServiceHandler interface {
-	Status(context.Context, *connect.Request[v1.StatusRequest]) (*connect.Response[v1.StatusResponse], error)
-	GetIndices(context.Context, *connect.Request[v1.GetIndicesRequest]) (*connect.Response[v1.GetIndicesResponse], error)
-	GetSectors(context.Context, *connect.Request[v1.GetSectorsRequest]) (*connect.Response[v1.GetSectorsResponse], error)
+	GetStatus(context.Context, *connect.Request[v1.GetStatusRequest]) (*connect.Response[v1.GetStatusResponse], error)
+	ListIndices(context.Context, *connect.Request[v1.ListIndicesRequest]) (*connect.Response[v1.ListIndicesResponse], error)
+	ListSectors(context.Context, *connect.Request[v1.ListSectorsRequest]) (*connect.Response[v1.ListSectorsResponse], error)
 }
 
 // NewMarketServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -118,32 +118,32 @@ type MarketServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewMarketServiceHandler(svc MarketServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	marketServiceMethods := v1.File_ntx_v1_market_proto.Services().ByName("MarketService").Methods()
-	marketServiceStatusHandler := connect.NewUnaryHandler(
-		MarketServiceStatusProcedure,
-		svc.Status,
-		connect.WithSchema(marketServiceMethods.ByName("Status")),
+	marketServiceGetStatusHandler := connect.NewUnaryHandler(
+		MarketServiceGetStatusProcedure,
+		svc.GetStatus,
+		connect.WithSchema(marketServiceMethods.ByName("GetStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
-	marketServiceGetIndicesHandler := connect.NewUnaryHandler(
-		MarketServiceGetIndicesProcedure,
-		svc.GetIndices,
-		connect.WithSchema(marketServiceMethods.ByName("GetIndices")),
+	marketServiceListIndicesHandler := connect.NewUnaryHandler(
+		MarketServiceListIndicesProcedure,
+		svc.ListIndices,
+		connect.WithSchema(marketServiceMethods.ByName("ListIndices")),
 		connect.WithHandlerOptions(opts...),
 	)
-	marketServiceGetSectorsHandler := connect.NewUnaryHandler(
-		MarketServiceGetSectorsProcedure,
-		svc.GetSectors,
-		connect.WithSchema(marketServiceMethods.ByName("GetSectors")),
+	marketServiceListSectorsHandler := connect.NewUnaryHandler(
+		MarketServiceListSectorsProcedure,
+		svc.ListSectors,
+		connect.WithSchema(marketServiceMethods.ByName("ListSectors")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/ntx.v1.MarketService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case MarketServiceStatusProcedure:
-			marketServiceStatusHandler.ServeHTTP(w, r)
-		case MarketServiceGetIndicesProcedure:
-			marketServiceGetIndicesHandler.ServeHTTP(w, r)
-		case MarketServiceGetSectorsProcedure:
-			marketServiceGetSectorsHandler.ServeHTTP(w, r)
+		case MarketServiceGetStatusProcedure:
+			marketServiceGetStatusHandler.ServeHTTP(w, r)
+		case MarketServiceListIndicesProcedure:
+			marketServiceListIndicesHandler.ServeHTTP(w, r)
+		case MarketServiceListSectorsProcedure:
+			marketServiceListSectorsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -153,14 +153,14 @@ func NewMarketServiceHandler(svc MarketServiceHandler, opts ...connect.HandlerOp
 // UnimplementedMarketServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedMarketServiceHandler struct{}
 
-func (UnimplementedMarketServiceHandler) Status(context.Context, *connect.Request[v1.StatusRequest]) (*connect.Response[v1.StatusResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.MarketService.Status is not implemented"))
+func (UnimplementedMarketServiceHandler) GetStatus(context.Context, *connect.Request[v1.GetStatusRequest]) (*connect.Response[v1.GetStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.MarketService.GetStatus is not implemented"))
 }
 
-func (UnimplementedMarketServiceHandler) GetIndices(context.Context, *connect.Request[v1.GetIndicesRequest]) (*connect.Response[v1.GetIndicesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.MarketService.GetIndices is not implemented"))
+func (UnimplementedMarketServiceHandler) ListIndices(context.Context, *connect.Request[v1.ListIndicesRequest]) (*connect.Response[v1.ListIndicesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.MarketService.ListIndices is not implemented"))
 }
 
-func (UnimplementedMarketServiceHandler) GetSectors(context.Context, *connect.Request[v1.GetSectorsRequest]) (*connect.Response[v1.GetSectorsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.MarketService.GetSectors is not implemented"))
+func (UnimplementedMarketServiceHandler) ListSectors(context.Context, *connect.Request[v1.ListSectorsRequest]) (*connect.Response[v1.ListSectorsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.MarketService.ListSectors is not implemented"))
 }

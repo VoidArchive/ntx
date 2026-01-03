@@ -42,9 +42,9 @@ const (
 	// CompanyServiceGetFundamentalsProcedure is the fully-qualified name of the CompanyService's
 	// GetFundamentals RPC.
 	CompanyServiceGetFundamentalsProcedure = "/ntx.v1.CompanyService/GetFundamentals"
-	// CompanyServiceGetReportsProcedure is the fully-qualified name of the CompanyService's GetReports
-	// RPC.
-	CompanyServiceGetReportsProcedure = "/ntx.v1.CompanyService/GetReports"
+	// CompanyServiceListReportsProcedure is the fully-qualified name of the CompanyService's
+	// ListReports RPC.
+	CompanyServiceListReportsProcedure = "/ntx.v1.CompanyService/ListReports"
 )
 
 // CompanyServiceClient is a client for the ntx.v1.CompanyService service.
@@ -52,7 +52,7 @@ type CompanyServiceClient interface {
 	ListCompanies(context.Context, *connect.Request[v1.ListCompaniesRequest]) (*connect.Response[v1.ListCompaniesResponse], error)
 	GetCompany(context.Context, *connect.Request[v1.GetCompanyRequest]) (*connect.Response[v1.GetCompanyResponse], error)
 	GetFundamentals(context.Context, *connect.Request[v1.GetFundamentalsRequest]) (*connect.Response[v1.GetFundamentalsResponse], error)
-	GetReports(context.Context, *connect.Request[v1.GetReportsRequest]) (*connect.Response[v1.GetReportsResponse], error)
+	ListReports(context.Context, *connect.Request[v1.ListReportsRequest]) (*connect.Response[v1.ListReportsResponse], error)
 }
 
 // NewCompanyServiceClient constructs a client for the ntx.v1.CompanyService service. By default, it
@@ -84,10 +84,10 @@ func NewCompanyServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(companyServiceMethods.ByName("GetFundamentals")),
 			connect.WithClientOptions(opts...),
 		),
-		getReports: connect.NewClient[v1.GetReportsRequest, v1.GetReportsResponse](
+		listReports: connect.NewClient[v1.ListReportsRequest, v1.ListReportsResponse](
 			httpClient,
-			baseURL+CompanyServiceGetReportsProcedure,
-			connect.WithSchema(companyServiceMethods.ByName("GetReports")),
+			baseURL+CompanyServiceListReportsProcedure,
+			connect.WithSchema(companyServiceMethods.ByName("ListReports")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -98,7 +98,7 @@ type companyServiceClient struct {
 	listCompanies   *connect.Client[v1.ListCompaniesRequest, v1.ListCompaniesResponse]
 	getCompany      *connect.Client[v1.GetCompanyRequest, v1.GetCompanyResponse]
 	getFundamentals *connect.Client[v1.GetFundamentalsRequest, v1.GetFundamentalsResponse]
-	getReports      *connect.Client[v1.GetReportsRequest, v1.GetReportsResponse]
+	listReports     *connect.Client[v1.ListReportsRequest, v1.ListReportsResponse]
 }
 
 // ListCompanies calls ntx.v1.CompanyService.ListCompanies.
@@ -116,9 +116,9 @@ func (c *companyServiceClient) GetFundamentals(ctx context.Context, req *connect
 	return c.getFundamentals.CallUnary(ctx, req)
 }
 
-// GetReports calls ntx.v1.CompanyService.GetReports.
-func (c *companyServiceClient) GetReports(ctx context.Context, req *connect.Request[v1.GetReportsRequest]) (*connect.Response[v1.GetReportsResponse], error) {
-	return c.getReports.CallUnary(ctx, req)
+// ListReports calls ntx.v1.CompanyService.ListReports.
+func (c *companyServiceClient) ListReports(ctx context.Context, req *connect.Request[v1.ListReportsRequest]) (*connect.Response[v1.ListReportsResponse], error) {
+	return c.listReports.CallUnary(ctx, req)
 }
 
 // CompanyServiceHandler is an implementation of the ntx.v1.CompanyService service.
@@ -126,7 +126,7 @@ type CompanyServiceHandler interface {
 	ListCompanies(context.Context, *connect.Request[v1.ListCompaniesRequest]) (*connect.Response[v1.ListCompaniesResponse], error)
 	GetCompany(context.Context, *connect.Request[v1.GetCompanyRequest]) (*connect.Response[v1.GetCompanyResponse], error)
 	GetFundamentals(context.Context, *connect.Request[v1.GetFundamentalsRequest]) (*connect.Response[v1.GetFundamentalsResponse], error)
-	GetReports(context.Context, *connect.Request[v1.GetReportsRequest]) (*connect.Response[v1.GetReportsResponse], error)
+	ListReports(context.Context, *connect.Request[v1.ListReportsRequest]) (*connect.Response[v1.ListReportsResponse], error)
 }
 
 // NewCompanyServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -154,10 +154,10 @@ func NewCompanyServiceHandler(svc CompanyServiceHandler, opts ...connect.Handler
 		connect.WithSchema(companyServiceMethods.ByName("GetFundamentals")),
 		connect.WithHandlerOptions(opts...),
 	)
-	companyServiceGetReportsHandler := connect.NewUnaryHandler(
-		CompanyServiceGetReportsProcedure,
-		svc.GetReports,
-		connect.WithSchema(companyServiceMethods.ByName("GetReports")),
+	companyServiceListReportsHandler := connect.NewUnaryHandler(
+		CompanyServiceListReportsProcedure,
+		svc.ListReports,
+		connect.WithSchema(companyServiceMethods.ByName("ListReports")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/ntx.v1.CompanyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -168,8 +168,8 @@ func NewCompanyServiceHandler(svc CompanyServiceHandler, opts ...connect.Handler
 			companyServiceGetCompanyHandler.ServeHTTP(w, r)
 		case CompanyServiceGetFundamentalsProcedure:
 			companyServiceGetFundamentalsHandler.ServeHTTP(w, r)
-		case CompanyServiceGetReportsProcedure:
-			companyServiceGetReportsHandler.ServeHTTP(w, r)
+		case CompanyServiceListReportsProcedure:
+			companyServiceListReportsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -191,6 +191,6 @@ func (UnimplementedCompanyServiceHandler) GetFundamentals(context.Context, *conn
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.GetFundamentals is not implemented"))
 }
 
-func (UnimplementedCompanyServiceHandler) GetReports(context.Context, *connect.Request[v1.GetReportsRequest]) (*connect.Response[v1.GetReportsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.GetReports is not implemented"))
+func (UnimplementedCompanyServiceHandler) ListReports(context.Context, *connect.Request[v1.ListReportsRequest]) (*connect.Response[v1.ListReportsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.ListReports is not implemented"))
 }

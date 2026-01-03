@@ -82,26 +82,26 @@ func (x *MarketStatus) GetAsOf() *timestamppb.Timestamp {
 	return nil
 }
 
-type StatusRequest struct {
+type GetStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StatusRequest) Reset() {
-	*x = StatusRequest{}
+func (x *GetStatusRequest) Reset() {
+	*x = GetStatusRequest{}
 	mi := &file_ntx_v1_market_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StatusRequest) String() string {
+func (x *GetStatusRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StatusRequest) ProtoMessage() {}
+func (*GetStatusRequest) ProtoMessage() {}
 
-func (x *StatusRequest) ProtoReflect() protoreflect.Message {
+func (x *GetStatusRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_market_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -113,32 +113,32 @@ func (x *StatusRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StatusRequest.ProtoReflect.Descriptor instead.
-func (*StatusRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetStatusRequest.ProtoReflect.Descriptor instead.
+func (*GetStatusRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_market_proto_rawDescGZIP(), []int{1}
 }
 
-type StatusResponse struct {
+type GetStatusResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Status        *MarketStatus          `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StatusResponse) Reset() {
-	*x = StatusResponse{}
+func (x *GetStatusResponse) Reset() {
+	*x = GetStatusResponse{}
 	mi := &file_ntx_v1_market_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StatusResponse) String() string {
+func (x *GetStatusResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StatusResponse) ProtoMessage() {}
+func (*GetStatusResponse) ProtoMessage() {}
 
-func (x *StatusResponse) ProtoReflect() protoreflect.Message {
+func (x *GetStatusResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_market_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -150,38 +150,38 @@ func (x *StatusResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StatusResponse.ProtoReflect.Descriptor instead.
-func (*StatusResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetStatusResponse.ProtoReflect.Descriptor instead.
+func (*GetStatusResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_market_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *StatusResponse) GetStatus() *MarketStatus {
+func (x *GetStatusResponse) GetStatus() *MarketStatus {
 	if x != nil {
 		return x.Status
 	}
 	return nil
 }
 
-type GetIndicesRequest struct {
+type ListIndicesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetIndicesRequest) Reset() {
-	*x = GetIndicesRequest{}
+func (x *ListIndicesRequest) Reset() {
+	*x = ListIndicesRequest{}
 	mi := &file_ntx_v1_market_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetIndicesRequest) String() string {
+func (x *ListIndicesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetIndicesRequest) ProtoMessage() {}
+func (*ListIndicesRequest) ProtoMessage() {}
 
-func (x *GetIndicesRequest) ProtoReflect() protoreflect.Message {
+func (x *ListIndicesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_market_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -193,32 +193,32 @@ func (x *GetIndicesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetIndicesRequest.ProtoReflect.Descriptor instead.
-func (*GetIndicesRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListIndicesRequest.ProtoReflect.Descriptor instead.
+func (*ListIndicesRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_market_proto_rawDescGZIP(), []int{3}
 }
 
-type GetIndicesResponse struct {
+type ListIndicesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Indices       []*Index               `protobuf:"bytes,1,rep,name=indices,proto3" json:"indices,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetIndicesResponse) Reset() {
-	*x = GetIndicesResponse{}
+func (x *ListIndicesResponse) Reset() {
+	*x = ListIndicesResponse{}
 	mi := &file_ntx_v1_market_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetIndicesResponse) String() string {
+func (x *ListIndicesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetIndicesResponse) ProtoMessage() {}
+func (*ListIndicesResponse) ProtoMessage() {}
 
-func (x *GetIndicesResponse) ProtoReflect() protoreflect.Message {
+func (x *ListIndicesResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_market_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -230,38 +230,38 @@ func (x *GetIndicesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetIndicesResponse.ProtoReflect.Descriptor instead.
-func (*GetIndicesResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListIndicesResponse.ProtoReflect.Descriptor instead.
+func (*ListIndicesResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_market_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetIndicesResponse) GetIndices() []*Index {
+func (x *ListIndicesResponse) GetIndices() []*Index {
 	if x != nil {
 		return x.Indices
 	}
 	return nil
 }
 
-type GetSectorsRequest struct {
+type ListSectorsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetSectorsRequest) Reset() {
-	*x = GetSectorsRequest{}
+func (x *ListSectorsRequest) Reset() {
+	*x = ListSectorsRequest{}
 	mi := &file_ntx_v1_market_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetSectorsRequest) String() string {
+func (x *ListSectorsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetSectorsRequest) ProtoMessage() {}
+func (*ListSectorsRequest) ProtoMessage() {}
 
-func (x *GetSectorsRequest) ProtoReflect() protoreflect.Message {
+func (x *ListSectorsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_market_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -273,32 +273,32 @@ func (x *GetSectorsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetSectorsRequest.ProtoReflect.Descriptor instead.
-func (*GetSectorsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListSectorsRequest.ProtoReflect.Descriptor instead.
+func (*ListSectorsRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_market_proto_rawDescGZIP(), []int{5}
 }
 
-type GetSectorsResponse struct {
+type ListSectorsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Sectors       []*SectorSummary       `protobuf:"bytes,1,rep,name=sectors,proto3" json:"sectors,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetSectorsResponse) Reset() {
-	*x = GetSectorsResponse{}
+func (x *ListSectorsResponse) Reset() {
+	*x = ListSectorsResponse{}
 	mi := &file_ntx_v1_market_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetSectorsResponse) String() string {
+func (x *ListSectorsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetSectorsResponse) ProtoMessage() {}
+func (*ListSectorsResponse) ProtoMessage() {}
 
-func (x *GetSectorsResponse) ProtoReflect() protoreflect.Message {
+func (x *ListSectorsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_market_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -310,12 +310,12 @@ func (x *GetSectorsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetSectorsResponse.ProtoReflect.Descriptor instead.
-func (*GetSectorsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListSectorsResponse.ProtoReflect.Descriptor instead.
+func (*ListSectorsResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_market_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GetSectorsResponse) GetSectors() []*SectorSummary {
+func (x *ListSectorsResponse) GetSectors() []*SectorSummary {
 	if x != nil {
 		return x.Sectors
 	}
@@ -330,22 +330,20 @@ const file_ntx_v1_market_proto_rawDesc = "" +
 	"\fMarketStatus\x12\x17\n" +
 	"\ais_open\x18\x01 \x01(\bR\x06isOpen\x12\x14\n" +
 	"\x05state\x18\x02 \x01(\tR\x05state\x12/\n" +
-	"\x05as_of\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x04asOf\"\x0f\n" +
-	"\rStatusRequest\">\n" +
-	"\x0eStatusResponse\x12,\n" +
-	"\x06status\x18\x01 \x01(\v2\x14.ntx.v1.MarketStatusR\x06status\"\x13\n" +
-	"\x11GetIndicesRequest\"=\n" +
-	"\x12GetIndicesResponse\x12'\n" +
-	"\aindices\x18\x01 \x03(\v2\r.ntx.v1.IndexR\aindices\"\x13\n" +
-	"\x11GetSectorsRequest\"E\n" +
-	"\x12GetSectorsResponse\x12/\n" +
-	"\asectors\x18\x01 \x03(\v2\x15.ntx.v1.SectorSummaryR\asectors2\xd2\x01\n" +
-	"\rMarketService\x127\n" +
-	"\x06Status\x12\x15.ntx.v1.StatusRequest\x1a\x16.ntx.v1.StatusResponse\x12C\n" +
-	"\n" +
-	"GetIndices\x12\x19.ntx.v1.GetIndicesRequest\x1a\x1a.ntx.v1.GetIndicesResponse\x12C\n" +
-	"\n" +
-	"GetSectors\x12\x19.ntx.v1.GetSectorsRequest\x1a\x1a.ntx.v1.GetSectorsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x05as_of\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x04asOf\"\x12\n" +
+	"\x10GetStatusRequest\"A\n" +
+	"\x11GetStatusResponse\x12,\n" +
+	"\x06status\x18\x01 \x01(\v2\x14.ntx.v1.MarketStatusR\x06status\"\x14\n" +
+	"\x12ListIndicesRequest\">\n" +
+	"\x13ListIndicesResponse\x12'\n" +
+	"\aindices\x18\x01 \x03(\v2\r.ntx.v1.IndexR\aindices\"\x14\n" +
+	"\x12ListSectorsRequest\"F\n" +
+	"\x13ListSectorsResponse\x12/\n" +
+	"\asectors\x18\x01 \x03(\v2\x15.ntx.v1.SectorSummaryR\asectors2\xe1\x01\n" +
+	"\rMarketService\x12@\n" +
+	"\tGetStatus\x12\x18.ntx.v1.GetStatusRequest\x1a\x19.ntx.v1.GetStatusResponse\x12F\n" +
+	"\vListIndices\x12\x1a.ntx.v1.ListIndicesRequest\x1a\x1b.ntx.v1.ListIndicesResponse\x12F\n" +
+	"\vListSectors\x12\x1a.ntx.v1.ListSectorsRequest\x1a\x1b.ntx.v1.ListSectorsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_market_proto_rawDescOnce sync.Once
@@ -362,27 +360,27 @@ func file_ntx_v1_market_proto_rawDescGZIP() []byte {
 var file_ntx_v1_market_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_ntx_v1_market_proto_goTypes = []any{
 	(*MarketStatus)(nil),          // 0: ntx.v1.MarketStatus
-	(*StatusRequest)(nil),         // 1: ntx.v1.StatusRequest
-	(*StatusResponse)(nil),        // 2: ntx.v1.StatusResponse
-	(*GetIndicesRequest)(nil),     // 3: ntx.v1.GetIndicesRequest
-	(*GetIndicesResponse)(nil),    // 4: ntx.v1.GetIndicesResponse
-	(*GetSectorsRequest)(nil),     // 5: ntx.v1.GetSectorsRequest
-	(*GetSectorsResponse)(nil),    // 6: ntx.v1.GetSectorsResponse
+	(*GetStatusRequest)(nil),      // 1: ntx.v1.GetStatusRequest
+	(*GetStatusResponse)(nil),     // 2: ntx.v1.GetStatusResponse
+	(*ListIndicesRequest)(nil),    // 3: ntx.v1.ListIndicesRequest
+	(*ListIndicesResponse)(nil),   // 4: ntx.v1.ListIndicesResponse
+	(*ListSectorsRequest)(nil),    // 5: ntx.v1.ListSectorsRequest
+	(*ListSectorsResponse)(nil),   // 6: ntx.v1.ListSectorsResponse
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 	(*Index)(nil),                 // 8: ntx.v1.Index
 	(*SectorSummary)(nil),         // 9: ntx.v1.SectorSummary
 }
 var file_ntx_v1_market_proto_depIdxs = []int32{
 	7, // 0: ntx.v1.MarketStatus.as_of:type_name -> google.protobuf.Timestamp
-	0, // 1: ntx.v1.StatusResponse.status:type_name -> ntx.v1.MarketStatus
-	8, // 2: ntx.v1.GetIndicesResponse.indices:type_name -> ntx.v1.Index
-	9, // 3: ntx.v1.GetSectorsResponse.sectors:type_name -> ntx.v1.SectorSummary
-	1, // 4: ntx.v1.MarketService.Status:input_type -> ntx.v1.StatusRequest
-	3, // 5: ntx.v1.MarketService.GetIndices:input_type -> ntx.v1.GetIndicesRequest
-	5, // 6: ntx.v1.MarketService.GetSectors:input_type -> ntx.v1.GetSectorsRequest
-	2, // 7: ntx.v1.MarketService.Status:output_type -> ntx.v1.StatusResponse
-	4, // 8: ntx.v1.MarketService.GetIndices:output_type -> ntx.v1.GetIndicesResponse
-	6, // 9: ntx.v1.MarketService.GetSectors:output_type -> ntx.v1.GetSectorsResponse
+	0, // 1: ntx.v1.GetStatusResponse.status:type_name -> ntx.v1.MarketStatus
+	8, // 2: ntx.v1.ListIndicesResponse.indices:type_name -> ntx.v1.Index
+	9, // 3: ntx.v1.ListSectorsResponse.sectors:type_name -> ntx.v1.SectorSummary
+	1, // 4: ntx.v1.MarketService.GetStatus:input_type -> ntx.v1.GetStatusRequest
+	3, // 5: ntx.v1.MarketService.ListIndices:input_type -> ntx.v1.ListIndicesRequest
+	5, // 6: ntx.v1.MarketService.ListSectors:input_type -> ntx.v1.ListSectorsRequest
+	2, // 7: ntx.v1.MarketService.GetStatus:output_type -> ntx.v1.GetStatusResponse
+	4, // 8: ntx.v1.MarketService.ListIndices:output_type -> ntx.v1.ListIndicesResponse
+	6, // 9: ntx.v1.MarketService.ListSectors:output_type -> ntx.v1.ListSectorsResponse
 	7, // [7:10] is the sub-list for method output_type
 	4, // [4:7] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

@@ -426,7 +426,7 @@ func (x *ScreenResult) GetFundamentals() *Fundamentals {
 	return nil
 }
 
-type TopGainersRequest struct {
+type ListTopGainersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Sector        Sector                 `protobuf:"varint,2,opt,name=sector,proto3,enum=ntx.v1.Sector" json:"sector,omitempty"`
@@ -434,20 +434,20 @@ type TopGainersRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TopGainersRequest) Reset() {
-	*x = TopGainersRequest{}
+func (x *ListTopGainersRequest) Reset() {
+	*x = ListTopGainersRequest{}
 	mi := &file_ntx_v1_screener_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TopGainersRequest) String() string {
+func (x *ListTopGainersRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TopGainersRequest) ProtoMessage() {}
+func (*ListTopGainersRequest) ProtoMessage() {}
 
-func (x *TopGainersRequest) ProtoReflect() protoreflect.Message {
+func (x *ListTopGainersRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_screener_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -459,46 +459,46 @@ func (x *TopGainersRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TopGainersRequest.ProtoReflect.Descriptor instead.
-func (*TopGainersRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListTopGainersRequest.ProtoReflect.Descriptor instead.
+func (*ListTopGainersRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_screener_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *TopGainersRequest) GetLimit() int32 {
+func (x *ListTopGainersRequest) GetLimit() int32 {
 	if x != nil {
 		return x.Limit
 	}
 	return 0
 }
 
-func (x *TopGainersRequest) GetSector() Sector {
+func (x *ListTopGainersRequest) GetSector() Sector {
 	if x != nil {
 		return x.Sector
 	}
 	return Sector_SECTOR_UNSPECIFIED
 }
 
-type TopGainersResponse struct {
+type ListTopGainersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Stocks        []*Price               `protobuf:"bytes,1,rep,name=stocks,proto3" json:"stocks,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TopGainersResponse) Reset() {
-	*x = TopGainersResponse{}
+func (x *ListTopGainersResponse) Reset() {
+	*x = ListTopGainersResponse{}
 	mi := &file_ntx_v1_screener_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TopGainersResponse) String() string {
+func (x *ListTopGainersResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TopGainersResponse) ProtoMessage() {}
+func (*ListTopGainersResponse) ProtoMessage() {}
 
-func (x *TopGainersResponse) ProtoReflect() protoreflect.Message {
+func (x *ListTopGainersResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_screener_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -510,19 +510,19 @@ func (x *TopGainersResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TopGainersResponse.ProtoReflect.Descriptor instead.
-func (*TopGainersResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListTopGainersResponse.ProtoReflect.Descriptor instead.
+func (*ListTopGainersResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_screener_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *TopGainersResponse) GetStocks() []*Price {
+func (x *ListTopGainersResponse) GetStocks() []*Price {
 	if x != nil {
 		return x.Stocks
 	}
 	return nil
 }
 
-type TopLosersRequest struct {
+type ListTopLosersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Sector        Sector                 `protobuf:"varint,2,opt,name=sector,proto3,enum=ntx.v1.Sector" json:"sector,omitempty"`
@@ -530,20 +530,20 @@ type TopLosersRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TopLosersRequest) Reset() {
-	*x = TopLosersRequest{}
+func (x *ListTopLosersRequest) Reset() {
+	*x = ListTopLosersRequest{}
 	mi := &file_ntx_v1_screener_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TopLosersRequest) String() string {
+func (x *ListTopLosersRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TopLosersRequest) ProtoMessage() {}
+func (*ListTopLosersRequest) ProtoMessage() {}
 
-func (x *TopLosersRequest) ProtoReflect() protoreflect.Message {
+func (x *ListTopLosersRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_screener_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -555,46 +555,46 @@ func (x *TopLosersRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TopLosersRequest.ProtoReflect.Descriptor instead.
-func (*TopLosersRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListTopLosersRequest.ProtoReflect.Descriptor instead.
+func (*ListTopLosersRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_screener_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *TopLosersRequest) GetLimit() int32 {
+func (x *ListTopLosersRequest) GetLimit() int32 {
 	if x != nil {
 		return x.Limit
 	}
 	return 0
 }
 
-func (x *TopLosersRequest) GetSector() Sector {
+func (x *ListTopLosersRequest) GetSector() Sector {
 	if x != nil {
 		return x.Sector
 	}
 	return Sector_SECTOR_UNSPECIFIED
 }
 
-type TopLosersResponse struct {
+type ListTopLosersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Stocks        []*Price               `protobuf:"bytes,1,rep,name=stocks,proto3" json:"stocks,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TopLosersResponse) Reset() {
-	*x = TopLosersResponse{}
+func (x *ListTopLosersResponse) Reset() {
+	*x = ListTopLosersResponse{}
 	mi := &file_ntx_v1_screener_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TopLosersResponse) String() string {
+func (x *ListTopLosersResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TopLosersResponse) ProtoMessage() {}
+func (*ListTopLosersResponse) ProtoMessage() {}
 
-func (x *TopLosersResponse) ProtoReflect() protoreflect.Message {
+func (x *ListTopLosersResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_screener_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -606,12 +606,12 @@ func (x *TopLosersResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TopLosersResponse.ProtoReflect.Descriptor instead.
-func (*TopLosersResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListTopLosersResponse.ProtoReflect.Descriptor instead.
+func (*ListTopLosersResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_screener_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *TopLosersResponse) GetStocks() []*Price {
+func (x *ListTopLosersResponse) GetStocks() []*Price {
 	if x != nil {
 		return x.Stocks
 	}
@@ -668,16 +668,16 @@ const file_ntx_v1_screener_proto_rawDesc = "" +
 	"\fScreenResult\x12)\n" +
 	"\acompany\x18\x01 \x01(\v2\x0f.ntx.v1.CompanyR\acompany\x12#\n" +
 	"\x05price\x18\x02 \x01(\v2\r.ntx.v1.PriceR\x05price\x128\n" +
-	"\ffundamentals\x18\x03 \x01(\v2\x14.ntx.v1.FundamentalsR\ffundamentals\"Q\n" +
-	"\x11TopGainersRequest\x12\x14\n" +
+	"\ffundamentals\x18\x03 \x01(\v2\x14.ntx.v1.FundamentalsR\ffundamentals\"U\n" +
+	"\x15ListTopGainersRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12&\n" +
-	"\x06sector\x18\x02 \x01(\x0e2\x0e.ntx.v1.SectorR\x06sector\";\n" +
-	"\x12TopGainersResponse\x12%\n" +
-	"\x06stocks\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06stocks\"P\n" +
-	"\x10TopLosersRequest\x12\x14\n" +
+	"\x06sector\x18\x02 \x01(\x0e2\x0e.ntx.v1.SectorR\x06sector\"?\n" +
+	"\x16ListTopGainersResponse\x12%\n" +
+	"\x06stocks\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06stocks\"T\n" +
+	"\x14ListTopLosersRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12&\n" +
-	"\x06sector\x18\x02 \x01(\x0e2\x0e.ntx.v1.SectorR\x06sector\":\n" +
-	"\x11TopLosersResponse\x12%\n" +
+	"\x06sector\x18\x02 \x01(\x0e2\x0e.ntx.v1.SectorR\x06sector\">\n" +
+	"\x15ListTopLosersResponse\x12%\n" +
 	"\x06stocks\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06stocks*\xae\x01\n" +
 	"\x06SortBy\x12\x17\n" +
 	"\x13SORT_BY_UNSPECIFIED\x10\x00\x12\x12\n" +
@@ -692,12 +692,11 @@ const file_ntx_v1_screener_proto_rawDesc = "" +
 	"\tSortOrder\x12\x1a\n" +
 	"\x16SORT_ORDER_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSORT_ORDER_ASC\x10\x01\x12\x13\n" +
-	"\x0fSORT_ORDER_DESC\x10\x022\xd1\x01\n" +
+	"\x0fSORT_ORDER_DESC\x10\x022\xe9\x01\n" +
 	"\x0fScreenerService\x127\n" +
-	"\x06Screen\x12\x15.ntx.v1.ScreenRequest\x1a\x16.ntx.v1.ScreenResponse\x12C\n" +
-	"\n" +
-	"TopGainers\x12\x19.ntx.v1.TopGainersRequest\x1a\x1a.ntx.v1.TopGainersResponse\x12@\n" +
-	"\tTopLosers\x12\x18.ntx.v1.TopLosersRequest\x1a\x19.ntx.v1.TopLosersResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x06Screen\x12\x15.ntx.v1.ScreenRequest\x1a\x16.ntx.v1.ScreenResponse\x12O\n" +
+	"\x0eListTopGainers\x12\x1d.ntx.v1.ListTopGainersRequest\x1a\x1e.ntx.v1.ListTopGainersResponse\x12L\n" +
+	"\rListTopLosers\x12\x1c.ntx.v1.ListTopLosersRequest\x1a\x1d.ntx.v1.ListTopLosersResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_screener_proto_rawDescOnce sync.Once
@@ -714,19 +713,19 @@ func file_ntx_v1_screener_proto_rawDescGZIP() []byte {
 var file_ntx_v1_screener_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_ntx_v1_screener_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_ntx_v1_screener_proto_goTypes = []any{
-	(SortBy)(0),                // 0: ntx.v1.SortBy
-	(SortOrder)(0),             // 1: ntx.v1.SortOrder
-	(*ScreenRequest)(nil),      // 2: ntx.v1.ScreenRequest
-	(*ScreenResponse)(nil),     // 3: ntx.v1.ScreenResponse
-	(*ScreenResult)(nil),       // 4: ntx.v1.ScreenResult
-	(*TopGainersRequest)(nil),  // 5: ntx.v1.TopGainersRequest
-	(*TopGainersResponse)(nil), // 6: ntx.v1.TopGainersResponse
-	(*TopLosersRequest)(nil),   // 7: ntx.v1.TopLosersRequest
-	(*TopLosersResponse)(nil),  // 8: ntx.v1.TopLosersResponse
-	(Sector)(0),                // 9: ntx.v1.Sector
-	(*Company)(nil),            // 10: ntx.v1.Company
-	(*Price)(nil),              // 11: ntx.v1.Price
-	(*Fundamentals)(nil),       // 12: ntx.v1.Fundamentals
+	(SortBy)(0),                    // 0: ntx.v1.SortBy
+	(SortOrder)(0),                 // 1: ntx.v1.SortOrder
+	(*ScreenRequest)(nil),          // 2: ntx.v1.ScreenRequest
+	(*ScreenResponse)(nil),         // 3: ntx.v1.ScreenResponse
+	(*ScreenResult)(nil),           // 4: ntx.v1.ScreenResult
+	(*ListTopGainersRequest)(nil),  // 5: ntx.v1.ListTopGainersRequest
+	(*ListTopGainersResponse)(nil), // 6: ntx.v1.ListTopGainersResponse
+	(*ListTopLosersRequest)(nil),   // 7: ntx.v1.ListTopLosersRequest
+	(*ListTopLosersResponse)(nil),  // 8: ntx.v1.ListTopLosersResponse
+	(Sector)(0),                    // 9: ntx.v1.Sector
+	(*Company)(nil),                // 10: ntx.v1.Company
+	(*Price)(nil),                  // 11: ntx.v1.Price
+	(*Fundamentals)(nil),           // 12: ntx.v1.Fundamentals
 }
 var file_ntx_v1_screener_proto_depIdxs = []int32{
 	9,  // 0: ntx.v1.ScreenRequest.sector:type_name -> ntx.v1.Sector
@@ -736,16 +735,16 @@ var file_ntx_v1_screener_proto_depIdxs = []int32{
 	10, // 4: ntx.v1.ScreenResult.company:type_name -> ntx.v1.Company
 	11, // 5: ntx.v1.ScreenResult.price:type_name -> ntx.v1.Price
 	12, // 6: ntx.v1.ScreenResult.fundamentals:type_name -> ntx.v1.Fundamentals
-	9,  // 7: ntx.v1.TopGainersRequest.sector:type_name -> ntx.v1.Sector
-	11, // 8: ntx.v1.TopGainersResponse.stocks:type_name -> ntx.v1.Price
-	9,  // 9: ntx.v1.TopLosersRequest.sector:type_name -> ntx.v1.Sector
-	11, // 10: ntx.v1.TopLosersResponse.stocks:type_name -> ntx.v1.Price
+	9,  // 7: ntx.v1.ListTopGainersRequest.sector:type_name -> ntx.v1.Sector
+	11, // 8: ntx.v1.ListTopGainersResponse.stocks:type_name -> ntx.v1.Price
+	9,  // 9: ntx.v1.ListTopLosersRequest.sector:type_name -> ntx.v1.Sector
+	11, // 10: ntx.v1.ListTopLosersResponse.stocks:type_name -> ntx.v1.Price
 	2,  // 11: ntx.v1.ScreenerService.Screen:input_type -> ntx.v1.ScreenRequest
-	5,  // 12: ntx.v1.ScreenerService.TopGainers:input_type -> ntx.v1.TopGainersRequest
-	7,  // 13: ntx.v1.ScreenerService.TopLosers:input_type -> ntx.v1.TopLosersRequest
+	5,  // 12: ntx.v1.ScreenerService.ListTopGainers:input_type -> ntx.v1.ListTopGainersRequest
+	7,  // 13: ntx.v1.ScreenerService.ListTopLosers:input_type -> ntx.v1.ListTopLosersRequest
 	3,  // 14: ntx.v1.ScreenerService.Screen:output_type -> ntx.v1.ScreenResponse
-	6,  // 15: ntx.v1.ScreenerService.TopGainers:output_type -> ntx.v1.TopGainersResponse
-	8,  // 16: ntx.v1.ScreenerService.TopLosers:output_type -> ntx.v1.TopLosersResponse
+	6,  // 15: ntx.v1.ScreenerService.ListTopGainers:output_type -> ntx.v1.ListTopGainersResponse
+	8,  // 16: ntx.v1.ScreenerService.ListTopLosers:output_type -> ntx.v1.ListTopLosersResponse
 	14, // [14:17] is the sub-list for method output_type
 	11, // [11:14] is the sub-list for method input_type
 	11, // [11:11] is the sub-list for extension type_name

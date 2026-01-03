@@ -64,15 +64,15 @@ Both share code but operate independently.
 │   │                    ConnectRPC API                           │   │
 │   │                                                             │   │
 │   │  CompanyService              MarketService                  │   │
-│   │  ├── ListCompanies           ├── GetIndices                 │   │
-│   │  ├── GetCompany              ├── GetSectors                 │   │
-│   │  ├── GetFundamentals         └── MarketStatus               │   │
-│   │  └── GetReports                                             │   │
+│   │  ├── ListCompanies           ├── GetStatus                  │   │
+│   │  ├── GetCompany              ├── ListIndices                │   │
+│   │  ├── GetFundamentals         └── ListSectors                │   │
+│   │  └── ListReports                                            │   │
 │   │                                                             │   │
 │   │  PriceService                ScreenerService                │   │
 │   │  ├── GetPrice                ├── Screen (filters)           │   │
-│   │  ├── GetHistory              └── TopGainers/Losers          │   │
-│   │  └── GetChart                                               │   │
+│   │  └── ListCandles             ├── ListTopGainers             │   │
+│   │                              └── ListTopLosers              │   │
 │   └─────────────────────────────────────────────────────────────┘   │
 │                                   │                                 │
 └───────────────────────────────────┼─────────────────────────────────┘
@@ -210,25 +210,26 @@ NEPSE operates 11:00-15:00 NPT, Sunday-Thursday.
 ```protobuf
 service CompanyService {
   rpc ListCompanies(ListCompaniesRequest) returns (ListCompaniesResponse);
-  rpc GetCompany(GetCompanyRequest) returns (Company);
-  rpc GetFundamentals(GetFundamentalsRequest) returns (Fundamentals);
-  rpc GetReports(GetReportsRequest) returns (Reports);
+  rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
+  rpc GetFundamentals(GetFundamentalsRequest) returns (GetFundamentalsResponse);
+  rpc ListReports(ListReportsRequest) returns (ListReportsResponse);
 }
 
 service PriceService {
-  rpc GetPrice(GetPriceRequest) returns (Price);
-  rpc GetHistory(GetHistoryRequest) returns (PriceHistory);
+  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
+  rpc ListCandles(ListCandlesRequest) returns (ListCandlesResponse);
 }
 
 service MarketService {
-  rpc Status(StatusRequest) returns (MarketStatus);
-  rpc GetIndices(GetIndicesRequest) returns (Indices);
-  rpc GetSectors(GetSectorsRequest) returns (Sectors);
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  rpc ListIndices(ListIndicesRequest) returns (ListIndicesResponse);
+  rpc ListSectors(ListSectorsRequest) returns (ListSectorsResponse);
 }
 
 service ScreenerService {
   rpc Screen(ScreenRequest) returns (ScreenResponse);
-  rpc TopMovers(TopMoversRequest) returns (TopMoversResponse);
+  rpc ListTopGainers(ListTopGainersRequest) returns (ListTopGainersResponse);
+  rpc ListTopLosers(ListTopLosersRequest) returns (ListTopLosersResponse);
 }
 ```
 

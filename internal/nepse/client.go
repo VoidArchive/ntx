@@ -1,3 +1,4 @@
+// Package nepse provides a wrapper around go-nepse for NTX.
 package nepse
 
 import (

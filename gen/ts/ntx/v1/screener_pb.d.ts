@@ -166,9 +166,9 @@ export declare type ScreenResult = Message<"ntx.v1.ScreenResult"> & {
 export declare const ScreenResultSchema: GenMessage<ScreenResult>;
 
 /**
- * @generated from message ntx.v1.TopGainersRequest
+ * @generated from message ntx.v1.ListTopGainersRequest
  */
-export declare type TopGainersRequest = Message<"ntx.v1.TopGainersRequest"> & {
+export declare type ListTopGainersRequest = Message<"ntx.v1.ListTopGainersRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -181,15 +181,15 @@ export declare type TopGainersRequest = Message<"ntx.v1.TopGainersRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.TopGainersRequest.
- * Use `create(TopGainersRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListTopGainersRequest.
+ * Use `create(ListTopGainersRequestSchema)` to create a new message.
  */
-export declare const TopGainersRequestSchema: GenMessage<TopGainersRequest>;
+export declare const ListTopGainersRequestSchema: GenMessage<ListTopGainersRequest>;
 
 /**
- * @generated from message ntx.v1.TopGainersResponse
+ * @generated from message ntx.v1.ListTopGainersResponse
  */
-export declare type TopGainersResponse = Message<"ntx.v1.TopGainersResponse"> & {
+export declare type ListTopGainersResponse = Message<"ntx.v1.ListTopGainersResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.Price stocks = 1;
    */
@@ -197,15 +197,15 @@ export declare type TopGainersResponse = Message<"ntx.v1.TopGainersResponse"> & 
 };
 
 /**
- * Describes the message ntx.v1.TopGainersResponse.
- * Use `create(TopGainersResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListTopGainersResponse.
+ * Use `create(ListTopGainersResponseSchema)` to create a new message.
  */
-export declare const TopGainersResponseSchema: GenMessage<TopGainersResponse>;
+export declare const ListTopGainersResponseSchema: GenMessage<ListTopGainersResponse>;
 
 /**
- * @generated from message ntx.v1.TopLosersRequest
+ * @generated from message ntx.v1.ListTopLosersRequest
  */
-export declare type TopLosersRequest = Message<"ntx.v1.TopLosersRequest"> & {
+export declare type ListTopLosersRequest = Message<"ntx.v1.ListTopLosersRequest"> & {
   /**
    * @generated from field: int32 limit = 1;
    */
@@ -218,15 +218,15 @@ export declare type TopLosersRequest = Message<"ntx.v1.TopLosersRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.TopLosersRequest.
- * Use `create(TopLosersRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListTopLosersRequest.
+ * Use `create(ListTopLosersRequestSchema)` to create a new message.
  */
-export declare const TopLosersRequestSchema: GenMessage<TopLosersRequest>;
+export declare const ListTopLosersRequestSchema: GenMessage<ListTopLosersRequest>;
 
 /**
- * @generated from message ntx.v1.TopLosersResponse
+ * @generated from message ntx.v1.ListTopLosersResponse
  */
-export declare type TopLosersResponse = Message<"ntx.v1.TopLosersResponse"> & {
+export declare type ListTopLosersResponse = Message<"ntx.v1.ListTopLosersResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.Price stocks = 1;
    */
@@ -234,10 +234,10 @@ export declare type TopLosersResponse = Message<"ntx.v1.TopLosersResponse"> & {
 };
 
 /**
- * Describes the message ntx.v1.TopLosersResponse.
- * Use `create(TopLosersResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListTopLosersResponse.
+ * Use `create(ListTopLosersResponseSchema)` to create a new message.
  */
-export declare const TopLosersResponseSchema: GenMessage<TopLosersResponse>;
+export declare const ListTopLosersResponseSchema: GenMessage<ListTopLosersResponse>;
 
 /**
  * @generated from enum ntx.v1.SortBy
@@ -327,20 +327,20 @@ export declare const ScreenerService: GenService<{
     output: typeof ScreenResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.ScreenerService.TopGainers
+   * @generated from rpc ntx.v1.ScreenerService.ListTopGainers
    */
-  topGainers: {
+  listTopGainers: {
     methodKind: "unary";
-    input: typeof TopGainersRequestSchema;
-    output: typeof TopGainersResponseSchema;
+    input: typeof ListTopGainersRequestSchema;
+    output: typeof ListTopGainersResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.ScreenerService.TopLosers
+   * @generated from rpc ntx.v1.ScreenerService.ListTopLosers
    */
-  topLosers: {
+  listTopLosers: {
     methodKind: "unary";
-    input: typeof TopLosersRequestSchema;
-    output: typeof TopLosersResponseSchema;
+    input: typeof ListTopLosersRequestSchema;
+    output: typeof ListTopLosersResponseSchema;
   },
 }>;
 

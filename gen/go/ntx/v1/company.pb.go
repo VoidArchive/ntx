@@ -293,7 +293,7 @@ func (x *GetFundamentalsResponse) GetFundamentals() *Fundamentals {
 	return nil
 }
 
-type GetReportsRequest struct {
+type ListReportsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	Type          ReportType             `protobuf:"varint,2,opt,name=type,proto3,enum=ntx.v1.ReportType" json:"type,omitempty"`
@@ -302,20 +302,20 @@ type GetReportsRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetReportsRequest) Reset() {
-	*x = GetReportsRequest{}
+func (x *ListReportsRequest) Reset() {
+	*x = ListReportsRequest{}
 	mi := &file_ntx_v1_company_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetReportsRequest) String() string {
+func (x *ListReportsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetReportsRequest) ProtoMessage() {}
+func (*ListReportsRequest) ProtoMessage() {}
 
-func (x *GetReportsRequest) ProtoReflect() protoreflect.Message {
+func (x *ListReportsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_company_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -327,53 +327,53 @@ func (x *GetReportsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetReportsRequest.ProtoReflect.Descriptor instead.
-func (*GetReportsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListReportsRequest.ProtoReflect.Descriptor instead.
+func (*ListReportsRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_company_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GetReportsRequest) GetSymbol() string {
+func (x *ListReportsRequest) GetSymbol() string {
 	if x != nil {
 		return x.Symbol
 	}
 	return ""
 }
 
-func (x *GetReportsRequest) GetType() ReportType {
+func (x *ListReportsRequest) GetType() ReportType {
 	if x != nil {
 		return x.Type
 	}
 	return ReportType_REPORT_TYPE_UNSPECIFIED
 }
 
-func (x *GetReportsRequest) GetLimit() int32 {
+func (x *ListReportsRequest) GetLimit() int32 {
 	if x != nil {
 		return x.Limit
 	}
 	return 0
 }
 
-type GetReportsResponse struct {
+type ListReportsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Reports       []*Report              `protobuf:"bytes,1,rep,name=reports,proto3" json:"reports,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetReportsResponse) Reset() {
-	*x = GetReportsResponse{}
+func (x *ListReportsResponse) Reset() {
+	*x = ListReportsResponse{}
 	mi := &file_ntx_v1_company_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetReportsResponse) String() string {
+func (x *ListReportsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetReportsResponse) ProtoMessage() {}
+func (*ListReportsResponse) ProtoMessage() {}
 
-func (x *GetReportsResponse) ProtoReflect() protoreflect.Message {
+func (x *ListReportsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_company_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -385,12 +385,12 @@ func (x *GetReportsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetReportsResponse.ProtoReflect.Descriptor instead.
-func (*GetReportsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListReportsResponse.ProtoReflect.Descriptor instead.
+func (*ListReportsResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_company_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *GetReportsResponse) GetReports() []*Report {
+func (x *ListReportsResponse) GetReports() []*Report {
 	if x != nil {
 		return x.Reports
 	}
@@ -414,20 +414,19 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x16GetFundamentalsRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"S\n" +
 	"\x17GetFundamentalsResponse\x128\n" +
-	"\ffundamentals\x18\x01 \x01(\v2\x14.ntx.v1.FundamentalsR\ffundamentals\"i\n" +
-	"\x11GetReportsRequest\x12\x16\n" +
+	"\ffundamentals\x18\x01 \x01(\v2\x14.ntx.v1.FundamentalsR\ffundamentals\"j\n" +
+	"\x12ListReportsRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12&\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x12.ntx.v1.ReportTypeR\x04type\x12\x14\n" +
-	"\x05limit\x18\x03 \x01(\x05R\x05limit\">\n" +
-	"\x12GetReportsResponse\x12(\n" +
-	"\areports\x18\x01 \x03(\v2\x0e.ntx.v1.ReportR\areports2\xbc\x02\n" +
+	"\x05limit\x18\x03 \x01(\x05R\x05limit\"?\n" +
+	"\x13ListReportsResponse\x12(\n" +
+	"\areports\x18\x01 \x03(\v2\x0e.ntx.v1.ReportR\areports2\xbf\x02\n" +
 	"\x0eCompanyService\x12L\n" +
 	"\rListCompanies\x12\x1c.ntx.v1.ListCompaniesRequest\x1a\x1d.ntx.v1.ListCompaniesResponse\x12C\n" +
 	"\n" +
 	"GetCompany\x12\x19.ntx.v1.GetCompanyRequest\x1a\x1a.ntx.v1.GetCompanyResponse\x12R\n" +
-	"\x0fGetFundamentals\x12\x1e.ntx.v1.GetFundamentalsRequest\x1a\x1f.ntx.v1.GetFundamentalsResponse\x12C\n" +
-	"\n" +
-	"GetReports\x12\x19.ntx.v1.GetReportsRequest\x1a\x1a.ntx.v1.GetReportsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x0fGetFundamentals\x12\x1e.ntx.v1.GetFundamentalsRequest\x1a\x1f.ntx.v1.GetFundamentalsResponse\x12F\n" +
+	"\vListReports\x12\x1a.ntx.v1.ListReportsRequest\x1a\x1b.ntx.v1.ListReportsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_company_proto_rawDescOnce sync.Once
@@ -449,8 +448,8 @@ var file_ntx_v1_company_proto_goTypes = []any{
 	(*GetCompanyResponse)(nil),      // 3: ntx.v1.GetCompanyResponse
 	(*GetFundamentalsRequest)(nil),  // 4: ntx.v1.GetFundamentalsRequest
 	(*GetFundamentalsResponse)(nil), // 5: ntx.v1.GetFundamentalsResponse
-	(*GetReportsRequest)(nil),       // 6: ntx.v1.GetReportsRequest
-	(*GetReportsResponse)(nil),      // 7: ntx.v1.GetReportsResponse
+	(*ListReportsRequest)(nil),      // 6: ntx.v1.ListReportsRequest
+	(*ListReportsResponse)(nil),     // 7: ntx.v1.ListReportsResponse
 	(Sector)(0),                     // 8: ntx.v1.Sector
 	(*Company)(nil),                 // 9: ntx.v1.Company
 	(*Fundamentals)(nil),            // 10: ntx.v1.Fundamentals
@@ -462,16 +461,16 @@ var file_ntx_v1_company_proto_depIdxs = []int32{
 	9,  // 1: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
 	9,  // 2: ntx.v1.GetCompanyResponse.company:type_name -> ntx.v1.Company
 	10, // 3: ntx.v1.GetFundamentalsResponse.fundamentals:type_name -> ntx.v1.Fundamentals
-	11, // 4: ntx.v1.GetReportsRequest.type:type_name -> ntx.v1.ReportType
-	12, // 5: ntx.v1.GetReportsResponse.reports:type_name -> ntx.v1.Report
+	11, // 4: ntx.v1.ListReportsRequest.type:type_name -> ntx.v1.ReportType
+	12, // 5: ntx.v1.ListReportsResponse.reports:type_name -> ntx.v1.Report
 	0,  // 6: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
 	2,  // 7: ntx.v1.CompanyService.GetCompany:input_type -> ntx.v1.GetCompanyRequest
 	4,  // 8: ntx.v1.CompanyService.GetFundamentals:input_type -> ntx.v1.GetFundamentalsRequest
-	6,  // 9: ntx.v1.CompanyService.GetReports:input_type -> ntx.v1.GetReportsRequest
+	6,  // 9: ntx.v1.CompanyService.ListReports:input_type -> ntx.v1.ListReportsRequest
 	1,  // 10: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
 	3,  // 11: ntx.v1.CompanyService.GetCompany:output_type -> ntx.v1.GetCompanyResponse
 	5,  // 12: ntx.v1.CompanyService.GetFundamentals:output_type -> ntx.v1.GetFundamentalsResponse
-	7,  // 13: ntx.v1.CompanyService.GetReports:output_type -> ntx.v1.GetReportsResponse
+	7,  // 13: ntx.v1.CompanyService.ListReports:output_type -> ntx.v1.ListReportsResponse
 	10, // [10:14] is the sub-list for method output_type
 	6,  // [6:10] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name

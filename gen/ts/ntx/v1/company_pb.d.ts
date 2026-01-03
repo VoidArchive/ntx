@@ -115,9 +115,9 @@ export declare type GetFundamentalsResponse = Message<"ntx.v1.GetFundamentalsRes
 export declare const GetFundamentalsResponseSchema: GenMessage<GetFundamentalsResponse>;
 
 /**
- * @generated from message ntx.v1.GetReportsRequest
+ * @generated from message ntx.v1.ListReportsRequest
  */
-export declare type GetReportsRequest = Message<"ntx.v1.GetReportsRequest"> & {
+export declare type ListReportsRequest = Message<"ntx.v1.ListReportsRequest"> & {
   /**
    * @generated from field: string symbol = 1;
    */
@@ -135,15 +135,15 @@ export declare type GetReportsRequest = Message<"ntx.v1.GetReportsRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.GetReportsRequest.
- * Use `create(GetReportsRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListReportsRequest.
+ * Use `create(ListReportsRequestSchema)` to create a new message.
  */
-export declare const GetReportsRequestSchema: GenMessage<GetReportsRequest>;
+export declare const ListReportsRequestSchema: GenMessage<ListReportsRequest>;
 
 /**
- * @generated from message ntx.v1.GetReportsResponse
+ * @generated from message ntx.v1.ListReportsResponse
  */
-export declare type GetReportsResponse = Message<"ntx.v1.GetReportsResponse"> & {
+export declare type ListReportsResponse = Message<"ntx.v1.ListReportsResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.Report reports = 1;
    */
@@ -151,10 +151,10 @@ export declare type GetReportsResponse = Message<"ntx.v1.GetReportsResponse"> & 
 };
 
 /**
- * Describes the message ntx.v1.GetReportsResponse.
- * Use `create(GetReportsResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListReportsResponse.
+ * Use `create(ListReportsResponseSchema)` to create a new message.
  */
-export declare const GetReportsResponseSchema: GenMessage<GetReportsResponse>;
+export declare const ListReportsResponseSchema: GenMessage<ListReportsResponse>;
 
 /**
  * @generated from service ntx.v1.CompanyService
@@ -185,12 +185,12 @@ export declare const CompanyService: GenService<{
     output: typeof GetFundamentalsResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.CompanyService.GetReports
+   * @generated from rpc ntx.v1.CompanyService.ListReports
    */
-  getReports: {
+  listReports: {
     methodKind: "unary";
-    input: typeof GetReportsRequestSchema;
-    output: typeof GetReportsResponseSchema;
+    input: typeof ListReportsRequestSchema;
+    output: typeof ListReportsResponseSchema;
   },
 }>;
 

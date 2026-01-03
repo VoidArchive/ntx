@@ -4,9 +4,61 @@
 
 package sqlc
 
-type Stock struct {
-	Symbol     string `json:"symbol"`
-	Name       string `json:"name"`
-	Sector     int64  `json:"sector"`
-	LastSynced string `json:"last_synced"`
+import (
+	"database/sql"
+)
+
+type Company struct {
+	Symbol      string `json:"symbol"`
+	Name        string `json:"name"`
+	Sector      int64  `json:"sector"`
+	Description string `json:"description"`
+	LogoUrl     string `json:"logo_url"`
+	LastSynced  string `json:"last_synced"`
+}
+
+type Fundamental struct {
+	Symbol            string          `json:"symbol"`
+	Pe                sql.NullFloat64 `json:"pe"`
+	Pb                sql.NullFloat64 `json:"pb"`
+	Eps               sql.NullFloat64 `json:"eps"`
+	BookValue         sql.NullFloat64 `json:"book_value"`
+	MarketCap         sql.NullFloat64 `json:"market_cap"`
+	DividendYield     sql.NullFloat64 `json:"dividend_yield"`
+	Roe               sql.NullFloat64 `json:"roe"`
+	SharesOutstanding sql.NullInt64   `json:"shares_outstanding"`
+	UpdatedAt         string          `json:"updated_at"`
+}
+
+type Price struct {
+	Symbol        string          `json:"symbol"`
+	Date          string          `json:"date"`
+	Open          float64         `json:"open"`
+	High          float64         `json:"high"`
+	Low           float64         `json:"low"`
+	Close         float64         `json:"close"`
+	PreviousClose sql.NullFloat64 `json:"previous_close"`
+	Volume        int64           `json:"volume"`
+	Turnover      sql.NullInt64   `json:"turnover"`
+	IsComplete    int64           `json:"is_complete"`
+}
+
+type Report struct {
+	ID          int64           `json:"id"`
+	Symbol      string          `json:"symbol"`
+	Type        int64           `json:"type"`
+	FiscalYear  int64           `json:"fiscal_year"`
+	Quarter     int64           `json:"quarter"`
+	Revenue     sql.NullFloat64 `json:"revenue"`
+	NetIncome   sql.NullFloat64 `json:"net_income"`
+	Eps         sql.NullFloat64 `json:"eps"`
+	BookValue   sql.NullFloat64 `json:"book_value"`
+	NplRatio    sql.NullFloat64 `json:"npl_ratio"`
+	PublishedAt sql.NullString  `json:"published_at"`
+}
+
+type TradingDay struct {
+	Date   string `json:"date"`
+	IsOpen int64  `json:"is_open"`
+	Status string `json:"status"`
 }

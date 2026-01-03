@@ -11,18 +11,18 @@
 - [x] Generate Go + TypeScript clients
 
 ### Database Schema (market.db)
-- [ ] Create `companies` table (symbol, name, sector, description, logo_url)
-- [ ] Create `fundamentals` table (symbol, pe, pb, eps, book_value, market_cap, dividend_yield, roe)
-- [ ] Create `prices` table (symbol, date, open, high, low, close, volume, is_complete)
-- [ ] Create `reports` table (symbol, type, fiscal_year, quarter, revenue, net_income, eps, book_value)
-- [ ] Create `trading_days` table (date, status)
-- [ ] Write SQLC queries for all tables
+- [x] Create `companies` table (symbol, name, sector, description, logo_url)
+- [x] Create `fundamentals` table (symbol, pe, pb, eps, book_value, market_cap, dividend_yield, roe)
+- [x] Create `prices` table (symbol, date, open, high, low, close, volume, is_complete)
+- [x] Create `reports` table (symbol, type, fiscal_year, quarter, revenue, net_income, eps, book_value)
+- [x] Create `trading_days` table (date, status)
+- [x] Write SQLC queries for all tables
 
 ### Market Hours Logic
-- [ ] Implement `internal/market` package
-- [ ] IsMarketOpen() function (11:00-15:00 NPT, Sun-Thu)
-- [ ] IsTradingDay() function
-- [ ] NextMarketOpen() function
+- [x] Implement `internal/market` package
+- [x] IsOpen() function (11:00-15:00 NPT, Sun-Thu)
+- [x] IsTradingDay() function
+- [x] NextOpen() function
 
 ---
 
@@ -39,15 +39,15 @@
 - [ ] CompanyService.ListCompanies
 - [ ] CompanyService.GetCompany
 - [ ] CompanyService.GetFundamentals
-- [ ] CompanyService.GetReports
+- [ ] CompanyService.ListReports
 - [ ] PriceService.GetPrice
-- [ ] PriceService.GetHistory
-- [ ] MarketService.Status
-- [ ] MarketService.GetIndices
-- [ ] MarketService.GetSectors
+- [ ] PriceService.ListCandles
+- [ ] MarketService.GetStatus
+- [ ] MarketService.ListIndices
+- [ ] MarketService.ListSectors
 - [ ] ScreenerService.Screen
-- [ ] ScreenerService.TopGainers
-- [ ] ScreenerService.TopLosers
+- [ ] ScreenerService.ListTopGainers
+- [ ] ScreenerService.ListTopLosers
 
 ### Server Infrastructure
 - [ ] HTTP server setup (port 8080)

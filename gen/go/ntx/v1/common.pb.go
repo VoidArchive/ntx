@@ -490,6 +490,7 @@ type OHLCV struct {
 	Low           float64                `protobuf:"fixed64,4,opt,name=low,proto3" json:"low,omitempty"`
 	Close         float64                `protobuf:"fixed64,5,opt,name=close,proto3" json:"close,omitempty"`
 	Volume        int64                  `protobuf:"varint,6,opt,name=volume,proto3" json:"volume,omitempty"`
+	Turnover      int64                  `protobuf:"varint,7,opt,name=turnover,proto3" json:"turnover,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -562,6 +563,13 @@ func (x *OHLCV) GetClose() float64 {
 func (x *OHLCV) GetVolume() int64 {
 	if x != nil {
 		return x.Volume
+	}
+	return 0
+}
+
+func (x *OHLCV) GetTurnover() int64 {
+	if x != nil {
+		return x.Turnover
 	}
 	return 0
 }
@@ -928,14 +936,15 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"market_cap\x18\x06 \x01(\x01R\tmarketCap\x12%\n" +
 	"\x0edividend_yield\x18\a \x01(\x01R\rdividendYield\x12\x10\n" +
 	"\x03roe\x18\b \x01(\x01R\x03roe\x12-\n" +
-	"\x12shares_outstanding\x18\t \x01(\x03R\x11sharesOutstanding\"\x9f\x01\n" +
+	"\x12shares_outstanding\x18\t \x01(\x03R\x11sharesOutstanding\"\xbb\x01\n" +
 	"\x05OHLCV\x12.\n" +
 	"\x04date\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x04date\x12\x12\n" +
 	"\x04open\x18\x02 \x01(\x01R\x04open\x12\x12\n" +
 	"\x04high\x18\x03 \x01(\x01R\x04high\x12\x10\n" +
 	"\x03low\x18\x04 \x01(\x01R\x03low\x12\x14\n" +
 	"\x05close\x18\x05 \x01(\x01R\x05close\x12\x16\n" +
-	"\x06volume\x18\x06 \x01(\x03R\x06volume\"\xc9\x02\n" +
+	"\x06volume\x18\x06 \x01(\x03R\x06volume\x12\x1a\n" +
+	"\bturnover\x18\a \x01(\x03R\bturnover\"\xc9\x02\n" +
 	"\x06Report\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12&\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x12.ntx.v1.ReportTypeR\x04type\x12\x1f\n" +

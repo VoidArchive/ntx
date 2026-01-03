@@ -13,12 +13,15 @@ import (
 )
 
 func main() {
-	db, err := database.OpenDB()
+	dbPath := database.DefaultServerPath()
+	db, err := database.OpenDB(dbPath)
 	if err != nil {
 		slog.Error("failed to open database", "error", err)
 		os.Exit(1)
 	}
 	defer db.Close()
+
+	slog.Info("database opened", "path", dbPath)
 
 	if err := database.AutoMigrate(db); err != nil {
 		slog.Error("failed to run migrations", "error", err)

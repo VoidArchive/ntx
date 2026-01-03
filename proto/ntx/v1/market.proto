@@ -8,9 +8,9 @@ import "ntx/v1/common.proto";
 option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
 service MarketService {
-  rpc Status(StatusRequest) returns (StatusResponse);
-  rpc GetIndices(GetIndicesRequest) returns (GetIndicesResponse);
-  rpc GetSectors(GetSectorsRequest) returns (GetSectorsResponse);
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  rpc ListIndices(ListIndicesRequest) returns (ListIndicesResponse);
+  rpc ListSectors(ListSectorsRequest) returns (ListSectorsResponse);
 }
 
 message MarketStatus {
@@ -19,20 +19,20 @@ message MarketStatus {
   google.protobuf.Timestamp as_of = 3;
 }
 
-message StatusRequest {}
+message GetStatusRequest {}
 
-message StatusResponse {
+message GetStatusResponse {
   MarketStatus status = 1;
 }
 
-message GetIndicesRequest {}
+message ListIndicesRequest {}
 
-message GetIndicesResponse {
+message ListIndicesResponse {
   repeated Index indices = 1;
 }
 
-message GetSectorsRequest {}
+message ListSectorsRequest {}
 
-message GetSectorsResponse {
+message ListSectorsResponse {
   repeated SectorSummary sectors = 1;
 }

@@ -35,14 +35,15 @@ const (
 const (
 	// PriceServiceGetPriceProcedure is the fully-qualified name of the PriceService's GetPrice RPC.
 	PriceServiceGetPriceProcedure = "/ntx.v1.PriceService/GetPrice"
-	// PriceServiceGetHistoryProcedure is the fully-qualified name of the PriceService's GetHistory RPC.
-	PriceServiceGetHistoryProcedure = "/ntx.v1.PriceService/GetHistory"
+	// PriceServiceListCandlesProcedure is the fully-qualified name of the PriceService's ListCandles
+	// RPC.
+	PriceServiceListCandlesProcedure = "/ntx.v1.PriceService/ListCandles"
 )
 
 // PriceServiceClient is a client for the ntx.v1.PriceService service.
 type PriceServiceClient interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
-	GetHistory(context.Context, *connect.Request[v1.GetHistoryRequest]) (*connect.Response[v1.GetHistoryResponse], error)
+	ListCandles(context.Context, *connect.Request[v1.ListCandlesRequest]) (*connect.Response[v1.ListCandlesResponse], error)
 }
 
 // NewPriceServiceClient constructs a client for the ntx.v1.PriceService service. By default, it
@@ -62,10 +63,10 @@ func NewPriceServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(priceServiceMethods.ByName("GetPrice")),
 			connect.WithClientOptions(opts...),
 		),
-		getHistory: connect.NewClient[v1.GetHistoryRequest, v1.GetHistoryResponse](
+		listCandles: connect.NewClient[v1.ListCandlesRequest, v1.ListCandlesResponse](
 			httpClient,
-			baseURL+PriceServiceGetHistoryProcedure,
-			connect.WithSchema(priceServiceMethods.ByName("GetHistory")),
+			baseURL+PriceServiceListCandlesProcedure,
+			connect.WithSchema(priceServiceMethods.ByName("ListCandles")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -73,8 +74,8 @@ func NewPriceServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // priceServiceClient implements PriceServiceClient.
 type priceServiceClient struct {
-	getPrice   *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
-	getHistory *connect.Client[v1.GetHistoryRequest, v1.GetHistoryResponse]
+	getPrice    *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
+	listCandles *connect.Client[v1.ListCandlesRequest, v1.ListCandlesResponse]
 }
 
 // GetPrice calls ntx.v1.PriceService.GetPrice.
@@ -82,15 +83,15 @@ func (c *priceServiceClient) GetPrice(ctx context.Context, req *connect.Request[
 	return c.getPrice.CallUnary(ctx, req)
 }
 
-// GetHistory calls ntx.v1.PriceService.GetHistory.
-func (c *priceServiceClient) GetHistory(ctx context.Context, req *connect.Request[v1.GetHistoryRequest]) (*connect.Response[v1.GetHistoryResponse], error) {
-	return c.getHistory.CallUnary(ctx, req)
+// ListCandles calls ntx.v1.PriceService.ListCandles.
+func (c *priceServiceClient) ListCandles(ctx context.Context, req *connect.Request[v1.ListCandlesRequest]) (*connect.Response[v1.ListCandlesResponse], error) {
+	return c.listCandles.CallUnary(ctx, req)
 }
 
 // PriceServiceHandler is an implementation of the ntx.v1.PriceService service.
 type PriceServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
-	GetHistory(context.Context, *connect.Request[v1.GetHistoryRequest]) (*connect.Response[v1.GetHistoryResponse], error)
+	ListCandles(context.Context, *connect.Request[v1.ListCandlesRequest]) (*connect.Response[v1.ListCandlesResponse], error)
 }
 
 // NewPriceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -106,18 +107,18 @@ func NewPriceServiceHandler(svc PriceServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(priceServiceMethods.ByName("GetPrice")),
 		connect.WithHandlerOptions(opts...),
 	)
-	priceServiceGetHistoryHandler := connect.NewUnaryHandler(
-		PriceServiceGetHistoryProcedure,
-		svc.GetHistory,
-		connect.WithSchema(priceServiceMethods.ByName("GetHistory")),
+	priceServiceListCandlesHandler := connect.NewUnaryHandler(
+		PriceServiceListCandlesProcedure,
+		svc.ListCandles,
+		connect.WithSchema(priceServiceMethods.ByName("ListCandles")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/ntx.v1.PriceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PriceServiceGetPriceProcedure:
 			priceServiceGetPriceHandler.ServeHTTP(w, r)
-		case PriceServiceGetHistoryProcedure:
-			priceServiceGetHistoryHandler.ServeHTTP(w, r)
+		case PriceServiceListCandlesProcedure:
+			priceServiceListCandlesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -131,6 +132,6 @@ func (UnimplementedPriceServiceHandler) GetPrice(context.Context, *connect.Reque
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.GetPrice is not implemented"))
 }
 
-func (UnimplementedPriceServiceHandler) GetHistory(context.Context, *connect.Request[v1.GetHistoryRequest]) (*connect.Response[v1.GetHistoryResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.GetHistory is not implemented"))
+func (UnimplementedPriceServiceHandler) ListCandles(context.Context, *connect.Request[v1.ListCandlesRequest]) (*connect.Response[v1.ListCandlesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.ListCandles is not implemented"))
 }

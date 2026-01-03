@@ -162,7 +162,7 @@ func (x *GetPriceResponse) GetPrice() *Price {
 	return nil
 }
 
-type GetHistoryRequest struct {
+type ListCandlesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	From          *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
@@ -172,20 +172,20 @@ type GetHistoryRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetHistoryRequest) Reset() {
-	*x = GetHistoryRequest{}
+func (x *ListCandlesRequest) Reset() {
+	*x = ListCandlesRequest{}
 	mi := &file_ntx_v1_price_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetHistoryRequest) String() string {
+func (x *ListCandlesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetHistoryRequest) ProtoMessage() {}
+func (*ListCandlesRequest) ProtoMessage() {}
 
-func (x *GetHistoryRequest) ProtoReflect() protoreflect.Message {
+func (x *ListCandlesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_price_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -197,60 +197,60 @@ func (x *GetHistoryRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetHistoryRequest.ProtoReflect.Descriptor instead.
-func (*GetHistoryRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListCandlesRequest.ProtoReflect.Descriptor instead.
+func (*ListCandlesRequest) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_price_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetHistoryRequest) GetSymbol() string {
+func (x *ListCandlesRequest) GetSymbol() string {
 	if x != nil {
 		return x.Symbol
 	}
 	return ""
 }
 
-func (x *GetHistoryRequest) GetFrom() *timestamppb.Timestamp {
+func (x *ListCandlesRequest) GetFrom() *timestamppb.Timestamp {
 	if x != nil {
 		return x.From
 	}
 	return nil
 }
 
-func (x *GetHistoryRequest) GetTo() *timestamppb.Timestamp {
+func (x *ListCandlesRequest) GetTo() *timestamppb.Timestamp {
 	if x != nil {
 		return x.To
 	}
 	return nil
 }
 
-func (x *GetHistoryRequest) GetTimeFrame() TimeFrame {
+func (x *ListCandlesRequest) GetTimeFrame() TimeFrame {
 	if x != nil {
 		return x.TimeFrame
 	}
 	return TimeFrame_TIME_FRAME_UNSPECIFIED
 }
 
-type GetHistoryResponse struct {
+type ListCandlesResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Candles       []*OHLCV               `protobuf:"bytes,1,rep,name=candles,proto3" json:"candles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetHistoryResponse) Reset() {
-	*x = GetHistoryResponse{}
+func (x *ListCandlesResponse) Reset() {
+	*x = ListCandlesResponse{}
 	mi := &file_ntx_v1_price_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetHistoryResponse) String() string {
+func (x *ListCandlesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetHistoryResponse) ProtoMessage() {}
+func (*ListCandlesResponse) ProtoMessage() {}
 
-func (x *GetHistoryResponse) ProtoReflect() protoreflect.Message {
+func (x *ListCandlesResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_ntx_v1_price_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -262,12 +262,12 @@ func (x *GetHistoryResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetHistoryResponse.ProtoReflect.Descriptor instead.
-func (*GetHistoryResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListCandlesResponse.ProtoReflect.Descriptor instead.
+func (*ListCandlesResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_price_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetHistoryResponse) GetCandles() []*OHLCV {
+func (x *ListCandlesResponse) GetCandles() []*OHLCV {
 	if x != nil {
 		return x.Candles
 	}
@@ -282,24 +282,23 @@ const file_ntx_v1_price_proto_rawDesc = "" +
 	"\x0fGetPriceRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"7\n" +
 	"\x10GetPriceResponse\x12#\n" +
-	"\x05price\x18\x01 \x01(\v2\r.ntx.v1.PriceR\x05price\"\xb9\x01\n" +
-	"\x11GetHistoryRequest\x12\x16\n" +
+	"\x05price\x18\x01 \x01(\v2\r.ntx.v1.PriceR\x05price\"\xba\x01\n" +
+	"\x12ListCandlesRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12.\n" +
 	"\x04from\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x04from\x12*\n" +
 	"\x02to\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x02to\x120\n" +
 	"\n" +
-	"time_frame\x18\x04 \x01(\x0e2\x11.ntx.v1.TimeFrameR\ttimeFrame\"=\n" +
-	"\x12GetHistoryResponse\x12'\n" +
+	"time_frame\x18\x04 \x01(\x0e2\x11.ntx.v1.TimeFrameR\ttimeFrame\">\n" +
+	"\x13ListCandlesResponse\x12'\n" +
 	"\acandles\x18\x01 \x03(\v2\r.ntx.v1.OHLCVR\acandles*l\n" +
 	"\tTimeFrame\x12\x1a\n" +
 	"\x16TIME_FRAME_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10TIME_FRAME_DAILY\x10\x01\x12\x15\n" +
 	"\x11TIME_FRAME_WEEKLY\x10\x02\x12\x16\n" +
-	"\x12TIME_FRAME_MONTHLY\x10\x032\x92\x01\n" +
+	"\x12TIME_FRAME_MONTHLY\x10\x032\x95\x01\n" +
 	"\fPriceService\x12=\n" +
-	"\bGetPrice\x12\x17.ntx.v1.GetPriceRequest\x1a\x18.ntx.v1.GetPriceResponse\x12C\n" +
-	"\n" +
-	"GetHistory\x12\x19.ntx.v1.GetHistoryRequest\x1a\x1a.ntx.v1.GetHistoryResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\bGetPrice\x12\x17.ntx.v1.GetPriceRequest\x1a\x18.ntx.v1.GetPriceResponse\x12F\n" +
+	"\vListCandles\x12\x1a.ntx.v1.ListCandlesRequest\x1a\x1b.ntx.v1.ListCandlesResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_price_proto_rawDescOnce sync.Once
@@ -319,22 +318,22 @@ var file_ntx_v1_price_proto_goTypes = []any{
 	(TimeFrame)(0),                // 0: ntx.v1.TimeFrame
 	(*GetPriceRequest)(nil),       // 1: ntx.v1.GetPriceRequest
 	(*GetPriceResponse)(nil),      // 2: ntx.v1.GetPriceResponse
-	(*GetHistoryRequest)(nil),     // 3: ntx.v1.GetHistoryRequest
-	(*GetHistoryResponse)(nil),    // 4: ntx.v1.GetHistoryResponse
+	(*ListCandlesRequest)(nil),    // 3: ntx.v1.ListCandlesRequest
+	(*ListCandlesResponse)(nil),   // 4: ntx.v1.ListCandlesResponse
 	(*Price)(nil),                 // 5: ntx.v1.Price
 	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 	(*OHLCV)(nil),                 // 7: ntx.v1.OHLCV
 }
 var file_ntx_v1_price_proto_depIdxs = []int32{
 	5, // 0: ntx.v1.GetPriceResponse.price:type_name -> ntx.v1.Price
-	6, // 1: ntx.v1.GetHistoryRequest.from:type_name -> google.protobuf.Timestamp
-	6, // 2: ntx.v1.GetHistoryRequest.to:type_name -> google.protobuf.Timestamp
-	0, // 3: ntx.v1.GetHistoryRequest.time_frame:type_name -> ntx.v1.TimeFrame
-	7, // 4: ntx.v1.GetHistoryResponse.candles:type_name -> ntx.v1.OHLCV
+	6, // 1: ntx.v1.ListCandlesRequest.from:type_name -> google.protobuf.Timestamp
+	6, // 2: ntx.v1.ListCandlesRequest.to:type_name -> google.protobuf.Timestamp
+	0, // 3: ntx.v1.ListCandlesRequest.time_frame:type_name -> ntx.v1.TimeFrame
+	7, // 4: ntx.v1.ListCandlesResponse.candles:type_name -> ntx.v1.OHLCV
 	1, // 5: ntx.v1.PriceService.GetPrice:input_type -> ntx.v1.GetPriceRequest
-	3, // 6: ntx.v1.PriceService.GetHistory:input_type -> ntx.v1.GetHistoryRequest
+	3, // 6: ntx.v1.PriceService.ListCandles:input_type -> ntx.v1.ListCandlesRequest
 	2, // 7: ntx.v1.PriceService.GetPrice:output_type -> ntx.v1.GetPriceResponse
-	4, // 8: ntx.v1.PriceService.GetHistory:output_type -> ntx.v1.GetHistoryResponse
+	4, // 8: ntx.v1.PriceService.ListCandles:output_type -> ntx.v1.ListCandlesResponse
 	7, // [7:9] is the sub-list for method output_type
 	5, // [5:7] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name

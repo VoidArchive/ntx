@@ -9,10 +9,37 @@ import (
 )
 
 type Querier interface {
-	GetStock(ctx context.Context, symbol string) (Stock, error)
-	ListStocks(ctx context.Context) ([]Stock, error)
-	ListStocksBySector(ctx context.Context, sector int64) ([]Stock, error)
-	UpsertStock(ctx context.Context, arg UpsertStockParams) error
+	CountCompanies(ctx context.Context) (int64, error)
+	Get52WeekHighLow(ctx context.Context, symbol string) (Get52WeekHighLowRow, error)
+	GetCompany(ctx context.Context, symbol string) (Company, error)
+	GetFundamentals(ctx context.Context, symbol string) (Fundamental, error)
+	GetLastTradingDay(ctx context.Context) (TradingDay, error)
+	GetLatestPrice(ctx context.Context, symbol string) (Price, error)
+	GetLatestReport(ctx context.Context, symbol string) (Report, error)
+	GetPriceHistory(ctx context.Context, arg GetPriceHistoryParams) ([]Price, error)
+	GetPricesForDate(ctx context.Context, date string) ([]Price, error)
+	GetReports(ctx context.Context, symbol string) ([]Report, error)
+	GetReportsByType(ctx context.Context, arg GetReportsByTypeParams) ([]Report, error)
+	// Returns all data needed for screening: company + latest price + fundamentals
+	// Filtering and sorting will be done in Go for flexibility
+	GetScreenerData(ctx context.Context) ([]GetScreenerDataRow, error)
+	GetScreenerDataBySector(ctx context.Context, sector int64) ([]GetScreenerDataBySectorRow, error)
+	GetTopGainers(ctx context.Context, limit int64) ([]Price, error)
+	GetTopGainersBySector(ctx context.Context, arg GetTopGainersBySectorParams) ([]Price, error)
+	GetTopLosers(ctx context.Context, limit int64) ([]Price, error)
+	GetTopLosersBySector(ctx context.Context, arg GetTopLosersBySectorParams) ([]Price, error)
+	GetTradingDay(ctx context.Context, date string) (TradingDay, error)
+	InsertReport(ctx context.Context, arg InsertReportParams) error
+	ListCompanies(ctx context.Context) ([]Company, error)
+	ListCompaniesBySector(ctx context.Context, sector int64) ([]Company, error)
+	ListFundamentals(ctx context.Context) ([]Fundamental, error)
+	ListTradingDays(ctx context.Context, arg ListTradingDaysParams) ([]TradingDay, error)
+	MarkPricesComplete(ctx context.Context, date string) error
+	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
+	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
+	UpsertFundamentals(ctx context.Context, arg UpsertFundamentalsParams) error
+	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
+	UpsertTradingDay(ctx context.Context, arg UpsertTradingDayParams) error
 }
 
 var _ Querier = (*Queries)(nil)

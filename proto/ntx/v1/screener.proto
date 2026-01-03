@@ -8,8 +8,8 @@ option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
 service ScreenerService {
   rpc Screen(ScreenRequest) returns (ScreenResponse);
-  rpc TopGainers(TopGainersRequest) returns (TopGainersResponse);
-  rpc TopLosers(TopLosersRequest) returns (TopLosersResponse);
+  rpc ListTopGainers(ListTopGainersRequest) returns (ListTopGainersResponse);
+  rpc ListTopLosers(ListTopLosersRequest) returns (ListTopLosersResponse);
 }
 
 message ScreenRequest {
@@ -61,20 +61,20 @@ message ScreenResult {
   Fundamentals fundamentals = 3;
 }
 
-message TopGainersRequest {
+message ListTopGainersRequest {
   int32 limit = 1;
   Sector sector = 2;
 }
 
-message TopGainersResponse {
+message ListTopGainersResponse {
   repeated Price stocks = 1;
 }
 
-message TopLosersRequest {
+message ListTopLosersRequest {
   int32 limit = 1;
   Sector sector = 2;
 }
 
-message TopLosersResponse {
+message ListTopLosersResponse {
   repeated Price stocks = 1;
 }

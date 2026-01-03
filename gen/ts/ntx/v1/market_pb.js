@@ -10,7 +10,7 @@ import { file_ntx_v1_common } from "./common_pb";
  * Describes the file ntx/v1/market.proto.
  */
 export const file_ntx_v1_market = /*@__PURE__*/
-  fileDesc("ChNudHgvdjEvbWFya2V0LnByb3RvEgZudHgudjEiWQoMTWFya2V0U3RhdHVzEg8KB2lzX29wZW4YASABKAgSDQoFc3RhdGUYAiABKAkSKQoFYXNfb2YYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIg8KDVN0YXR1c1JlcXVlc3QiNgoOU3RhdHVzUmVzcG9uc2USJAoGc3RhdHVzGAEgASgLMhQubnR4LnYxLk1hcmtldFN0YXR1cyITChFHZXRJbmRpY2VzUmVxdWVzdCI0ChJHZXRJbmRpY2VzUmVzcG9uc2USHgoHaW5kaWNlcxgBIAMoCzINLm50eC52MS5JbmRleCITChFHZXRTZWN0b3JzUmVxdWVzdCI8ChJHZXRTZWN0b3JzUmVzcG9uc2USJgoHc2VjdG9ycxgBIAMoCzIVLm50eC52MS5TZWN0b3JTdW1tYXJ5MtIBCg1NYXJrZXRTZXJ2aWNlEjcKBlN0YXR1cxIVLm50eC52MS5TdGF0dXNSZXF1ZXN0GhYubnR4LnYxLlN0YXR1c1Jlc3BvbnNlEkMKCkdldEluZGljZXMSGS5udHgudjEuR2V0SW5kaWNlc1JlcXVlc3QaGi5udHgudjEuR2V0SW5kaWNlc1Jlc3BvbnNlEkMKCkdldFNlY3RvcnMSGS5udHgudjEuR2V0U2VjdG9yc1JlcXVlc3QaGi5udHgudjEuR2V0U2VjdG9yc1Jlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw", [file_google_protobuf_timestamp, file_ntx_v1_common]);
+  fileDesc("ChNudHgvdjEvbWFya2V0LnByb3RvEgZudHgudjEiWQoMTWFya2V0U3RhdHVzEg8KB2lzX29wZW4YASABKAgSDQoFc3RhdGUYAiABKAkSKQoFYXNfb2YYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhIKEEdldFN0YXR1c1JlcXVlc3QiOQoRR2V0U3RhdHVzUmVzcG9uc2USJAoGc3RhdHVzGAEgASgLMhQubnR4LnYxLk1hcmtldFN0YXR1cyIUChJMaXN0SW5kaWNlc1JlcXVlc3QiNQoTTGlzdEluZGljZXNSZXNwb25zZRIeCgdpbmRpY2VzGAEgAygLMg0ubnR4LnYxLkluZGV4IhQKEkxpc3RTZWN0b3JzUmVxdWVzdCI9ChNMaXN0U2VjdG9yc1Jlc3BvbnNlEiYKB3NlY3RvcnMYASADKAsyFS5udHgudjEuU2VjdG9yU3VtbWFyeTLhAQoNTWFya2V0U2VydmljZRJACglHZXRTdGF0dXMSGC5udHgudjEuR2V0U3RhdHVzUmVxdWVzdBoZLm50eC52MS5HZXRTdGF0dXNSZXNwb25zZRJGCgtMaXN0SW5kaWNlcxIaLm50eC52MS5MaXN0SW5kaWNlc1JlcXVlc3QaGy5udHgudjEuTGlzdEluZGljZXNSZXNwb25zZRJGCgtMaXN0U2VjdG9ycxIaLm50eC52MS5MaXN0U2VjdG9yc1JlcXVlc3QaGy5udHgudjEuTGlzdFNlY3RvcnNSZXNwb25zZUIwWi5naXRodWIuY29tL3ZvaWRhcmNoaXZlL250eC9nZW4vZ28vbnR4L3YxO250eHYxYgZwcm90bzM", [file_google_protobuf_timestamp, file_ntx_v1_common]);
 
 /**
  * Describes the message ntx.v1.MarketStatus.
@@ -20,45 +20,45 @@ export const MarketStatusSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 0);
 
 /**
- * Describes the message ntx.v1.StatusRequest.
- * Use `create(StatusRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.GetStatusRequest.
+ * Use `create(GetStatusRequestSchema)` to create a new message.
  */
-export const StatusRequestSchema = /*@__PURE__*/
+export const GetStatusRequestSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 1);
 
 /**
- * Describes the message ntx.v1.StatusResponse.
- * Use `create(StatusResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.GetStatusResponse.
+ * Use `create(GetStatusResponseSchema)` to create a new message.
  */
-export const StatusResponseSchema = /*@__PURE__*/
+export const GetStatusResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 2);
 
 /**
- * Describes the message ntx.v1.GetIndicesRequest.
- * Use `create(GetIndicesRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListIndicesRequest.
+ * Use `create(ListIndicesRequestSchema)` to create a new message.
  */
-export const GetIndicesRequestSchema = /*@__PURE__*/
+export const ListIndicesRequestSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 3);
 
 /**
- * Describes the message ntx.v1.GetIndicesResponse.
- * Use `create(GetIndicesResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListIndicesResponse.
+ * Use `create(ListIndicesResponseSchema)` to create a new message.
  */
-export const GetIndicesResponseSchema = /*@__PURE__*/
+export const ListIndicesResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 4);
 
 /**
- * Describes the message ntx.v1.GetSectorsRequest.
- * Use `create(GetSectorsRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListSectorsRequest.
+ * Use `create(ListSectorsRequestSchema)` to create a new message.
  */
-export const GetSectorsRequestSchema = /*@__PURE__*/
+export const ListSectorsRequestSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 5);
 
 /**
- * Describes the message ntx.v1.GetSectorsResponse.
- * Use `create(GetSectorsResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListSectorsResponse.
+ * Use `create(ListSectorsResponseSchema)` to create a new message.
  */
-export const GetSectorsResponseSchema = /*@__PURE__*/
+export const ListSectorsResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_market, 6);
 
 /**

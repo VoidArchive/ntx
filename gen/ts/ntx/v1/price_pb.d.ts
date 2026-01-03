@@ -45,9 +45,9 @@ export declare type GetPriceResponse = Message<"ntx.v1.GetPriceResponse"> & {
 export declare const GetPriceResponseSchema: GenMessage<GetPriceResponse>;
 
 /**
- * @generated from message ntx.v1.GetHistoryRequest
+ * @generated from message ntx.v1.ListCandlesRequest
  */
-export declare type GetHistoryRequest = Message<"ntx.v1.GetHistoryRequest"> & {
+export declare type ListCandlesRequest = Message<"ntx.v1.ListCandlesRequest"> & {
   /**
    * @generated from field: string symbol = 1;
    */
@@ -70,15 +70,15 @@ export declare type GetHistoryRequest = Message<"ntx.v1.GetHistoryRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.GetHistoryRequest.
- * Use `create(GetHistoryRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListCandlesRequest.
+ * Use `create(ListCandlesRequestSchema)` to create a new message.
  */
-export declare const GetHistoryRequestSchema: GenMessage<GetHistoryRequest>;
+export declare const ListCandlesRequestSchema: GenMessage<ListCandlesRequest>;
 
 /**
- * @generated from message ntx.v1.GetHistoryResponse
+ * @generated from message ntx.v1.ListCandlesResponse
  */
-export declare type GetHistoryResponse = Message<"ntx.v1.GetHistoryResponse"> & {
+export declare type ListCandlesResponse = Message<"ntx.v1.ListCandlesResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.OHLCV candles = 1;
    */
@@ -86,10 +86,10 @@ export declare type GetHistoryResponse = Message<"ntx.v1.GetHistoryResponse"> & 
 };
 
 /**
- * Describes the message ntx.v1.GetHistoryResponse.
- * Use `create(GetHistoryResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListCandlesResponse.
+ * Use `create(ListCandlesResponseSchema)` to create a new message.
  */
-export declare const GetHistoryResponseSchema: GenMessage<GetHistoryResponse>;
+export declare const ListCandlesResponseSchema: GenMessage<ListCandlesResponse>;
 
 /**
  * @generated from enum ntx.v1.TimeFrame
@@ -134,12 +134,12 @@ export declare const PriceService: GenService<{
     output: typeof GetPriceResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.PriceService.GetHistory
+   * @generated from rpc ntx.v1.PriceService.ListCandles
    */
-  getHistory: {
+  listCandles: {
     methodKind: "unary";
-    input: typeof GetHistoryRequestSchema;
-    output: typeof GetHistoryResponseSchema;
+    input: typeof ListCandlesRequestSchema;
+    output: typeof ListCandlesResponseSchema;
   },
 }>;
 

@@ -10,7 +10,7 @@ service CompanyService {
   rpc ListCompanies(ListCompaniesRequest) returns (ListCompaniesResponse);
   rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
   rpc GetFundamentals(GetFundamentalsRequest) returns (GetFundamentalsResponse);
-  rpc GetReports(GetReportsRequest) returns (GetReportsResponse);
+  rpc ListReports(ListReportsRequest) returns (ListReportsResponse);
 }
 
 message ListCompaniesRequest {
@@ -38,12 +38,12 @@ message GetFundamentalsResponse {
   Fundamentals fundamentals = 1;
 }
 
-message GetReportsRequest {
+message ListReportsRequest {
   string symbol = 1;
   ReportType type = 2;
   int32 limit = 3;
 }
 
-message GetReportsResponse {
+message ListReportsResponse {
   repeated Report reports = 1;
 }

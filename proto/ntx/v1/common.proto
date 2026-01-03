@@ -71,6 +71,7 @@ message OHLCV {
   double low = 4;
   double close = 5;
   int64 volume = 6;
+  int64 turnover = 7;
 }
 
 // Report represents quarterly or annual financial data.

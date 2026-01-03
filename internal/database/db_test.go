@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -17,9 +18,10 @@ func TestAutoMigrate(t *testing.T) {
 	require.NoError(t, err)
 
 	var tableName string
-	err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'").Scan(&tableName)
+	query := "SELECT name FROM sqlite_master WHERE type='table' AND name='companies'"
+	err = db.QueryRowContext(context.Background(), query).Scan(&tableName)
 	require.NoError(t, err)
-	require.Equal(t, "stocks", tableName)
+	require.Equal(t, "companies", tableName)
 }
 
 func TestQueryGeneration(t *testing.T) {

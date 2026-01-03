@@ -41,21 +41,21 @@ export declare type MarketStatus = Message<"ntx.v1.MarketStatus"> & {
 export declare const MarketStatusSchema: GenMessage<MarketStatus>;
 
 /**
- * @generated from message ntx.v1.StatusRequest
+ * @generated from message ntx.v1.GetStatusRequest
  */
-export declare type StatusRequest = Message<"ntx.v1.StatusRequest"> & {
+export declare type GetStatusRequest = Message<"ntx.v1.GetStatusRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.StatusRequest.
- * Use `create(StatusRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.GetStatusRequest.
+ * Use `create(GetStatusRequestSchema)` to create a new message.
  */
-export declare const StatusRequestSchema: GenMessage<StatusRequest>;
+export declare const GetStatusRequestSchema: GenMessage<GetStatusRequest>;
 
 /**
- * @generated from message ntx.v1.StatusResponse
+ * @generated from message ntx.v1.GetStatusResponse
  */
-export declare type StatusResponse = Message<"ntx.v1.StatusResponse"> & {
+export declare type GetStatusResponse = Message<"ntx.v1.GetStatusResponse"> & {
   /**
    * @generated from field: ntx.v1.MarketStatus status = 1;
    */
@@ -63,27 +63,27 @@ export declare type StatusResponse = Message<"ntx.v1.StatusResponse"> & {
 };
 
 /**
- * Describes the message ntx.v1.StatusResponse.
- * Use `create(StatusResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.GetStatusResponse.
+ * Use `create(GetStatusResponseSchema)` to create a new message.
  */
-export declare const StatusResponseSchema: GenMessage<StatusResponse>;
+export declare const GetStatusResponseSchema: GenMessage<GetStatusResponse>;
 
 /**
- * @generated from message ntx.v1.GetIndicesRequest
+ * @generated from message ntx.v1.ListIndicesRequest
  */
-export declare type GetIndicesRequest = Message<"ntx.v1.GetIndicesRequest"> & {
+export declare type ListIndicesRequest = Message<"ntx.v1.ListIndicesRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.GetIndicesRequest.
- * Use `create(GetIndicesRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListIndicesRequest.
+ * Use `create(ListIndicesRequestSchema)` to create a new message.
  */
-export declare const GetIndicesRequestSchema: GenMessage<GetIndicesRequest>;
+export declare const ListIndicesRequestSchema: GenMessage<ListIndicesRequest>;
 
 /**
- * @generated from message ntx.v1.GetIndicesResponse
+ * @generated from message ntx.v1.ListIndicesResponse
  */
-export declare type GetIndicesResponse = Message<"ntx.v1.GetIndicesResponse"> & {
+export declare type ListIndicesResponse = Message<"ntx.v1.ListIndicesResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.Index indices = 1;
    */
@@ -91,27 +91,27 @@ export declare type GetIndicesResponse = Message<"ntx.v1.GetIndicesResponse"> & 
 };
 
 /**
- * Describes the message ntx.v1.GetIndicesResponse.
- * Use `create(GetIndicesResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListIndicesResponse.
+ * Use `create(ListIndicesResponseSchema)` to create a new message.
  */
-export declare const GetIndicesResponseSchema: GenMessage<GetIndicesResponse>;
+export declare const ListIndicesResponseSchema: GenMessage<ListIndicesResponse>;
 
 /**
- * @generated from message ntx.v1.GetSectorsRequest
+ * @generated from message ntx.v1.ListSectorsRequest
  */
-export declare type GetSectorsRequest = Message<"ntx.v1.GetSectorsRequest"> & {
+export declare type ListSectorsRequest = Message<"ntx.v1.ListSectorsRequest"> & {
 };
 
 /**
- * Describes the message ntx.v1.GetSectorsRequest.
- * Use `create(GetSectorsRequestSchema)` to create a new message.
+ * Describes the message ntx.v1.ListSectorsRequest.
+ * Use `create(ListSectorsRequestSchema)` to create a new message.
  */
-export declare const GetSectorsRequestSchema: GenMessage<GetSectorsRequest>;
+export declare const ListSectorsRequestSchema: GenMessage<ListSectorsRequest>;
 
 /**
- * @generated from message ntx.v1.GetSectorsResponse
+ * @generated from message ntx.v1.ListSectorsResponse
  */
-export declare type GetSectorsResponse = Message<"ntx.v1.GetSectorsResponse"> & {
+export declare type ListSectorsResponse = Message<"ntx.v1.ListSectorsResponse"> & {
   /**
    * @generated from field: repeated ntx.v1.SectorSummary sectors = 1;
    */
@@ -119,38 +119,38 @@ export declare type GetSectorsResponse = Message<"ntx.v1.GetSectorsResponse"> & 
 };
 
 /**
- * Describes the message ntx.v1.GetSectorsResponse.
- * Use `create(GetSectorsResponseSchema)` to create a new message.
+ * Describes the message ntx.v1.ListSectorsResponse.
+ * Use `create(ListSectorsResponseSchema)` to create a new message.
  */
-export declare const GetSectorsResponseSchema: GenMessage<GetSectorsResponse>;
+export declare const ListSectorsResponseSchema: GenMessage<ListSectorsResponse>;
 
 /**
  * @generated from service ntx.v1.MarketService
  */
 export declare const MarketService: GenService<{
   /**
-   * @generated from rpc ntx.v1.MarketService.Status
+   * @generated from rpc ntx.v1.MarketService.GetStatus
    */
-  status: {
+  getStatus: {
     methodKind: "unary";
-    input: typeof StatusRequestSchema;
-    output: typeof StatusResponseSchema;
+    input: typeof GetStatusRequestSchema;
+    output: typeof GetStatusResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.MarketService.GetIndices
+   * @generated from rpc ntx.v1.MarketService.ListIndices
    */
-  getIndices: {
+  listIndices: {
     methodKind: "unary";
-    input: typeof GetIndicesRequestSchema;
-    output: typeof GetIndicesResponseSchema;
+    input: typeof ListIndicesRequestSchema;
+    output: typeof ListIndicesResponseSchema;
   },
   /**
-   * @generated from rpc ntx.v1.MarketService.GetSectors
+   * @generated from rpc ntx.v1.MarketService.ListSectors
    */
-  getSectors: {
+  listSectors: {
     methodKind: "unary";
-    input: typeof GetSectorsRequestSchema;
-    output: typeof GetSectorsResponseSchema;
+    input: typeof ListSectorsRequestSchema;
+    output: typeof ListSectorsResponseSchema;
   },
 }>;
 

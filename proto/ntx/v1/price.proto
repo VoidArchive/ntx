@@ -9,7 +9,7 @@ option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
 service PriceService {
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
-  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
+  rpc ListCandles(ListCandlesRequest) returns (ListCandlesResponse);
 }
 
 message GetPriceRequest {
@@ -20,7 +20,7 @@ message GetPriceResponse {
   Price price = 1;
 }
 
-message GetHistoryRequest {
+message ListCandlesRequest {
   string symbol = 1;
   google.protobuf.Timestamp from = 2;
   google.protobuf.Timestamp to = 3;
@@ -34,6 +34,6 @@ enum TimeFrame {
   TIME_FRAME_MONTHLY = 3;
 }
 
-message GetHistoryResponse {
+message ListCandlesResponse {
   repeated OHLCV candles = 1;
 }

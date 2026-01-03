@@ -35,19 +35,19 @@ const (
 const (
 	// ScreenerServiceScreenProcedure is the fully-qualified name of the ScreenerService's Screen RPC.
 	ScreenerServiceScreenProcedure = "/ntx.v1.ScreenerService/Screen"
-	// ScreenerServiceTopGainersProcedure is the fully-qualified name of the ScreenerService's
-	// TopGainers RPC.
-	ScreenerServiceTopGainersProcedure = "/ntx.v1.ScreenerService/TopGainers"
-	// ScreenerServiceTopLosersProcedure is the fully-qualified name of the ScreenerService's TopLosers
-	// RPC.
-	ScreenerServiceTopLosersProcedure = "/ntx.v1.ScreenerService/TopLosers"
+	// ScreenerServiceListTopGainersProcedure is the fully-qualified name of the ScreenerService's
+	// ListTopGainers RPC.
+	ScreenerServiceListTopGainersProcedure = "/ntx.v1.ScreenerService/ListTopGainers"
+	// ScreenerServiceListTopLosersProcedure is the fully-qualified name of the ScreenerService's
+	// ListTopLosers RPC.
+	ScreenerServiceListTopLosersProcedure = "/ntx.v1.ScreenerService/ListTopLosers"
 )
 
 // ScreenerServiceClient is a client for the ntx.v1.ScreenerService service.
 type ScreenerServiceClient interface {
 	Screen(context.Context, *connect.Request[v1.ScreenRequest]) (*connect.Response[v1.ScreenResponse], error)
-	TopGainers(context.Context, *connect.Request[v1.TopGainersRequest]) (*connect.Response[v1.TopGainersResponse], error)
-	TopLosers(context.Context, *connect.Request[v1.TopLosersRequest]) (*connect.Response[v1.TopLosersResponse], error)
+	ListTopGainers(context.Context, *connect.Request[v1.ListTopGainersRequest]) (*connect.Response[v1.ListTopGainersResponse], error)
+	ListTopLosers(context.Context, *connect.Request[v1.ListTopLosersRequest]) (*connect.Response[v1.ListTopLosersResponse], error)
 }
 
 // NewScreenerServiceClient constructs a client for the ntx.v1.ScreenerService service. By default,
@@ -67,16 +67,16 @@ func NewScreenerServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(screenerServiceMethods.ByName("Screen")),
 			connect.WithClientOptions(opts...),
 		),
-		topGainers: connect.NewClient[v1.TopGainersRequest, v1.TopGainersResponse](
+		listTopGainers: connect.NewClient[v1.ListTopGainersRequest, v1.ListTopGainersResponse](
 			httpClient,
-			baseURL+ScreenerServiceTopGainersProcedure,
-			connect.WithSchema(screenerServiceMethods.ByName("TopGainers")),
+			baseURL+ScreenerServiceListTopGainersProcedure,
+			connect.WithSchema(screenerServiceMethods.ByName("ListTopGainers")),
 			connect.WithClientOptions(opts...),
 		),
-		topLosers: connect.NewClient[v1.TopLosersRequest, v1.TopLosersResponse](
+		listTopLosers: connect.NewClient[v1.ListTopLosersRequest, v1.ListTopLosersResponse](
 			httpClient,
-			baseURL+ScreenerServiceTopLosersProcedure,
-			connect.WithSchema(screenerServiceMethods.ByName("TopLosers")),
+			baseURL+ScreenerServiceListTopLosersProcedure,
+			connect.WithSchema(screenerServiceMethods.ByName("ListTopLosers")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -84,9 +84,9 @@ func NewScreenerServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // screenerServiceClient implements ScreenerServiceClient.
 type screenerServiceClient struct {
-	screen     *connect.Client[v1.ScreenRequest, v1.ScreenResponse]
-	topGainers *connect.Client[v1.TopGainersRequest, v1.TopGainersResponse]
-	topLosers  *connect.Client[v1.TopLosersRequest, v1.TopLosersResponse]
+	screen         *connect.Client[v1.ScreenRequest, v1.ScreenResponse]
+	listTopGainers *connect.Client[v1.ListTopGainersRequest, v1.ListTopGainersResponse]
+	listTopLosers  *connect.Client[v1.ListTopLosersRequest, v1.ListTopLosersResponse]
 }
 
 // Screen calls ntx.v1.ScreenerService.Screen.
@@ -94,21 +94,21 @@ func (c *screenerServiceClient) Screen(ctx context.Context, req *connect.Request
 	return c.screen.CallUnary(ctx, req)
 }
 
-// TopGainers calls ntx.v1.ScreenerService.TopGainers.
-func (c *screenerServiceClient) TopGainers(ctx context.Context, req *connect.Request[v1.TopGainersRequest]) (*connect.Response[v1.TopGainersResponse], error) {
-	return c.topGainers.CallUnary(ctx, req)
+// ListTopGainers calls ntx.v1.ScreenerService.ListTopGainers.
+func (c *screenerServiceClient) ListTopGainers(ctx context.Context, req *connect.Request[v1.ListTopGainersRequest]) (*connect.Response[v1.ListTopGainersResponse], error) {
+	return c.listTopGainers.CallUnary(ctx, req)
 }
 
-// TopLosers calls ntx.v1.ScreenerService.TopLosers.
-func (c *screenerServiceClient) TopLosers(ctx context.Context, req *connect.Request[v1.TopLosersRequest]) (*connect.Response[v1.TopLosersResponse], error) {
-	return c.topLosers.CallUnary(ctx, req)
+// ListTopLosers calls ntx.v1.ScreenerService.ListTopLosers.
+func (c *screenerServiceClient) ListTopLosers(ctx context.Context, req *connect.Request[v1.ListTopLosersRequest]) (*connect.Response[v1.ListTopLosersResponse], error) {
+	return c.listTopLosers.CallUnary(ctx, req)
 }
 
 // ScreenerServiceHandler is an implementation of the ntx.v1.ScreenerService service.
 type ScreenerServiceHandler interface {
 	Screen(context.Context, *connect.Request[v1.ScreenRequest]) (*connect.Response[v1.ScreenResponse], error)
-	TopGainers(context.Context, *connect.Request[v1.TopGainersRequest]) (*connect.Response[v1.TopGainersResponse], error)
-	TopLosers(context.Context, *connect.Request[v1.TopLosersRequest]) (*connect.Response[v1.TopLosersResponse], error)
+	ListTopGainers(context.Context, *connect.Request[v1.ListTopGainersRequest]) (*connect.Response[v1.ListTopGainersResponse], error)
+	ListTopLosers(context.Context, *connect.Request[v1.ListTopLosersRequest]) (*connect.Response[v1.ListTopLosersResponse], error)
 }
 
 // NewScreenerServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -124,26 +124,26 @@ func NewScreenerServiceHandler(svc ScreenerServiceHandler, opts ...connect.Handl
 		connect.WithSchema(screenerServiceMethods.ByName("Screen")),
 		connect.WithHandlerOptions(opts...),
 	)
-	screenerServiceTopGainersHandler := connect.NewUnaryHandler(
-		ScreenerServiceTopGainersProcedure,
-		svc.TopGainers,
-		connect.WithSchema(screenerServiceMethods.ByName("TopGainers")),
+	screenerServiceListTopGainersHandler := connect.NewUnaryHandler(
+		ScreenerServiceListTopGainersProcedure,
+		svc.ListTopGainers,
+		connect.WithSchema(screenerServiceMethods.ByName("ListTopGainers")),
 		connect.WithHandlerOptions(opts...),
 	)
-	screenerServiceTopLosersHandler := connect.NewUnaryHandler(
-		ScreenerServiceTopLosersProcedure,
-		svc.TopLosers,
-		connect.WithSchema(screenerServiceMethods.ByName("TopLosers")),
+	screenerServiceListTopLosersHandler := connect.NewUnaryHandler(
+		ScreenerServiceListTopLosersProcedure,
+		svc.ListTopLosers,
+		connect.WithSchema(screenerServiceMethods.ByName("ListTopLosers")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/ntx.v1.ScreenerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ScreenerServiceScreenProcedure:
 			screenerServiceScreenHandler.ServeHTTP(w, r)
-		case ScreenerServiceTopGainersProcedure:
-			screenerServiceTopGainersHandler.ServeHTTP(w, r)
-		case ScreenerServiceTopLosersProcedure:
-			screenerServiceTopLosersHandler.ServeHTTP(w, r)
+		case ScreenerServiceListTopGainersProcedure:
+			screenerServiceListTopGainersHandler.ServeHTTP(w, r)
+		case ScreenerServiceListTopLosersProcedure:
+			screenerServiceListTopLosersHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -157,10 +157,10 @@ func (UnimplementedScreenerServiceHandler) Screen(context.Context, *connect.Requ
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.ScreenerService.Screen is not implemented"))
 }
 
-func (UnimplementedScreenerServiceHandler) TopGainers(context.Context, *connect.Request[v1.TopGainersRequest]) (*connect.Response[v1.TopGainersResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.ScreenerService.TopGainers is not implemented"))
+func (UnimplementedScreenerServiceHandler) ListTopGainers(context.Context, *connect.Request[v1.ListTopGainersRequest]) (*connect.Response[v1.ListTopGainersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.ScreenerService.ListTopGainers is not implemented"))
 }
 
-func (UnimplementedScreenerServiceHandler) TopLosers(context.Context, *connect.Request[v1.TopLosersRequest]) (*connect.Response[v1.TopLosersResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.ScreenerService.TopLosers is not implemented"))
+func (UnimplementedScreenerServiceHandler) ListTopLosers(context.Context, *connect.Request[v1.ListTopLosersRequest]) (*connect.Response[v1.ListTopLosersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.ScreenerService.ListTopLosers is not implemented"))
 }
