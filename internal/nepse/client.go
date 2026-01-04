@@ -4,7 +4,6 @@ package nepse
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/voidarchive/go-nepse"
@@ -40,106 +39,29 @@ type Company struct {
 	Shares    int64
 }
 
-// Companies returns all listed companies (excluding mutual funds, bonds, promoter shares).
-// Uses Securities API for active status, enriched with sector data from Companies API.
+// Companies returns all listed companies (Equity only, active status).
+// Uses Companies API filtered by InstrumentType and Status.
 func (c *Client) Companies(ctx context.Context) ([]Company, error) {
-	// Get companies for sector info
 	companyList, err := c.api.Companies(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("fetch companies: %w", err)
 	}
 
-	// Build sector map from companies
-	sectorMap := make(map[string]string)
-	for _, co := range companyList {
-		sectorMap[co.Symbol] = co.SectorName
-	}
-
-	// Get securities for active status
-	securities, err := c.api.Securities(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("fetch securities: %w", err)
-	}
-
 	var out []Company
-	for _, s := range securities {
-		if s.ActiveStatus != "A" {
-			continue
-		}
-		if isPromoterShare(s.Symbol) {
-			continue
-		}
-		if isDebentureOrBond(s.SecurityName) {
-			continue
-		}
-
-		sector := sectorMap[s.Symbol]
-		if sector == "" {
-			sector = "Others"
-		}
-		if sector == "Mutual Fund" {
+	for _, co := range companyList {
+		// Only include active equity instruments
+		if co.InstrumentType != "Equity" || co.Status != "A" {
 			continue
 		}
 
 		out = append(out, Company{
-			ID:     s.ID,
-			Symbol: s.Symbol,
-			Name:   s.SecurityName,
-			Sector: sector,
+			ID:     co.ID,
+			Symbol: co.Symbol,
+			Name:   co.SecurityName,
+			Sector: co.SectorName,
 		})
 	}
 	return out, nil
-}
-
-// Security represents an actively tradable security.
-type Security struct {
-	ID     int32
-	Symbol string
-	Name   string
-}
-
-// Securities returns all actively tradable securities.
-func (c *Client) Securities(ctx context.Context) ([]Security, error) {
-	list, err := c.api.Securities(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("fetch securities: %w", err)
-	}
-
-	var out []Security
-	for _, s := range list {
-		if s.ActiveStatus != "A" {
-			continue
-		}
-		if isPromoterShare(s.Symbol) {
-			continue
-		}
-		if isDebentureOrBond(s.SecurityName) {
-			continue
-		}
-
-		out = append(out, Security{
-			ID:     s.ID,
-			Symbol: s.Symbol,
-			Name:   s.SecurityName,
-		})
-	}
-	return out, nil
-}
-
-// isPromoterShare checks if a symbol is a promoter share.
-// Promoter shares typically have suffix "P" or "PO".
-func isPromoterShare(symbol string) bool {
-	if len(symbol) < 2 {
-		return false
-	}
-	return strings.HasSuffix(symbol, "P") || strings.HasSuffix(symbol, "PO")
-}
-
-// isDebentureOrBond checks if a name is a debenture or bond.
-// Case-insensitive check for "debenture" or "bond" in the name.
-func isDebentureOrBond(name string) bool {
-	name = strings.ToLower(name)
-	return strings.Contains(name, "debenture") || strings.Contains(name, "bond")
 }
 
 // CompanyDetail contains full company info with current price.
@@ -296,7 +218,7 @@ func (c *Client) NepseIndex(ctx context.Context) (*Index, error) {
 
 	return &Index{
 		Name:          "NEPSE",
-		Value:         idx.IndexValue,
+		Value:         idx.PreviousClose,
 		Change:        idx.PointChange,
 		ChangePercent: idx.PercentChange,
 	}, nil
@@ -313,7 +235,7 @@ func (c *Client) SubIndices(ctx context.Context) ([]Index, error) {
 	for i, s := range subs {
 		out[i] = Index{
 			Name:          s.Index,
-			Value:         s.Close,
+			Value:         s.PreviousClose,
 			Change:        s.Change,
 			ChangePercent: s.PerChange,
 		}

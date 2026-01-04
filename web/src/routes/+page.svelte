@@ -20,7 +20,7 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="border-b bg-gradient-to-b from-muted/50 to-background py-16 md:py-24">
+<section class="border-b bg-linear-to-b from-muted/50 to-background py-16 md:py-24">
 	<PageContainer>
 		<div class="mx-auto max-w-3xl text-center">
 			{#if data.status}
@@ -78,7 +78,7 @@
 	<section class="py-10">
 		<PageContainer>
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-				{#each data.indices.slice(0, 4) as index}
+				{#each data.indices.slice(0, 4) as index (index.name)}
 					<IndexCard
 						name={index.name}
 						value={index.value}

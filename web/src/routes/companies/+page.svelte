@@ -11,16 +11,17 @@
 	import { SearchIcon, Building2Icon, XIcon } from '@lucide/svelte';
 	import { debounce } from '$lib/utils/debounce';
 	import type { PageData } from './$types';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 
 	let { data }: { data: PageData } = $props();
 
-	let searchInput = $state(data.query);
-	let sectorValue = $state(data.sector !== Sector.UNSPECIFIED ? String(data.sector) : '');
+	let searchInput = $derived(data.query);
+	let sectorValue = $derived(data.sector !== Sector.UNSPECIFIED ? String(data.sector) : '');
 
 	const sectors = getAllSectors();
 
 	function updateFilters(newQuery?: string, newSector?: string) {
-		const params = new URLSearchParams();
+		const params = new SvelteURLSearchParams()
 		const q = newQuery ?? searchInput;
 		const s = newSector ?? sectorValue;
 
@@ -88,7 +89,7 @@
 				</Select.Trigger>
 				<Select.Content>
 					<Select.Item value="">All Sectors</Select.Item>
-					{#each sectors as sector}
+					{#each sectors as sector  }
 						<Select.Item value={String(sector)}>{getSectorName(sector)}</Select.Item>
 					{/each}
 				</Select.Content>

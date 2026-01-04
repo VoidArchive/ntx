@@ -117,7 +117,7 @@ func (w *worker) run(total int, task func(idx int) string) {
 		close(progressDone)
 	}()
 
-	for i := 0; i < total; i++ {
+	for i := range total {
 		wg.Add(1)
 		go func(idx int) {
 			defer wg.Done()
@@ -136,7 +136,13 @@ func (w *worker) run(total int, task func(idx int) string) {
 	<-progressDone
 }
 
-func backfillPrices(ctx context.Context, db *sql.DB, client *nepse.Client, queries *sqlc.Queries, companies []nepse.Company) {
+func backfillPrices(
+	ctx context.Context,
+	db *sql.DB,
+	client *nepse.Client,
+	queries *sqlc.Queries,
+	companies []nepse.Company,
+) {
 	now := time.Now()
 	defaultFrom := now.AddDate(-1, 0, 0).Format("2006-01-02")
 	to := now.Format("2006-01-02")
@@ -235,7 +241,12 @@ func backfillPrices(ctx context.Context, db *sql.DB, client *nepse.Client, queri
 		return fmt.Sprintf("[%d/%d] %s done (%d records)", idx+1, total, symbol, len(history))
 	})
 
-	fmt.Printf("\nPrices: %d new records, %d skipped, %d errors\n\n", priceCount.Load(), skipped.Load(), errorCount.Load())
+	fmt.Printf(
+		"\nPrices: %d new records, %d skipped, %d errors\n\n",
+		priceCount.Load(),
+		skipped.Load(),
+		errorCount.Load(),
+	)
 }
 
 func backfillReports(ctx context.Context, client *nepse.Client, queries *sqlc.Queries, companies []nepse.Company) {
@@ -377,7 +388,12 @@ func backfillProfiles(ctx context.Context, client *nepse.Client, queries *sqlc.Q
 		return fmt.Sprintf("[%d/%d] %s done", idx+1, total, symbol)
 	})
 
-	fmt.Printf("\nProfiles: %d skipped, %d updated, %d errors\n\n", skipped.Load(), profileCount.Load(), errorCount.Load())
+	fmt.Printf(
+		"\nProfiles: %d skipped, %d updated, %d errors\n\n",
+		skipped.Load(),
+		profileCount.Load(),
+		errorCount.Load(),
+	)
 }
 
 // parseFiscalYear extracts numeric year from Nepali fiscal year format (e.g., "2080/81" -> 2080).

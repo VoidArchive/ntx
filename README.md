@@ -1,8 +1,8 @@
 # NTX
 
-> NEPSE Stock Aggregator - Market data, analysis, and insights
+> NEPSE Stock Screener - Market data, analysis, and insights
 
-Fast, offline-first stock aggregator for Nepal Stock Exchange (NEPSE). 
+Fast, stock screener for Nepal Stock Exchange (NEPSE). 
 
 ## Features (In Development)
 

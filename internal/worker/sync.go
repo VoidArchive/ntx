@@ -129,12 +129,28 @@ func (w *Worker) syncPrices(ctx context.Context) error {
 	start := time.Now()
 	today := time.Now().In(market.NPT).Format(market.DateFormat)
 
+	// Get equity symbols to filter live prices
+	companies, err := w.nepse.Companies(ctx)
+	if err != nil {
+		return err
+	}
+	equitySymbols := make(map[string]struct{}, len(companies))
+	for _, c := range companies {
+		equitySymbols[c.Symbol] = struct{}{}
+	}
+
 	prices, err := w.nepse.LivePrices(ctx)
 	if err != nil {
 		return err
 	}
 
+	count := 0
 	for _, p := range prices {
+		// Only sync equity symbols
+		if _, ok := equitySymbols[p.Symbol]; !ok {
+			continue
+		}
+
 		highLow, _ := w.queries.Get52WeekHighLow(ctx, p.Symbol)
 
 		week52High := 0.0
@@ -169,9 +185,10 @@ func (w *Worker) syncPrices(ctx context.Context) error {
 			slog.Error("failed to upsert price", "symbol", p.Symbol, "error", err)
 			continue
 		}
+		count++
 	}
 
-	slog.Info("price sync complete", "count", len(prices), "duration", time.Since(start))
+	slog.Info("price sync complete", "count", count, "duration", time.Since(start))
 	return nil
 }
 
