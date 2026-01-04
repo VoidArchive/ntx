@@ -1,131 +1,134 @@
-# NTX Implementation Checklist
+# NTX Development Checklist
 
-## Phase 1: Foundation
-
-### Proto Schema
-- [x] Define common.proto (Company, Price, Fundamentals, OHLCV, Report, Index, SectorSummary)
-- [x] Define company.proto (CompanyService)
-- [x] Define price.proto (PriceService)
-- [x] Define market.proto (MarketService)
-- [x] Define screener.proto (ScreenerService)
-- [x] Generate Go + TypeScript clients
-
-### Database Schema (market.db)
-- [x] Create `companies` table (symbol, name, sector, description, logo_url)
-- [x] Create `fundamentals` table (symbol, pe, pb, eps, book_value, market_cap, dividend_yield, roe)
-- [x] Create `prices` table (symbol, date, open, high, low, close, volume, is_complete)
-- [x] Create `reports` table (symbol, type, fiscal_year, quarter, revenue, net_income, eps, book_value)
-- [x] Create `trading_days` table (date, status)
-- [x] Write SQLC queries for all tables
-
-### Market Hours Logic
-- [x] Implement `internal/market` package
-- [x] IsOpen() function (11:00-15:00 NPT, Sun-Thu)
-- [x] IsTradingDay() function
-- [x] NextOpen() function
+Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend -> Frontend).
 
 ---
 
-## Phase 2: Server (ntxd)
+## Cycle 1: Hello World
 
-### Background Worker
-- [x] Company sync job (daily)
-- [x] Fundamentals sync job (daily)
-- [x] Price sync job (1/min during market hours)
-- [x] Final snapshot job (after 15:00)
-- [x] Historical price backfill (one-time)
+**Goal:** Prove the stack works end-to-end.
 
-### ConnectRPC Handlers
-- [x] CompanyService.ListCompanies
-- [x] CompanyService.GetCompany
-- [x] CompanyService.GetFundamentals
-- [x] CompanyService.ListReports
-- [x] PriceService.GetPrice
-- [x] PriceService.ListCandles
-- [x] MarketService.GetStatus
-- [x] MarketService.ListIndices
-- [x] MarketService.ListSectors
-- [x] ScreenerService.Screen
-- [x] ScreenerService.ListTopGainers
-- [x] ScreenerService.ListTopLosers
+- [ ] DB: Create `companies` table migration
+- [ ] DB: Write SQLC query `ListCompanies`
+- [ ] Proto: Define `CompanyService.ListCompanies`
+- [ ] Backend: Implement handler (return hardcoded data first)
+- [ ] Frontend: Display company list on `/`
 
-### Server Infrastructure
-- [ ] HTTP server setup (port 8080)
-- [ ] Health check endpoint (/health)
-- [ ] Graceful shutdown
-- [ ] Embed SvelteKit static files
+**Done when:** Browser shows a list of companies from the database.
 
 ---
 
-## Phase 3: Web (SvelteKit)
+## Cycle 2: Company Page
 
-### Setup
-- [ ] Configure ConnectRPC client
-- [ ] Create shared API client wrapper
-- [ ] Setup TailwindCSS + shadcn components
+**Goal:** View a single company with basic info.
 
-### Pages
-- [ ] `/` — Landing + market overview (indices, top gainers/losers)
-- [ ] `/companies` — All companies grid/table with search
-- [ ] `/company/[symbol]` — Company profile
-  - [ ] Overview tab (price, chart)
-  - [ ] Fundamentals tab (PE, EPS, ratios)
-  - [ ] Financials tab (quarterly/annual reports)
-  - [ ] History tab (price chart with timeframes)
-- [ ] `/sectors` — Sector breakdown with aggregates
-- [ ] `/screener` — Filter stocks by fundamentals
+- [ ] DB: Add `GetCompanyBySymbol` query
+- [ ] Proto: Define `CompanyService.GetCompany`
+- [ ] Backend: Implement handler
+- [ ] Frontend: Create `/company/[symbol]` page
 
-### Components
-- [ ] Price display (with change indicator)
-- [ ] Stock chart (OHLCV candlestick or line)
-- [ ] Company card
-- [ ] Sector badge
-- [ ] Screener filter form
+**Done when:** Clicking a company shows its detail page.
 
 ---
 
-## Phase 4: CLI (ntx)
+## Cycle 3: Live Data
 
-// Need to decide if i want to implement the portfolio management or not, it looks simple but is complex in nature. Just having a simple stock aggregator and screener is good. Let's not feature creep it. NTX will do one thing, and one thing really well. And that's stock screening with fundamentals.
+**Goal:** Real data from NEPSE via background worker.
 
-### Database Schema (ntx.db)
-- [ ] Create `portfolios` table
-- [ ] Create `watchlists` table
-- [ ] Create `price_cache` table
-- [ ] Write SQLC queries
+- [ ] Backend: Implement company sync job (go-nepse -> SQLite)
+- [ ] Backend: Schedule job to run daily
+- [ ] Frontend: Verify real companies appear
 
-### Commands
-- [ ] `ntx price <symbol>` — Get current price
-- [ ] `ntx watch add/rm/list` — Manage watchlist
-- [ ] `ntx portfolio add/rm/list` — Manage holdings
-- [ ] `ntx portfolio summary` — Show P&L
-
-### TUI
-- [ ] Dashboard view (watchlist + portfolio summary)
-- [ ] Price refresh (from go-nepse direct)
-- [ ] Offline mode (from cache)
+**Done when:** Companies list shows real NEPSE companies.
 
 ---
 
-## Phase 5: Deployment
+## Cycle 4: Prices
 
-### Railway
-- [ ] Create Dockerfile (multi-stage: Go build + SvelteKit build)
-- [ ] Configure railway.toml
-- [ ] Setup persistent volume for market.db
-- [ ] Configure health checks
-- [ ] Deploy and verify
+**Goal:** Show current price on company page.
 
-### CLI Distribution
-- [ ] Setup goreleaser
-- [ ] GitHub Actions for releases
-- [ ] Test `go install` path
+- [ ] DB: Create `prices` table migration
+- [ ] DB: Write `GetLatestPrice`, `UpsertPrice` queries
+- [ ] Proto: Define `PriceService.GetPrice`
+- [ ] Backend: Implement handler
+- [ ] Backend: Add price sync to background worker
+- [ ] Frontend: Display price on company page
+
+**Done when:** Company page shows today's price.
 
 ---
 
-## Phase 6: Future
+## Cycle 5: Fundamentals
 
-- [ ] Historical data bootstrap (seed from CSV)
-- [ ] Corporate actions (dividends, bonus) — requires go-nepse update
-- [ ] WebSocket/SSE for live prices during market hours
-- [ ] Report scraping (PDFs from NEPSE website)
+**Goal:** Show PE, EPS, book value on company page.
+
+- [ ] DB: Create `fundamentals` table migration
+- [ ] DB: Write queries
+- [ ] Proto: Define `GetFundamentals`
+- [ ] Backend: Implement handler + sync job
+- [ ] Frontend: Display fundamentals on company page
+
+**Done when:** Company page shows key ratios.
+
+---
+
+## Cycle 6: Market Overview
+
+**Goal:** Landing page with market status and top movers.
+
+- [ ] DB: Add queries for top gainers/losers
+- [ ] Proto: Define `MarketService.GetStatus`, `ListTopGainers`, `ListTopLosers`
+- [ ] Backend: Implement handlers
+- [ ] Frontend: Build landing page with indices + movers
+
+**Done when:** Homepage shows market overview.
+
+---
+
+## Cycle 7: Screener
+
+**Goal:** Filter stocks by fundamentals.
+
+- [ ] DB: Write dynamic filter query
+- [ ] Proto: Define `ScreenerService.Screen`
+- [ ] Backend: Implement handler
+- [ ] Frontend: Build screener page with filters
+
+**Done when:** User can filter stocks by PE, market cap, etc.
+
+---
+
+## Cycle 8: Price History
+
+**Goal:** Show price chart on company page.
+
+- [ ] DB: Write `ListCandles` query
+- [ ] Proto: Define `PriceService.ListCandles`
+- [ ] Backend: Implement handler + historical backfill
+- [ ] Frontend: Add chart component to company page
+
+**Done when:** Company page shows price chart.
+
+---
+
+## Cycle 9: Polish & Deploy
+
+**Goal:** Production-ready.
+
+- [ ] Backend: Health check endpoint
+- [ ] Backend: Graceful shutdown
+- [ ] Backend: Embed SvelteKit build
+- [ ] Deploy: Dockerfile
+- [ ] Deploy: Railway config
+- [ ] Deploy: Verify everything works
+
+**Done when:** App is live on Railway.
+
+---
+
+## Future Cycles (if needed)
+
+- Sectors page
+- Financial reports (quarterly/annual)
+- Corporate actions (dividends, bonus)
+- User accounts + watchlists

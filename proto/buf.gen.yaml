@@ -1,13 +1,11 @@
 version: v2
 plugins:
-  # Go
   - remote: buf.build/protocolbuffers/go
-    out: ../gen/go
+    out: ../apps/api/gen/go
     opt: paths=source_relative
   - remote: buf.build/connectrpc/go
-    out: ../gen/go
+    out: ../apps/api/gen/go
     opt: paths=source_relative
-
-  # TypeScript (v2 - no separate connect plugin needed)
   - remote: buf.build/bufbuild/es:v2.2.3
-    out: ../gen/ts
+    out: ../apps/web/src/lib/gen
+

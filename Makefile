@@ -1,32 +1,25 @@
-.PHONY: build run dev test lint fmt proto clean migrate-create migrate-up migrate-down migrate-status sqlc
-
-build:
-	go build -o bin/ntxd ./cmd/ntxd
-	go build -o bin/ntx ./cmd/ntx
-
-run:
-	go run ./cmd/ntx
+.PHONY: dev dev-api dev-web lint fmt proto tools migrate-create migrate-up migrate-down migrate-status sqlc
 
 dev:
-	air
+	make -j 2 dev-api dev-web
+
+dev-api:
+	cd apps/api && air
 
 dev-web:
-	cd web && pnpm dev
+	cd apps/web && pnpm dev --host
 
 test:
-	go test ./...
+	cd apps/api && go test ./...
 
 lint:
-	golangci-lint run
+	cd apps/api && golangci-lint run
 
 fmt:
-	golangci-lint run --fix
+	cd apps/api && golangci-lint run --fix
 
 proto:
 	cd proto && buf lint && buf generate
-
-clean:
-	rm -rf bin/ tmp/
 
 tools:
 	go install github.com/air-verse/air@latest
@@ -35,16 +28,16 @@ tools:
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 migrate-create:
-	goose -dir internal/database/migrations create $(NAME) sql
+	goose -dir apps/api/internal/database/migrations create $(NAME) sql
 
 migrate-up:
-	goose -dir internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db up
+	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db up
 
 migrate-down:
-	goose -dir internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db down
+	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db down
 
 migrate-status:
-	goose -dir internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db status
+	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db status
 
 sqlc:
-	sqlc generate
+	cd apps/api && sqlc generate

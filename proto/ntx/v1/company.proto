@@ -6,44 +6,15 @@ import "ntx/v1/common.proto";
 
 option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
-service CompanyService {
+service CompanyService{
   rpc ListCompanies(ListCompaniesRequest) returns (ListCompaniesResponse);
-  rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
-  rpc GetFundamentals(GetFundamentalsRequest) returns (GetFundamentalsResponse);
-  rpc ListReports(ListReportsRequest) returns (ListReportsResponse);
 }
 
 message ListCompaniesRequest {
-  Sector sector = 1;
-  string query = 2; // search by symbol or name
+  optional Sector sector = 1;
+  optional string query = 2;
 }
 
 message ListCompaniesResponse {
   repeated Company companies = 1;
-}
-
-message GetCompanyRequest {
-  string symbol = 1;
-}
-
-message GetCompanyResponse {
-  Company company = 1;
-}
-
-message GetFundamentalsRequest {
-  string symbol = 1;
-}
-
-message GetFundamentalsResponse {
-  Fundamentals fundamentals = 1;
-}
-
-message ListReportsRequest {
-  string symbol = 1;
-  ReportType type = 2;
-  int32 limit = 3;
-}
-
-message ListReportsResponse {
-  repeated Report reports = 1;
 }

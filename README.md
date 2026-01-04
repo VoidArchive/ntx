@@ -1,89 +1,52 @@
 # NTX
 
-> NEPSE Stock Screener - Market data, analysis, and insights
+> The best stock screener for NEPSE
 
-Fast, stock screener for Nepal Stock Exchange (NEPSE). 
+A focused, information-dense stock screener for Nepal Stock Exchange. Like [StockTapper](https://stocktapper.com) but for NEPSE.
 
-## Features (In Development)
+## What NTX Does
 
-### Market Data
-- Real-time prices from NEPSE
-- Market indices and overview
-- Top gainers and losers
-- Sector performance
+One thing, really well: **Stock screening with useful company pages.**
 
-### Stock Analysis
-- Fundamentals (PE, PB, EPS, dividend yield)
-- Technical signals
-- Stock comparison
-- Sector analysis
-
-### Interfaces
-- **CLI** - Fast terminal commands
-- **Web** - SvelteKit dashboard
-- **API** - ConnectRPC for integrations
-
-## Installation
-
-### Prerequisites
-- Go 1.25 or later
-
-### Build from Source
-```bash
-git clone https://github.com/voidarchive/ntx.git
-cd ntx
-go build -o ntx ./cmd/ntx
-```
-
-## Usage
-
-```bash
-# Show help
-ntx --help
-
-# Get stock price (coming soon)
-ntx price NABIL
-
-# Market overview (coming soon)
-ntx market
-
-# Stock analysis (coming soon)
-ntx analyze NABIL
-```
-
-## Development
-
-### Prerequisites
-- Go 1.25+
-- `buf` - Protobuf linter/generator
-- `sqlc` - SQL to Go code generator
-- Node.js + pnpm (for web)
-
-### Build & Test
-```bash
-# Build
-go build ./...
-
-# Test
-go test ./...
-
-# Run web dev server
-make web && pnpm dev
-
-# Run server
-make dev
-```
+- Stock screener with fundamental filters
+- Company pages with dense, actionable data
+- Market overview (indices, top movers)
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| **Language** | Go 1.25 |
-| **CLI** | Kong |
-| **Database** | SQLite + SQLC |
-| **API** | ConnectRPC |
-| **Market Data** | go-nepse |
-| **Web** | SvelteKit + Tailwind + shadcn |
+| Backend | Go + ConnectRPC |
+| Database | SQLite + SQLC |
+| Frontend | SvelteKit + Tailwind + shadcn |
+| Data | go-nepse |
+
+## Development
+
+```bash
+# Run backend (hot reload)
+make dev
+
+# Run frontend
+make dev-web
+
+# After proto changes
+make proto
+
+# After SQL query changes
+make sqlc
+```
+
+## Project Structure
+
+```
+ntx/
+├── cmd/ntxd/           # Server binary
+├── internal/           # Go packages
+├── gen/                # Generated code (proto)
+├── proto/              # Proto definitions
+└── web/                # SvelteKit frontend
+```
 
 ## License
 

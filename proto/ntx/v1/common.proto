@@ -2,11 +2,17 @@ syntax = "proto3";
 
 package ntx.v1;
 
-import "google/protobuf/timestamp.proto";
+// import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
-// Sector represents NEPSE sector classification.
+enum CompanyStatus {
+  COMPANY_STATUS_UNSPECIFIED = 0;
+  COMPANY_STATUS_ACTIVE = 1;
+  COMPANY_STATUS_SUSPENDED = 2;
+  COMPANY_STATUS_DELISTED = 3;
+}
+
 enum Sector {
   SECTOR_UNSPECIFIED = 0;
   SECTOR_COMMERCIAL_BANK = 1;
@@ -24,96 +30,21 @@ enum Sector {
   SECTOR_OTHERS = 13;
 }
 
-// Company represents a NEPSE listed security.
+enum InstrumentType {
+  INSTRUMENT_TYPE_UNSPECIFIED = 0;
+  INSTRUMENT_TYPE_EQUITY = 1;
+  INSTRUMENT_TYPE_BOND = 2;
+  INSTRUMENT_TYPE_MUTUAL_FUND = 3;
+}
+
 message Company {
-  string symbol = 1;
+  int64 id = 1;
   string name = 2;
-  Sector sector = 3;
-  string description = 4;
-  string logo_url = 5;
+  string symbol = 3;
+  CompanyStatus status = 4;
+  optional string email = 5;
+  optional string website = 6;
+  Sector sector = 7;
+  InstrumentType instrument_type = 8;
 }
 
-// Price represents current price data for a stock.
-message Price {
-  string symbol = 1;
-  double ltp = 2;
-  double change = 3;
-  double percent_change = 4;
-  double open = 5;
-  double high = 6;
-  double low = 7;
-  double previous_close = 8;
-  int64 volume = 9;
-  int64 turnover = 10;
-  double week_52_high = 11;
-  double week_52_low = 12;
-  google.protobuf.Timestamp timestamp = 13;
-}
-
-// Fundamentals represents valuation metrics for a stock.
-message Fundamentals {
-  string symbol = 1;
-  double pe = 2;
-  double pb = 3;
-  double eps = 4;
-  double book_value = 5;
-  double market_cap = 6;
-  double dividend_yield = 7;
-  double roe = 8;
-  int64 shares_outstanding = 9;
-}
-
-// OHLCV represents a single candlestick.
-message OHLCV {
-  google.protobuf.Timestamp date = 1;
-  double open = 2;
-  double high = 3;
-  double low = 4;
-  double close = 5;
-  int64 volume = 6;
-  int64 turnover = 7;
-}
-
-// Report represents quarterly or annual financial data.
-message Report {
-  string symbol = 1;
-  ReportType type = 2;
-  int32 fiscal_year = 3;
-  int32 quarter = 4; // 0 for annual, 1-4 for quarterly
-  double revenue = 5;
-  double net_income = 6;
-  double eps = 7;
-  double book_value = 8;
-  double npl_ratio = 9; // for banks/financials
-  google.protobuf.Timestamp published_at = 10;
-}
-
-enum ReportType {
-  REPORT_TYPE_UNSPECIFIED = 0;
-  REPORT_TYPE_QUARTERLY = 1;
-  REPORT_TYPE_ANNUAL = 2;
-}
-
-// Index represents a market index.
-message Index {
-  string name = 1;
-  double value = 2;
-  double change = 3;
-  double percent_change = 4;
-  google.protobuf.Timestamp timestamp = 5;
-}
-
-// SectorSummary represents sector-level aggregated data.
-message SectorSummary {
-  Sector sector = 1;
-  string name = 2;
-  int32 stock_count = 3;
-  int64 turnover = 4;
-  double change = 5;
-  double percent_change = 6;
-}
-
-// Money represents a monetary value in NPR.
-message Money {
-  int64 paisa = 1;
-}
