@@ -1,9 +1,14 @@
 <script lang="ts">
+import { InstrumentType } from "$lib/gen/ntx/v1/common_pb.js";
     let {data} = $props();
-    let companies = data.companies;
 </script>
 
-{#each companies as company (company.id)}
+{#each data.companies as company (company.id)}
+  {#if company.instrumentType === InstrumentType.EQUITY}
     <div>{company.name}</div>
     <div>{company.symbol}</div>
+    <div>{company.instrumentType}</div>
+    <div>{company.sector}</div>
+{/if}
+  
 {/each}

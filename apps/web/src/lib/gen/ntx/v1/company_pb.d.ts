@@ -49,6 +49,38 @@ export declare type ListCompaniesResponse = Message<"ntx.v1.ListCompaniesRespons
 export declare const ListCompaniesResponseSchema: GenMessage<ListCompaniesResponse>;
 
 /**
+ * @generated from message ntx.v1.GetCompanyRequest
+ */
+export declare type GetCompanyRequest = Message<"ntx.v1.GetCompanyRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+};
+
+/**
+ * Describes the message ntx.v1.GetCompanyRequest.
+ * Use `create(GetCompanyRequestSchema)` to create a new message.
+ */
+export declare const GetCompanyRequestSchema: GenMessage<GetCompanyRequest>;
+
+/**
+ * @generated from message ntx.v1.GetCompanyResponse
+ */
+export declare type GetCompanyResponse = Message<"ntx.v1.GetCompanyResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Company company = 1;
+   */
+  company?: Company;
+};
+
+/**
+ * Describes the message ntx.v1.GetCompanyResponse.
+ * Use `create(GetCompanyResponseSchema)` to create a new message.
+ */
+export declare const GetCompanyResponseSchema: GenMessage<GetCompanyResponse>;
+
+/**
  * @generated from service ntx.v1.CompanyService
  */
 export declare const CompanyService: GenService<{
@@ -59,6 +91,14 @@ export declare const CompanyService: GenService<{
     methodKind: "unary";
     input: typeof ListCompaniesRequestSchema;
     output: typeof ListCompaniesResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetCompany
+   */
+  getCompany: {
+    methodKind: "unary";
+    input: typeof GetCompanyRequestSchema;
+    output: typeof GetCompanyResponseSchema;
   },
 }>;
 

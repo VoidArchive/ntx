@@ -9,7 +9,7 @@ import { file_ntx_v1_common } from "./common_pb";
  * Describes the file ntx/v1/company.proto.
  */
 export const file_ntx_v1_company = /*@__PURE__*/
-  fileDesc("ChRudHgvdjEvY29tcGFueS5wcm90bxIGbnR4LnYxImQKFExpc3RDb21wYW5pZXNSZXF1ZXN0EiMKBnNlY3RvchgBIAEoDjIOLm50eC52MS5TZWN0b3JIAIgBARISCgVxdWVyeRgCIAEoCUgBiAEBQgkKB19zZWN0b3JCCAoGX3F1ZXJ5IjsKFUxpc3RDb21wYW5pZXNSZXNwb25zZRIiCgljb21wYW5pZXMYASADKAsyDy5udHgudjEuQ29tcGFueTJeCg5Db21wYW55U2VydmljZRJMCg1MaXN0Q29tcGFuaWVzEhwubnR4LnYxLkxpc3RDb21wYW5pZXNSZXF1ZXN0Gh0ubnR4LnYxLkxpc3RDb21wYW5pZXNSZXNwb25zZUIwWi5naXRodWIuY29tL3ZvaWRhcmNoaXZlL250eC9nZW4vZ28vbnR4L3YxO250eHYxYgZwcm90bzM", [file_ntx_v1_common]);
+  fileDesc("ChRudHgvdjEvY29tcGFueS5wcm90bxIGbnR4LnYxImQKFExpc3RDb21wYW5pZXNSZXF1ZXN0EiMKBnNlY3RvchgBIAEoDjIOLm50eC52MS5TZWN0b3JIAIgBARISCgVxdWVyeRgCIAEoCUgBiAEBQgkKB19zZWN0b3JCCAoGX3F1ZXJ5IjsKFUxpc3RDb21wYW5pZXNSZXNwb25zZRIiCgljb21wYW5pZXMYASADKAsyDy5udHgudjEuQ29tcGFueSIjChFHZXRDb21wYW55UmVxdWVzdBIOCgZzeW1ib2wYASABKAkiNgoSR2V0Q29tcGFueVJlc3BvbnNlEiAKB2NvbXBhbnkYASABKAsyDy5udHgudjEuQ29tcGFueTKjAQoOQ29tcGFueVNlcnZpY2USTAoNTGlzdENvbXBhbmllcxIcLm50eC52MS5MaXN0Q29tcGFuaWVzUmVxdWVzdBodLm50eC52MS5MaXN0Q29tcGFuaWVzUmVzcG9uc2USQwoKR2V0Q29tcGFueRIZLm50eC52MS5HZXRDb21wYW55UmVxdWVzdBoaLm50eC52MS5HZXRDb21wYW55UmVzcG9uc2VCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z", [file_ntx_v1_common]);
 
 /**
  * Describes the message ntx.v1.ListCompaniesRequest.
@@ -24,6 +24,20 @@ export const ListCompaniesRequestSchema = /*@__PURE__*/
  */
 export const ListCompaniesResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_company, 1);
+
+/**
+ * Describes the message ntx.v1.GetCompanyRequest.
+ * Use `create(GetCompanyRequestSchema)` to create a new message.
+ */
+export const GetCompanyRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_company, 2);
+
+/**
+ * Describes the message ntx.v1.GetCompanyResponse.
+ * Use `create(GetCompanyResponseSchema)` to create a new message.
+ */
+export const GetCompanyResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_company, 3);
 
 /**
  * @generated from service ntx.v1.CompanyService

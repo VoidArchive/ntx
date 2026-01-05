@@ -55,7 +55,7 @@ func (s *CompanyService) ListCompanies(
 			Status:         ntxv1.CompanyStatus_COMPANY_STATUS_ACTIVE,
 			Email:          pointerTo("info@chilime.com"),
 			Website:        pointerTo("https://chilime.com"),
-			InstrumentType: ntxv1.InstrumentType_INSTRUMENT_TYPE_EQUITY,
+			InstrumentType: ntxv1.InstrumentType_INSTRUMENT_TYPE_BOND,
 		},
 	}
 

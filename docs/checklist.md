@@ -11,8 +11,8 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 - [x] DB: Create `companies` table migration
 - [x] DB: Write SQLC query `ListCompanies`
 - [x] Proto: Define `CompanyService.ListCompanies`
-- [ ] Backend: Implement handler (return hardcoded data first)
-- [ ] Frontend: Display company list on `/`
+- [x] Backend: Implement handler (return hardcoded data first)
+- [x] Frontend: Display company list on `/`
 
 **Done when:** Browser shows a list of companies from the database.
 
@@ -22,8 +22,8 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** View a single company with basic info.
 
-- [ ] DB: Add `GetCompanyBySymbol` query
-- [ ] Proto: Define `CompanyService.GetCompany`
+- [x] DB: Add `GetCompany` query
+- [x] Proto: Define `CompanyService.GetCompany`
 - [ ] Backend: Implement handler
 - [ ] Frontend: Create `/company/[symbol]` page
 

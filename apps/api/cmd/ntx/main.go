@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	connectcors "connectrpc.com/cors"
+	"github.com/rs/cors"
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/company"
 	"github.com/voidarchive/ntx/internal/database"
@@ -40,7 +42,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	companyPath, companyHandler := ntxv1connect.NewCompanyServiceHandler(company.NewCompanyService(queries))
-	mux.Handle(companyPath, companyHandler)
+	mux.Handle(companyPath, withCORS(companyHandler))
 	addr := ":8080"
 	server := &http.Server{
 		Addr:         addr,
@@ -71,4 +73,14 @@ func main() {
 		slog.Error("server error", "error", err)
 		os.Exit(1)
 	}
+}
+
+func withCORS(h http.Handler) http.Handler {
+	middleware := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:5173"},
+		AllowedMethods: connectcors.AllowedMethods(),
+		AllowedHeaders: connectcors.AllowedHeaders(),
+		ExposedHeaders: connectcors.ExposedHeaders(),
+	})
+	return middleware.Handler(h)
 }

@@ -117,6 +117,94 @@ func (x *ListCompaniesResponse) GetCompanies() []*Company {
 	return nil
 }
 
+type GetCompanyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCompanyRequest) Reset() {
+	*x = GetCompanyRequest{}
+	mi := &file_ntx_v1_company_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCompanyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCompanyRequest) ProtoMessage() {}
+
+func (x *GetCompanyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCompanyRequest.ProtoReflect.Descriptor instead.
+func (*GetCompanyRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetCompanyRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+type GetCompanyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Company       *Company               `protobuf:"bytes,1,opt,name=company,proto3" json:"company,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCompanyResponse) Reset() {
+	*x = GetCompanyResponse{}
+	mi := &file_ntx_v1_company_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCompanyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCompanyResponse) ProtoMessage() {}
+
+func (x *GetCompanyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCompanyResponse.ProtoReflect.Descriptor instead.
+func (*GetCompanyResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetCompanyResponse) GetCompany() *Company {
+	if x != nil {
+		return x.Company
+	}
+	return nil
+}
+
 var File_ntx_v1_company_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_company_proto_rawDesc = "" +
@@ -128,9 +216,15 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\a_sectorB\b\n" +
 	"\x06_query\"F\n" +
 	"\x15ListCompaniesResponse\x12-\n" +
-	"\tcompanies\x18\x01 \x03(\v2\x0f.ntx.v1.CompanyR\tcompanies2^\n" +
+	"\tcompanies\x18\x01 \x03(\v2\x0f.ntx.v1.CompanyR\tcompanies\"+\n" +
+	"\x11GetCompanyRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"?\n" +
+	"\x12GetCompanyResponse\x12)\n" +
+	"\acompany\x18\x01 \x01(\v2\x0f.ntx.v1.CompanyR\acompany2\xa3\x01\n" +
 	"\x0eCompanyService\x12L\n" +
-	"\rListCompanies\x12\x1c.ntx.v1.ListCompaniesRequest\x1a\x1d.ntx.v1.ListCompaniesResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\rListCompanies\x12\x1c.ntx.v1.ListCompaniesRequest\x1a\x1d.ntx.v1.ListCompaniesResponse\x12C\n" +
+	"\n" +
+	"GetCompany\x12\x19.ntx.v1.GetCompanyRequest\x1a\x1a.ntx.v1.GetCompanyResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_company_proto_rawDescOnce sync.Once
@@ -144,23 +238,28 @@ func file_ntx_v1_company_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_company_proto_rawDescData
 }
 
-var file_ntx_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_ntx_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_ntx_v1_company_proto_goTypes = []any{
 	(*ListCompaniesRequest)(nil),  // 0: ntx.v1.ListCompaniesRequest
 	(*ListCompaniesResponse)(nil), // 1: ntx.v1.ListCompaniesResponse
-	(Sector)(0),                   // 2: ntx.v1.Sector
-	(*Company)(nil),               // 3: ntx.v1.Company
+	(*GetCompanyRequest)(nil),     // 2: ntx.v1.GetCompanyRequest
+	(*GetCompanyResponse)(nil),    // 3: ntx.v1.GetCompanyResponse
+	(Sector)(0),                   // 4: ntx.v1.Sector
+	(*Company)(nil),               // 5: ntx.v1.Company
 }
 var file_ntx_v1_company_proto_depIdxs = []int32{
-	2, // 0: ntx.v1.ListCompaniesRequest.sector:type_name -> ntx.v1.Sector
-	3, // 1: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
-	0, // 2: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
-	1, // 3: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	4, // 0: ntx.v1.ListCompaniesRequest.sector:type_name -> ntx.v1.Sector
+	5, // 1: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
+	5, // 2: ntx.v1.GetCompanyResponse.company:type_name -> ntx.v1.Company
+	0, // 3: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
+	2, // 4: ntx.v1.CompanyService.GetCompany:input_type -> ntx.v1.GetCompanyRequest
+	1, // 5: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
+	3, // 6: ntx.v1.CompanyService.GetCompany:output_type -> ntx.v1.GetCompanyResponse
+	5, // [5:7] is the sub-list for method output_type
+	3, // [3:5] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_company_proto_init() }
@@ -176,7 +275,7 @@ func file_ntx_v1_company_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_company_proto_rawDesc), len(file_ntx_v1_company_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

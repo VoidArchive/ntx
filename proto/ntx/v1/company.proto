@@ -8,6 +8,7 @@ option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
 service CompanyService{
   rpc ListCompanies(ListCompaniesRequest) returns (ListCompaniesResponse);
+  rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
 }
 
 message ListCompaniesRequest {
@@ -18,3 +19,13 @@ message ListCompaniesRequest {
 message ListCompaniesResponse {
   repeated Company companies = 1;
 }
+
+message GetCompanyRequest {
+  string symbol = 1;
+}
+
+message GetCompanyResponse {
+  Company company = 1;
+}
+
+
