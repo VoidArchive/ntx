@@ -24,7 +24,7 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 - [x] DB: Add `GetCompany` query
 - [x] Proto: Define `CompanyService.GetCompany`
-- [ ] Backend: Implement handler
+- [x] Backend: Implement handler
 - [ ] Frontend: Create `/company/[symbol]` page
 
 **Done when:** Clicking a company shows its detail page.

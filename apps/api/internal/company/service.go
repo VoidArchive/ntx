@@ -215,3 +215,16 @@ func instrumentFromDB(s string) ntxv1.InstrumentType {
 		return ntxv1.InstrumentType_INSTRUMENT_TYPE_UNSPECIFIED
 	}
 }
+
+func (s *CompanyService) GetCompany(
+	ctx context.Context,
+	req *connect.Request[ntxv1.GetCompanyRequest],
+) (*connect.Response[ntxv1.GetCompanyResponse], error) {
+	company, err := s.queries.GetCompany(ctx, req.Msg.Symbol)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, err)
+	}
+	return connect.NewResponse(&ntxv1.GetCompanyResponse{
+		Company: companyToProto(company),
+	}), nil
+}
