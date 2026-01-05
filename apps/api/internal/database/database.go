@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/adrg/xdg"
+
+	_ "modernc.org/sqlite"
 )
 
 var ErrNoDBPath = errors.New("database path is empty")

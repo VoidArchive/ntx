@@ -8,9 +8,9 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Prove the stack works end-to-end.
 
-- [ ] DB: Create `companies` table migration
-- [ ] DB: Write SQLC query `ListCompanies`
-- [ ] Proto: Define `CompanyService.ListCompanies`
+- [x] DB: Create `companies` table migration
+- [x] DB: Write SQLC query `ListCompanies`
+- [x] Proto: Define `CompanyService.ListCompanies`
 - [ ] Backend: Implement handler (return hardcoded data first)
 - [ ] Frontend: Display company list on `/`
 
