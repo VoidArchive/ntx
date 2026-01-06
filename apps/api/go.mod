@@ -7,6 +7,7 @@ require (
 	connectrpc.com/cors v0.1.0
 	github.com/adrg/xdg v0.5.3
 	github.com/pressly/goose/v3 v3.26.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/cors v1.11.1
 	github.com/voidarchive/go-nepse v0.2.3
 	google.golang.org/protobuf v1.36.11

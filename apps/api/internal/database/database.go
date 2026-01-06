@@ -68,7 +68,7 @@ func DefaultPath() string {
 		return path
 	}
 	path, err := xdg.DataFile("ntx/market.db")
-	if err != nil && path != "" {
+	if err == nil && path != "" {
 		return path
 	}
 	return "./data/market.db"

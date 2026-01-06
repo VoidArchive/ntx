@@ -35,9 +35,9 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Real data from NEPSE via background worker.
 
-- [ ] Backend: Implement company sync job (go-nepse -> SQLite)
-- [ ] Backend: Schedule job to run daily
-- [ ] Frontend: Verify real companies appear
+- [x] Backend: Implement company sync job (go-nepse -> SQLite)
+- [x] Backend: Schedule job to run daily
+- [x] Frontend: Verify real companies appear
 
 **Done when:** Companies list shows real NEPSE companies.
 
