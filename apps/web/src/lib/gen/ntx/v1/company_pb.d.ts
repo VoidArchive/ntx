@@ -2,9 +2,9 @@
 // @generated from file ntx/v1/company.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
-import type { Message } from "@bufbuild/protobuf";
-import type { Company, Sector } from "./common_pb";
+import type { GenFile, GenMessage, GenService } from '@bufbuild/protobuf/codegenv1';
+import type { Message } from '@bufbuild/protobuf';
+import type { Company, Sector } from './common_pb';
 
 /**
  * Describes the file ntx/v1/company.proto.
@@ -14,16 +14,16 @@ export declare const file_ntx_v1_company: GenFile;
 /**
  * @generated from message ntx.v1.ListCompaniesRequest
  */
-export declare type ListCompaniesRequest = Message<"ntx.v1.ListCompaniesRequest"> & {
-  /**
-   * @generated from field: optional ntx.v1.Sector sector = 1;
-   */
-  sector?: Sector;
+export declare type ListCompaniesRequest = Message<'ntx.v1.ListCompaniesRequest'> & {
+	/**
+	 * @generated from field: optional ntx.v1.Sector sector = 1;
+	 */
+	sector?: Sector;
 
-  /**
-   * @generated from field: optional string query = 2;
-   */
-  query?: string;
+	/**
+	 * @generated from field: optional string query = 2;
+	 */
+	query?: string;
 };
 
 /**
@@ -35,11 +35,11 @@ export declare const ListCompaniesRequestSchema: GenMessage<ListCompaniesRequest
 /**
  * @generated from message ntx.v1.ListCompaniesResponse
  */
-export declare type ListCompaniesResponse = Message<"ntx.v1.ListCompaniesResponse"> & {
-  /**
-   * @generated from field: repeated ntx.v1.Company companies = 1;
-   */
-  companies: Company[];
+export declare type ListCompaniesResponse = Message<'ntx.v1.ListCompaniesResponse'> & {
+	/**
+	 * @generated from field: repeated ntx.v1.Company companies = 1;
+	 */
+	companies: Company[];
 };
 
 /**
@@ -51,11 +51,11 @@ export declare const ListCompaniesResponseSchema: GenMessage<ListCompaniesRespon
 /**
  * @generated from message ntx.v1.GetCompanyRequest
  */
-export declare type GetCompanyRequest = Message<"ntx.v1.GetCompanyRequest"> & {
-  /**
-   * @generated from field: string symbol = 1;
-   */
-  symbol: string;
+export declare type GetCompanyRequest = Message<'ntx.v1.GetCompanyRequest'> & {
+	/**
+	 * @generated from field: string symbol = 1;
+	 */
+	symbol: string;
 };
 
 /**
@@ -67,11 +67,11 @@ export declare const GetCompanyRequestSchema: GenMessage<GetCompanyRequest>;
 /**
  * @generated from message ntx.v1.GetCompanyResponse
  */
-export declare type GetCompanyResponse = Message<"ntx.v1.GetCompanyResponse"> & {
-  /**
-   * @generated from field: ntx.v1.Company company = 1;
-   */
-  company?: Company;
+export declare type GetCompanyResponse = Message<'ntx.v1.GetCompanyResponse'> & {
+	/**
+	 * @generated from field: ntx.v1.Company company = 1;
+	 */
+	company?: Company;
 };
 
 /**
@@ -84,21 +84,20 @@ export declare const GetCompanyResponseSchema: GenMessage<GetCompanyResponse>;
  * @generated from service ntx.v1.CompanyService
  */
 export declare const CompanyService: GenService<{
-  /**
-   * @generated from rpc ntx.v1.CompanyService.ListCompanies
-   */
-  listCompanies: {
-    methodKind: "unary";
-    input: typeof ListCompaniesRequestSchema;
-    output: typeof ListCompaniesResponseSchema;
-  },
-  /**
-   * @generated from rpc ntx.v1.CompanyService.GetCompany
-   */
-  getCompany: {
-    methodKind: "unary";
-    input: typeof GetCompanyRequestSchema;
-    output: typeof GetCompanyResponseSchema;
-  },
+	/**
+	 * @generated from rpc ntx.v1.CompanyService.ListCompanies
+	 */
+	listCompanies: {
+		methodKind: 'unary';
+		input: typeof ListCompaniesRequestSchema;
+		output: typeof ListCompaniesResponseSchema;
+	};
+	/**
+	 * @generated from rpc ntx.v1.CompanyService.GetCompany
+	 */
+	getCompany: {
+		methodKind: 'unary';
+		input: typeof GetCompanyRequestSchema;
+		output: typeof GetCompanyResponseSchema;
+	};
 }>;
-

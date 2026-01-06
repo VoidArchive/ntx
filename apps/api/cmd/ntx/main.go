@@ -45,10 +45,10 @@ func main() {
 		slog.Error("scheduler init failed", "error", err)
 		os.Exit(1)
 	}
-	if err := w.SyncCompanies(context.Background()); err != nil {
-		slog.Error("manual sync failed", "error", err)
-		os.Exit(1)
-	}
+	// if err := w.SyncCompanies(context.Background()); err != nil {
+	// 	slog.Error("manual sync failed", "error", err)
+	// 	os.Exit(1)
+	// }
 	go func() {
 		_ = sched.Start(context.Background())
 	}()

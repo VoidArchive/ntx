@@ -33,5 +33,5 @@ func MigrateDown(db *sql.DB) error {
 	if err := goose.SetDialect("sqlite"); err != nil {
 		return err
 	}
-	return goose.Down(db, "migartions")
+	return goose.Down(db, "migrations")
 }

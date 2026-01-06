@@ -42,8 +42,21 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 **Done when:** Companies list shows real NEPSE companies.
 
 ---
+## Cycle 4: Fundamentals
 
-## Cycle 4: Prices
+**Goal:** Show PE, EPS, book value on company page.
+
+- [ ] DB: Create `fundamentals` table migration
+- [ ] DB: Write queries
+- [ ] Proto: Define `GetFundamentals`
+- [ ] Backend: Implement handler + sync job
+- [ ] Frontend: Display fundamentals on company page
+
+**Done when:** Company page shows key ratios.
+
+---
+
+## Cycle 5: Prices
 
 **Goal:** Show current price on company page.
 
@@ -55,20 +68,6 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 - [ ] Frontend: Display price on company page
 
 **Done when:** Company page shows today's price.
-
----
-
-## Cycle 5: Fundamentals
-
-**Goal:** Show PE, EPS, book value on company page.
-
-- [ ] DB: Create `fundamentals` table migration
-- [ ] DB: Write queries
-- [ ] Proto: Define `GetFundamentals`
-- [ ] Backend: Implement handler + sync job
-- [ ] Frontend: Display fundamentals on company page
-
-**Done when:** Company page shows key ratios.
 
 ---
 

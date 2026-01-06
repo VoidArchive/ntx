@@ -35,6 +35,7 @@ func companyToProto(c sqlc.Company) *ntxv1.Company {
 		Email:          nullString(c.Email),
 		Website:        nullString(c.Website),
 		InstrumentType: instrumentFromDB(c.InstrumentType),
+		Sector:         sectorFromDB(c.Sector),
 	}
 }
 
@@ -77,6 +78,22 @@ var sectorMap = map[ntxv1.Sector]string{
 func sectorEnumToDB(sector ntxv1.Sector) (string, bool) {
 	str, ok := sectorMap[sector]
 	return str, ok
+}
+
+var sectorDBMap map[string]ntxv1.Sector
+
+func init() {
+	sectorDBMap = make(map[string]ntxv1.Sector, len(sectorMap))
+	for k, v := range sectorMap {
+		sectorDBMap[v] = k
+	}
+}
+
+func sectorFromDB(s string) ntxv1.Sector {
+	if sector, ok := sectorDBMap[s]; ok {
+		return sector
+	}
+	return ntxv1.Sector_SECTOR_UNSPECIFIED
 }
 
 var instrumentMap = map[string]ntxv1.InstrumentType{

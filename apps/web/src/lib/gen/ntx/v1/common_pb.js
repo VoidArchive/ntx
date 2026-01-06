@@ -2,54 +2,49 @@
 // @generated from file ntx/v1/common.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import { enumDesc, fileDesc, messageDesc, tsEnum } from "@bufbuild/protobuf/codegenv1";
+import { enumDesc, fileDesc, messageDesc, tsEnum } from '@bufbuild/protobuf/codegenv1';
 
 /**
  * Describes the file ntx/v1/common.proto.
  */
-export const file_ntx_v1_common = /*@__PURE__*/
-  fileDesc("ChNudHgvdjEvY29tbW9uLnByb3RvEgZudHgudjEi6wEKB0NvbXBhbnkSCgoCaWQYASABKAMSDAoEbmFtZRgCIAEoCRIOCgZzeW1ib2wYAyABKAkSJQoGc3RhdHVzGAQgASgOMhUubnR4LnYxLkNvbXBhbnlTdGF0dXMSEgoFZW1haWwYBSABKAlIAIgBARIUCgd3ZWJzaXRlGAYgASgJSAGIAQESHgoGc2VjdG9yGAcgASgOMg4ubnR4LnYxLlNlY3RvchIvCg9pbnN0cnVtZW50X3R5cGUYCCABKA4yFi5udHgudjEuSW5zdHJ1bWVudFR5cGVCCAoGX2VtYWlsQgoKCF93ZWJzaXRlKoUBCg1Db21wYW55U3RhdHVzEh4KGkNPTVBBTllfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGQoVQ09NUEFOWV9TVEFUVVNfQUNUSVZFEAESHAoYQ09NUEFOWV9TVEFUVVNfU1VTUEVOREVEEAISGwoXQ09NUEFOWV9TVEFUVVNfREVMSVNURUQQAyrZAgoGU2VjdG9yEhYKElNFQ1RPUl9VTlNQRUNJRklFRBAAEhoKFlNFQ1RPUl9DT01NRVJDSUFMX0JBTksQARIbChdTRUNUT1JfREVWRUxPUE1FTlRfQkFOSxACEhIKDlNFQ1RPUl9GSU5BTkNFEAMSFwoTU0VDVE9SX01JQ1JPRklOQU5DRRAEEhkKFVNFQ1RPUl9MSUZFX0lOU1VSQU5DRRAFEh0KGVNFQ1RPUl9OT05fTElGRV9JTlNVUkFOQ0UQBhIVChFTRUNUT1JfSFlEUk9QT1dFUhAHEhgKFFNFQ1RPUl9NQU5VRkFDVFVSSU5HEAgSEAoMU0VDVE9SX0hPVEVMEAkSEgoOU0VDVE9SX1RSQURJTkcQChIVChFTRUNUT1JfSU5WRVNUTUVOVBALEhYKElNFQ1RPUl9NVVRVQUxfRlVORBAMEhEKDVNFQ1RPUl9PVEhFUlMQDSqIAQoOSW5zdHJ1bWVudFR5cGUSHwobSU5TVFJVTUVOVF9UWVBFX1VOU1BFQ0lGSUVEEAASGgoWSU5TVFJVTUVOVF9UWVBFX0VRVUlUWRABEhgKFElOU1RSVU1FTlRfVFlQRV9CT05EEAISHwobSU5TVFJVTUVOVF9UWVBFX01VVFVBTF9GVU5EEANCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z");
+export const file_ntx_v1_common =
+	/*@__PURE__*/
+	fileDesc(
+		'ChNudHgvdjEvY29tbW9uLnByb3RvEgZudHgudjEi6wEKB0NvbXBhbnkSCgoCaWQYASABKAMSDAoEbmFtZRgCIAEoCRIOCgZzeW1ib2wYAyABKAkSJQoGc3RhdHVzGAQgASgOMhUubnR4LnYxLkNvbXBhbnlTdGF0dXMSEgoFZW1haWwYBSABKAlIAIgBARIUCgd3ZWJzaXRlGAYgASgJSAGIAQESHgoGc2VjdG9yGAcgASgOMg4ubnR4LnYxLlNlY3RvchIvCg9pbnN0cnVtZW50X3R5cGUYCCABKA4yFi5udHgudjEuSW5zdHJ1bWVudFR5cGVCCAoGX2VtYWlsQgoKCF93ZWJzaXRlKoUBCg1Db21wYW55U3RhdHVzEh4KGkNPTVBBTllfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGQoVQ09NUEFOWV9TVEFUVVNfQUNUSVZFEAESHAoYQ09NUEFOWV9TVEFUVVNfU1VTUEVOREVEEAISGwoXQ09NUEFOWV9TVEFUVVNfREVMSVNURUQQAyrZAgoGU2VjdG9yEhYKElNFQ1RPUl9VTlNQRUNJRklFRBAAEhoKFlNFQ1RPUl9DT01NRVJDSUFMX0JBTksQARIbChdTRUNUT1JfREVWRUxPUE1FTlRfQkFOSxACEhIKDlNFQ1RPUl9GSU5BTkNFEAMSFwoTU0VDVE9SX01JQ1JPRklOQU5DRRAEEhkKFVNFQ1RPUl9MSUZFX0lOU1VSQU5DRRAFEh0KGVNFQ1RPUl9OT05fTElGRV9JTlNVUkFOQ0UQBhIVChFTRUNUT1JfSFlEUk9QT1dFUhAHEhgKFFNFQ1RPUl9NQU5VRkFDVFVSSU5HEAgSEAoMU0VDVE9SX0hPVEVMEAkSEgoOU0VDVE9SX1RSQURJTkcQChIVChFTRUNUT1JfSU5WRVNUTUVOVBALEhYKElNFQ1RPUl9NVVRVQUxfRlVORBAMEhEKDVNFQ1RPUl9PVEhFUlMQDSqIAQoOSW5zdHJ1bWVudFR5cGUSHwobSU5TVFJVTUVOVF9UWVBFX1VOU1BFQ0lGSUVEEAASGgoWSU5TVFJVTUVOVF9UWVBFX0VRVUlUWRABEhgKFElOU1RSVU1FTlRfVFlQRV9CT05EEAISHwobSU5TVFJVTUVOVF9UWVBFX01VVFVBTF9GVU5EEANCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z'
+	);
 
 /**
  * Describes the message ntx.v1.Company.
  * Use `create(CompanySchema)` to create a new message.
  */
-export const CompanySchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_common, 0);
+export const CompanySchema = /*@__PURE__*/ messageDesc(file_ntx_v1_common, 0);
 
 /**
  * Describes the enum ntx.v1.CompanyStatus.
  */
-export const CompanyStatusSchema = /*@__PURE__*/
-  enumDesc(file_ntx_v1_common, 0);
+export const CompanyStatusSchema = /*@__PURE__*/ enumDesc(file_ntx_v1_common, 0);
 
 /**
  * @generated from enum ntx.v1.CompanyStatus
  */
-export const CompanyStatus = /*@__PURE__*/
-  tsEnum(CompanyStatusSchema);
+export const CompanyStatus = /*@__PURE__*/ tsEnum(CompanyStatusSchema);
 
 /**
  * Describes the enum ntx.v1.Sector.
  */
-export const SectorSchema = /*@__PURE__*/
-  enumDesc(file_ntx_v1_common, 1);
+export const SectorSchema = /*@__PURE__*/ enumDesc(file_ntx_v1_common, 1);
 
 /**
  * @generated from enum ntx.v1.Sector
  */
-export const Sector = /*@__PURE__*/
-  tsEnum(SectorSchema);
+export const Sector = /*@__PURE__*/ tsEnum(SectorSchema);
 
 /**
  * Describes the enum ntx.v1.InstrumentType.
  */
-export const InstrumentTypeSchema = /*@__PURE__*/
-  enumDesc(file_ntx_v1_common, 2);
+export const InstrumentTypeSchema = /*@__PURE__*/ enumDesc(file_ntx_v1_common, 2);
 
 /**
  * @generated from enum ntx.v1.InstrumentType
  */
-export const InstrumentType = /*@__PURE__*/
-  tsEnum(InstrumentTypeSchema);
-
+export const InstrumentType = /*@__PURE__*/ tsEnum(InstrumentTypeSchema);

@@ -1,6 +1,6 @@
-import { company } from "$lib/api/client";
+import { company } from '$lib/api/client';
 
 export const load = async () => {
-  const res = await company.listCompanies({});
-  return { companies: res.companies };
+	const res = await company.listCompanies({});
+	return { companies: res.companies };
 };
