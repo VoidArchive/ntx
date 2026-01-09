@@ -4,7 +4,8 @@
  * Common types used across all story generation modules.
  */
 
-import type { Company, Price, Fundamental, SectorStats } from '$lib/gen/ntx/v1/common_pb';
+import type { Company, Price, Fundamental } from '$lib/gen/ntx/v1/common_pb';
+import type { SectorStats } from '$lib/gen/ntx/v1/company_pb';
 
 /**
  * All data needed to generate a company's story

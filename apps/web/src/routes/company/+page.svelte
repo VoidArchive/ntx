@@ -4,11 +4,9 @@
 
 	let { data } = $props();
 
-	// Filter state
 	let selectedSector = $state<number | null>(null);
 	let searchQuery = $state('');
 
-	// Define sectors for filter pills
 	const sectors = [
 		{ value: Sector.COMMERCIAL_BANK, label: 'Banks' },
 		{ value: Sector.DEVELOPMENT_BANK, label: 'Dev Banks' },
@@ -25,22 +23,18 @@
 		{ value: Sector.OTHERS, label: 'Others' }
 	];
 
-	// Filtered companies
 	let filteredCompanies = $derived.by(() => {
 		let companies = data.companies ?? [];
 
-		// Filter by sector
 		if (selectedSector !== null) {
 			companies = companies.filter((c) => c.sector === selectedSector);
 		}
 
-		// Filter by search query
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase();
 			companies = companies.filter(
 				(c) =>
-					c.symbol.toLowerCase().includes(query) ||
-					c.name.toLowerCase().includes(query)
+					c.symbol.toLowerCase().includes(query) || c.name.toLowerCase().includes(query)
 			);
 		}
 
@@ -48,139 +42,85 @@
 	});
 
 	function toggleSector(sector: number) {
-		if (selectedSector === sector) {
-			selectedSector = null;
-		} else {
-			selectedSector = sector;
-		}
+		selectedSector = selectedSector === sector ? null : sector;
 	}
+
+	function clearFilters() {
+		selectedSector = null;
+		searchQuery = '';
+	}
+
+	let hasFilters = $derived(selectedSector !== null || searchQuery.trim().length > 0);
 </script>
 
-<div class="screener">
-	<header class="screener-header">
-		<h1>NEPSE Companies</h1>
-		<p class="subtitle">Find your next investment story</p>
+<div class="min-h-screen">
+	<!-- Header -->
+	<header class="border-b border-border">
+		<div class="mx-auto max-w-3xl px-4 py-8">
+			<h1 class="text-3xl tracking-tight">Companies</h1>
+			<p class="mt-1 text-muted-foreground">
+				{data.companies?.length ?? 0} listed on NEPSE
+			</p>
+		</div>
 	</header>
 
-	<div class="filters">
-		<input
-			type="search"
-			placeholder="Search by name or symbol..."
-			bind:value={searchQuery}
-			class="search-input"
-		/>
+	<!-- Filters -->
+	<div class="sticky top-0 z-40 border-b border-border bg-background">
+		<div class="mx-auto max-w-3xl px-4 py-3">
+			<!-- Search -->
+			<div class="relative">
+				<input
+					type="search"
+					placeholder="Search companies..."
+					bind:value={searchQuery}
+					class="h-9 w-full rounded-md border border-input bg-background px-3 text-sm transition-colors placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+				/>
+			</div>
 
-		<div class="sector-pills">
-			{#each sectors as sector}
-				<button
-					class="pill"
-					class:active={selectedSector === sector.value}
-					onclick={() => toggleSector(sector.value)}
-				>
-					{sector.label}
-				</button>
-			{/each}
+			<!-- Sector filters -->
+			<div class="mt-3 flex flex-wrap gap-1.5">
+				{#each sectors as sector (sector.value)}
+					<button
+						onclick={() => toggleSector(sector.value)}
+						class="rounded-full px-2.5 py-1 text-xs transition-colors
+						{selectedSector === sector.value
+							? 'bg-foreground text-background'
+							: 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'}"
+					>
+						{sector.label}
+					</button>
+				{/each}
+			</div>
+
+			<!-- Results & Clear -->
+			{#if hasFilters}
+				<div class="mt-3 flex items-center justify-between text-sm">
+					<span class="text-muted-foreground">
+						{filteredCompanies.length} result{filteredCompanies.length === 1 ? '' : 's'}
+					</span>
+					<button onclick={clearFilters} class="text-muted-foreground hover:text-foreground">
+						Clear
+					</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 
-	<p class="count">{filteredCompanies.length} companies</p>
-
-	<div class="grid">
-		{#each filteredCompanies as company (company.id)}
-			<CompanyCard {company} />
-		{/each}
-	</div>
-
-	{#if filteredCompanies.length === 0}
-		<p class="no-results">No companies found matching your criteria.</p>
-	{/if}
+	<!-- Company List -->
+	<main class="mx-auto max-w-3xl px-4">
+		{#if filteredCompanies.length === 0}
+			<div class="py-16 text-center">
+				<p class="text-muted-foreground">No companies found</p>
+				<button onclick={clearFilters} class="mt-2 text-sm hover:underline">
+					Clear filters
+				</button>
+			</div>
+		{:else}
+			<div class="divide-y divide-border">
+				{#each filteredCompanies as company (company.id)}
+					<CompanyCard {company} />
+				{/each}
+			</div>
+		{/if}
+	</main>
 </div>
-
-<style>
-	.screener {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 2rem 1.5rem;
-	}
-
-	.screener-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.screener-header h1 {
-		font-size: 2rem;
-		margin: 0;
-	}
-
-	.subtitle {
-		color: var(--muted-foreground);
-		margin: 0.5rem 0 0;
-	}
-
-	.filters {
-		margin-bottom: 1.5rem;
-	}
-
-	.search-input {
-		width: 100%;
-		padding: 0.75rem 1rem;
-		font-size: 1rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-		background: var(--background);
-		color: var(--foreground);
-		margin-bottom: 1rem;
-	}
-
-	.search-input:focus {
-		outline: none;
-		border-color: var(--primary);
-		box-shadow: 0 0 0 2px var(--ring);
-	}
-
-	.sector-pills {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-
-	.pill {
-		padding: 0.375rem 0.75rem;
-		font-size: 0.875rem;
-		border: 1px solid var(--border);
-		border-radius: 999px;
-		background: var(--background);
-		color: var(--foreground);
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.pill:hover {
-		border-color: var(--primary);
-	}
-
-	.pill.active {
-		background: var(--primary);
-		color: var(--primary-foreground);
-		border-color: var(--primary);
-	}
-
-	.count {
-		font-size: 0.875rem;
-		color: var(--muted-foreground);
-		margin-bottom: 1rem;
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 1rem;
-	}
-
-	.no-results {
-		text-align: center;
-		color: var(--muted-foreground);
-		padding: 3rem;
-	}
-</style>

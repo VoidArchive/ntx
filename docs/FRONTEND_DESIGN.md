@@ -334,7 +334,6 @@ type Sector =
   | 'HOTEL'
   | 'TRADING'
   | 'INVESTMENT'
-  | 'MUTUAL_FUND'
   | 'OTHERS'
 ```
 
@@ -506,5 +505,8 @@ The full narrative experience described above.
 
 > We're not building a terminal for traders.
 > We're building a storyteller for people who want to understand a company in 60 seconds.
+> We should use tailwind css and shadcn-svelte when possible. Style block are only allowed if it makes sense. 
+> Design should use #FBF7EB as background and 
 
 Every design decision should answer: **"Does this help tell the story?"**
+

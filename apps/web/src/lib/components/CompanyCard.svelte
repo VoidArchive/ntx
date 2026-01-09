@@ -1,126 +1,90 @@
 <script lang="ts">
-	import type { Company, Price, Fundamental } from '$lib/gen/ntx/v1/common_pb';
+	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
+	import { Sector } from '$lib/gen/ntx/v1/common_pb';
 
 	interface Props {
 		company: Company;
 		price?: Price;
-		fundamentals?: Fundamental;
 		miniStory?: string;
 	}
 
-	let { company, price, miniStory = 'View details →' }: Props = $props();
+	let { company, price, miniStory }: Props = $props();
 
-	function formatNumber(value: number | undefined): string {
-		if (value === undefined) return '-';
+	function formatPrice(value: number | undefined): string {
+		if (value === undefined) return '—';
 		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
 	}
+
+	function formatChange(value: number | undefined): string {
+		if (value === undefined) return '';
+		const prefix = value > 0 ? '+' : '';
+		return `${prefix}${value.toFixed(2)}%`;
+	}
+
+	const sectorLabels: Record<number, string> = {
+		[Sector.COMMERCIAL_BANK]: 'Banking',
+		[Sector.DEVELOPMENT_BANK]: 'Dev Bank',
+		[Sector.FINANCE]: 'Finance',
+		[Sector.MICROFINANCE]: 'Microfinance',
+		[Sector.LIFE_INSURANCE]: 'Life Insurance',
+		[Sector.NON_LIFE_INSURANCE]: 'Non-Life Insurance',
+		[Sector.HYDROPOWER]: 'Hydropower',
+		[Sector.MANUFACTURING]: 'Manufacturing',
+		[Sector.HOTEL]: 'Hotels',
+		[Sector.TRADING]: 'Trading',
+		[Sector.INVESTMENT]: 'Investment',
+		[Sector.MUTUAL_FUND]: 'Mutual Fund',
+		[Sector.OTHERS]: 'Others'
+	};
 </script>
 
-<a href="/company/{company.symbol}" class="card">
-	<div class="card-header">
-		<span class="symbol">{company.symbol}</span>
-		<span class="name">{company.name}</span>
+<a
+	href="/company/{company.symbol}"
+	class="group block border-b border-border py-4 transition-colors hover:bg-muted/30"
+>
+	<div class="flex items-start justify-between gap-4">
+		<!-- Left: Symbol & Name -->
+		<div class="min-w-0 flex-1">
+			<div class="flex items-baseline gap-2">
+				<span class="font-serif text-lg tracking-tight group-hover:underline">
+					{company.symbol}
+				</span>
+				<span class="text-xs text-muted-foreground">
+					{sectorLabels[company.sector ?? Sector.OTHERS] ?? 'Others'}
+				</span>
+			</div>
+			<p class="mt-0.5 truncate text-sm text-muted-foreground">
+				{company.name}
+			</p>
+		</div>
+
+		<!-- Right: Price -->
+		{#if price?.ltp}
+			<div class="text-right">
+				<div class="flex items-baseline gap-2">
+					<span class="text-lg font-medium tabular-nums">
+						{formatPrice(price.ltp)}
+					</span>
+					{#if price.changePercent !== undefined}
+						<span
+							class="text-sm tabular-nums {price.changePercent > 0
+								? 'text-positive'
+								: price.changePercent < 0
+									? 'text-negative'
+									: 'text-muted-foreground'}"
+						>
+							{formatChange(price.changePercent)}
+						</span>
+					{/if}
+				</div>
+			</div>
+		{/if}
 	</div>
 
-	{#if price}
-		<div class="card-price">
-			<span class="ltp">Rs. {formatNumber(price.ltp)}</span>
-			<span
-				class="change"
-				class:positive={price.changePercent && price.changePercent > 0}
-				class:negative={price.changePercent && price.changePercent < 0}
-			>
-				{price.changePercent && price.changePercent > 0 ? '+' : ''}{formatNumber(price.changePercent)}%
-			</span>
-		</div>
+	<!-- Mini story if provided -->
+	{#if miniStory}
+		<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+			{miniStory}
+		</p>
 	{/if}
-
-	<p class="mini-story">{miniStory}</p>
 </a>
-
-<style>
-	.card {
-		display: block;
-		padding: 1.25rem;
-		background: var(--card);
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-		text-decoration: none;
-		color: inherit;
-		transition: border-color 0.15s ease, box-shadow 0.15s ease;
-	}
-
-	.card:hover {
-		border-color: var(--primary);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-	}
-
-	.card-header {
-		margin-bottom: 0.75rem;
-	}
-
-	.symbol {
-		display: block;
-		font-size: 1.125rem;
-		font-weight: 600;
-		margin-bottom: 0.125rem;
-	}
-
-	.name {
-		display: block;
-		font-size: 0.875rem;
-		color: var(--muted-foreground);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.card-price {
-		display: flex;
-		align-items: baseline;
-		gap: 0.5rem;
-		margin-bottom: 0.75rem;
-	}
-
-	.ltp {
-		font-size: 1.25rem;
-		font-weight: 600;
-	}
-
-	.change {
-		font-size: 0.875rem;
-		font-weight: 500;
-		padding: 0.125rem 0.375rem;
-		border-radius: 0.25rem;
-		background: var(--muted);
-	}
-
-	.change.positive {
-		color: #16a34a;
-		background: #dcfce7;
-	}
-
-	.change.negative {
-		color: #dc2626;
-		background: #fee2e2;
-	}
-
-	.mini-story {
-		font-size: 0.875rem;
-		color: var(--muted-foreground);
-		font-style: italic;
-		margin: 0;
-		line-height: 1.4;
-	}
-
-	/* Dark mode */
-	:global(.dark) .change.positive {
-		background: #166534;
-		color: #bbf7d0;
-	}
-
-	:global(.dark) .change.negative {
-		background: #991b1b;
-		color: #fecaca;
-	}
-</style>

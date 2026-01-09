@@ -122,8 +122,6 @@ function generateSummary(
   }
 
   // Add disclaimer
-  summary += ' This is not investment advice.';
-
   return summary;
 }
 

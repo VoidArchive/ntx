@@ -28,7 +28,6 @@ const sectorDisplayNames: Record<number, string> = {
   [Sector.HOTEL]: 'hotels',
   [Sector.TRADING]: 'trading companies',
   [Sector.INVESTMENT]: 'investment companies',
-  [Sector.MUTUAL_FUND]: 'mutual funds',
   [Sector.OTHERS]: 'peers'
 };
 
