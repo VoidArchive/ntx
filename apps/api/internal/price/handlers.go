@@ -68,3 +68,17 @@ func (s *PriceService) GetPriceHistory(
 		Prices: pricesToProto(prices),
 	}), nil
 }
+
+func (s *PriceService) ListLatestPrices(
+	ctx context.Context,
+	req *connect.Request[ntxv1.ListLatestPricesRequest],
+) (*connect.Response[ntxv1.ListLatestPricesResponse], error) {
+	prices, err := s.queries.ListLatestPrices(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&ntxv1.ListLatestPricesResponse{
+		Prices: pricesToProto(prices),
+	}), nil
+}

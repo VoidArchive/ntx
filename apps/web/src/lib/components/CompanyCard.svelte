@@ -1,14 +1,14 @@
 <script lang="ts">
 	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
+	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
 	interface Props {
 		company: Company;
 		price?: Price;
-		miniStory?: string;
 	}
 
-	let { company, price, miniStory }: Props = $props();
+	let { company, price }: Props = $props();
 
 	function formatPrice(value: number | undefined): string {
 		if (value === undefined) return '—';
@@ -40,51 +40,54 @@
 
 <a
 	href="/company/{company.symbol}"
-	class="group block border-b border-border py-4 transition-colors hover:bg-muted/30"
+	class="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-card/50 p-6 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:border-foreground/20 hover:shadow-md"
 >
-	<div class="flex items-start justify-between gap-4">
-		<!-- Left: Symbol & Name -->
-		<div class="min-w-0 flex-1">
-			<div class="flex items-baseline gap-2">
-				<span class="font-serif text-lg tracking-tight group-hover:underline">
-					{company.symbol}
-				</span>
-				<span class="text-xs text-muted-foreground">
-					{sectorLabels[company.sector ?? Sector.OTHERS] ?? 'Others'}
-				</span>
-			</div>
-			<p class="mt-0.5 truncate text-sm text-muted-foreground">
+	<!-- Top: Header -->
+	<div class="flex items-start justify-between">
+		<div>
+			<h3 class="font-serif text-2xl font-medium tracking-tight text-foreground group-hover:underline">
+				{company.symbol}
+			</h3>
+			<p class="mt-1 text-sm text-muted-foreground line-clamp-2" title={company.name}>
 				{company.name}
 			</p>
 		</div>
+		
+		<!-- Sector Badge (Top Right) -->
+		<span class="inline-flex items-center rounded-full border border-border bg-background/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+			{sectorLabels[company.sector ?? Sector.OTHERS] ?? 'Others'}
+		</span>
+	</div>
 
-		<!-- Right: Price -->
+	<!-- Middle: Price (Placeholder or Real) -->
+	<div class="mt-6 flex items-baseline gap-3">
 		{#if price?.ltp}
-			<div class="text-right">
-				<div class="flex items-baseline gap-2">
-					<span class="text-lg font-medium tabular-nums">
-						{formatPrice(price.ltp)}
-					</span>
-					{#if price.changePercent !== undefined}
-						<span
-							class="text-sm tabular-nums {price.changePercent > 0
-								? 'text-positive'
-								: price.changePercent < 0
-									? 'text-negative'
-									: 'text-muted-foreground'}"
-						>
-							{formatChange(price.changePercent)}
-						</span>
-					{/if}
-				</div>
-			</div>
+			<span class="text-3xl font-medium tabular-nums text-foreground">
+				{formatPrice(price.ltp)}
+			</span>
+			{#if price.changePercent !== undefined}
+				<span
+					class="text-sm font-medium tabular-nums {price.changePercent > 0
+						? 'text-positive'
+						: price.changePercent < 0
+							? 'text-negative'
+							: 'text-muted-foreground'}"
+				>
+					{formatChange(price.changePercent)}
+				</span>
+			{/if}
+		{:else}
+			<!-- Empty state / Placeholder for visually balanced card -->
+			<div class="h-9 w-24 animate-pulse rounded bg-muted/20"></div>
 		{/if}
 	</div>
 
-	<!-- Mini story if provided -->
-	{#if miniStory}
-		<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-			{miniStory}
-		</p>
-	{/if}
+	<!-- Bottom: CTA -->
+	<div class="mt-6 flex items-center justify-between border-t border-border/50 pt-4 opacity-60 transition-opacity group-hover:opacity-100">
+		<span class="text-xs font-medium text-muted-foreground">View Analysis</span>
+		<ArrowRight class="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
+	</div>
+	
+	<!-- Hover Gradient Effect -->
+	<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
 </a>

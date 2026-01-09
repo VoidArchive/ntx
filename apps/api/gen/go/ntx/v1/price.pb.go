@@ -205,6 +205,86 @@ func (x *GetPriceHistoryResponse) GetPrices() []*Price {
 	return nil
 }
 
+type ListLatestPricesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLatestPricesRequest) Reset() {
+	*x = ListLatestPricesRequest{}
+	mi := &file_ntx_v1_price_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLatestPricesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLatestPricesRequest) ProtoMessage() {}
+
+func (x *ListLatestPricesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_price_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLatestPricesRequest.ProtoReflect.Descriptor instead.
+func (*ListLatestPricesRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_price_proto_rawDescGZIP(), []int{4}
+}
+
+type ListLatestPricesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Prices        []*Price               `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLatestPricesResponse) Reset() {
+	*x = ListLatestPricesResponse{}
+	mi := &file_ntx_v1_price_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLatestPricesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLatestPricesResponse) ProtoMessage() {}
+
+func (x *ListLatestPricesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_price_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLatestPricesResponse.ProtoReflect.Descriptor instead.
+func (*ListLatestPricesResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_price_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListLatestPricesResponse) GetPrices() []*Price {
+	if x != nil {
+		return x.Prices
+	}
+	return nil
+}
+
 var File_ntx_v1_price_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_price_proto_rawDesc = "" +
@@ -219,10 +299,14 @@ const file_ntx_v1_price_proto_rawDesc = "" +
 	"\x04days\x18\x02 \x01(\x05H\x00R\x04days\x88\x01\x01B\a\n" +
 	"\x05_days\"@\n" +
 	"\x17GetPriceHistoryResponse\x12%\n" +
-	"\x06prices\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06prices2\xa1\x01\n" +
+	"\x06prices\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06prices\"\x19\n" +
+	"\x17ListLatestPricesRequest\"A\n" +
+	"\x18ListLatestPricesResponse\x12%\n" +
+	"\x06prices\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06prices2\xf8\x01\n" +
 	"\fPriceService\x12=\n" +
 	"\bGetPrice\x12\x17.ntx.v1.GetPriceRequest\x1a\x18.ntx.v1.GetPriceResponse\x12R\n" +
-	"\x0fGetPriceHistory\x12\x1e.ntx.v1.GetPriceHistoryRequest\x1a\x1f.ntx.v1.GetPriceHistoryResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x0fGetPriceHistory\x12\x1e.ntx.v1.GetPriceHistoryRequest\x1a\x1f.ntx.v1.GetPriceHistoryResponse\x12U\n" +
+	"\x10ListLatestPrices\x12\x1f.ntx.v1.ListLatestPricesRequest\x1a .ntx.v1.ListLatestPricesResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_price_proto_rawDescOnce sync.Once
@@ -236,26 +320,31 @@ func file_ntx_v1_price_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_price_proto_rawDescData
 }
 
-var file_ntx_v1_price_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_ntx_v1_price_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_ntx_v1_price_proto_goTypes = []any{
-	(*GetPriceRequest)(nil),         // 0: ntx.v1.GetPriceRequest
-	(*GetPriceResponse)(nil),        // 1: ntx.v1.GetPriceResponse
-	(*GetPriceHistoryRequest)(nil),  // 2: ntx.v1.GetPriceHistoryRequest
-	(*GetPriceHistoryResponse)(nil), // 3: ntx.v1.GetPriceHistoryResponse
-	(*Price)(nil),                   // 4: ntx.v1.Price
+	(*GetPriceRequest)(nil),          // 0: ntx.v1.GetPriceRequest
+	(*GetPriceResponse)(nil),         // 1: ntx.v1.GetPriceResponse
+	(*GetPriceHistoryRequest)(nil),   // 2: ntx.v1.GetPriceHistoryRequest
+	(*GetPriceHistoryResponse)(nil),  // 3: ntx.v1.GetPriceHistoryResponse
+	(*ListLatestPricesRequest)(nil),  // 4: ntx.v1.ListLatestPricesRequest
+	(*ListLatestPricesResponse)(nil), // 5: ntx.v1.ListLatestPricesResponse
+	(*Price)(nil),                    // 6: ntx.v1.Price
 }
 var file_ntx_v1_price_proto_depIdxs = []int32{
-	4, // 0: ntx.v1.GetPriceResponse.price:type_name -> ntx.v1.Price
-	4, // 1: ntx.v1.GetPriceHistoryResponse.prices:type_name -> ntx.v1.Price
-	0, // 2: ntx.v1.PriceService.GetPrice:input_type -> ntx.v1.GetPriceRequest
-	2, // 3: ntx.v1.PriceService.GetPriceHistory:input_type -> ntx.v1.GetPriceHistoryRequest
-	1, // 4: ntx.v1.PriceService.GetPrice:output_type -> ntx.v1.GetPriceResponse
-	3, // 5: ntx.v1.PriceService.GetPriceHistory:output_type -> ntx.v1.GetPriceHistoryResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 0: ntx.v1.GetPriceResponse.price:type_name -> ntx.v1.Price
+	6, // 1: ntx.v1.GetPriceHistoryResponse.prices:type_name -> ntx.v1.Price
+	6, // 2: ntx.v1.ListLatestPricesResponse.prices:type_name -> ntx.v1.Price
+	0, // 3: ntx.v1.PriceService.GetPrice:input_type -> ntx.v1.GetPriceRequest
+	2, // 4: ntx.v1.PriceService.GetPriceHistory:input_type -> ntx.v1.GetPriceHistoryRequest
+	4, // 5: ntx.v1.PriceService.ListLatestPrices:input_type -> ntx.v1.ListLatestPricesRequest
+	1, // 6: ntx.v1.PriceService.GetPrice:output_type -> ntx.v1.GetPriceResponse
+	3, // 7: ntx.v1.PriceService.GetPriceHistory:output_type -> ntx.v1.GetPriceHistoryResponse
+	5, // 8: ntx.v1.PriceService.ListLatestPrices:output_type -> ntx.v1.ListLatestPricesResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_price_proto_init() }
@@ -271,7 +360,7 @@ func file_ntx_v1_price_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_price_proto_rawDesc), len(file_ntx_v1_price_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

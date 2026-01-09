@@ -92,7 +92,11 @@ type HistoricalPrice struct {
 
 // PriceHistory returns historical OHLCV data for a security within a date range.
 // Date format: "YYYY-MM-DD"
-func (c *Client) PriceHistory(ctx context.Context, securityID int32, startDate, endDate string) ([]HistoricalPrice, error) {
+func (c *Client) PriceHistory(
+	ctx context.Context,
+	securityID int32,
+	startDate, endDate string,
+) ([]HistoricalPrice, error) {
 	history, err := c.api.PriceHistory(ctx, securityID, startDate, endDate)
 	if err != nil {
 		return nil, fmt.Errorf("fetch price history: %w", err)

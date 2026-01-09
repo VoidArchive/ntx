@@ -107,7 +107,12 @@ func syncFundamentalsConcurrent(ctx context.Context, queries *sqlc.Queries, clie
 	return nil
 }
 
-func syncCompanyFundamentals(ctx context.Context, queries *sqlc.Queries, client *nepse.Client, company sqlc.Company) error {
+func syncCompanyFundamentals(
+	ctx context.Context,
+	queries *sqlc.Queries,
+	client *nepse.Client,
+	company sqlc.Company,
+) error {
 	fundamentals, err := client.Fundamentals(ctx, int32(company.ID))
 	if err != nil {
 		return err
@@ -168,7 +173,13 @@ func syncPriceHistoryConcurrent(ctx context.Context, queries *sqlc.Queries, clie
 	return nil
 }
 
-func syncCompanyPriceHistory(ctx context.Context, queries *sqlc.Queries, client *nepse.Client, company sqlc.Company, startDate, endDate string) error {
+func syncCompanyPriceHistory(
+	ctx context.Context,
+	queries *sqlc.Queries,
+	client *nepse.Client,
+	company sqlc.Company,
+	startDate, endDate string,
+) error {
 	history, err := client.PriceHistory(ctx, int32(company.ID), startDate, endDate)
 	if err != nil {
 		return err

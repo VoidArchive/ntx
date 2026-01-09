@@ -72,7 +72,7 @@ var sectorMap = map[ntxv1.Sector]string{
 	ntxv1.Sector_SECTOR_NON_LIFE_INSURANCE: "Non Life Insurance",
 	ntxv1.Sector_SECTOR_TRADING:            "Trading",
 	ntxv1.Sector_SECTOR_MUTUAL_FUND:        "Mutual Funds",
-	ntxv1.Sector_SECTOR_OTHERS:             "Other",
+	ntxv1.Sector_SECTOR_OTHERS:             "Others",
 }
 
 func sectorEnumToDB(sector ntxv1.Sector) (string, bool) {
@@ -87,6 +87,12 @@ func init() {
 	for k, v := range sectorMap {
 		sectorDBMap[v] = k
 	}
+
+	// Add aliases for data mismatches
+	sectorDBMap["Hydro Power"] = ntxv1.Sector_SECTOR_HYDROPOWER
+	sectorDBMap["Hotels And Tourism"] = ntxv1.Sector_SECTOR_HOTEL
+	sectorDBMap["Manufacturing And Processing"] = ntxv1.Sector_SECTOR_MANUFACTURING
+	sectorDBMap["Tradings"] = ntxv1.Sector_SECTOR_TRADING
 }
 
 func sectorFromDB(s string) ntxv1.Sector {

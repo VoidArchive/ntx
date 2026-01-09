@@ -33,3 +33,13 @@ SELECT * FROM prices
 WHERE company_id = ?
 ORDER BY business_date DESC
 LIMIT ? OFFSET ?;
+
+-- name: ListLatestPrices :many
+WITH LatestDates AS (
+    SELECT company_id, MAX(business_date) as max_date
+    FROM prices
+    GROUP BY company_id
+)
+SELECT p.*
+FROM prices p
+JOIN LatestDates ld ON p.company_id = ld.company_id AND p.business_date = ld.max_date;

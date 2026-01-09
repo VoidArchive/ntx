@@ -38,12 +38,16 @@ const (
 	// PriceServiceGetPriceHistoryProcedure is the fully-qualified name of the PriceService's
 	// GetPriceHistory RPC.
 	PriceServiceGetPriceHistoryProcedure = "/ntx.v1.PriceService/GetPriceHistory"
+	// PriceServiceListLatestPricesProcedure is the fully-qualified name of the PriceService's
+	// ListLatestPrices RPC.
+	PriceServiceListLatestPricesProcedure = "/ntx.v1.PriceService/ListLatestPrices"
 )
 
 // PriceServiceClient is a client for the ntx.v1.PriceService service.
 type PriceServiceClient interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
 	GetPriceHistory(context.Context, *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error)
+	ListLatestPrices(context.Context, *connect.Request[v1.ListLatestPricesRequest]) (*connect.Response[v1.ListLatestPricesResponse], error)
 }
 
 // NewPriceServiceClient constructs a client for the ntx.v1.PriceService service. By default, it
@@ -69,13 +73,20 @@ func NewPriceServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(priceServiceMethods.ByName("GetPriceHistory")),
 			connect.WithClientOptions(opts...),
 		),
+		listLatestPrices: connect.NewClient[v1.ListLatestPricesRequest, v1.ListLatestPricesResponse](
+			httpClient,
+			baseURL+PriceServiceListLatestPricesProcedure,
+			connect.WithSchema(priceServiceMethods.ByName("ListLatestPrices")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // priceServiceClient implements PriceServiceClient.
 type priceServiceClient struct {
-	getPrice        *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
-	getPriceHistory *connect.Client[v1.GetPriceHistoryRequest, v1.GetPriceHistoryResponse]
+	getPrice         *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
+	getPriceHistory  *connect.Client[v1.GetPriceHistoryRequest, v1.GetPriceHistoryResponse]
+	listLatestPrices *connect.Client[v1.ListLatestPricesRequest, v1.ListLatestPricesResponse]
 }
 
 // GetPrice calls ntx.v1.PriceService.GetPrice.
@@ -88,10 +99,16 @@ func (c *priceServiceClient) GetPriceHistory(ctx context.Context, req *connect.R
 	return c.getPriceHistory.CallUnary(ctx, req)
 }
 
+// ListLatestPrices calls ntx.v1.PriceService.ListLatestPrices.
+func (c *priceServiceClient) ListLatestPrices(ctx context.Context, req *connect.Request[v1.ListLatestPricesRequest]) (*connect.Response[v1.ListLatestPricesResponse], error) {
+	return c.listLatestPrices.CallUnary(ctx, req)
+}
+
 // PriceServiceHandler is an implementation of the ntx.v1.PriceService service.
 type PriceServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
 	GetPriceHistory(context.Context, *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error)
+	ListLatestPrices(context.Context, *connect.Request[v1.ListLatestPricesRequest]) (*connect.Response[v1.ListLatestPricesResponse], error)
 }
 
 // NewPriceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -113,12 +130,20 @@ func NewPriceServiceHandler(svc PriceServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(priceServiceMethods.ByName("GetPriceHistory")),
 		connect.WithHandlerOptions(opts...),
 	)
+	priceServiceListLatestPricesHandler := connect.NewUnaryHandler(
+		PriceServiceListLatestPricesProcedure,
+		svc.ListLatestPrices,
+		connect.WithSchema(priceServiceMethods.ByName("ListLatestPrices")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.PriceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PriceServiceGetPriceProcedure:
 			priceServiceGetPriceHandler.ServeHTTP(w, r)
 		case PriceServiceGetPriceHistoryProcedure:
 			priceServiceGetPriceHistoryHandler.ServeHTTP(w, r)
+		case PriceServiceListLatestPricesProcedure:
+			priceServiceListLatestPricesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -134,4 +159,8 @@ func (UnimplementedPriceServiceHandler) GetPrice(context.Context, *connect.Reque
 
 func (UnimplementedPriceServiceHandler) GetPriceHistory(context.Context, *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.GetPriceHistory is not implemented"))
+}
+
+func (UnimplementedPriceServiceHandler) ListLatestPrices(context.Context, *connect.Request[v1.ListLatestPricesRequest]) (*connect.Response[v1.ListLatestPricesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.ListLatestPrices is not implemented"))
 }

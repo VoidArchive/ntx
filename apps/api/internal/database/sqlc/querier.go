@@ -20,6 +20,7 @@ type Querier interface {
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]Company, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
+	ListLatestPrices(ctx context.Context) ([]Price, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error

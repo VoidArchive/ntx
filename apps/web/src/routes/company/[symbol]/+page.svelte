@@ -172,82 +172,43 @@
 		const sector = sectorNames[company.sector ?? Sector.OTHERS];
 		const today = priceData.businessDate ?? new Date().toISOString().split('T')[0];
 
-		let prompt = `You are a financial research analyst. Analyze this NEPSE (Nepal Stock Exchange) company and provide investment research and advice.
+		let prompt = `Act as a Senior Financial Analyst specializing in the Nepalese Stock Market (NEPSE).
+Your goal is to perform a deep-dive investment analysis of: ${company.name} (${company.symbol}).
 
-## Company Information
-- **Name:** ${company.name}
-- **Symbol:** ${company.symbol}
-- **Sector:** ${sector}
-- **Status:** ${company.status === CompanyStatus.ACTIVE ? 'Active' : 'Inactive'}
+## 1. Provided Data Snapshot (As of ${today})
+- **Price**: Rs. ${fmt(priceData.ltp)}
+- **Sector**: ${sector}
+- **Sector Avg P/E**: ${fmt(sectorStats?.avgPeRatio ?? 0)}
+- **Fundamentals**:
+  - EPS: ${fmt(fundamentals?.eps)}
+  - P/E Ratio: ${fmt(fundamentals?.peRatio)}
+  - Book Value: ${fmt(fundamentals?.bookValue)}
+  - Paid-up Capital: ${fmt(fundamentals?.paidUpCapital)}
 
-## Current Price Data (as of ${today})
-- **Last Traded Price:** Rs. ${fmt(priceData.ltp)}
-- **Daily Change:** ${priceData.change && priceData.change > 0 ? '+' : ''}${fmt(priceData.change)} (${priceData.changePercent && priceData.changePercent > 0 ? '+' : ''}${fmt(priceData.changePercent)}%)
-- **Open:** Rs. ${fmt(priceData.open)}
-- **High:** Rs. ${fmt(priceData.high)}
-- **Low:** Rs. ${fmt(priceData.low)}
-- **Previous Close:** Rs. ${fmt(priceData.previousClose)}
-- **Volume:** ${fmtLarge(Number(priceData.volume ?? 0))}`;
+## 2. Research Tasks (MANDATORY WEB SEARCH)
+Please SEARCH THE WEB (using browsing capabilities) for the following real-time information:
+1.  **Recent News**: Look for the latest news on "sharesansar", "merolagani", or "bizmandu" regarding ${company.symbol} in the last 6 months.
+2.  **Regulatory Impacts**: Are there any recent NRB directives, BFI regulations, or insurance board policies affecting the ${sector} sector?
+3.  **Corporate Actions**: Check for recent AGM announcements, dividend declarations, or right share issues.
 
-		if (rangeInfo) {
-			prompt += `
+## 3. Analysis Requirements
+Combine the provided data with your web research to answer:
+- **Valuation**: Is ${company.symbol} undervalued compared to its peers in the ${sector} sector? (Compare P/E and P/B).
+- **Growth Outlook**: Based on the latest quarterly reports you find, is the company growing its core business?
+- **Risk Assessment**: What are the specific regulatory or macro risks for this company right now?
 
-## 52-Week Range
-- **52W High:** Rs. ${fmt(rangeInfo.high52w)}
-- **52W Low:** Rs. ${fmt(rangeInfo.low52w)}
-- **Position in Range:** ${rangeInfo.position.toFixed(1)}%
-- **From 52W High:** -${rangeInfo.fromHigh.toFixed(1)}%
-- **From 52W Low:** +${rangeInfo.fromLow.toFixed(1)}%`;
-		}
+## 4. Investment Verdict
+Conclude with a structured verdict:
+- **Recommendation**: [Buy / Hold / Sell]
+- **Time Horizon**: [Short-term / Long-term]
+- **Key Catalyst**: [One specific event to watch]
 
-		if (priceStats) {
-			prompt += `
+Please be objective, critical, and data-driven.`;
 
-## Recent Performance
-- **1 Week Return:** ${priceStats.change1W >= 0 ? '+' : ''}${priceStats.change1W.toFixed(2)}%
-- **1 Month Return:** ${priceStats.change1M >= 0 ? '+' : ''}${priceStats.change1M.toFixed(2)}%
-- **3 Month Return:** ${priceStats.change3M >= 0 ? '+' : ''}${priceStats.change3M.toFixed(2)}%
-- **Average Daily Volume (1Y):** ${fmtLarge(priceStats.avgVolume)}
-- **Volume vs Average:** ${priceStats.volumeRatio.toFixed(2)}x`;
-		}
+		return prompt;
+	});
 
-		if (fundamentals) {
-			prompt += `
 
-## Fundamentals
-- **EPS (Earnings Per Share):** Rs. ${fmt(fundamentals.eps)}
-- **P/E Ratio:** ${fmt(fundamentals.peRatio)}
-- **Book Value:** Rs. ${fmt(fundamentals.bookValue)}
-- **P/B Ratio:** ${fundamentals.bookValue && fundamentals.bookValue > 0 ? ((priceData.ltp ?? 0) / fundamentals.bookValue).toFixed(2) : 'N/A'}`;
-
-			if (sectorStats) {
-				prompt += `
-
-## Sector Comparison (${sector})
-- **Sector Avg EPS:** Rs. ${fmt(sectorStats.avgEps)}
-- **Sector Avg P/E:** ${fmt(sectorStats.avgPeRatio)}
-- **Sector Avg Book Value:** Rs. ${fmt(sectorStats.avgBookValue)}`;
-			}
-		}
-
-		prompt += `
-
----
-
-## Your Task
-Please provide a comprehensive analysis including:
-
-1. **Valuation Assessment:** Is this stock overvalued, undervalued, or fairly valued based on the fundamentals and sector comparisons?
-
-2. **Technical Position:** Analyze the stock's position in its 52-week range and recent momentum.
-
-3. **Key Strengths & Risks:** What are the main positives and negatives?
-
-4. **Investment Recommendation:** Based on the data, what would you advise? (Buy/Hold/Sell and why)
-
-5. **Research Suggestions:** What additional information should an investor research before making a decision?
-
-Note: This is for educational and research purposes. Investment decisions should be made after thorough personal due diligence.`;
 
 		return prompt;
 	});

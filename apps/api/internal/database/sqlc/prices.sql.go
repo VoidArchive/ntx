@@ -73,6 +73,56 @@ func (q *Queries) GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) 
 	return i, err
 }
 
+const listLatestPrices = `-- name: ListLatestPrices :many
+WITH LatestDates AS (
+    SELECT company_id, MAX(business_date) as max_date
+    FROM prices
+    GROUP BY company_id
+)
+SELECT p.id, p.company_id, p.business_date, p.open_price, p.high_price, p.low_price, p.close_price, p.last_traded_price, p.previous_close, p.change_amount, p.change_percent, p.volume, p.turnover, p.trades, p.created_at
+FROM prices p
+JOIN LatestDates ld ON p.company_id = ld.company_id AND p.business_date = ld.max_date
+`
+
+func (q *Queries) ListLatestPrices(ctx context.Context) ([]Price, error) {
+	rows, err := q.db.QueryContext(ctx, listLatestPrices)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Price
+	for rows.Next() {
+		var i Price
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.BusinessDate,
+			&i.OpenPrice,
+			&i.HighPrice,
+			&i.LowPrice,
+			&i.ClosePrice,
+			&i.LastTradedPrice,
+			&i.PreviousClose,
+			&i.ChangeAmount,
+			&i.ChangePercent,
+			&i.Volume,
+			&i.Turnover,
+			&i.Trades,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPricesByCompany = `-- name: ListPricesByCompany :many
 SELECT id, company_id, business_date, open_price, high_price, low_price, close_price, last_traded_price, previous_close, change_amount, change_percent, volume, turnover, trades, created_at FROM prices
 WHERE company_id = ?

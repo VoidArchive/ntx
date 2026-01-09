@@ -9,21 +9,23 @@ option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 service PriceService {
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
   rpc GetPriceHistory(GetPriceHistoryRequest) returns (GetPriceHistoryResponse);
+  rpc ListLatestPrices(ListLatestPricesRequest)
+      returns (ListLatestPricesResponse);
 }
 
-message GetPriceRequest {
-  string symbol = 1;
-}
+message GetPriceRequest { string symbol = 1; }
 
-message GetPriceResponse {
-  Price price = 1;
-}
+message GetPriceResponse { Price price = 1; }
 
 message GetPriceHistoryRequest {
   string symbol = 1;
   optional int32 days = 2; // defaults to 365
 }
 
-message GetPriceHistoryResponse {
-  repeated Price prices = 1;
+message GetPriceHistoryResponse { repeated Price prices = 1; }
+
+message ListLatestPricesRequest {
+  // Empty for now, but good to have for future filters
 }
+
+message ListLatestPricesResponse { repeated Price prices = 1; }

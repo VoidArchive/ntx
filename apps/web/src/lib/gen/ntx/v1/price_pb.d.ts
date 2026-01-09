@@ -83,6 +83,36 @@ export declare type GetPriceHistoryResponse = Message<"ntx.v1.GetPriceHistoryRes
 export declare const GetPriceHistoryResponseSchema: GenMessage<GetPriceHistoryResponse>;
 
 /**
+ * Empty for now, but good to have for future filters
+ *
+ * @generated from message ntx.v1.ListLatestPricesRequest
+ */
+export declare type ListLatestPricesRequest = Message<"ntx.v1.ListLatestPricesRequest"> & {
+};
+
+/**
+ * Describes the message ntx.v1.ListLatestPricesRequest.
+ * Use `create(ListLatestPricesRequestSchema)` to create a new message.
+ */
+export declare const ListLatestPricesRequestSchema: GenMessage<ListLatestPricesRequest>;
+
+/**
+ * @generated from message ntx.v1.ListLatestPricesResponse
+ */
+export declare type ListLatestPricesResponse = Message<"ntx.v1.ListLatestPricesResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.Price prices = 1;
+   */
+  prices: Price[];
+};
+
+/**
+ * Describes the message ntx.v1.ListLatestPricesResponse.
+ * Use `create(ListLatestPricesResponseSchema)` to create a new message.
+ */
+export declare const ListLatestPricesResponseSchema: GenMessage<ListLatestPricesResponse>;
+
+/**
  * @generated from service ntx.v1.PriceService
  */
 export declare const PriceService: GenService<{
@@ -101,6 +131,14 @@ export declare const PriceService: GenService<{
     methodKind: "unary";
     input: typeof GetPriceHistoryRequestSchema;
     output: typeof GetPriceHistoryResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PriceService.ListLatestPrices
+   */
+  listLatestPrices: {
+    methodKind: "unary";
+    input: typeof ListLatestPricesRequestSchema;
+    output: typeof ListLatestPricesResponseSchema;
   },
 }>;
 

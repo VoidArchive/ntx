@@ -9,7 +9,7 @@ import { file_ntx_v1_common } from "./common_pb";
  * Describes the file ntx/v1/price.proto.
  */
 export const file_ntx_v1_price = /*@__PURE__*/
-  fileDesc("ChJudHgvdjEvcHJpY2UucHJvdG8SBm50eC52MSIhCg9HZXRQcmljZVJlcXVlc3QSDgoGc3ltYm9sGAEgASgJIjAKEEdldFByaWNlUmVzcG9uc2USHAoFcHJpY2UYASABKAsyDS5udHgudjEuUHJpY2UiRAoWR2V0UHJpY2VIaXN0b3J5UmVxdWVzdBIOCgZzeW1ib2wYASABKAkSEQoEZGF5cxgCIAEoBUgAiAEBQgcKBV9kYXlzIjgKF0dldFByaWNlSGlzdG9yeVJlc3BvbnNlEh0KBnByaWNlcxgBIAMoCzINLm50eC52MS5QcmljZTKhAQoMUHJpY2VTZXJ2aWNlEj0KCEdldFByaWNlEhcubnR4LnYxLkdldFByaWNlUmVxdWVzdBoYLm50eC52MS5HZXRQcmljZVJlc3BvbnNlElIKD0dldFByaWNlSGlzdG9yeRIeLm50eC52MS5HZXRQcmljZUhpc3RvcnlSZXF1ZXN0Gh8ubnR4LnYxLkdldFByaWNlSGlzdG9yeVJlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw", [file_ntx_v1_common]);
+  fileDesc("ChJudHgvdjEvcHJpY2UucHJvdG8SBm50eC52MSIhCg9HZXRQcmljZVJlcXVlc3QSDgoGc3ltYm9sGAEgASgJIjAKEEdldFByaWNlUmVzcG9uc2USHAoFcHJpY2UYASABKAsyDS5udHgudjEuUHJpY2UiRAoWR2V0UHJpY2VIaXN0b3J5UmVxdWVzdBIOCgZzeW1ib2wYASABKAkSEQoEZGF5cxgCIAEoBUgAiAEBQgcKBV9kYXlzIjgKF0dldFByaWNlSGlzdG9yeVJlc3BvbnNlEh0KBnByaWNlcxgBIAMoCzINLm50eC52MS5QcmljZSIZChdMaXN0TGF0ZXN0UHJpY2VzUmVxdWVzdCI5ChhMaXN0TGF0ZXN0UHJpY2VzUmVzcG9uc2USHQoGcHJpY2VzGAEgAygLMg0ubnR4LnYxLlByaWNlMvgBCgxQcmljZVNlcnZpY2USPQoIR2V0UHJpY2USFy5udHgudjEuR2V0UHJpY2VSZXF1ZXN0GhgubnR4LnYxLkdldFByaWNlUmVzcG9uc2USUgoPR2V0UHJpY2VIaXN0b3J5Eh4ubnR4LnYxLkdldFByaWNlSGlzdG9yeVJlcXVlc3QaHy5udHgudjEuR2V0UHJpY2VIaXN0b3J5UmVzcG9uc2USVQoQTGlzdExhdGVzdFByaWNlcxIfLm50eC52MS5MaXN0TGF0ZXN0UHJpY2VzUmVxdWVzdBogLm50eC52MS5MaXN0TGF0ZXN0UHJpY2VzUmVzcG9uc2VCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z", [file_ntx_v1_common]);
 
 /**
  * Describes the message ntx.v1.GetPriceRequest.
@@ -38,6 +38,20 @@ export const GetPriceHistoryRequestSchema = /*@__PURE__*/
  */
 export const GetPriceHistoryResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_price, 3);
+
+/**
+ * Describes the message ntx.v1.ListLatestPricesRequest.
+ * Use `create(ListLatestPricesRequestSchema)` to create a new message.
+ */
+export const ListLatestPricesRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_price, 4);
+
+/**
+ * Describes the message ntx.v1.ListLatestPricesResponse.
+ * Use `create(ListLatestPricesResponseSchema)` to create a new message.
+ */
+export const ListLatestPricesResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_price, 5);
 
 /**
  * @generated from service ntx.v1.PriceService

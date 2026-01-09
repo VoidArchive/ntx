@@ -1,6 +1,6 @@
-import { company } from '$lib/api/client';
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
-export const load = async () => {
-	const res = await company.listCompanies({ limit: 500 });
-	return { companies: res.companies };
+export const load: PageServerLoad = async () => {
+	redirect(301, '/');
 };
