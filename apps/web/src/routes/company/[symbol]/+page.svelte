@@ -208,11 +208,6 @@ Please be objective, critical, and data-driven.`;
 		return prompt;
 	});
 
-
-
-		return prompt;
-	});
-
 	async function copyPrompt() {
 		if (!aiPrompt) return;
 		await navigator.clipboard.writeText(aiPrompt);

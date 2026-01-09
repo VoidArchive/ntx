@@ -1,0 +1,9 @@
+[build]
+dockerfilePath = "apps/api/Dockerfile"
+
+[deploy]
+startCommand = "/bin/ntx serve"
+restartPolicyType = "ON_FAILURE"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+numReplicas = 1
