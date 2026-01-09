@@ -95,9 +95,9 @@
 		// Calculate recent performance
 		const sorted = [...priceHistory].sort((a, b) => b.businessDate.localeCompare(a.businessDate));
 		const current = priceData?.ltp ?? 0;
-		const week1 = sorted[5]?.ltp ?? current;
-		const month1 = sorted[20]?.ltp ?? current;
-		const month3 = sorted[60]?.ltp ?? current;
+		const week1 = sorted[5]?.ltp ?? sorted[5]?.close ?? current;
+		const month1 = sorted[20]?.ltp ?? sorted[20]?.close ?? current;
+		const month3 = sorted[60]?.ltp ?? sorted[60]?.close ?? current;
 
 		return {
 			avgVolume,
