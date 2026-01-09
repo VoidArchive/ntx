@@ -21,3 +21,35 @@ type Company struct {
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 }
+
+type Fundamental struct {
+	ID            int64           `json:"id"`
+	CompanyID     int64           `json:"company_id"`
+	FiscalYear    string          `json:"fiscal_year"`
+	Quarter       sql.NullString  `json:"quarter"`
+	Eps           sql.NullFloat64 `json:"eps"`
+	PeRatio       sql.NullFloat64 `json:"pe_ratio"`
+	BookValue     sql.NullFloat64 `json:"book_value"`
+	PaidUpCapital sql.NullFloat64 `json:"paid_up_capital"`
+	ProfitAmount  sql.NullFloat64 `json:"profit_amount"`
+	CreatedAt     time.Time       `json:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at"`
+}
+
+type Price struct {
+	ID              int64           `json:"id"`
+	CompanyID       int64           `json:"company_id"`
+	BusinessDate    string          `json:"business_date"`
+	OpenPrice       sql.NullFloat64 `json:"open_price"`
+	HighPrice       sql.NullFloat64 `json:"high_price"`
+	LowPrice        sql.NullFloat64 `json:"low_price"`
+	ClosePrice      sql.NullFloat64 `json:"close_price"`
+	LastTradedPrice sql.NullFloat64 `json:"last_traded_price"`
+	PreviousClose   sql.NullFloat64 `json:"previous_close"`
+	ChangeAmount    sql.NullFloat64 `json:"change_amount"`
+	ChangePercent   sql.NullFloat64 `json:"change_percent"`
+	Volume          sql.NullInt64   `json:"volume"`
+	Turnover        sql.NullFloat64 `json:"turnover"`
+	Trades          sql.NullInt64   `json:"trades"`
+	CreatedAt       time.Time       `json:"created_at"`
+}

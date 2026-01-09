@@ -48,3 +48,32 @@ message Company {
   InstrumentType instrument_type = 8;
 }
 
+message Fundamental {
+  int64 id = 1;
+  int64 company_id = 2;
+  string fiscal_year = 3;
+  optional string quarter = 4;
+  optional double eps = 5;
+  optional double pe_ratio = 6;
+  optional double book_value = 7;
+  optional double paid_up_capital = 8;
+  optional double profit_amount = 9;
+}
+
+message Price {
+  int64 id = 1;
+  int64 company_id = 2;
+  string business_date = 3;
+  optional double open = 4;
+  optional double high = 5;
+  optional double low = 6;
+  optional double close = 7;
+  optional double ltp = 8;
+  optional double previous_close = 9;
+  optional double change = 10;
+  optional double change_percent = 11;
+  optional int64 volume = 12;
+  optional double turnover = 13;
+  optional int32 trades = 14;
+}
+

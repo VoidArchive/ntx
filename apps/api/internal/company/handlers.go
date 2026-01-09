@@ -14,6 +14,10 @@ func (s *CompanyService) GetCompany(
 	ctx context.Context,
 	req *connect.Request[ntxv1.GetCompanyRequest],
 ) (*connect.Response[ntxv1.GetCompanyResponse], error) {
+	if req.Msg.Symbol == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("symbol is required"))
+	}
+
 	company, err := s.queries.GetCompany(ctx, req.Msg.Symbol)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, err)
@@ -31,9 +35,30 @@ func (s *CompanyService) ListCompanies(
 	query := req.Msg.GetQuery()
 
 	const (
-		limit  int64 = 100
-		offset int64 = 0
+		defaultLimit int64 = 100
+		maxLimit     int64 = 500
+		maxQueryLen  int   = 100
 	)
+
+	if len(query) > maxQueryLen {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("query too long"))
+	}
+
+	limit := defaultLimit
+	if req.Msg.Limit != nil {
+		if *req.Msg.Limit <= 0 {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("limit must be positive"))
+		}
+		limit = min(int64(*req.Msg.Limit), maxLimit)
+	}
+
+	var offset int64
+	if req.Msg.Offset != nil {
+		if *req.Msg.Offset < 0 {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("offset must be non-negative"))
+		}
+		offset = int64(*req.Msg.Offset)
+	}
 
 	pattern := "%"
 	if query != "" {
@@ -68,6 +93,7 @@ func (s *CompanyService) ListCompanies(
 			Symbol: pattern,
 			Name:   pattern,
 			Limit:  limit,
+			Offset: offset,
 		})
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
@@ -88,5 +114,33 @@ func (s *CompanyService) ListCompanies(
 
 	return connect.NewResponse(&ntxv1.ListCompaniesResponse{
 		Companies: companiesToProto(companies),
+	}), nil
+}
+
+func (s *CompanyService) GetFundamentals(
+	ctx context.Context,
+	req *connect.Request[ntxv1.GetFundamentalsRequest],
+) (*connect.Response[ntxv1.GetFundamentalsResponse], error) {
+	if req.Msg.Symbol == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("symbol is required"))
+	}
+
+	company, err := s.queries.GetCompany(ctx, req.Msg.Symbol)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("company not found"))
+	}
+
+	fundamentals, err := s.queries.ListFundamentalsByCompany(ctx, company.ID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	if len(fundamentals) == 0 {
+		return connect.NewResponse(&ntxv1.GetFundamentalsResponse{}), nil
+	}
+
+	return connect.NewResponse(&ntxv1.GetFundamentalsResponse{
+		Latest:  fundamentalToProto(fundamentals[0]),
+		History: fundamentalsToProto(fundamentals),
 	}), nil
 }

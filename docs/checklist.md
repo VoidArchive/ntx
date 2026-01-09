@@ -46,11 +46,11 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Show PE, EPS, book value on company page.
 
-- [ ] DB: Create `fundamentals` table migration
-- [ ] DB: Write queries
-- [ ] Proto: Define `GetFundamentals`
-- [ ] Backend: Implement handler + sync job
-- [ ] Frontend: Display fundamentals on company page
+- [x] DB: Create `fundamentals` table migration
+- [x] DB: Write queries
+- [x] Proto: Define `GetFundamentals`
+- [x] Backend: Implement handler + sync job
+- [x] Frontend: Display fundamentals on company page
 
 **Done when:** Company page shows key ratios.
 
@@ -60,12 +60,12 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Show current price on company page.
 
-- [ ] DB: Create `prices` table migration
-- [ ] DB: Write `GetLatestPrice`, `UpsertPrice` queries
-- [ ] Proto: Define `PriceService.GetPrice`
-- [ ] Backend: Implement handler
-- [ ] Backend: Add price sync to background worker
-- [ ] Frontend: Display price on company page
+- [x] DB: Create `prices` table migration
+- [x] DB: Write `GetLatestPrice`, `UpsertPrice` queries
+- [x] Proto: Define `PriceService.GetPrice`
+- [x] Backend: Implement handler
+- [x] Backend: Add price sync to background worker
+- [x] Frontend: Display price on company page
 
 **Done when:** Company page shows today's price.
 

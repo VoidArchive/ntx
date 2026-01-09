@@ -13,10 +13,17 @@ type Querier interface {
 	CountCompaniesBySearch(ctx context.Context, arg CountCompaniesBySearchParams) (int64, error)
 	CountCompaniesBySector(ctx context.Context, sector string) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
+	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
+	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
+	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]Company, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
+	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
+	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
+	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
+	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
 }
 
 var _ Querier = (*Queries)(nil)

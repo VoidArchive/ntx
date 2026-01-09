@@ -2,18 +2,8 @@
 
 ## Project Goal
 
-Build the best NEPSE stock screener with dense, useful company pages. Web-only, no CLI.
-
-## How Claude Should Help
-
-The human is learning by building. Claude's role:
-
-1. **Explain** - Answer questions about concepts, not write code
-2. **Review** - Point out issues in code the human wrote
-3. **Hint** - When stuck, give direction, not solutions
-4. **Never write code** - Unless explicitly asked to fix a specific bug
-
-The human writes all the code. 
+Build the best NEPSE stock screener with dense, useful company pages.
+The Company page should tell a story.
 
 ## Code Rules
 

@@ -307,6 +307,262 @@ func (x *Company) GetInstrumentType() InstrumentType {
 	return InstrumentType_INSTRUMENT_TYPE_UNSPECIFIED
 }
 
+type Fundamental struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId     int64                  `protobuf:"varint,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	FiscalYear    string                 `protobuf:"bytes,3,opt,name=fiscal_year,json=fiscalYear,proto3" json:"fiscal_year,omitempty"`
+	Quarter       *string                `protobuf:"bytes,4,opt,name=quarter,proto3,oneof" json:"quarter,omitempty"`
+	Eps           *float64               `protobuf:"fixed64,5,opt,name=eps,proto3,oneof" json:"eps,omitempty"`
+	PeRatio       *float64               `protobuf:"fixed64,6,opt,name=pe_ratio,json=peRatio,proto3,oneof" json:"pe_ratio,omitempty"`
+	BookValue     *float64               `protobuf:"fixed64,7,opt,name=book_value,json=bookValue,proto3,oneof" json:"book_value,omitempty"`
+	PaidUpCapital *float64               `protobuf:"fixed64,8,opt,name=paid_up_capital,json=paidUpCapital,proto3,oneof" json:"paid_up_capital,omitempty"`
+	ProfitAmount  *float64               `protobuf:"fixed64,9,opt,name=profit_amount,json=profitAmount,proto3,oneof" json:"profit_amount,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Fundamental) Reset() {
+	*x = Fundamental{}
+	mi := &file_ntx_v1_common_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Fundamental) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Fundamental) ProtoMessage() {}
+
+func (x *Fundamental) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_common_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Fundamental.ProtoReflect.Descriptor instead.
+func (*Fundamental) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_common_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Fundamental) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Fundamental) GetCompanyId() int64 {
+	if x != nil {
+		return x.CompanyId
+	}
+	return 0
+}
+
+func (x *Fundamental) GetFiscalYear() string {
+	if x != nil {
+		return x.FiscalYear
+	}
+	return ""
+}
+
+func (x *Fundamental) GetQuarter() string {
+	if x != nil && x.Quarter != nil {
+		return *x.Quarter
+	}
+	return ""
+}
+
+func (x *Fundamental) GetEps() float64 {
+	if x != nil && x.Eps != nil {
+		return *x.Eps
+	}
+	return 0
+}
+
+func (x *Fundamental) GetPeRatio() float64 {
+	if x != nil && x.PeRatio != nil {
+		return *x.PeRatio
+	}
+	return 0
+}
+
+func (x *Fundamental) GetBookValue() float64 {
+	if x != nil && x.BookValue != nil {
+		return *x.BookValue
+	}
+	return 0
+}
+
+func (x *Fundamental) GetPaidUpCapital() float64 {
+	if x != nil && x.PaidUpCapital != nil {
+		return *x.PaidUpCapital
+	}
+	return 0
+}
+
+func (x *Fundamental) GetProfitAmount() float64 {
+	if x != nil && x.ProfitAmount != nil {
+		return *x.ProfitAmount
+	}
+	return 0
+}
+
+type Price struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId     int64                  `protobuf:"varint,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	BusinessDate  string                 `protobuf:"bytes,3,opt,name=business_date,json=businessDate,proto3" json:"business_date,omitempty"`
+	Open          *float64               `protobuf:"fixed64,4,opt,name=open,proto3,oneof" json:"open,omitempty"`
+	High          *float64               `protobuf:"fixed64,5,opt,name=high,proto3,oneof" json:"high,omitempty"`
+	Low           *float64               `protobuf:"fixed64,6,opt,name=low,proto3,oneof" json:"low,omitempty"`
+	Close         *float64               `protobuf:"fixed64,7,opt,name=close,proto3,oneof" json:"close,omitempty"`
+	Ltp           *float64               `protobuf:"fixed64,8,opt,name=ltp,proto3,oneof" json:"ltp,omitempty"`
+	PreviousClose *float64               `protobuf:"fixed64,9,opt,name=previous_close,json=previousClose,proto3,oneof" json:"previous_close,omitempty"`
+	Change        *float64               `protobuf:"fixed64,10,opt,name=change,proto3,oneof" json:"change,omitempty"`
+	ChangePercent *float64               `protobuf:"fixed64,11,opt,name=change_percent,json=changePercent,proto3,oneof" json:"change_percent,omitempty"`
+	Volume        *int64                 `protobuf:"varint,12,opt,name=volume,proto3,oneof" json:"volume,omitempty"`
+	Turnover      *float64               `protobuf:"fixed64,13,opt,name=turnover,proto3,oneof" json:"turnover,omitempty"`
+	Trades        *int32                 `protobuf:"varint,14,opt,name=trades,proto3,oneof" json:"trades,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Price) Reset() {
+	*x = Price{}
+	mi := &file_ntx_v1_common_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Price) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Price) ProtoMessage() {}
+
+func (x *Price) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_common_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Price.ProtoReflect.Descriptor instead.
+func (*Price) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_common_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Price) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Price) GetCompanyId() int64 {
+	if x != nil {
+		return x.CompanyId
+	}
+	return 0
+}
+
+func (x *Price) GetBusinessDate() string {
+	if x != nil {
+		return x.BusinessDate
+	}
+	return ""
+}
+
+func (x *Price) GetOpen() float64 {
+	if x != nil && x.Open != nil {
+		return *x.Open
+	}
+	return 0
+}
+
+func (x *Price) GetHigh() float64 {
+	if x != nil && x.High != nil {
+		return *x.High
+	}
+	return 0
+}
+
+func (x *Price) GetLow() float64 {
+	if x != nil && x.Low != nil {
+		return *x.Low
+	}
+	return 0
+}
+
+func (x *Price) GetClose() float64 {
+	if x != nil && x.Close != nil {
+		return *x.Close
+	}
+	return 0
+}
+
+func (x *Price) GetLtp() float64 {
+	if x != nil && x.Ltp != nil {
+		return *x.Ltp
+	}
+	return 0
+}
+
+func (x *Price) GetPreviousClose() float64 {
+	if x != nil && x.PreviousClose != nil {
+		return *x.PreviousClose
+	}
+	return 0
+}
+
+func (x *Price) GetChange() float64 {
+	if x != nil && x.Change != nil {
+		return *x.Change
+	}
+	return 0
+}
+
+func (x *Price) GetChangePercent() float64 {
+	if x != nil && x.ChangePercent != nil {
+		return *x.ChangePercent
+	}
+	return 0
+}
+
+func (x *Price) GetVolume() int64 {
+	if x != nil && x.Volume != nil {
+		return *x.Volume
+	}
+	return 0
+}
+
+func (x *Price) GetTurnover() float64 {
+	if x != nil && x.Turnover != nil {
+		return *x.Turnover
+	}
+	return 0
+}
+
+func (x *Price) GetTrades() int32 {
+	if x != nil && x.Trades != nil {
+		return *x.Trades
+	}
+	return 0
+}
+
 var File_ntx_v1_common_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_common_proto_rawDesc = "" +
@@ -323,7 +579,56 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"\x0finstrument_type\x18\b \x01(\x0e2\x16.ntx.v1.InstrumentTypeR\x0einstrumentTypeB\b\n" +
 	"\x06_emailB\n" +
 	"\n" +
-	"\b_website*\x85\x01\n" +
+	"\b_website\"\x84\x03\n" +
+	"\vFundamental\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\x03R\tcompanyId\x12\x1f\n" +
+	"\vfiscal_year\x18\x03 \x01(\tR\n" +
+	"fiscalYear\x12\x1d\n" +
+	"\aquarter\x18\x04 \x01(\tH\x00R\aquarter\x88\x01\x01\x12\x15\n" +
+	"\x03eps\x18\x05 \x01(\x01H\x01R\x03eps\x88\x01\x01\x12\x1e\n" +
+	"\bpe_ratio\x18\x06 \x01(\x01H\x02R\apeRatio\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"book_value\x18\a \x01(\x01H\x03R\tbookValue\x88\x01\x01\x12+\n" +
+	"\x0fpaid_up_capital\x18\b \x01(\x01H\x04R\rpaidUpCapital\x88\x01\x01\x12(\n" +
+	"\rprofit_amount\x18\t \x01(\x01H\x05R\fprofitAmount\x88\x01\x01B\n" +
+	"\n" +
+	"\b_quarterB\x06\n" +
+	"\x04_epsB\v\n" +
+	"\t_pe_ratioB\r\n" +
+	"\v_book_valueB\x12\n" +
+	"\x10_paid_up_capitalB\x10\n" +
+	"\x0e_profit_amount\"\xa6\x04\n" +
+	"\x05Price\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\x03R\tcompanyId\x12#\n" +
+	"\rbusiness_date\x18\x03 \x01(\tR\fbusinessDate\x12\x17\n" +
+	"\x04open\x18\x04 \x01(\x01H\x00R\x04open\x88\x01\x01\x12\x17\n" +
+	"\x04high\x18\x05 \x01(\x01H\x01R\x04high\x88\x01\x01\x12\x15\n" +
+	"\x03low\x18\x06 \x01(\x01H\x02R\x03low\x88\x01\x01\x12\x19\n" +
+	"\x05close\x18\a \x01(\x01H\x03R\x05close\x88\x01\x01\x12\x15\n" +
+	"\x03ltp\x18\b \x01(\x01H\x04R\x03ltp\x88\x01\x01\x12*\n" +
+	"\x0eprevious_close\x18\t \x01(\x01H\x05R\rpreviousClose\x88\x01\x01\x12\x1b\n" +
+	"\x06change\x18\n" +
+	" \x01(\x01H\x06R\x06change\x88\x01\x01\x12*\n" +
+	"\x0echange_percent\x18\v \x01(\x01H\aR\rchangePercent\x88\x01\x01\x12\x1b\n" +
+	"\x06volume\x18\f \x01(\x03H\bR\x06volume\x88\x01\x01\x12\x1f\n" +
+	"\bturnover\x18\r \x01(\x01H\tR\bturnover\x88\x01\x01\x12\x1b\n" +
+	"\x06trades\x18\x0e \x01(\x05H\n" +
+	"R\x06trades\x88\x01\x01B\a\n" +
+	"\x05_openB\a\n" +
+	"\x05_highB\x06\n" +
+	"\x04_lowB\b\n" +
+	"\x06_closeB\x06\n" +
+	"\x04_ltpB\x11\n" +
+	"\x0f_previous_closeB\t\n" +
+	"\a_changeB\x11\n" +
+	"\x0f_change_percentB\t\n" +
+	"\a_volumeB\v\n" +
+	"\t_turnoverB\t\n" +
+	"\a_trades*\x85\x01\n" +
 	"\rCompanyStatus\x12\x1e\n" +
 	"\x1aCOMPANY_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15COMPANY_STATUS_ACTIVE\x10\x01\x12\x1c\n" +
@@ -364,12 +669,14 @@ func file_ntx_v1_common_proto_rawDescGZIP() []byte {
 }
 
 var file_ntx_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_ntx_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_ntx_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_ntx_v1_common_proto_goTypes = []any{
 	(CompanyStatus)(0),  // 0: ntx.v1.CompanyStatus
 	(Sector)(0),         // 1: ntx.v1.Sector
 	(InstrumentType)(0), // 2: ntx.v1.InstrumentType
 	(*Company)(nil),     // 3: ntx.v1.Company
+	(*Fundamental)(nil), // 4: ntx.v1.Fundamental
+	(*Price)(nil),       // 5: ntx.v1.Price
 }
 var file_ntx_v1_common_proto_depIdxs = []int32{
 	0, // 0: ntx.v1.Company.status:type_name -> ntx.v1.CompanyStatus
@@ -388,13 +695,15 @@ func file_ntx_v1_common_proto_init() {
 		return
 	}
 	file_ntx_v1_common_proto_msgTypes[0].OneofWrappers = []any{}
+	file_ntx_v1_common_proto_msgTypes[1].OneofWrappers = []any{}
+	file_ntx_v1_common_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_common_proto_rawDesc), len(file_ntx_v1_common_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   1,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

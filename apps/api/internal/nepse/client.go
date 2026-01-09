@@ -1,7 +1,11 @@
-// Package nepse provides a wrapper arround go-nepse
+// Package nepse provides a wrapper around go-nepse
 package nepse
 
-import "github.com/voidarchive/go-nepse"
+import (
+	"os"
+
+	"github.com/voidarchive/go-nepse"
+)
 
 type Client struct {
 	api *nepse.Client
@@ -9,7 +13,7 @@ type Client struct {
 
 func NewClient() (*Client, error) {
 	opts := nepse.DefaultOptions()
-	opts.TLSVerification = false
+	opts.TLSVerification = os.Getenv("NEPSE_TLS_VERIFY") == "true"
 
 	api, err := nepse.NewClient(opts)
 	if err != nil {

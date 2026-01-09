@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+import "ntx/v1/common.proto";
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+service PriceService {
+  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
+}
+
+message GetPriceRequest {
+  string symbol = 1;
+}
+
+message GetPriceResponse {
+  Price price = 1;
+}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -23,9 +24,15 @@ type Server struct {
 func NewServer(queries *sqlc.Queries) *Server {
 	mux := http.NewServeMux()
 	registerRoutes(mux, queries)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
 	return &Server{
 		Server: &http.Server{
-			Addr:         ":8080",
+			Addr:         ":" + port,
 			Handler:      withCORS(mux),
 			ReadTimeout:  15 * time.Second,
 			WriteTimeout: 15 * time.Second,
@@ -55,11 +62,27 @@ func (s *Server) gracefulShutdown(done <-chan os.Signal) {
 }
 
 func withCORS(h http.Handler) http.Handler {
+	origins := getCORSOrigins()
 	middleware := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:5173"},
+		AllowedOrigins: origins,
 		AllowedMethods: connectcors.AllowedMethods(),
 		AllowedHeaders: connectcors.AllowedHeaders(),
 		ExposedHeaders: connectcors.ExposedHeaders(),
 	})
 	return middleware.Handler(h)
+}
+
+func getCORSOrigins() []string {
+	env := os.Getenv("CORS_ORIGINS")
+	if env == "" {
+		return []string{"http://localhost:5173"}
+	}
+
+	var origins []string
+	for o := range strings.SplitSeq(env, ",") {
+		if trimmed := strings.TrimSpace(o); trimmed != "" {
+			origins = append(origins, trimmed)
+		}
+	}
+	return origins
 }

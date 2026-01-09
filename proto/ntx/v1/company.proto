@@ -9,11 +9,14 @@ option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 service CompanyService{
   rpc ListCompanies(ListCompaniesRequest) returns (ListCompaniesResponse);
   rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
+  rpc GetFundamentals(GetFundamentalsRequest) returns (GetFundamentalsResponse);
 }
 
 message ListCompaniesRequest {
   optional Sector sector = 1;
   optional string query = 2;
+  optional int32 limit = 3;
+  optional int32 offset = 4;
 }
 
 message ListCompaniesResponse {
@@ -26,6 +29,15 @@ message GetCompanyRequest {
 
 message GetCompanyResponse {
   Company company = 1;
+}
+
+message GetFundamentalsRequest {
+  string symbol = 1;
+}
+
+message GetFundamentalsResponse {
+  Fundamental latest = 1;
+  repeated Fundamental history = 2;
 }
 
 

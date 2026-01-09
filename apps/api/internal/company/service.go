@@ -107,3 +107,32 @@ func instrumentFromDB(s string) ntxv1.InstrumentType {
 	}
 	return ntxv1.InstrumentType_INSTRUMENT_TYPE_UNSPECIFIED
 }
+
+func fundamentalsToProto(fundamentals []sqlc.Fundamental) []*ntxv1.Fundamental {
+	out := make([]*ntxv1.Fundamental, len(fundamentals))
+	for i, f := range fundamentals {
+		out[i] = fundamentalToProto(f)
+	}
+	return out
+}
+
+func fundamentalToProto(f sqlc.Fundamental) *ntxv1.Fundamental {
+	return &ntxv1.Fundamental{
+		Id:            f.ID,
+		CompanyId:     f.CompanyID,
+		FiscalYear:    f.FiscalYear,
+		Quarter:       nullString(f.Quarter),
+		Eps:           nullFloat64(f.Eps),
+		PeRatio:       nullFloat64(f.PeRatio),
+		BookValue:     nullFloat64(f.BookValue),
+		PaidUpCapital: nullFloat64(f.PaidUpCapital),
+		ProfitAmount:  nullFloat64(f.ProfitAmount),
+	}
+}
+
+func nullFloat64(nf sql.NullFloat64) *float64 {
+	if !nf.Valid {
+		return nil
+	}
+	return &nf.Float64
+}
