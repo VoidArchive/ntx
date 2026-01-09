@@ -1,238 +1,357 @@
 <script lang="ts">
+	import { generateStory } from '$lib/story';
+	import type { CompanyStory } from '$lib/story';
+	import { Sector, CompanyStatus } from '$lib/gen/ntx/v1/common_pb';
+
 	let { data } = $props();
 	let company = $derived(data.company);
 	let fundamentals = $derived(data.fundamentals);
 	let priceData = $derived(data.price);
+	let priceHistory = $derived(data.priceHistory);
+	let sectorStats = $derived(data.sectorStats);
+
+	// Generate story from data
+	let story = $derived.by(() => {
+		if (!company || !priceData || !fundamentals) return null;
+		return generateStory({
+			company,
+			price: priceData,
+			priceHistory: priceHistory ?? [],
+			fundamentals,
+			fundamentalsHistory: data.fundamentalsHistory ?? [],
+			sectorStats
+		});
+	});
+
+	// Sector enum to display name mapping
+	const sectorDisplayNames: Record<number, string> = {
+		[Sector.COMMERCIAL_BANK]: 'Commercial Banking',
+		[Sector.DEVELOPMENT_BANK]: 'Development Banking',
+		[Sector.FINANCE]: 'Finance',
+		[Sector.MICROFINANCE]: 'Microfinance',
+		[Sector.LIFE_INSURANCE]: 'Life Insurance',
+		[Sector.NON_LIFE_INSURANCE]: 'Non-Life Insurance',
+		[Sector.HYDROPOWER]: 'Hydropower',
+		[Sector.MANUFACTURING]: 'Manufacturing',
+		[Sector.HOTEL]: 'Hotels & Tourism',
+		[Sector.TRADING]: 'Trading',
+		[Sector.INVESTMENT]: 'Investment',
+		[Sector.MUTUAL_FUND]: 'Mutual Fund',
+		[Sector.OTHERS]: 'Others'
+	};
 
 	function formatNumber(value: number | undefined): string {
 		if (value === undefined) return '-';
 		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
 	}
 
-	function formatCrore(value: number | undefined): string {
-		if (value === undefined) return '-';
-		const crore = value / 10_000_000;
-		return crore.toLocaleString('en-NP', { maximumFractionDigits: 2 }) + ' Cr';
-	}
-
-	function formatVolume(value: number | bigint | undefined): string {
-		if (value === undefined) return '-';
-		const num = typeof value === 'bigint' ? Number(value) : value;
-		if (num >= 1_000_000) {
-			return (num / 1_000_000).toFixed(2) + 'M';
-		}
-		if (num >= 1_000) {
-			return (num / 1_000).toFixed(2) + 'K';
-		}
-		return num.toLocaleString();
+	function formatSector(sector: number | undefined): string {
+		if (sector === undefined) return '';
+		return sectorDisplayNames[sector] ?? 'Unknown';
 	}
 </script>
 
-{#if company}
-	<div class="company-page">
-		<header class="company-header">
-			<div class="company-info">
-				<h1>{company.name}</h1>
-				<span class="symbol">{company.symbol}</span>
-			</div>
-			{#if priceData}
-				<div class="price-display">
-					<span class="ltp">Rs. {formatNumber(priceData.ltp)}</span>
-					<span class="change" class:positive={priceData.changePercent && priceData.changePercent > 0} class:negative={priceData.changePercent && priceData.changePercent < 0}>
-						{priceData.change && priceData.change > 0 ? '+' : ''}{formatNumber(priceData.change)} ({priceData.changePercent && priceData.changePercent > 0 ? '+' : ''}{formatNumber(priceData.changePercent)}%)
-					</span>
-				</div>
-			{/if}
+{#if company && priceData}
+	<article class="story">
+		<!-- Act 1: The Introduction -->
+		<header class="act act-intro">
+			<h1 class="company-symbol">{company.symbol}</h1>
+			<p class="company-name">{company.name}</p>
+			<p class="company-meta">
+				{formatSector(company.sector)} · {company.status === CompanyStatus.ACTIVE ? 'Active' : 'Inactive'}
+			</p>
 		</header>
 
-		<div class="company-meta">
-			<span class="sector">{company.sector}</span>
-			<span class="instrument">{company.instrumentType}</span>
-		</div>
+		<!-- Act 2: The Current State -->
+		<section class="act act-price">
+			<p class="price-main">Rs. {formatNumber(priceData.ltp)}</p>
+			{#if story}
+				<p class="price-context">{story.price.positionSentence}</p>
+				{#if story.price.volumeContext}
+					<p class="price-volume">{story.price.trendSentence} {story.price.volumeContext}</p>
+				{:else}
+					<p class="price-volume">{story.price.trendSentence}</p>
+				{/if}
+			{/if}
+			<div class="price-change" class:positive={priceData.changePercent && priceData.changePercent > 0} class:negative={priceData.changePercent && priceData.changePercent < 0}>
+				{priceData.change && priceData.change > 0 ? '+' : ''}{formatNumber(priceData.change)} ({priceData.changePercent && priceData.changePercent > 0 ? '+' : ''}{formatNumber(priceData.changePercent)}%) today
+			</div>
+		</section>
 
-		{#if priceData}
-			<section class="price-details">
-				<h2>Today's Trading</h2>
-				<div class="price-grid">
-					<div class="price-card">
-						<span class="label">Open</span>
-						<span class="value">{formatNumber(priceData.open)}</span>
+		<!-- Act 3: The Journey (Price Chart placeholder) -->
+		<section class="act act-journey">
+			<h2>The Journey</h2>
+			<div class="chart-placeholder">
+				<p>📈 Price chart coming soon</p>
+				<p class="chart-note">1Y price history with {priceHistory?.length ?? 0} data points</p>
+			</div>
+			{#if story}
+				<p class="journey-narrative">
+					{story.price.trendSentence}. Currently trading at Rs. {formatNumber(priceData.ltp)}.
+				</p>
+			{/if}
+		</section>
+
+		<!-- Act 4: The Fundamentals Story -->
+		{#if fundamentals && story}
+			<section class="act act-fundamentals">
+				<div class="fundamentals-section">
+					<h2>Earnings</h2>
+					<p class="fundamentals-headline">{story.earnings.headline}</p>
+					<p class="fundamentals-detail">{story.earnings.detail}</p>
+					<p class="fundamentals-trend">{story.earnings.trendSentence}</p>
+				</div>
+
+				<div class="fundamentals-section">
+					<h2>Valuation</h2>
+					<p class="fundamentals-headline">{story.valuation.headline}</p>
+					<p class="fundamentals-detail">{story.valuation.peContext}</p>
+				</div>
+
+				<!-- Key metrics as supporting data -->
+				<div class="metrics-grid">
+					<div class="metric">
+						<span class="metric-label">EPS</span>
+						<span class="metric-value">Rs. {formatNumber(fundamentals.eps)}</span>
 					</div>
-					<div class="price-card">
-						<span class="label">High</span>
-						<span class="value">{formatNumber(priceData.high)}</span>
+					<div class="metric">
+						<span class="metric-label">P/E</span>
+						<span class="metric-value">{formatNumber(fundamentals.peRatio)}</span>
 					</div>
-					<div class="price-card">
-						<span class="label">Low</span>
-						<span class="value">{formatNumber(priceData.low)}</span>
-					</div>
-					<div class="price-card">
-						<span class="label">Close</span>
-						<span class="value">{formatNumber(priceData.close)}</span>
-					</div>
-					<div class="price-card">
-						<span class="label">Prev Close</span>
-						<span class="value">{formatNumber(priceData.previousClose)}</span>
-					</div>
-					<div class="price-card">
-						<span class="label">Volume</span>
-						<span class="value">{formatVolume(priceData.volume)}</span>
+					<div class="metric">
+						<span class="metric-label">Book Value</span>
+						<span class="metric-value">Rs. {formatNumber(fundamentals.bookValue)}</span>
 					</div>
 				</div>
-				<p class="business-date">As of {priceData.businessDate}</p>
 			</section>
 		{/if}
 
-		{#if fundamentals}
-			<section class="fundamentals">
-				<h2>Key Ratios</h2>
-				<div class="ratios-grid">
-					<div class="ratio-card">
-						<span class="label">EPS</span>
-						<span class="value">{formatNumber(fundamentals.eps)}</span>
-					</div>
-					<div class="ratio-card">
-						<span class="label">P/E Ratio</span>
-						<span class="value">{formatNumber(fundamentals.peRatio)}</span>
-					</div>
-					<div class="ratio-card">
-						<span class="label">Book Value</span>
-						<span class="value">{formatNumber(fundamentals.bookValue)}</span>
-					</div>
-					<div class="ratio-card">
-						<span class="label">Paid-up Capital</span>
-						<span class="value">{formatCrore(fundamentals.paidUpCapital)}</span>
-					</div>
-					<div class="ratio-card">
-						<span class="label">Net Profit</span>
-						<span class="value">{formatCrore(fundamentals.profitAmount)}</span>
-					</div>
-				</div>
-				<p class="fiscal-year">As of FY {fundamentals.fiscalYear}{fundamentals.quarter ? ` (${fundamentals.quarter})` : ''}</p>
-			</section>
-		{:else}
-			<section class="fundamentals">
-				<h2>Key Ratios</h2>
-				<p class="no-data">No fundamental data available</p>
+		<!-- Act 5: The Verdict -->
+		{#if story}
+			<section class="act act-verdict" class:opportunity={story.verdict.signal === 'opportunity'} class:caution={story.verdict.signal === 'caution'}>
+				<h2>{story.verdict.title}</h2>
+				<p class="verdict-summary">{story.verdict.summary}</p>
 			</section>
 		{/if}
-	</div>
+	</article>
 {/if}
 
 <style>
-	.company-page {
-		max-width: 800px;
+	.story {
+		max-width: 720px;
 		margin: 0 auto;
-		padding: 2rem;
+		padding: 3rem 1.5rem;
 	}
 
-	.company-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 0.5rem;
-		flex-wrap: wrap;
-		gap: 1rem;
+	.act {
+		margin-bottom: 4rem;
 	}
 
-	.company-info {
-		display: flex;
-		align-items: baseline;
-		gap: 1rem;
+	/* Act 1: Introduction */
+	.act-intro {
+		text-align: center;
+		padding: 2rem 0 3rem;
+		border-bottom: 1px solid var(--border);
 	}
 
-	.company-info h1 {
-		margin: 0;
-		font-size: 1.75rem;
-	}
-
-	.symbol {
-		font-size: 1rem;
-		color: #666;
-		font-weight: 500;
-	}
-
-	.price-display {
-		text-align: right;
-	}
-
-	.ltp {
-		font-size: 1.75rem;
+	.company-symbol {
+		font-size: 3rem;
 		font-weight: 700;
-		display: block;
+		margin: 0;
+		letter-spacing: -0.02em;
 	}
 
-	.change {
-		font-size: 1rem;
-		font-weight: 500;
-	}
-
-	.change.positive {
-		color: #16a34a;
-	}
-
-	.change.negative {
-		color: #dc2626;
+	.company-name {
+		font-size: 1.25rem;
+		color: var(--muted-foreground);
+		margin: 0.5rem 0;
 	}
 
 	.company-meta {
-		display: flex;
-		gap: 1rem;
-		margin-bottom: 2rem;
-		color: #666;
 		font-size: 0.875rem;
+		color: var(--muted-foreground);
+		margin: 0;
 	}
 
-	.price-details h2,
-	.fundamentals h2 {
+	/* Act 2: Current State */
+	.act-price {
+		text-align: center;
+		padding: 2rem 0;
+	}
+
+	.price-main {
+		font-size: 3.5rem;
+		font-weight: 700;
+		margin: 0;
+		letter-spacing: -0.02em;
+	}
+
+	.price-context {
+		font-size: 1.125rem;
+		font-style: italic;
+		color: var(--muted-foreground);
+		margin: 1rem 0 0.5rem;
+	}
+
+	.price-volume {
+		font-size: 1rem;
+		color: var(--muted-foreground);
+		margin: 0.25rem 0;
+	}
+
+	.price-change {
+		display: inline-block;
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		border-radius: var(--radius);
+		font-weight: 500;
+		background: var(--muted);
+	}
+
+	.price-change.positive {
+		color: #16a34a;
+		background: #dcfce7;
+	}
+
+	.price-change.negative {
+		color: #dc2626;
+		background: #fee2e2;
+	}
+
+	/* Act 3: Journey */
+	.act-journey h2 {
+		font-size: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.chart-placeholder {
+		background: var(--muted);
+		border-radius: var(--radius);
+		padding: 4rem 2rem;
+		text-align: center;
+		margin-bottom: 1.5rem;
+	}
+
+	.chart-placeholder p {
+		margin: 0;
+		color: var(--muted-foreground);
+	}
+
+	.chart-note {
+		font-size: 0.875rem;
+		margin-top: 0.5rem !important;
+	}
+
+	.journey-narrative {
+		font-size: 1.125rem;
+		line-height: 1.7;
+		color: var(--foreground);
+	}
+
+	/* Act 4: Fundamentals */
+	.act-fundamentals h2 {
 		font-size: 1.25rem;
-		margin-bottom: 1rem;
+		color: var(--muted-foreground);
+		margin-bottom: 0.75rem;
 	}
 
-	.price-grid,
-	.ratios-grid {
+	.fundamentals-section {
+		margin-bottom: 2.5rem;
+	}
+
+	.fundamentals-headline {
+		font-size: 1.5rem;
+		font-weight: 600;
+		margin: 0 0 0.5rem;
+	}
+
+	.fundamentals-detail {
+		font-size: 1.125rem;
+		line-height: 1.6;
+		margin: 0 0 0.5rem;
+	}
+
+	.fundamentals-trend {
+		font-size: 1rem;
+		color: var(--muted-foreground);
+		margin: 0;
+	}
+
+	.metrics-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+		grid-template-columns: repeat(3, 1fr);
 		gap: 1rem;
+		margin-top: 2rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--border);
 	}
 
-	.price-card,
-	.ratio-card {
-		background: #f8f9fa;
-		border-radius: 8px;
-		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
+	.metric {
+		text-align: center;
 	}
 
-	.price-card .label,
-	.ratio-card .label {
+	.metric-label {
+		display: block;
 		font-size: 0.75rem;
-		color: #666;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
+		color: var(--muted-foreground);
+		margin-bottom: 0.25rem;
 	}
 
-	.price-card .value,
-	.ratio-card .value {
+	.metric-value {
 		font-size: 1.25rem;
 		font-weight: 600;
 	}
 
-	.business-date,
-	.fiscal-year {
-		margin-top: 1rem;
-		font-size: 0.875rem;
-		color: #666;
+	/* Act 5: Verdict */
+	.act-verdict {
+		background: var(--muted);
+		padding: 2rem;
+		border-radius: var(--radius);
+		border-left: 4px solid var(--border);
 	}
 
-	.price-details {
-		margin-bottom: 2rem;
+	.act-verdict.opportunity {
+		border-left-color: #16a34a;
+		background: #f0fdf4;
 	}
 
-	.no-data {
-		color: #666;
-		font-style: italic;
+	.act-verdict.caution {
+		border-left-color: #eab308;
+		background: #fefce8;
+	}
+
+	.act-verdict h2 {
+		font-size: 1.125rem;
+		margin: 0 0 1rem;
+		color: var(--muted-foreground);
+	}
+
+	.verdict-summary {
+		font-size: 1.125rem;
+		line-height: 1.7;
+		margin: 0;
+	}
+
+	/* Dark mode adjustments */
+	:global(.dark) .price-change.positive {
+		background: #166534;
+		color: #bbf7d0;
+	}
+
+	:global(.dark) .price-change.negative {
+		background: #991b1b;
+		color: #fecaca;
+	}
+
+	:global(.dark) .act-verdict.opportunity {
+		background: #14532d;
+		border-left-color: #22c55e;
+	}
+
+	:global(.dark) .act-verdict.caution {
+		background: #422006;
+		border-left-color: #facc15;
 	}
 </style>
