@@ -36,6 +36,42 @@ func (q *Queries) GetLatestFundamental(ctx context.Context, companyID int64) (Fu
 	return i, err
 }
 
+const getSectorStats = `-- name: GetSectorStats :one
+SELECT
+  COUNT(DISTINCT c.id) as company_count,
+  AVG(f.eps) as avg_eps,
+  AVG(f.pe_ratio) as avg_pe_ratio,
+  AVG(f.book_value) as avg_book_value
+FROM companies c
+INNER JOIN fundamentals f ON f.company_id = c.id
+WHERE c.sector = ?
+  AND f.id IN (
+    SELECT f2.id FROM fundamentals f2
+    WHERE f2.company_id = c.id
+    ORDER BY f2.fiscal_year DESC, f2.quarter DESC NULLS FIRST
+    LIMIT 1
+  )
+`
+
+type GetSectorStatsRow struct {
+	CompanyCount int64           `json:"company_count"`
+	AvgEps       sql.NullFloat64 `json:"avg_eps"`
+	AvgPeRatio   sql.NullFloat64 `json:"avg_pe_ratio"`
+	AvgBookValue sql.NullFloat64 `json:"avg_book_value"`
+}
+
+func (q *Queries) GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error) {
+	row := q.db.QueryRowContext(ctx, getSectorStats, sector)
+	var i GetSectorStatsRow
+	err := row.Scan(
+		&i.CompanyCount,
+		&i.AvgEps,
+		&i.AvgPeRatio,
+		&i.AvgBookValue,
+	)
+	return i, err
+}
+
 const listFundamentalsByCompany = `-- name: ListFundamentalsByCompany :many
 SELECT id, company_id, fiscal_year, quarter, eps, pe_ratio, book_value, paid_up_capital, profit_amount, created_at, updated_at FROM fundamentals
 WHERE company_id = ?

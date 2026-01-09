@@ -128,6 +128,81 @@ export declare type GetFundamentalsResponse = Message<"ntx.v1.GetFundamentalsRes
 export declare const GetFundamentalsResponseSchema: GenMessage<GetFundamentalsResponse>;
 
 /**
+ * @generated from message ntx.v1.GetSectorStatsRequest
+ */
+export declare type GetSectorStatsRequest = Message<"ntx.v1.GetSectorStatsRequest"> & {
+  /**
+   * @generated from field: ntx.v1.Sector sector = 1;
+   */
+  sector: Sector;
+};
+
+/**
+ * Describes the message ntx.v1.GetSectorStatsRequest.
+ * Use `create(GetSectorStatsRequestSchema)` to create a new message.
+ */
+export declare const GetSectorStatsRequestSchema: GenMessage<GetSectorStatsRequest>;
+
+/**
+ * @generated from message ntx.v1.GetSectorStatsResponse
+ */
+export declare type GetSectorStatsResponse = Message<"ntx.v1.GetSectorStatsResponse"> & {
+  /**
+   * @generated from field: ntx.v1.SectorStats stats = 1;
+   */
+  stats?: SectorStats;
+};
+
+/**
+ * Describes the message ntx.v1.GetSectorStatsResponse.
+ * Use `create(GetSectorStatsResponseSchema)` to create a new message.
+ */
+export declare const GetSectorStatsResponseSchema: GenMessage<GetSectorStatsResponse>;
+
+/**
+ * @generated from message ntx.v1.SectorStats
+ */
+export declare type SectorStats = Message<"ntx.v1.SectorStats"> & {
+  /**
+   * @generated from field: ntx.v1.Sector sector = 1;
+   */
+  sector: Sector;
+
+  /**
+   * @generated from field: int32 company_count = 2;
+   */
+  companyCount: number;
+
+  /**
+   * @generated from field: optional double avg_eps = 3;
+   */
+  avgEps?: number;
+
+  /**
+   * @generated from field: optional double avg_pe_ratio = 4;
+   */
+  avgPeRatio?: number;
+
+  /**
+   * @generated from field: optional double avg_book_value = 5;
+   */
+  avgBookValue?: number;
+
+  /**
+   * YoY average
+   *
+   * @generated from field: optional double avg_profit_growth = 6;
+   */
+  avgProfitGrowth?: number;
+};
+
+/**
+ * Describes the message ntx.v1.SectorStats.
+ * Use `create(SectorStatsSchema)` to create a new message.
+ */
+export declare const SectorStatsSchema: GenMessage<SectorStats>;
+
+/**
  * @generated from service ntx.v1.CompanyService
  */
 export declare const CompanyService: GenService<{
@@ -154,6 +229,14 @@ export declare const CompanyService: GenService<{
     methodKind: "unary";
     input: typeof GetFundamentalsRequestSchema;
     output: typeof GetFundamentalsResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetSectorStats
+   */
+  getSectorStats: {
+    methodKind: "unary";
+    input: typeof GetSectorStatsRequestSchema;
+    output: typeof GetSectorStatsResponseSchema;
   },
 }>;
 

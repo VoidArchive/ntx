@@ -37,6 +37,14 @@ func priceToProto(p sqlc.Price) *ntxv1.Price {
 	}
 }
 
+func pricesToProto(prices []sqlc.Price) []*ntxv1.Price {
+	out := make([]*ntxv1.Price, len(prices))
+	for i, p := range prices {
+		out[i] = priceToProto(p)
+	}
+	return out
+}
+
 func nullFloat64(nf sql.NullFloat64) *float64 {
 	if !nf.Valid {
 		return nil

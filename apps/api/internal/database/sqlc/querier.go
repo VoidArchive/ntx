@@ -16,6 +16,7 @@ type Querier interface {
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
 	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
 	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
+	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]Company, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)

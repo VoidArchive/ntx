@@ -8,6 +8,7 @@ option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
 service PriceService {
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
+  rpc GetPriceHistory(GetPriceHistoryRequest) returns (GetPriceHistoryResponse);
 }
 
 message GetPriceRequest {
@@ -16,4 +17,13 @@ message GetPriceRequest {
 
 message GetPriceResponse {
   Price price = 1;
+}
+
+message GetPriceHistoryRequest {
+  string symbol = 1;
+  optional int32 days = 2; // defaults to 365
+}
+
+message GetPriceHistoryResponse {
+  repeated Price prices = 1;
 }

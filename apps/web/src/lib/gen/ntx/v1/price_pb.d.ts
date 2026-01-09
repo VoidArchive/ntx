@@ -44,6 +44,45 @@ export declare type GetPriceResponse = Message<"ntx.v1.GetPriceResponse"> & {
 export declare const GetPriceResponseSchema: GenMessage<GetPriceResponse>;
 
 /**
+ * @generated from message ntx.v1.GetPriceHistoryRequest
+ */
+export declare type GetPriceHistoryRequest = Message<"ntx.v1.GetPriceHistoryRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * defaults to 365
+   *
+   * @generated from field: optional int32 days = 2;
+   */
+  days?: number;
+};
+
+/**
+ * Describes the message ntx.v1.GetPriceHistoryRequest.
+ * Use `create(GetPriceHistoryRequestSchema)` to create a new message.
+ */
+export declare const GetPriceHistoryRequestSchema: GenMessage<GetPriceHistoryRequest>;
+
+/**
+ * @generated from message ntx.v1.GetPriceHistoryResponse
+ */
+export declare type GetPriceHistoryResponse = Message<"ntx.v1.GetPriceHistoryResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.Price prices = 1;
+   */
+  prices: Price[];
+};
+
+/**
+ * Describes the message ntx.v1.GetPriceHistoryResponse.
+ * Use `create(GetPriceHistoryResponseSchema)` to create a new message.
+ */
+export declare const GetPriceHistoryResponseSchema: GenMessage<GetPriceHistoryResponse>;
+
+/**
  * @generated from service ntx.v1.PriceService
  */
 export declare const PriceService: GenService<{
@@ -54,6 +93,14 @@ export declare const PriceService: GenService<{
     methodKind: "unary";
     input: typeof GetPriceRequestSchema;
     output: typeof GetPriceResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PriceService.GetPriceHistory
+   */
+  getPriceHistory: {
+    methodKind: "unary";
+    input: typeof GetPriceHistoryRequestSchema;
+    output: typeof GetPriceHistoryResponseSchema;
   },
 }>;
 

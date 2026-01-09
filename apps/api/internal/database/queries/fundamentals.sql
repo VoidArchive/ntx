@@ -19,3 +19,19 @@ LIMIT 1;
 SELECT * FROM fundamentals
 WHERE company_id = ?
 ORDER BY fiscal_year DESC, quarter DESC NULLS FIRST;
+
+-- name: GetSectorStats :one
+SELECT
+  COUNT(DISTINCT c.id) as company_count,
+  AVG(f.eps) as avg_eps,
+  AVG(f.pe_ratio) as avg_pe_ratio,
+  AVG(f.book_value) as avg_book_value
+FROM companies c
+INNER JOIN fundamentals f ON f.company_id = c.id
+WHERE c.sector = ?
+  AND f.id IN (
+    SELECT f2.id FROM fundamentals f2
+    WHERE f2.company_id = c.id
+    ORDER BY f2.fiscal_year DESC, f2.quarter DESC NULLS FIRST
+    LIMIT 1
+  );

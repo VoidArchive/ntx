@@ -6,10 +6,11 @@ import "ntx/v1/common.proto";
 
 option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
 
-service CompanyService{
+service CompanyService {
   rpc ListCompanies(ListCompaniesRequest) returns (ListCompaniesResponse);
   rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
   rpc GetFundamentals(GetFundamentalsRequest) returns (GetFundamentalsResponse);
+  rpc GetSectorStats(GetSectorStatsRequest) returns (GetSectorStatsResponse);
 }
 
 message ListCompaniesRequest {
@@ -19,25 +20,28 @@ message ListCompaniesRequest {
   optional int32 offset = 4;
 }
 
-message ListCompaniesResponse {
-  repeated Company companies = 1;
-}
+message ListCompaniesResponse { repeated Company companies = 1; }
 
-message GetCompanyRequest {
-  string symbol = 1;
-}
+message GetCompanyRequest { string symbol = 1; }
 
-message GetCompanyResponse {
-  Company company = 1;
-}
+message GetCompanyResponse { Company company = 1; }
 
-message GetFundamentalsRequest {
-  string symbol = 1;
-}
+message GetFundamentalsRequest { string symbol = 1; }
 
 message GetFundamentalsResponse {
   Fundamental latest = 1;
   repeated Fundamental history = 2;
 }
 
+message GetSectorStatsRequest { Sector sector = 1; }
 
+message GetSectorStatsResponse { SectorStats stats = 1; }
+
+message SectorStats {
+  Sector sector = 1;
+  int32 company_count = 2;
+  optional double avg_eps = 3;
+  optional double avg_pe_ratio = 4;
+  optional double avg_book_value = 5;
+  optional double avg_profit_growth = 6; // YoY average
+}

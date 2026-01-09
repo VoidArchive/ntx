@@ -109,6 +109,102 @@ func (x *GetPriceResponse) GetPrice() *Price {
 	return nil
 }
 
+type GetPriceHistoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Days          *int32                 `protobuf:"varint,2,opt,name=days,proto3,oneof" json:"days,omitempty"` // defaults to 365
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPriceHistoryRequest) Reset() {
+	*x = GetPriceHistoryRequest{}
+	mi := &file_ntx_v1_price_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPriceHistoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPriceHistoryRequest) ProtoMessage() {}
+
+func (x *GetPriceHistoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_price_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPriceHistoryRequest.ProtoReflect.Descriptor instead.
+func (*GetPriceHistoryRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_price_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetPriceHistoryRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *GetPriceHistoryRequest) GetDays() int32 {
+	if x != nil && x.Days != nil {
+		return *x.Days
+	}
+	return 0
+}
+
+type GetPriceHistoryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Prices        []*Price               `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPriceHistoryResponse) Reset() {
+	*x = GetPriceHistoryResponse{}
+	mi := &file_ntx_v1_price_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPriceHistoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPriceHistoryResponse) ProtoMessage() {}
+
+func (x *GetPriceHistoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_price_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPriceHistoryResponse.ProtoReflect.Descriptor instead.
+func (*GetPriceHistoryResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_price_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetPriceHistoryResponse) GetPrices() []*Price {
+	if x != nil {
+		return x.Prices
+	}
+	return nil
+}
+
 var File_ntx_v1_price_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_price_proto_rawDesc = "" +
@@ -117,9 +213,16 @@ const file_ntx_v1_price_proto_rawDesc = "" +
 	"\x0fGetPriceRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"7\n" +
 	"\x10GetPriceResponse\x12#\n" +
-	"\x05price\x18\x01 \x01(\v2\r.ntx.v1.PriceR\x05price2M\n" +
+	"\x05price\x18\x01 \x01(\v2\r.ntx.v1.PriceR\x05price\"R\n" +
+	"\x16GetPriceHistoryRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x17\n" +
+	"\x04days\x18\x02 \x01(\x05H\x00R\x04days\x88\x01\x01B\a\n" +
+	"\x05_days\"@\n" +
+	"\x17GetPriceHistoryResponse\x12%\n" +
+	"\x06prices\x18\x01 \x03(\v2\r.ntx.v1.PriceR\x06prices2\xa1\x01\n" +
 	"\fPriceService\x12=\n" +
-	"\bGetPrice\x12\x17.ntx.v1.GetPriceRequest\x1a\x18.ntx.v1.GetPriceResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\bGetPrice\x12\x17.ntx.v1.GetPriceRequest\x1a\x18.ntx.v1.GetPriceResponse\x12R\n" +
+	"\x0fGetPriceHistory\x12\x1e.ntx.v1.GetPriceHistoryRequest\x1a\x1f.ntx.v1.GetPriceHistoryResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_price_proto_rawDescOnce sync.Once
@@ -133,21 +236,26 @@ func file_ntx_v1_price_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_price_proto_rawDescData
 }
 
-var file_ntx_v1_price_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_ntx_v1_price_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_ntx_v1_price_proto_goTypes = []any{
-	(*GetPriceRequest)(nil),  // 0: ntx.v1.GetPriceRequest
-	(*GetPriceResponse)(nil), // 1: ntx.v1.GetPriceResponse
-	(*Price)(nil),            // 2: ntx.v1.Price
+	(*GetPriceRequest)(nil),         // 0: ntx.v1.GetPriceRequest
+	(*GetPriceResponse)(nil),        // 1: ntx.v1.GetPriceResponse
+	(*GetPriceHistoryRequest)(nil),  // 2: ntx.v1.GetPriceHistoryRequest
+	(*GetPriceHistoryResponse)(nil), // 3: ntx.v1.GetPriceHistoryResponse
+	(*Price)(nil),                   // 4: ntx.v1.Price
 }
 var file_ntx_v1_price_proto_depIdxs = []int32{
-	2, // 0: ntx.v1.GetPriceResponse.price:type_name -> ntx.v1.Price
-	0, // 1: ntx.v1.PriceService.GetPrice:input_type -> ntx.v1.GetPriceRequest
-	1, // 2: ntx.v1.PriceService.GetPrice:output_type -> ntx.v1.GetPriceResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	4, // 0: ntx.v1.GetPriceResponse.price:type_name -> ntx.v1.Price
+	4, // 1: ntx.v1.GetPriceHistoryResponse.prices:type_name -> ntx.v1.Price
+	0, // 2: ntx.v1.PriceService.GetPrice:input_type -> ntx.v1.GetPriceRequest
+	2, // 3: ntx.v1.PriceService.GetPriceHistory:input_type -> ntx.v1.GetPriceHistoryRequest
+	1, // 4: ntx.v1.PriceService.GetPrice:output_type -> ntx.v1.GetPriceResponse
+	3, // 5: ntx.v1.PriceService.GetPriceHistory:output_type -> ntx.v1.GetPriceHistoryResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_price_proto_init() }
@@ -156,13 +264,14 @@ func file_ntx_v1_price_proto_init() {
 		return
 	}
 	file_ntx_v1_common_proto_init()
+	file_ntx_v1_price_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_price_proto_rawDesc), len(file_ntx_v1_price_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

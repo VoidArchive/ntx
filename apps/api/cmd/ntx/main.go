@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -35,7 +36,27 @@ func main() {
 	runServer()
 }
 
+type backfillOptions struct {
+	companies    bool
+	fundamentals bool
+	prices       bool
+}
+
 func runBackfillCmd() {
+	fs := flag.NewFlagSet("backfill", flag.ExitOnError)
+	opts := backfillOptions{}
+	fs.BoolVar(&opts.companies, "companies", false, "sync companies")
+	fs.BoolVar(&opts.fundamentals, "fundamentals", false, "sync fundamentals")
+	fs.BoolVar(&opts.prices, "prices", false, "sync price history")
+	fs.Parse(os.Args[2:])
+
+	// If no flags specified, sync everything
+	if !opts.companies && !opts.fundamentals && !opts.prices {
+		opts.companies = true
+		opts.fundamentals = true
+		opts.prices = true
+	}
+
 	db, queries, client := setup()
 	defer db.Close()
 	defer client.Close()
@@ -43,7 +64,7 @@ func runBackfillCmd() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	if err := runBackfill(ctx, queries, client); err != nil {
+	if err := runBackfill(ctx, queries, client, opts); err != nil {
 		slog.Error("backfill failed", "error", err)
 		os.Exit(1)
 	}

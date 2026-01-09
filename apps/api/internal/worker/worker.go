@@ -97,8 +97,8 @@ func (w *Worker) SyncPrices(ctx context.Context, businessDate string) error {
 		symbolToID[c.Symbol] = c.ID
 	}
 
-	// Fetch today's prices
-	prices, err := w.nepse.TodaysPrices(ctx, businessDate)
+	// Use LiveMarket - TodaysPrices requires auth that go-nepse doesn't support
+	prices, err := w.nepse.LiveMarket(ctx)
 	if err != nil {
 		return fmt.Errorf("fetch prices: %w", err)
 	}
@@ -112,14 +112,14 @@ func (w *Worker) SyncPrices(ctx context.Context, businessDate string) error {
 
 		params := sqlc.UpsertPriceParams{
 			CompanyID:       companyID,
-			BusinessDate:    p.BusinessDate,
+			BusinessDate:    businessDate,
 			OpenPrice:       nullFloat64(p.Open),
 			HighPrice:       nullFloat64(p.High),
 			LowPrice:        nullFloat64(p.Low),
-			ClosePrice:      nullFloat64(p.Close),
+			ClosePrice:      nullFloat64(p.LTP),
 			LastTradedPrice: nullFloat64(p.LTP),
 			PreviousClose:   nullFloat64(p.PreviousClose),
-			ChangeAmount:    nullFloat64(p.Change),
+			ChangeAmount:    nullFloat64(p.LTP - p.PreviousClose),
 			ChangePercent:   nullFloat64(p.ChangePercent),
 			Volume:          nullInt64(p.Volume),
 			Turnover:        nullFloat64(p.Turnover),

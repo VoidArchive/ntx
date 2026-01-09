@@ -144,3 +144,33 @@ func (s *CompanyService) GetFundamentals(
 		History: fundamentalsToProto(fundamentals),
 	}), nil
 }
+
+func (s *CompanyService) GetSectorStats(
+	ctx context.Context,
+	req *connect.Request[ntxv1.GetSectorStatsRequest],
+) (*connect.Response[ntxv1.GetSectorStatsResponse], error) {
+	sector := req.Msg.GetSector()
+	if sector == ntxv1.Sector_SECTOR_UNSPECIFIED {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("sector is required"))
+	}
+
+	sectorStr, ok := sectorEnumToDB(sector)
+	if !ok {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid sector"))
+	}
+
+	stats, err := s.queries.GetSectorStats(ctx, sectorStr)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&ntxv1.GetSectorStatsResponse{
+		Stats: &ntxv1.SectorStats{
+			Sector:       sector,
+			CompanyCount: int32(stats.CompanyCount),
+			AvgEps:       nullFloat64(stats.AvgEps),
+			AvgPeRatio:   nullFloat64(stats.AvgPeRatio),
+			AvgBookValue: nullFloat64(stats.AvgBookValue),
+		},
+	}), nil
+}

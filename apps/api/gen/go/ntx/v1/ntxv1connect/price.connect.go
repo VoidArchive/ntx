@@ -35,11 +35,15 @@ const (
 const (
 	// PriceServiceGetPriceProcedure is the fully-qualified name of the PriceService's GetPrice RPC.
 	PriceServiceGetPriceProcedure = "/ntx.v1.PriceService/GetPrice"
+	// PriceServiceGetPriceHistoryProcedure is the fully-qualified name of the PriceService's
+	// GetPriceHistory RPC.
+	PriceServiceGetPriceHistoryProcedure = "/ntx.v1.PriceService/GetPriceHistory"
 )
 
 // PriceServiceClient is a client for the ntx.v1.PriceService service.
 type PriceServiceClient interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
+	GetPriceHistory(context.Context, *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error)
 }
 
 // NewPriceServiceClient constructs a client for the ntx.v1.PriceService service. By default, it
@@ -59,12 +63,19 @@ func NewPriceServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(priceServiceMethods.ByName("GetPrice")),
 			connect.WithClientOptions(opts...),
 		),
+		getPriceHistory: connect.NewClient[v1.GetPriceHistoryRequest, v1.GetPriceHistoryResponse](
+			httpClient,
+			baseURL+PriceServiceGetPriceHistoryProcedure,
+			connect.WithSchema(priceServiceMethods.ByName("GetPriceHistory")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // priceServiceClient implements PriceServiceClient.
 type priceServiceClient struct {
-	getPrice *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
+	getPrice        *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
+	getPriceHistory *connect.Client[v1.GetPriceHistoryRequest, v1.GetPriceHistoryResponse]
 }
 
 // GetPrice calls ntx.v1.PriceService.GetPrice.
@@ -72,9 +83,15 @@ func (c *priceServiceClient) GetPrice(ctx context.Context, req *connect.Request[
 	return c.getPrice.CallUnary(ctx, req)
 }
 
+// GetPriceHistory calls ntx.v1.PriceService.GetPriceHistory.
+func (c *priceServiceClient) GetPriceHistory(ctx context.Context, req *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error) {
+	return c.getPriceHistory.CallUnary(ctx, req)
+}
+
 // PriceServiceHandler is an implementation of the ntx.v1.PriceService service.
 type PriceServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
+	GetPriceHistory(context.Context, *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error)
 }
 
 // NewPriceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -90,10 +107,18 @@ func NewPriceServiceHandler(svc PriceServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(priceServiceMethods.ByName("GetPrice")),
 		connect.WithHandlerOptions(opts...),
 	)
+	priceServiceGetPriceHistoryHandler := connect.NewUnaryHandler(
+		PriceServiceGetPriceHistoryProcedure,
+		svc.GetPriceHistory,
+		connect.WithSchema(priceServiceMethods.ByName("GetPriceHistory")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.PriceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PriceServiceGetPriceProcedure:
 			priceServiceGetPriceHandler.ServeHTTP(w, r)
+		case PriceServiceGetPriceHistoryProcedure:
+			priceServiceGetPriceHistoryHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -105,4 +130,8 @@ type UnimplementedPriceServiceHandler struct{}
 
 func (UnimplementedPriceServiceHandler) GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.GetPrice is not implemented"))
+}
+
+func (UnimplementedPriceServiceHandler) GetPriceHistory(context.Context, *connect.Request[v1.GetPriceHistoryRequest]) (*connect.Response[v1.GetPriceHistoryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PriceService.GetPriceHistory is not implemented"))
 }
