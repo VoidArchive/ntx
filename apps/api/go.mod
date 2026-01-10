@@ -9,7 +9,7 @@ require (
 	github.com/pressly/goose/v3 v3.26.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/cors v1.11.1
-	github.com/voidarchive/go-nepse v0.2.4
+	github.com/voidarchive/go-nepse v0.2.5
 	google.golang.org/protobuf v1.36.11
 	modernc.org/sqlite v1.38.2
 )
