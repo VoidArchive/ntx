@@ -3,17 +3,21 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ params, platform }) => {
-	const apiUrl = platform?.env?.API_URL ?? 'http://localhost:8080';
+	// In dev mode, always use localhost. In prod, use platform env.
+	const apiUrl = import.meta.env.DEV
+		? 'http://localhost:8080'
+		: (platform?.env?.API_URL ?? 'http://localhost:8080');
 	const { company, price } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes, companiesRes, pricesRes] = await Promise.all([
-			company.getCompany({ symbol: params.symbol }),
-			company.getFundamentals({ symbol: params.symbol }),
-			price.getPrice({ symbol: params.symbol }),
-			price.getPriceHistory({ symbol: params.symbol, days: 365 }),
-			company.listCompanies({ limit: 500 }),
-			price.listLatestPrices({})
-		]);
+		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes, companiesRes, pricesRes] =
+			await Promise.all([
+				company.getCompany({ symbol: params.symbol }),
+				company.getFundamentals({ symbol: params.symbol }),
+				price.getPrice({ symbol: params.symbol }),
+				price.getPriceHistory({ symbol: params.symbol, days: 365 }),
+				company.listCompanies({ limit: 500 }),
+				price.listLatestPrices({})
+			]);
 
 		// Fetch sector stats (non-blocking - we can still show page without it)
 		let sectorStats = undefined;
@@ -26,6 +30,24 @@ export const load = async ({ params, platform }) => {
 			}
 		}
 
+		// Fetch ownership data (non-blocking)
+		let ownership = undefined;
+		try {
+			const ownershipRes = await company.getOwnership({ symbol: params.symbol });
+			ownership = ownershipRes.ownership;
+		} catch {
+			// Ownership data is optional, continue without it
+		}
+
+		// Fetch corporate actions (non-blocking)
+		let corporateActions = undefined;
+		try {
+			const actionsRes = await company.getCorporateActions({ symbol: params.symbol });
+			corporateActions = actionsRes.actions;
+		} catch {
+			// Corporate actions are optional, continue without them
+		}
+
 		return {
 			company: companyRes.company,
 			fundamentals: fundamentalsRes.latest,
@@ -33,6 +55,8 @@ export const load = async ({ params, platform }) => {
 			price: priceRes.price,
 			priceHistory: priceHistoryRes.prices,
 			sectorStats,
+			ownership,
+			corporateActions,
 			companies: companiesRes.companies,
 			prices: pricesRes.prices
 		};

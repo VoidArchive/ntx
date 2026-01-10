@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.png';
 	import Github from '@lucide/svelte/icons/github';
 	import AlertCircle from '@lucide/svelte/icons/alert-circle';
 	import { browser } from '$app/environment';

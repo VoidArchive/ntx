@@ -563,6 +563,190 @@ func (x *Price) GetTrades() int32 {
 	return 0
 }
 
+type Ownership struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	CompanyId       int64                  `protobuf:"varint,1,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	ListedShares    int64                  `protobuf:"varint,2,opt,name=listed_shares,json=listedShares,proto3" json:"listed_shares,omitempty"`
+	PublicShares    int64                  `protobuf:"varint,3,opt,name=public_shares,json=publicShares,proto3" json:"public_shares,omitempty"`
+	PublicPercent   float64                `protobuf:"fixed64,4,opt,name=public_percent,json=publicPercent,proto3" json:"public_percent,omitempty"`
+	PromoterShares  int64                  `protobuf:"varint,5,opt,name=promoter_shares,json=promoterShares,proto3" json:"promoter_shares,omitempty"`
+	PromoterPercent float64                `protobuf:"fixed64,6,opt,name=promoter_percent,json=promoterPercent,proto3" json:"promoter_percent,omitempty"`
+	UpdatedAt       string                 `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Ownership) Reset() {
+	*x = Ownership{}
+	mi := &file_ntx_v1_common_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Ownership) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Ownership) ProtoMessage() {}
+
+func (x *Ownership) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_common_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Ownership.ProtoReflect.Descriptor instead.
+func (*Ownership) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_common_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Ownership) GetCompanyId() int64 {
+	if x != nil {
+		return x.CompanyId
+	}
+	return 0
+}
+
+func (x *Ownership) GetListedShares() int64 {
+	if x != nil {
+		return x.ListedShares
+	}
+	return 0
+}
+
+func (x *Ownership) GetPublicShares() int64 {
+	if x != nil {
+		return x.PublicShares
+	}
+	return 0
+}
+
+func (x *Ownership) GetPublicPercent() float64 {
+	if x != nil {
+		return x.PublicPercent
+	}
+	return 0
+}
+
+func (x *Ownership) GetPromoterShares() int64 {
+	if x != nil {
+		return x.PromoterShares
+	}
+	return 0
+}
+
+func (x *Ownership) GetPromoterPercent() float64 {
+	if x != nil {
+		return x.PromoterPercent
+	}
+	return 0
+}
+
+func (x *Ownership) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type CorporateAction struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	CompanyId       int64                  `protobuf:"varint,2,opt,name=company_id,json=companyId,proto3" json:"company_id,omitempty"`
+	FiscalYear      string                 `protobuf:"bytes,3,opt,name=fiscal_year,json=fiscalYear,proto3" json:"fiscal_year,omitempty"`
+	BonusPercentage float64                `protobuf:"fixed64,4,opt,name=bonus_percentage,json=bonusPercentage,proto3" json:"bonus_percentage,omitempty"`
+	RightPercentage *float64               `protobuf:"fixed64,5,opt,name=right_percentage,json=rightPercentage,proto3,oneof" json:"right_percentage,omitempty"`
+	CashDividend    *float64               `protobuf:"fixed64,6,opt,name=cash_dividend,json=cashDividend,proto3,oneof" json:"cash_dividend,omitempty"`
+	SubmittedDate   string                 `protobuf:"bytes,7,opt,name=submitted_date,json=submittedDate,proto3" json:"submitted_date,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CorporateAction) Reset() {
+	*x = CorporateAction{}
+	mi := &file_ntx_v1_common_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CorporateAction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CorporateAction) ProtoMessage() {}
+
+func (x *CorporateAction) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_common_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CorporateAction.ProtoReflect.Descriptor instead.
+func (*CorporateAction) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_common_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CorporateAction) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *CorporateAction) GetCompanyId() int64 {
+	if x != nil {
+		return x.CompanyId
+	}
+	return 0
+}
+
+func (x *CorporateAction) GetFiscalYear() string {
+	if x != nil {
+		return x.FiscalYear
+	}
+	return ""
+}
+
+func (x *CorporateAction) GetBonusPercentage() float64 {
+	if x != nil {
+		return x.BonusPercentage
+	}
+	return 0
+}
+
+func (x *CorporateAction) GetRightPercentage() float64 {
+	if x != nil && x.RightPercentage != nil {
+		return *x.RightPercentage
+	}
+	return 0
+}
+
+func (x *CorporateAction) GetCashDividend() float64 {
+	if x != nil && x.CashDividend != nil {
+		return *x.CashDividend
+	}
+	return 0
+}
+
+func (x *CorporateAction) GetSubmittedDate() string {
+	if x != nil {
+		return x.SubmittedDate
+	}
+	return ""
+}
+
 var File_ntx_v1_common_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_common_proto_rawDesc = "" +
@@ -628,7 +812,29 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"\x0f_change_percentB\t\n" +
 	"\a_volumeB\v\n" +
 	"\t_turnoverB\t\n" +
-	"\a_trades*\x85\x01\n" +
+	"\a_trades\"\x8e\x02\n" +
+	"\tOwnership\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x01 \x01(\x03R\tcompanyId\x12#\n" +
+	"\rlisted_shares\x18\x02 \x01(\x03R\flistedShares\x12#\n" +
+	"\rpublic_shares\x18\x03 \x01(\x03R\fpublicShares\x12%\n" +
+	"\x0epublic_percent\x18\x04 \x01(\x01R\rpublicPercent\x12'\n" +
+	"\x0fpromoter_shares\x18\x05 \x01(\x03R\x0epromoterShares\x12)\n" +
+	"\x10promoter_percent\x18\x06 \x01(\x01R\x0fpromoterPercent\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\a \x01(\tR\tupdatedAt\"\xb4\x02\n" +
+	"\x0fCorporateAction\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
+	"\n" +
+	"company_id\x18\x02 \x01(\x03R\tcompanyId\x12\x1f\n" +
+	"\vfiscal_year\x18\x03 \x01(\tR\n" +
+	"fiscalYear\x12)\n" +
+	"\x10bonus_percentage\x18\x04 \x01(\x01R\x0fbonusPercentage\x12.\n" +
+	"\x10right_percentage\x18\x05 \x01(\x01H\x00R\x0frightPercentage\x88\x01\x01\x12(\n" +
+	"\rcash_dividend\x18\x06 \x01(\x01H\x01R\fcashDividend\x88\x01\x01\x12%\n" +
+	"\x0esubmitted_date\x18\a \x01(\tR\rsubmittedDateB\x13\n" +
+	"\x11_right_percentageB\x10\n" +
+	"\x0e_cash_dividend*\x85\x01\n" +
 	"\rCompanyStatus\x12\x1e\n" +
 	"\x1aCOMPANY_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15COMPANY_STATUS_ACTIVE\x10\x01\x12\x1c\n" +
@@ -669,14 +875,16 @@ func file_ntx_v1_common_proto_rawDescGZIP() []byte {
 }
 
 var file_ntx_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_ntx_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_ntx_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_ntx_v1_common_proto_goTypes = []any{
-	(CompanyStatus)(0),  // 0: ntx.v1.CompanyStatus
-	(Sector)(0),         // 1: ntx.v1.Sector
-	(InstrumentType)(0), // 2: ntx.v1.InstrumentType
-	(*Company)(nil),     // 3: ntx.v1.Company
-	(*Fundamental)(nil), // 4: ntx.v1.Fundamental
-	(*Price)(nil),       // 5: ntx.v1.Price
+	(CompanyStatus)(0),      // 0: ntx.v1.CompanyStatus
+	(Sector)(0),             // 1: ntx.v1.Sector
+	(InstrumentType)(0),     // 2: ntx.v1.InstrumentType
+	(*Company)(nil),         // 3: ntx.v1.Company
+	(*Fundamental)(nil),     // 4: ntx.v1.Fundamental
+	(*Price)(nil),           // 5: ntx.v1.Price
+	(*Ownership)(nil),       // 6: ntx.v1.Ownership
+	(*CorporateAction)(nil), // 7: ntx.v1.CorporateAction
 }
 var file_ntx_v1_common_proto_depIdxs = []int32{
 	0, // 0: ntx.v1.Company.status:type_name -> ntx.v1.CompanyStatus
@@ -697,13 +905,14 @@ func file_ntx_v1_common_proto_init() {
 	file_ntx_v1_common_proto_msgTypes[0].OneofWrappers = []any{}
 	file_ntx_v1_common_proto_msgTypes[1].OneofWrappers = []any{}
 	file_ntx_v1_common_proto_msgTypes[2].OneofWrappers = []any{}
+	file_ntx_v1_common_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_common_proto_rawDesc), len(file_ntx_v1_common_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

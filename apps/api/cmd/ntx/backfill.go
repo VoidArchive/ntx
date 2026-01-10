@@ -41,6 +41,22 @@ func runBackfill(ctx context.Context, queries *sqlc.Queries, client *nepse.Clien
 		slog.Info("price history synced")
 	}
 
+	if opts.ownership {
+		slog.Info("syncing ownership...", "concurrency", maxConcurrency)
+		if err := syncOwnershipConcurrent(ctx, queries, client); err != nil {
+			return fmt.Errorf("sync ownership: %w", err)
+		}
+		slog.Info("ownership synced")
+	}
+
+	if opts.corporateActions {
+		slog.Info("syncing corporate actions...", "concurrency", maxConcurrency)
+		if err := syncCorporateActionsConcurrent(ctx, queries, client); err != nil {
+			return fmt.Errorf("sync corporate actions: %w", err)
+		}
+		slog.Info("corporate actions synced")
+	}
+
 	slog.Info("backfill complete", "duration", time.Since(start))
 	return nil
 }
@@ -136,6 +152,113 @@ func syncCompanyFundamentals(
 	return nil
 }
 
+func syncOwnershipConcurrent(ctx context.Context, queries *sqlc.Queries, client *nepse.Client) error {
+	companies, err := queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
+		Limit:  1000,
+		Offset: 0,
+	})
+	if err != nil {
+		return err
+	}
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, maxConcurrency)
+
+	for _, c := range companies {
+		wg.Add(1)
+		go func(company sqlc.Company) {
+			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
+			if err := syncCompanyOwnership(ctx, queries, client, company); err != nil {
+				slog.Warn("skip ownership", "symbol", company.Symbol, "error", err)
+			}
+		}(c)
+	}
+
+	wg.Wait()
+	return nil
+}
+
+func syncCompanyOwnership(
+	ctx context.Context,
+	queries *sqlc.Queries,
+	client *nepse.Client,
+	company sqlc.Company,
+) error {
+	ownership, err := client.SecurityDetail(ctx, int32(company.ID))
+	if err != nil {
+		return err
+	}
+
+	params := sqlc.UpsertOwnershipParams{
+		CompanyID:       company.ID,
+		ListedShares:    nullInt64(ownership.ListedShares),
+		PublicShares:    nullInt64(ownership.PublicShares),
+		PublicPercent:   nullFloat64(ownership.PublicPercent),
+		PromoterShares:  nullInt64(ownership.PromoterShares),
+		PromoterPercent: nullFloat64(ownership.PromoterPercent),
+	}
+	return queries.UpsertOwnership(ctx, params)
+}
+
+func syncCorporateActionsConcurrent(ctx context.Context, queries *sqlc.Queries, client *nepse.Client) error {
+	companies, err := queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
+		Limit:  1000,
+		Offset: 0,
+	})
+	if err != nil {
+		return err
+	}
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, maxConcurrency)
+
+	for _, c := range companies {
+		wg.Add(1)
+		go func(company sqlc.Company) {
+			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
+			if err := syncCompanyCorporateActions(ctx, queries, client, company); err != nil {
+				slog.Warn("skip corporate actions", "symbol", company.Symbol, "error", err)
+			}
+		}(c)
+	}
+
+	wg.Wait()
+	return nil
+}
+
+func syncCompanyCorporateActions(
+	ctx context.Context,
+	queries *sqlc.Queries,
+	client *nepse.Client,
+	company sqlc.Company,
+) error {
+	actions, err := client.CorporateActions(ctx, int32(company.ID))
+	if err != nil {
+		return err
+	}
+
+	for _, a := range actions {
+		params := sqlc.UpsertCorporateActionParams{
+			CompanyID:       company.ID,
+			FiscalYear:      a.FiscalYear,
+			BonusPercentage: nullFloat64(a.BonusPercentage),
+			RightPercentage: nullFloat64Ptr(a.RightPercentage),
+			CashDividend:    nullFloat64Ptr(a.CashDividend),
+			SubmittedDate:   nullString(a.SubmittedDate),
+		}
+		if err := queries.UpsertCorporateAction(ctx, params); err != nil {
+			return fmt.Errorf("upsert corporate action: %w", err)
+		}
+	}
+	return nil
+}
+
 func syncPriceHistoryConcurrent(ctx context.Context, queries *sqlc.Queries, client *nepse.Client) error {
 	companies, err := queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
 		Limit:  1000,
@@ -224,4 +347,11 @@ func nullInt64(i int64) sql.NullInt64 {
 		return sql.NullInt64{Valid: false}
 	}
 	return sql.NullInt64{Int64: i, Valid: true}
+}
+
+func nullFloat64Ptr(f *float64) sql.NullFloat64 {
+	if f == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{Float64: *f, Valid: true}
 }

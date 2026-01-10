@@ -45,6 +45,12 @@ const (
 	// CompanyServiceGetSectorStatsProcedure is the fully-qualified name of the CompanyService's
 	// GetSectorStats RPC.
 	CompanyServiceGetSectorStatsProcedure = "/ntx.v1.CompanyService/GetSectorStats"
+	// CompanyServiceGetOwnershipProcedure is the fully-qualified name of the CompanyService's
+	// GetOwnership RPC.
+	CompanyServiceGetOwnershipProcedure = "/ntx.v1.CompanyService/GetOwnership"
+	// CompanyServiceGetCorporateActionsProcedure is the fully-qualified name of the CompanyService's
+	// GetCorporateActions RPC.
+	CompanyServiceGetCorporateActionsProcedure = "/ntx.v1.CompanyService/GetCorporateActions"
 )
 
 // CompanyServiceClient is a client for the ntx.v1.CompanyService service.
@@ -53,6 +59,8 @@ type CompanyServiceClient interface {
 	GetCompany(context.Context, *connect.Request[v1.GetCompanyRequest]) (*connect.Response[v1.GetCompanyResponse], error)
 	GetFundamentals(context.Context, *connect.Request[v1.GetFundamentalsRequest]) (*connect.Response[v1.GetFundamentalsResponse], error)
 	GetSectorStats(context.Context, *connect.Request[v1.GetSectorStatsRequest]) (*connect.Response[v1.GetSectorStatsResponse], error)
+	GetOwnership(context.Context, *connect.Request[v1.GetOwnershipRequest]) (*connect.Response[v1.GetOwnershipResponse], error)
+	GetCorporateActions(context.Context, *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error)
 }
 
 // NewCompanyServiceClient constructs a client for the ntx.v1.CompanyService service. By default, it
@@ -90,15 +98,29 @@ func NewCompanyServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(companyServiceMethods.ByName("GetSectorStats")),
 			connect.WithClientOptions(opts...),
 		),
+		getOwnership: connect.NewClient[v1.GetOwnershipRequest, v1.GetOwnershipResponse](
+			httpClient,
+			baseURL+CompanyServiceGetOwnershipProcedure,
+			connect.WithSchema(companyServiceMethods.ByName("GetOwnership")),
+			connect.WithClientOptions(opts...),
+		),
+		getCorporateActions: connect.NewClient[v1.GetCorporateActionsRequest, v1.GetCorporateActionsResponse](
+			httpClient,
+			baseURL+CompanyServiceGetCorporateActionsProcedure,
+			connect.WithSchema(companyServiceMethods.ByName("GetCorporateActions")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // companyServiceClient implements CompanyServiceClient.
 type companyServiceClient struct {
-	listCompanies   *connect.Client[v1.ListCompaniesRequest, v1.ListCompaniesResponse]
-	getCompany      *connect.Client[v1.GetCompanyRequest, v1.GetCompanyResponse]
-	getFundamentals *connect.Client[v1.GetFundamentalsRequest, v1.GetFundamentalsResponse]
-	getSectorStats  *connect.Client[v1.GetSectorStatsRequest, v1.GetSectorStatsResponse]
+	listCompanies       *connect.Client[v1.ListCompaniesRequest, v1.ListCompaniesResponse]
+	getCompany          *connect.Client[v1.GetCompanyRequest, v1.GetCompanyResponse]
+	getFundamentals     *connect.Client[v1.GetFundamentalsRequest, v1.GetFundamentalsResponse]
+	getSectorStats      *connect.Client[v1.GetSectorStatsRequest, v1.GetSectorStatsResponse]
+	getOwnership        *connect.Client[v1.GetOwnershipRequest, v1.GetOwnershipResponse]
+	getCorporateActions *connect.Client[v1.GetCorporateActionsRequest, v1.GetCorporateActionsResponse]
 }
 
 // ListCompanies calls ntx.v1.CompanyService.ListCompanies.
@@ -121,12 +143,24 @@ func (c *companyServiceClient) GetSectorStats(ctx context.Context, req *connect.
 	return c.getSectorStats.CallUnary(ctx, req)
 }
 
+// GetOwnership calls ntx.v1.CompanyService.GetOwnership.
+func (c *companyServiceClient) GetOwnership(ctx context.Context, req *connect.Request[v1.GetOwnershipRequest]) (*connect.Response[v1.GetOwnershipResponse], error) {
+	return c.getOwnership.CallUnary(ctx, req)
+}
+
+// GetCorporateActions calls ntx.v1.CompanyService.GetCorporateActions.
+func (c *companyServiceClient) GetCorporateActions(ctx context.Context, req *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error) {
+	return c.getCorporateActions.CallUnary(ctx, req)
+}
+
 // CompanyServiceHandler is an implementation of the ntx.v1.CompanyService service.
 type CompanyServiceHandler interface {
 	ListCompanies(context.Context, *connect.Request[v1.ListCompaniesRequest]) (*connect.Response[v1.ListCompaniesResponse], error)
 	GetCompany(context.Context, *connect.Request[v1.GetCompanyRequest]) (*connect.Response[v1.GetCompanyResponse], error)
 	GetFundamentals(context.Context, *connect.Request[v1.GetFundamentalsRequest]) (*connect.Response[v1.GetFundamentalsResponse], error)
 	GetSectorStats(context.Context, *connect.Request[v1.GetSectorStatsRequest]) (*connect.Response[v1.GetSectorStatsResponse], error)
+	GetOwnership(context.Context, *connect.Request[v1.GetOwnershipRequest]) (*connect.Response[v1.GetOwnershipResponse], error)
+	GetCorporateActions(context.Context, *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error)
 }
 
 // NewCompanyServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -160,6 +194,18 @@ func NewCompanyServiceHandler(svc CompanyServiceHandler, opts ...connect.Handler
 		connect.WithSchema(companyServiceMethods.ByName("GetSectorStats")),
 		connect.WithHandlerOptions(opts...),
 	)
+	companyServiceGetOwnershipHandler := connect.NewUnaryHandler(
+		CompanyServiceGetOwnershipProcedure,
+		svc.GetOwnership,
+		connect.WithSchema(companyServiceMethods.ByName("GetOwnership")),
+		connect.WithHandlerOptions(opts...),
+	)
+	companyServiceGetCorporateActionsHandler := connect.NewUnaryHandler(
+		CompanyServiceGetCorporateActionsProcedure,
+		svc.GetCorporateActions,
+		connect.WithSchema(companyServiceMethods.ByName("GetCorporateActions")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.CompanyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CompanyServiceListCompaniesProcedure:
@@ -170,6 +216,10 @@ func NewCompanyServiceHandler(svc CompanyServiceHandler, opts ...connect.Handler
 			companyServiceGetFundamentalsHandler.ServeHTTP(w, r)
 		case CompanyServiceGetSectorStatsProcedure:
 			companyServiceGetSectorStatsHandler.ServeHTTP(w, r)
+		case CompanyServiceGetOwnershipProcedure:
+			companyServiceGetOwnershipHandler.ServeHTTP(w, r)
+		case CompanyServiceGetCorporateActionsProcedure:
+			companyServiceGetCorporateActionsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -193,4 +243,12 @@ func (UnimplementedCompanyServiceHandler) GetFundamentals(context.Context, *conn
 
 func (UnimplementedCompanyServiceHandler) GetSectorStats(context.Context, *connect.Request[v1.GetSectorStatsRequest]) (*connect.Response[v1.GetSectorStatsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.GetSectorStats is not implemented"))
+}
+
+func (UnimplementedCompanyServiceHandler) GetOwnership(context.Context, *connect.Request[v1.GetOwnershipRequest]) (*connect.Response[v1.GetOwnershipResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.GetOwnership is not implemented"))
+}
+
+func (UnimplementedCompanyServiceHandler) GetCorporateActions(context.Context, *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.GetCorporateActions is not implemented"))
 }

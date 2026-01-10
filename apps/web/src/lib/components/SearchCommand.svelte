@@ -112,7 +112,11 @@
 	});
 </script>
 
-<div class="relative w-full" class:max-w-xl={variant === 'hero'} class:max-w-xs={variant === 'compact'}>
+<div
+	class="relative w-full"
+	class:max-w-xl={variant === 'hero'}
+	class:max-w-xs={variant === 'compact'}
+>
 	{#if variant === 'hero'}
 		<!-- Hero variant: larger, centered search -->
 		<div class="group relative">
@@ -131,7 +135,9 @@
 					onblur={() => setTimeout(() => (isOpen = false), 200)}
 					class="flex-1 border-none bg-transparent px-4 py-4 text-lg placeholder:text-muted-foreground focus:ring-0 focus:outline-none"
 				/>
-				<kbd class="mr-4 hidden rounded border border-border bg-muted px-2 py-0.5 text-xs text-muted-foreground sm:inline">
+				<kbd
+					class="mr-4 hidden rounded border border-border bg-muted px-2 py-0.5 text-xs text-muted-foreground sm:inline"
+				>
 					⌘K
 				</kbd>
 			</div>
@@ -158,7 +164,9 @@
 					<X class="size-3" />
 				</button>
 			{:else}
-				<kbd class="mr-2 hidden rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground lg:inline">
+				<kbd
+					class="mr-2 hidden rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground lg:inline"
+				>
 					⌘K
 				</kbd>
 			{/if}

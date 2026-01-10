@@ -1,13 +1,14 @@
 <script lang="ts">
-	import type { Price, Fundamental } from '$lib/gen/ntx/v1/common_pb';
+	import type { Price, Fundamental, Ownership } from '$lib/gen/ntx/v1/common_pb';
 
 	interface Props {
 		price?: Price;
 		fundamentals?: Fundamental;
 		priceHistory?: Price[];
+		ownership?: Ownership;
 	}
 
-	let { price, fundamentals, priceHistory }: Props = $props();
+	let { price, fundamentals, priceHistory, ownership }: Props = $props();
 
 	function fmt(value: number | bigint | undefined): string {
 		if (value === undefined) return '—';
@@ -36,17 +37,23 @@
 		};
 	});
 
-	// Calculate outstanding shares from paid-up capital (face value = Rs. 100)
-	let outstandingShares = $derived.by(() => {
-		if (!fundamentals?.paidUpCapital) return null;
-		return fundamentals.paidUpCapital / 100;
+	// Use listedShares from ownership API, fallback to calculation from paid-up capital
+	let listedShares = $derived.by(() => {
+		if (ownership?.listedShares) {
+			return Number(ownership.listedShares);
+		}
+		// Fallback: calculate from paid-up capital (face value = Rs. 100)
+		if (fundamentals?.paidUpCapital) {
+			return fundamentals.paidUpCapital / 100;
+		}
+		return null;
 	});
 
-	// Calculate market cap: price * outstanding shares
+	// Calculate market cap: price * listed shares
 	let marketCap = $derived.by(() => {
 		const currentPrice = price?.ltp ?? price?.close;
-		if (!currentPrice || !outstandingShares) return null;
-		return currentPrice * outstandingShares;
+		if (!currentPrice || !listedShares) return null;
+		return currentPrice * listedShares;
 	});
 
 	interface StatRow {
@@ -82,8 +89,8 @@
 			rows.push({ label: 'Volume', value: fmtLarge(price.volume) });
 		}
 
-		if (outstandingShares) {
-			rows.push({ label: 'Listed Shares', value: fmtLarge(outstandingShares) });
+		if (listedShares) {
+			rows.push({ label: 'Listed Shares', value: fmtLarge(listedShares) });
 		}
 
 		return rows;
@@ -98,7 +105,7 @@
 				: ''}"
 		>
 			<span class="text-muted-foreground">{stat.label}</span>
-			<span class="tabular-nums font-medium">{stat.value}</span>
+			<span class="font-medium tabular-nums">{stat.value}</span>
 		</div>
 	{/each}
 </div>

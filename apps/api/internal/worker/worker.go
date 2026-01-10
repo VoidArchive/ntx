@@ -132,6 +132,70 @@ func (w *Worker) SyncPrices(ctx context.Context, businessDate string) error {
 	return nil
 }
 
+func (w *Worker) SyncOwnership(ctx context.Context) error {
+	companies, err := w.queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
+		Limit:  1000,
+		Offset: 0,
+	})
+	if err != nil {
+		return fmt.Errorf("list companies: %w", err)
+	}
+
+	for _, c := range companies {
+		ownership, err := w.nepse.SecurityDetail(ctx, int32(c.ID))
+		if err != nil {
+			fmt.Printf("skip ownership for %s: %v\n", c.Symbol, err)
+			continue
+		}
+
+		params := sqlc.UpsertOwnershipParams{
+			CompanyID:       c.ID,
+			ListedShares:    nullInt64(ownership.ListedShares),
+			PublicShares:    nullInt64(ownership.PublicShares),
+			PublicPercent:   nullFloat64(ownership.PublicPercent),
+			PromoterShares:  nullInt64(ownership.PromoterShares),
+			PromoterPercent: nullFloat64(ownership.PromoterPercent),
+		}
+		if err := w.queries.UpsertOwnership(ctx, params); err != nil {
+			return fmt.Errorf("upsert ownership for %s: %w", c.Symbol, err)
+		}
+	}
+	return nil
+}
+
+func (w *Worker) SyncCorporateActions(ctx context.Context) error {
+	companies, err := w.queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
+		Limit:  1000,
+		Offset: 0,
+	})
+	if err != nil {
+		return fmt.Errorf("list companies: %w", err)
+	}
+
+	for _, c := range companies {
+		actions, err := w.nepse.CorporateActions(ctx, int32(c.ID))
+		if err != nil {
+			fmt.Printf("skip corporate actions for %s: %v\n", c.Symbol, err)
+			continue
+		}
+
+		for _, a := range actions {
+			params := sqlc.UpsertCorporateActionParams{
+				CompanyID:       c.ID,
+				FiscalYear:      a.FiscalYear,
+				BonusPercentage: nullFloat64(a.BonusPercentage),
+				RightPercentage: nullFloat64Ptr(a.RightPercentage),
+				CashDividend:    nullFloat64Ptr(a.CashDividend),
+				SubmittedDate:   nullString(a.SubmittedDate),
+			}
+			if err := w.queries.UpsertCorporateAction(ctx, params); err != nil {
+				return fmt.Errorf("upsert corporate action for %s: %w", c.Symbol, err)
+			}
+		}
+	}
+	return nil
+}
+
 func nullString(s string) sql.NullString {
 	if s == "" {
 		return sql.NullString{Valid: false}
@@ -144,6 +208,13 @@ func nullFloat64(f float64) sql.NullFloat64 {
 		return sql.NullFloat64{Valid: false}
 	}
 	return sql.NullFloat64{Float64: f, Valid: true}
+}
+
+func nullFloat64Ptr(f *float64) sql.NullFloat64 {
+	if f == nil {
+		return sql.NullFloat64{Valid: false}
+	}
+	return sql.NullFloat64{Float64: *f, Valid: true}
 }
 
 func nullInt64(i int64) sql.NullInt64 {

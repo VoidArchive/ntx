@@ -13,18 +13,25 @@ type Querier interface {
 	CountCompaniesBySearch(ctx context.Context, arg CountCompaniesBySearchParams) (int64, error)
 	CountCompaniesBySector(ctx context.Context, sector string) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
+	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
+	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
 	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
+	GetOwnership(ctx context.Context, companyID int64) (Ownership, error)
+	GetOwnershipBySymbol(ctx context.Context, symbol string) (Ownership, error)
 	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]Company, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
+	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
+	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error
 	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
+	UpsertOwnership(ctx context.Context, arg UpsertOwnershipParams) error
 	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
 }
 

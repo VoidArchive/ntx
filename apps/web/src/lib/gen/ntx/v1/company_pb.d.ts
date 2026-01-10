@@ -2,9 +2,9 @@
 // @generated from file ntx/v1/company.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from '@bufbuild/protobuf/codegenv1';
-import type { Message } from '@bufbuild/protobuf';
-import type { Company, Fundamental, Sector } from './common_pb';
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import type { Message } from "@bufbuild/protobuf";
+import type { Company, CorporateAction, Fundamental, Ownership, Sector } from "./common_pb";
 
 /**
  * Describes the file ntx/v1/company.proto.
@@ -14,26 +14,26 @@ export declare const file_ntx_v1_company: GenFile;
 /**
  * @generated from message ntx.v1.ListCompaniesRequest
  */
-export declare type ListCompaniesRequest = Message<'ntx.v1.ListCompaniesRequest'> & {
-	/**
-	 * @generated from field: optional ntx.v1.Sector sector = 1;
-	 */
-	sector?: Sector;
+export declare type ListCompaniesRequest = Message<"ntx.v1.ListCompaniesRequest"> & {
+  /**
+   * @generated from field: optional ntx.v1.Sector sector = 1;
+   */
+  sector?: Sector;
 
-	/**
-	 * @generated from field: optional string query = 2;
-	 */
-	query?: string;
+  /**
+   * @generated from field: optional string query = 2;
+   */
+  query?: string;
 
-	/**
-	 * @generated from field: optional int32 limit = 3;
-	 */
-	limit?: number;
+  /**
+   * @generated from field: optional int32 limit = 3;
+   */
+  limit?: number;
 
-	/**
-	 * @generated from field: optional int32 offset = 4;
-	 */
-	offset?: number;
+  /**
+   * @generated from field: optional int32 offset = 4;
+   */
+  offset?: number;
 };
 
 /**
@@ -45,11 +45,11 @@ export declare const ListCompaniesRequestSchema: GenMessage<ListCompaniesRequest
 /**
  * @generated from message ntx.v1.ListCompaniesResponse
  */
-export declare type ListCompaniesResponse = Message<'ntx.v1.ListCompaniesResponse'> & {
-	/**
-	 * @generated from field: repeated ntx.v1.Company companies = 1;
-	 */
-	companies: Company[];
+export declare type ListCompaniesResponse = Message<"ntx.v1.ListCompaniesResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.Company companies = 1;
+   */
+  companies: Company[];
 };
 
 /**
@@ -61,11 +61,11 @@ export declare const ListCompaniesResponseSchema: GenMessage<ListCompaniesRespon
 /**
  * @generated from message ntx.v1.GetCompanyRequest
  */
-export declare type GetCompanyRequest = Message<'ntx.v1.GetCompanyRequest'> & {
-	/**
-	 * @generated from field: string symbol = 1;
-	 */
-	symbol: string;
+export declare type GetCompanyRequest = Message<"ntx.v1.GetCompanyRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
 };
 
 /**
@@ -77,11 +77,11 @@ export declare const GetCompanyRequestSchema: GenMessage<GetCompanyRequest>;
 /**
  * @generated from message ntx.v1.GetCompanyResponse
  */
-export declare type GetCompanyResponse = Message<'ntx.v1.GetCompanyResponse'> & {
-	/**
-	 * @generated from field: ntx.v1.Company company = 1;
-	 */
-	company?: Company;
+export declare type GetCompanyResponse = Message<"ntx.v1.GetCompanyResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Company company = 1;
+   */
+  company?: Company;
 };
 
 /**
@@ -93,11 +93,11 @@ export declare const GetCompanyResponseSchema: GenMessage<GetCompanyResponse>;
 /**
  * @generated from message ntx.v1.GetFundamentalsRequest
  */
-export declare type GetFundamentalsRequest = Message<'ntx.v1.GetFundamentalsRequest'> & {
-	/**
-	 * @generated from field: string symbol = 1;
-	 */
-	symbol: string;
+export declare type GetFundamentalsRequest = Message<"ntx.v1.GetFundamentalsRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
 };
 
 /**
@@ -109,16 +109,16 @@ export declare const GetFundamentalsRequestSchema: GenMessage<GetFundamentalsReq
 /**
  * @generated from message ntx.v1.GetFundamentalsResponse
  */
-export declare type GetFundamentalsResponse = Message<'ntx.v1.GetFundamentalsResponse'> & {
-	/**
-	 * @generated from field: ntx.v1.Fundamental latest = 1;
-	 */
-	latest?: Fundamental;
+export declare type GetFundamentalsResponse = Message<"ntx.v1.GetFundamentalsResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Fundamental latest = 1;
+   */
+  latest?: Fundamental;
 
-	/**
-	 * @generated from field: repeated ntx.v1.Fundamental history = 2;
-	 */
-	history: Fundamental[];
+  /**
+   * @generated from field: repeated ntx.v1.Fundamental history = 2;
+   */
+  history: Fundamental[];
 };
 
 /**
@@ -130,11 +130,11 @@ export declare const GetFundamentalsResponseSchema: GenMessage<GetFundamentalsRe
 /**
  * @generated from message ntx.v1.GetSectorStatsRequest
  */
-export declare type GetSectorStatsRequest = Message<'ntx.v1.GetSectorStatsRequest'> & {
-	/**
-	 * @generated from field: ntx.v1.Sector sector = 1;
-	 */
-	sector: Sector;
+export declare type GetSectorStatsRequest = Message<"ntx.v1.GetSectorStatsRequest"> & {
+  /**
+   * @generated from field: ntx.v1.Sector sector = 1;
+   */
+  sector: Sector;
 };
 
 /**
@@ -146,11 +146,11 @@ export declare const GetSectorStatsRequestSchema: GenMessage<GetSectorStatsReque
 /**
  * @generated from message ntx.v1.GetSectorStatsResponse
  */
-export declare type GetSectorStatsResponse = Message<'ntx.v1.GetSectorStatsResponse'> & {
-	/**
-	 * @generated from field: ntx.v1.SectorStats stats = 1;
-	 */
-	stats?: SectorStats;
+export declare type GetSectorStatsResponse = Message<"ntx.v1.GetSectorStatsResponse"> & {
+  /**
+   * @generated from field: ntx.v1.SectorStats stats = 1;
+   */
+  stats?: SectorStats;
 };
 
 /**
@@ -162,38 +162,38 @@ export declare const GetSectorStatsResponseSchema: GenMessage<GetSectorStatsResp
 /**
  * @generated from message ntx.v1.SectorStats
  */
-export declare type SectorStats = Message<'ntx.v1.SectorStats'> & {
-	/**
-	 * @generated from field: ntx.v1.Sector sector = 1;
-	 */
-	sector: Sector;
+export declare type SectorStats = Message<"ntx.v1.SectorStats"> & {
+  /**
+   * @generated from field: ntx.v1.Sector sector = 1;
+   */
+  sector: Sector;
 
-	/**
-	 * @generated from field: int32 company_count = 2;
-	 */
-	companyCount: number;
+  /**
+   * @generated from field: int32 company_count = 2;
+   */
+  companyCount: number;
 
-	/**
-	 * @generated from field: optional double avg_eps = 3;
-	 */
-	avgEps?: number;
+  /**
+   * @generated from field: optional double avg_eps = 3;
+   */
+  avgEps?: number;
 
-	/**
-	 * @generated from field: optional double avg_pe_ratio = 4;
-	 */
-	avgPeRatio?: number;
+  /**
+   * @generated from field: optional double avg_pe_ratio = 4;
+   */
+  avgPeRatio?: number;
 
-	/**
-	 * @generated from field: optional double avg_book_value = 5;
-	 */
-	avgBookValue?: number;
+  /**
+   * @generated from field: optional double avg_book_value = 5;
+   */
+  avgBookValue?: number;
 
-	/**
-	 * YoY average
-	 *
-	 * @generated from field: optional double avg_profit_growth = 6;
-	 */
-	avgProfitGrowth?: number;
+  /**
+   * YoY average
+   *
+   * @generated from field: optional double avg_profit_growth = 6;
+   */
+  avgProfitGrowth?: number;
 };
 
 /**
@@ -203,39 +203,120 @@ export declare type SectorStats = Message<'ntx.v1.SectorStats'> & {
 export declare const SectorStatsSchema: GenMessage<SectorStats>;
 
 /**
+ * @generated from message ntx.v1.GetOwnershipRequest
+ */
+export declare type GetOwnershipRequest = Message<"ntx.v1.GetOwnershipRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+};
+
+/**
+ * Describes the message ntx.v1.GetOwnershipRequest.
+ * Use `create(GetOwnershipRequestSchema)` to create a new message.
+ */
+export declare const GetOwnershipRequestSchema: GenMessage<GetOwnershipRequest>;
+
+/**
+ * @generated from message ntx.v1.GetOwnershipResponse
+ */
+export declare type GetOwnershipResponse = Message<"ntx.v1.GetOwnershipResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Ownership ownership = 1;
+   */
+  ownership?: Ownership;
+};
+
+/**
+ * Describes the message ntx.v1.GetOwnershipResponse.
+ * Use `create(GetOwnershipResponseSchema)` to create a new message.
+ */
+export declare const GetOwnershipResponseSchema: GenMessage<GetOwnershipResponse>;
+
+/**
+ * @generated from message ntx.v1.GetCorporateActionsRequest
+ */
+export declare type GetCorporateActionsRequest = Message<"ntx.v1.GetCorporateActionsRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+};
+
+/**
+ * Describes the message ntx.v1.GetCorporateActionsRequest.
+ * Use `create(GetCorporateActionsRequestSchema)` to create a new message.
+ */
+export declare const GetCorporateActionsRequestSchema: GenMessage<GetCorporateActionsRequest>;
+
+/**
+ * @generated from message ntx.v1.GetCorporateActionsResponse
+ */
+export declare type GetCorporateActionsResponse = Message<"ntx.v1.GetCorporateActionsResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.CorporateAction actions = 1;
+   */
+  actions: CorporateAction[];
+};
+
+/**
+ * Describes the message ntx.v1.GetCorporateActionsResponse.
+ * Use `create(GetCorporateActionsResponseSchema)` to create a new message.
+ */
+export declare const GetCorporateActionsResponseSchema: GenMessage<GetCorporateActionsResponse>;
+
+/**
  * @generated from service ntx.v1.CompanyService
  */
 export declare const CompanyService: GenService<{
-	/**
-	 * @generated from rpc ntx.v1.CompanyService.ListCompanies
-	 */
-	listCompanies: {
-		methodKind: 'unary';
-		input: typeof ListCompaniesRequestSchema;
-		output: typeof ListCompaniesResponseSchema;
-	};
-	/**
-	 * @generated from rpc ntx.v1.CompanyService.GetCompany
-	 */
-	getCompany: {
-		methodKind: 'unary';
-		input: typeof GetCompanyRequestSchema;
-		output: typeof GetCompanyResponseSchema;
-	};
-	/**
-	 * @generated from rpc ntx.v1.CompanyService.GetFundamentals
-	 */
-	getFundamentals: {
-		methodKind: 'unary';
-		input: typeof GetFundamentalsRequestSchema;
-		output: typeof GetFundamentalsResponseSchema;
-	};
-	/**
-	 * @generated from rpc ntx.v1.CompanyService.GetSectorStats
-	 */
-	getSectorStats: {
-		methodKind: 'unary';
-		input: typeof GetSectorStatsRequestSchema;
-		output: typeof GetSectorStatsResponseSchema;
-	};
+  /**
+   * @generated from rpc ntx.v1.CompanyService.ListCompanies
+   */
+  listCompanies: {
+    methodKind: "unary";
+    input: typeof ListCompaniesRequestSchema;
+    output: typeof ListCompaniesResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetCompany
+   */
+  getCompany: {
+    methodKind: "unary";
+    input: typeof GetCompanyRequestSchema;
+    output: typeof GetCompanyResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetFundamentals
+   */
+  getFundamentals: {
+    methodKind: "unary";
+    input: typeof GetFundamentalsRequestSchema;
+    output: typeof GetFundamentalsResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetSectorStats
+   */
+  getSectorStats: {
+    methodKind: "unary";
+    input: typeof GetSectorStatsRequestSchema;
+    output: typeof GetSectorStatsResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetOwnership
+   */
+  getOwnership: {
+    methodKind: "unary";
+    input: typeof GetOwnershipRequestSchema;
+    output: typeof GetOwnershipResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.CompanyService.GetCorporateActions
+   */
+  getCorporateActions: {
+    methodKind: "unary";
+    input: typeof GetCorporateActionsRequestSchema;
+    output: typeof GetCorporateActionsResponseSchema;
+  },
 }>;
+

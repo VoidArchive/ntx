@@ -47,11 +47,12 @@
 	{/if}
 
 	<p class="mt-3 leading-relaxed text-muted-foreground">
-		{company.name} operates in the {sectorNames[company.sector ?? Sector.OTHERS]} sector on the Nepal Stock Exchange.
+		{company.name} operates in the {sectorNames[company.sector ?? Sector.OTHERS]} sector on the Nepal
+		Stock Exchange.
 	</p>
 
 	{#if company.status === CompanyStatus.ACTIVE}
-		<p class="mt-3 text-xs text-positive">Currently trading</p>
+		<p class="mt-3 text-xs text-positive">Active</p>
 	{:else if company.status === CompanyStatus.SUSPENDED}
 		<p class="mt-3 text-xs text-caution">Trading suspended</p>
 	{:else if company.status === CompanyStatus.DELISTED}

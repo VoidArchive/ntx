@@ -22,6 +22,16 @@ type Company struct {
 	UpdatedAt      time.Time      `json:"updated_at"`
 }
 
+type CorporateAction struct {
+	ID              int64           `json:"id"`
+	CompanyID       int64           `json:"company_id"`
+	FiscalYear      string          `json:"fiscal_year"`
+	BonusPercentage sql.NullFloat64 `json:"bonus_percentage"`
+	RightPercentage sql.NullFloat64 `json:"right_percentage"`
+	CashDividend    sql.NullFloat64 `json:"cash_dividend"`
+	SubmittedDate   sql.NullString  `json:"submitted_date"`
+}
+
 type Fundamental struct {
 	ID            int64           `json:"id"`
 	CompanyID     int64           `json:"company_id"`
@@ -34,6 +44,16 @@ type Fundamental struct {
 	ProfitAmount  sql.NullFloat64 `json:"profit_amount"`
 	CreatedAt     time.Time       `json:"created_at"`
 	UpdatedAt     time.Time       `json:"updated_at"`
+}
+
+type Ownership struct {
+	CompanyID       int64           `json:"company_id"`
+	ListedShares    sql.NullInt64   `json:"listed_shares"`
+	PublicShares    sql.NullInt64   `json:"public_shares"`
+	PublicPercent   sql.NullFloat64 `json:"public_percent"`
+	PromoterShares  sql.NullInt64   `json:"promoter_shares"`
+	PromoterPercent sql.NullFloat64 `json:"promoter_percent"`
+	UpdatedAt       time.Time       `json:"updated_at"`
 }
 
 type Price struct {

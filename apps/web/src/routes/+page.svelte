@@ -6,7 +6,6 @@
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
-	import favicon from '$lib/assets/favicon.svg';
 
 	let { data } = $props();
 
@@ -138,9 +137,11 @@
 			</div>
 
 			<!-- Logo & Search -->
-			<div class="flex flex-col items-center gap-6 border-t border-border py-8 md:flex-row md:justify-between">
+			<div
+				class="flex flex-col items-center gap-6 border-t border-border py-8 md:flex-row md:justify-between"
+			>
 				<a href="/" class="flex items-center gap-4">
-					<img src={favicon} alt="NTX" class="size-12" />
+					<img src="/logo.png" alt="NTX" class="size-12" />
 					<div>
 						<h1 class="font-serif text-4xl tracking-tight md:text-5xl">NTX</h1>
 						<p class="text-sm tracking-[0.3em] text-muted-foreground uppercase">Market Stories</p>
@@ -176,7 +177,7 @@
 							<p class="mt-1 font-serif text-xl">{top.company?.symbol}</p>
 						</div>
 						<div class="text-right">
-							<p class="text-2xl font-medium tabular-nums text-positive">
+							<p class="text-2xl font-medium text-positive tabular-nums">
 								{formatChange(top.price.changePercent)}
 							</p>
 							<p class="text-sm text-muted-foreground tabular-nums">
@@ -201,7 +202,7 @@
 							<p class="mt-1 font-serif text-xl">{top.company?.symbol}</p>
 						</div>
 						<div class="text-right">
-							<p class="text-2xl font-medium tabular-nums text-negative">
+							<p class="text-2xl font-medium text-negative tabular-nums">
 								{formatChange(top.price.changePercent)}
 							</p>
 							<p class="text-sm text-muted-foreground tabular-nums">
@@ -261,7 +262,7 @@
 									<span class="font-serif">{item.company?.symbol}</span>
 									<p class="truncate text-xs text-muted-foreground">{item.company?.name}</p>
 								</div>
-								<span class="shrink-0 font-medium tabular-nums text-positive">
+								<span class="shrink-0 font-medium text-positive tabular-nums">
 									{formatChange(item.price.changePercent)}
 								</span>
 							</a>
@@ -285,7 +286,7 @@
 									<span class="font-serif">{item.company?.symbol}</span>
 									<p class="truncate text-xs text-muted-foreground">{item.company?.name}</p>
 								</div>
-								<span class="shrink-0 font-medium tabular-nums text-negative">
+								<span class="shrink-0 font-medium text-negative tabular-nums">
 									{formatChange(item.price.changePercent)}
 								</span>
 							</a>
@@ -309,7 +310,7 @@
 									<span class="font-serif">{item.company?.symbol}</span>
 									<p class="truncate text-xs text-muted-foreground">{item.company?.name}</p>
 								</div>
-								<span class="shrink-0 text-sm tabular-nums text-muted-foreground">
+								<span class="shrink-0 text-sm text-muted-foreground tabular-nums">
 									{Number(item.price.volume).toLocaleString()}
 								</span>
 							</a>
@@ -347,8 +348,8 @@
 							onclick={() => toggleSector(sector.value)}
 							class="group relative overflow-hidden rounded-lg border p-3 text-left transition-all
 								{selectedSector === sector.value
-									? 'border-primary bg-primary/10 ring-1 ring-primary/20'
-									: 'border-border hover:border-foreground/50'}"
+								? 'border-primary bg-primary/10 ring-1 ring-primary/20'
+								: 'border-border hover:border-foreground/50'}"
 						>
 							<span class="text-2xl font-medium tabular-nums opacity-20">{count}</span>
 							<p class="mt-1 text-xs font-medium">{sector.label}</p>
@@ -369,13 +370,16 @@
 					<div class="space-y-8">
 						<!-- Editorial headline -->
 						<div class="rounded-2xl border border-border bg-card p-8">
-							<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Featured Analysis</p>
+							<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+								Featured Analysis
+							</p>
 							<h3 class="mt-4 font-serif text-3xl leading-tight md:text-4xl">
 								Deep insights into Nepal's capital markets
 							</h3>
 							<p class="mt-4 max-w-2xl text-muted-foreground">
-								NTX provides comprehensive fundamental analysis, real-time price tracking, and AI-powered research prompts
-								for every listed security on NEPSE. Start by searching for a stock or exploring a sector.
+								NTX provides comprehensive fundamental analysis, real-time price tracking, and
+								AI-powered research prompts for every listed security on NEPSE. Start by searching
+								for a stock or exploring a sector.
 							</p>
 							<div class="mt-6 flex flex-wrap gap-3">
 								<button

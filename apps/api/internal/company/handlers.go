@@ -2,6 +2,7 @@ package company
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 
 	"connectrpc.com/connect"
@@ -173,4 +174,97 @@ func (s *CompanyService) GetSectorStats(
 			AvgBookValue: nullFloat64(stats.AvgBookValue),
 		},
 	}), nil
+}
+
+func (s *CompanyService) GetOwnership(
+	ctx context.Context,
+	req *connect.Request[ntxv1.GetOwnershipRequest],
+) (*connect.Response[ntxv1.GetOwnershipResponse], error) {
+	if req.Msg.Symbol == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("symbol is required"))
+	}
+
+	ownership, err := s.queries.GetOwnershipBySymbol(ctx, req.Msg.Symbol)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("ownership data not found"))
+	}
+
+	return connect.NewResponse(&ntxv1.GetOwnershipResponse{
+		Ownership: ownershipToProto(ownership),
+	}), nil
+}
+
+func (s *CompanyService) GetCorporateActions(
+	ctx context.Context,
+	req *connect.Request[ntxv1.GetCorporateActionsRequest],
+) (*connect.Response[ntxv1.GetCorporateActionsResponse], error) {
+	if req.Msg.Symbol == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("symbol is required"))
+	}
+
+	actions, err := s.queries.GetCorporateActionsBySymbol(ctx, req.Msg.Symbol)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("corporate actions not found"))
+	}
+
+	protoActions := make([]*ntxv1.CorporateAction, 0, len(actions))
+	for _, a := range actions {
+		protoActions = append(protoActions, corporateActionToProto(a))
+	}
+
+	return connect.NewResponse(&ntxv1.GetCorporateActionsResponse{
+		Actions: protoActions,
+	}), nil
+}
+
+func ownershipToProto(o sqlc.Ownership) *ntxv1.Ownership {
+	return &ntxv1.Ownership{
+		CompanyId:       o.CompanyID,
+		ListedShares:    nullInt64Val(o.ListedShares),
+		PublicShares:    nullInt64Val(o.PublicShares),
+		PublicPercent:   nullFloat64Val(o.PublicPercent),
+		PromoterShares:  nullInt64Val(o.PromoterShares),
+		PromoterPercent: nullFloat64Val(o.PromoterPercent),
+		UpdatedAt:       o.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
+}
+
+func corporateActionToProto(a sqlc.CorporateAction) *ntxv1.CorporateAction {
+	return &ntxv1.CorporateAction{
+		Id:              a.ID,
+		CompanyId:       a.CompanyID,
+		FiscalYear:      a.FiscalYear,
+		BonusPercentage: nullFloat64Val(a.BonusPercentage),
+		RightPercentage: nullFloat64Ptr(a.RightPercentage),
+		CashDividend:    nullFloat64Ptr(a.CashDividend),
+		SubmittedDate:   nullStringVal(a.SubmittedDate),
+	}
+}
+
+func nullInt64Val(ni sql.NullInt64) int64 {
+	if !ni.Valid {
+		return 0
+	}
+	return ni.Int64
+}
+
+func nullFloat64Val(nf sql.NullFloat64) float64 {
+	if !nf.Valid {
+		return 0
+	}
+	return nf.Float64
+}
+
+func nullFloat64Ptr(nf sql.NullFloat64) *float64 {
+	if !nf.Valid {
+		return nil
+	}
+	return &nf.Float64
+}
+
+func nullStringVal(ns sql.NullString) string {
+	if !ns.Valid {
+		return ""
+	}
+	return ns.String
 }

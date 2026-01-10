@@ -49,12 +49,12 @@
 
 		<!-- Change (only show if data available) -->
 		{#if hasChange}
-			<span
-				class="tabular-nums {isPositive ? 'text-positive' : 'text-negative'}"
-			>
+			<span class="tabular-nums {isPositive ? 'text-positive' : 'text-negative'}">
 				{#if price.changePercent < 0}▼{:else if price.changePercent > 0}▲{/if}
 				{price.changePercent > 0 ? '+' : ''}{fmt(price.changePercent)}%
-				<span class="text-sm">({price.change && price.change > 0 ? '+' : ''}{fmt(price.change)})</span>
+				<span class="text-sm"
+					>({price.change && price.change > 0 ? '+' : ''}{fmt(price.change)})</span
+				>
 			</span>
 		{/if}
 	</div>

@@ -77,3 +77,22 @@ message Price {
   optional int32 trades = 14;
 }
 
+message Ownership {
+  int64 company_id = 1;
+  int64 listed_shares = 2;
+  int64 public_shares = 3;
+  double public_percent = 4;
+  int64 promoter_shares = 5;
+  double promoter_percent = 6;
+  string updated_at = 7;
+}
+
+message CorporateAction {
+  int64 id = 1;
+  int64 company_id = 2;
+  string fiscal_year = 3;
+  double bonus_percentage = 4;
+  optional double right_percentage = 5;
+  optional double cash_dividend = 6;
+  string submitted_date = 7;
+}

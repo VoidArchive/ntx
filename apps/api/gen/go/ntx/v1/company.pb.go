@@ -489,6 +489,182 @@ func (x *SectorStats) GetAvgProfitGrowth() float64 {
 	return 0
 }
 
+type GetOwnershipRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOwnershipRequest) Reset() {
+	*x = GetOwnershipRequest{}
+	mi := &file_ntx_v1_company_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOwnershipRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOwnershipRequest) ProtoMessage() {}
+
+func (x *GetOwnershipRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOwnershipRequest.ProtoReflect.Descriptor instead.
+func (*GetOwnershipRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetOwnershipRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+type GetOwnershipResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ownership     *Ownership             `protobuf:"bytes,1,opt,name=ownership,proto3" json:"ownership,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOwnershipResponse) Reset() {
+	*x = GetOwnershipResponse{}
+	mi := &file_ntx_v1_company_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOwnershipResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOwnershipResponse) ProtoMessage() {}
+
+func (x *GetOwnershipResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOwnershipResponse.ProtoReflect.Descriptor instead.
+func (*GetOwnershipResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetOwnershipResponse) GetOwnership() *Ownership {
+	if x != nil {
+		return x.Ownership
+	}
+	return nil
+}
+
+type GetCorporateActionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCorporateActionsRequest) Reset() {
+	*x = GetCorporateActionsRequest{}
+	mi := &file_ntx_v1_company_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCorporateActionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCorporateActionsRequest) ProtoMessage() {}
+
+func (x *GetCorporateActionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCorporateActionsRequest.ProtoReflect.Descriptor instead.
+func (*GetCorporateActionsRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetCorporateActionsRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+type GetCorporateActionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Actions       []*CorporateAction     `protobuf:"bytes,1,rep,name=actions,proto3" json:"actions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCorporateActionsResponse) Reset() {
+	*x = GetCorporateActionsResponse{}
+	mi := &file_ntx_v1_company_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCorporateActionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCorporateActionsResponse) ProtoMessage() {}
+
+func (x *GetCorporateActionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCorporateActionsResponse.ProtoReflect.Descriptor instead.
+func (*GetCorporateActionsResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetCorporateActionsResponse) GetActions() []*CorporateAction {
+	if x != nil {
+		return x.Actions
+	}
+	return nil
+}
+
 var File_ntx_v1_company_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_company_proto_rawDesc = "" +
@@ -530,13 +706,23 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\b_avg_epsB\x0f\n" +
 	"\r_avg_pe_ratioB\x11\n" +
 	"\x0f_avg_book_valueB\x14\n" +
-	"\x12_avg_profit_growth2\xc8\x02\n" +
+	"\x12_avg_profit_growth\"-\n" +
+	"\x13GetOwnershipRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"G\n" +
+	"\x14GetOwnershipResponse\x12/\n" +
+	"\townership\x18\x01 \x01(\v2\x11.ntx.v1.OwnershipR\townership\"4\n" +
+	"\x1aGetCorporateActionsRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"P\n" +
+	"\x1bGetCorporateActionsResponse\x121\n" +
+	"\aactions\x18\x01 \x03(\v2\x17.ntx.v1.CorporateActionR\aactions2\xf3\x03\n" +
 	"\x0eCompanyService\x12L\n" +
 	"\rListCompanies\x12\x1c.ntx.v1.ListCompaniesRequest\x1a\x1d.ntx.v1.ListCompaniesResponse\x12C\n" +
 	"\n" +
 	"GetCompany\x12\x19.ntx.v1.GetCompanyRequest\x1a\x1a.ntx.v1.GetCompanyResponse\x12R\n" +
 	"\x0fGetFundamentals\x12\x1e.ntx.v1.GetFundamentalsRequest\x1a\x1f.ntx.v1.GetFundamentalsResponse\x12O\n" +
-	"\x0eGetSectorStats\x12\x1d.ntx.v1.GetSectorStatsRequest\x1a\x1e.ntx.v1.GetSectorStatsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x0eGetSectorStats\x12\x1d.ntx.v1.GetSectorStatsRequest\x1a\x1e.ntx.v1.GetSectorStatsResponse\x12I\n" +
+	"\fGetOwnership\x12\x1b.ntx.v1.GetOwnershipRequest\x1a\x1c.ntx.v1.GetOwnershipResponse\x12^\n" +
+	"\x13GetCorporateActions\x12\".ntx.v1.GetCorporateActionsRequest\x1a#.ntx.v1.GetCorporateActionsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_company_proto_rawDescOnce sync.Once
@@ -550,43 +736,55 @@ func file_ntx_v1_company_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_company_proto_rawDescData
 }
 
-var file_ntx_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_ntx_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_ntx_v1_company_proto_goTypes = []any{
-	(*ListCompaniesRequest)(nil),    // 0: ntx.v1.ListCompaniesRequest
-	(*ListCompaniesResponse)(nil),   // 1: ntx.v1.ListCompaniesResponse
-	(*GetCompanyRequest)(nil),       // 2: ntx.v1.GetCompanyRequest
-	(*GetCompanyResponse)(nil),      // 3: ntx.v1.GetCompanyResponse
-	(*GetFundamentalsRequest)(nil),  // 4: ntx.v1.GetFundamentalsRequest
-	(*GetFundamentalsResponse)(nil), // 5: ntx.v1.GetFundamentalsResponse
-	(*GetSectorStatsRequest)(nil),   // 6: ntx.v1.GetSectorStatsRequest
-	(*GetSectorStatsResponse)(nil),  // 7: ntx.v1.GetSectorStatsResponse
-	(*SectorStats)(nil),             // 8: ntx.v1.SectorStats
-	(Sector)(0),                     // 9: ntx.v1.Sector
-	(*Company)(nil),                 // 10: ntx.v1.Company
-	(*Fundamental)(nil),             // 11: ntx.v1.Fundamental
+	(*ListCompaniesRequest)(nil),        // 0: ntx.v1.ListCompaniesRequest
+	(*ListCompaniesResponse)(nil),       // 1: ntx.v1.ListCompaniesResponse
+	(*GetCompanyRequest)(nil),           // 2: ntx.v1.GetCompanyRequest
+	(*GetCompanyResponse)(nil),          // 3: ntx.v1.GetCompanyResponse
+	(*GetFundamentalsRequest)(nil),      // 4: ntx.v1.GetFundamentalsRequest
+	(*GetFundamentalsResponse)(nil),     // 5: ntx.v1.GetFundamentalsResponse
+	(*GetSectorStatsRequest)(nil),       // 6: ntx.v1.GetSectorStatsRequest
+	(*GetSectorStatsResponse)(nil),      // 7: ntx.v1.GetSectorStatsResponse
+	(*SectorStats)(nil),                 // 8: ntx.v1.SectorStats
+	(*GetOwnershipRequest)(nil),         // 9: ntx.v1.GetOwnershipRequest
+	(*GetOwnershipResponse)(nil),        // 10: ntx.v1.GetOwnershipResponse
+	(*GetCorporateActionsRequest)(nil),  // 11: ntx.v1.GetCorporateActionsRequest
+	(*GetCorporateActionsResponse)(nil), // 12: ntx.v1.GetCorporateActionsResponse
+	(Sector)(0),                         // 13: ntx.v1.Sector
+	(*Company)(nil),                     // 14: ntx.v1.Company
+	(*Fundamental)(nil),                 // 15: ntx.v1.Fundamental
+	(*Ownership)(nil),                   // 16: ntx.v1.Ownership
+	(*CorporateAction)(nil),             // 17: ntx.v1.CorporateAction
 }
 var file_ntx_v1_company_proto_depIdxs = []int32{
-	9,  // 0: ntx.v1.ListCompaniesRequest.sector:type_name -> ntx.v1.Sector
-	10, // 1: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
-	10, // 2: ntx.v1.GetCompanyResponse.company:type_name -> ntx.v1.Company
-	11, // 3: ntx.v1.GetFundamentalsResponse.latest:type_name -> ntx.v1.Fundamental
-	11, // 4: ntx.v1.GetFundamentalsResponse.history:type_name -> ntx.v1.Fundamental
-	9,  // 5: ntx.v1.GetSectorStatsRequest.sector:type_name -> ntx.v1.Sector
+	13, // 0: ntx.v1.ListCompaniesRequest.sector:type_name -> ntx.v1.Sector
+	14, // 1: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
+	14, // 2: ntx.v1.GetCompanyResponse.company:type_name -> ntx.v1.Company
+	15, // 3: ntx.v1.GetFundamentalsResponse.latest:type_name -> ntx.v1.Fundamental
+	15, // 4: ntx.v1.GetFundamentalsResponse.history:type_name -> ntx.v1.Fundamental
+	13, // 5: ntx.v1.GetSectorStatsRequest.sector:type_name -> ntx.v1.Sector
 	8,  // 6: ntx.v1.GetSectorStatsResponse.stats:type_name -> ntx.v1.SectorStats
-	9,  // 7: ntx.v1.SectorStats.sector:type_name -> ntx.v1.Sector
-	0,  // 8: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
-	2,  // 9: ntx.v1.CompanyService.GetCompany:input_type -> ntx.v1.GetCompanyRequest
-	4,  // 10: ntx.v1.CompanyService.GetFundamentals:input_type -> ntx.v1.GetFundamentalsRequest
-	6,  // 11: ntx.v1.CompanyService.GetSectorStats:input_type -> ntx.v1.GetSectorStatsRequest
-	1,  // 12: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
-	3,  // 13: ntx.v1.CompanyService.GetCompany:output_type -> ntx.v1.GetCompanyResponse
-	5,  // 14: ntx.v1.CompanyService.GetFundamentals:output_type -> ntx.v1.GetFundamentalsResponse
-	7,  // 15: ntx.v1.CompanyService.GetSectorStats:output_type -> ntx.v1.GetSectorStatsResponse
-	12, // [12:16] is the sub-list for method output_type
-	8,  // [8:12] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	13, // 7: ntx.v1.SectorStats.sector:type_name -> ntx.v1.Sector
+	16, // 8: ntx.v1.GetOwnershipResponse.ownership:type_name -> ntx.v1.Ownership
+	17, // 9: ntx.v1.GetCorporateActionsResponse.actions:type_name -> ntx.v1.CorporateAction
+	0,  // 10: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
+	2,  // 11: ntx.v1.CompanyService.GetCompany:input_type -> ntx.v1.GetCompanyRequest
+	4,  // 12: ntx.v1.CompanyService.GetFundamentals:input_type -> ntx.v1.GetFundamentalsRequest
+	6,  // 13: ntx.v1.CompanyService.GetSectorStats:input_type -> ntx.v1.GetSectorStatsRequest
+	9,  // 14: ntx.v1.CompanyService.GetOwnership:input_type -> ntx.v1.GetOwnershipRequest
+	11, // 15: ntx.v1.CompanyService.GetCorporateActions:input_type -> ntx.v1.GetCorporateActionsRequest
+	1,  // 16: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
+	3,  // 17: ntx.v1.CompanyService.GetCompany:output_type -> ntx.v1.GetCompanyResponse
+	5,  // 18: ntx.v1.CompanyService.GetFundamentals:output_type -> ntx.v1.GetFundamentalsResponse
+	7,  // 19: ntx.v1.CompanyService.GetSectorStats:output_type -> ntx.v1.GetSectorStatsResponse
+	10, // 20: ntx.v1.CompanyService.GetOwnership:output_type -> ntx.v1.GetOwnershipResponse
+	12, // 21: ntx.v1.CompanyService.GetCorporateActions:output_type -> ntx.v1.GetCorporateActionsResponse
+	16, // [16:22] is the sub-list for method output_type
+	10, // [10:16] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_company_proto_init() }
@@ -603,7 +801,7 @@ func file_ntx_v1_company_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_company_proto_rawDesc), len(file_ntx_v1_company_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -1,6 +1,14 @@
 <script lang="ts">
-	import { Navbar, CompanyHeader, TimeRangeSelector, StatsPanel, AboutSection } from '$lib/components/company';
-	import { PriceChart } from '$lib/components/charts';
+	import {
+		Navbar,
+		CompanyHeader,
+		TimeRangeSelector,
+		StatsPanel,
+		AboutSection,
+		FinancialsTable,
+		CorporateActionsTable
+	} from '$lib/components/company';
+	import { PriceChart, OwnershipPieChart } from '$lib/components/charts';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
@@ -14,11 +22,14 @@
 
 	let company = $derived(data.company);
 	let fundamentals = $derived(data.fundamentals);
+	let fundamentalsHistory = $derived(data.fundamentalsHistory ?? []);
 	let priceData = $derived(data.price);
 	let priceHistory = $derived(data.priceHistory);
 	let sectorStats = $derived(data.sectorStats);
 	let companies = $derived(data.companies ?? []);
 	let allPrices = $derived(data.prices ?? []);
+	let ownership = $derived(data.ownership);
+	let corporateActions = $derived(data.corporateActions ?? []);
 
 	let currentPrice = $derived(priceData?.ltp ?? priceData?.close);
 	let chartDays = $state<number>(365);
@@ -122,11 +133,7 @@ Please be objective, critical, and data-driven.`;
 
 				<!-- Stats Panel -->
 				<div>
-					<StatsPanel
-						price={priceData}
-						fundamentals={fundamentals}
-						priceHistory={priceHistory}
-					/>
+					<StatsPanel price={priceData} {fundamentals} {priceHistory} {ownership} />
 				</div>
 
 				<!-- About Section -->
@@ -145,6 +152,26 @@ Please be objective, critical, and data-driven.`;
 							AI Research
 						</Button>
 					</div>
+				</div>
+			</div>
+
+			<!-- Extended Content Section -->
+			<div class="mt-10 border-t border-border pt-8">
+				<div class="grid gap-8 lg:grid-cols-3">
+					<!-- Financial History -->
+					<div class="lg:col-span-2">
+						<FinancialsTable fundamentals={fundamentalsHistory} />
+					</div>
+
+					<!-- Ownership Pie Chart -->
+					<div>
+						<OwnershipPieChart {ownership} />
+					</div>
+				</div>
+
+				<!-- Corporate Actions -->
+				<div class="mt-8">
+					<CorporateActionsTable actions={corporateActions} />
 				</div>
 			</div>
 		</div>

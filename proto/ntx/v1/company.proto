@@ -11,6 +11,9 @@ service CompanyService {
   rpc GetCompany(GetCompanyRequest) returns (GetCompanyResponse);
   rpc GetFundamentals(GetFundamentalsRequest) returns (GetFundamentalsResponse);
   rpc GetSectorStats(GetSectorStatsRequest) returns (GetSectorStatsResponse);
+  rpc GetOwnership(GetOwnershipRequest) returns (GetOwnershipResponse);
+  rpc GetCorporateActions(GetCorporateActionsRequest)
+      returns (GetCorporateActionsResponse);
 }
 
 message ListCompaniesRequest {
@@ -45,3 +48,11 @@ message SectorStats {
   optional double avg_book_value = 5;
   optional double avg_profit_growth = 6; // YoY average
 }
+
+message GetOwnershipRequest { string symbol = 1; }
+
+message GetOwnershipResponse { Ownership ownership = 1; }
+
+message GetCorporateActionsRequest { string symbol = 1; }
+
+message GetCorporateActionsResponse { repeated CorporateAction actions = 1; }

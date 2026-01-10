@@ -38,8 +38,8 @@
 			onclick={() => onSelect(getDays(range))}
 			class="rounded-md border px-3 py-1.5 text-sm font-medium transition-colors
 				{isSelected(range)
-					? 'border-foreground bg-foreground text-background'
-					: 'border-border bg-background text-muted-foreground hover:border-foreground/50 hover:text-foreground'}"
+				? 'border-foreground bg-foreground text-background'
+				: 'border-border bg-background text-muted-foreground hover:border-foreground/50 hover:text-foreground'}"
 		>
 			{range.label}
 		</button>
