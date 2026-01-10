@@ -65,24 +65,31 @@
 				{
 					key: 'price',
 					value: (d) => d.price,
-					color: priceDirection === 'up' ? 'var(--positive)' : priceDirection === 'down' ? 'var(--negative)' : 'var(--chart-1)'
+					color:
+						priceDirection === 'up'
+							? 'var(--positive)'
+							: priceDirection === 'down'
+								? 'var(--negative)'
+								: 'var(--chart-1)'
 				}
 			]}
 			tooltip={{ title: 'Price' }}
 			props={{
 				area: {
 					line: {
-						class: priceDirection === 'up'
-							? 'stroke-positive stroke-2'
-							: priceDirection === 'down'
-								? 'stroke-negative stroke-2'
-								: 'stroke-chart-1 stroke-2'
+						class:
+							priceDirection === 'up'
+								? 'stroke-positive stroke-2'
+								: priceDirection === 'down'
+									? 'stroke-negative stroke-2'
+									: 'stroke-chart-1 stroke-2'
 					},
-					class: priceDirection === 'up'
-						? 'fill-positive/15'
-						: priceDirection === 'down'
-							? 'fill-negative/15'
-							: 'fill-chart-1/20'
+					class:
+						priceDirection === 'up'
+							? 'fill-positive/15'
+							: priceDirection === 'down'
+								? 'fill-negative/15'
+								: 'fill-chart-1/20'
 				},
 				grid: { class: 'stroke-border/20' }
 			}}
@@ -91,8 +98,18 @@
 {:else}
 	<div class="flex h-[350px] items-center justify-center rounded-xl bg-muted/50">
 		<div class="text-center">
-			<svg class="mx-auto h-10 w-10 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+			<svg
+				class="mx-auto h-10 w-10 text-muted-foreground/50"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="1.5"
+					d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
+				/>
 			</svg>
 			<p class="mt-2 text-sm text-muted-foreground">No price data available</p>
 		</div>

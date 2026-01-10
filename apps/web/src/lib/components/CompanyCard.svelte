@@ -45,16 +45,20 @@
 	<!-- Top: Header -->
 	<div class="flex items-start justify-between">
 		<div>
-			<h3 class="font-serif text-2xl font-medium tracking-tight text-foreground group-hover:underline">
+			<h3
+				class="font-serif text-2xl font-medium tracking-tight text-foreground group-hover:underline"
+			>
 				{company.symbol}
 			</h3>
-			<p class="mt-1 text-sm text-muted-foreground line-clamp-2" title={company.name}>
+			<p class="mt-1 line-clamp-2 text-sm text-muted-foreground" title={company.name}>
 				{company.name}
 			</p>
 		</div>
-		
+
 		<!-- Sector Badge (Top Right) -->
-		<span class="inline-flex items-center rounded-full border border-border bg-background/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+		<span
+			class="inline-flex items-center rounded-full border border-border bg-background/50 px-2 py-0.5 text-[10px] font-medium tracking-wider text-muted-foreground uppercase"
+		>
 			{sectorLabels[company.sector ?? Sector.OTHERS] ?? 'Others'}
 		</span>
 	</div>
@@ -62,7 +66,7 @@
 	<!-- Middle: Price (Placeholder or Real) -->
 	<div class="mt-6 flex items-baseline gap-3">
 		{#if price?.ltp}
-			<span class="text-3xl font-medium tabular-nums text-foreground">
+			<span class="text-3xl font-medium text-foreground tabular-nums">
 				{formatPrice(price.ltp)}
 			</span>
 			{#if price.changePercent !== undefined}
@@ -83,11 +87,17 @@
 	</div>
 
 	<!-- Bottom: CTA -->
-	<div class="mt-6 flex items-center justify-between border-t border-border/50 pt-4 opacity-60 transition-opacity group-hover:opacity-100">
+	<div
+		class="mt-6 flex items-center justify-between border-t border-border/50 pt-4 opacity-60 transition-opacity group-hover:opacity-100"
+	>
 		<span class="text-xs font-medium text-muted-foreground">View Analysis</span>
-		<ArrowRight class="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
+		<ArrowRight
+			class="size-4 text-muted-foreground transition-transform group-hover:translate-x-1"
+		/>
 	</div>
-	
+
 	<!-- Hover Gradient Effect -->
-	<div class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+	<div
+		class="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+	></div>
 </a>

@@ -20,7 +20,7 @@
 		if (!fundamentals || fundamentals.length === 0) return [];
 
 		// Deduplicate by fiscal year, keeping the latest entry
-		const uniqueMap = new Map<string, typeof fundamentals[0]>();
+		const uniqueMap = new Map<string, (typeof fundamentals)[0]>();
 		for (const f of fundamentals) {
 			if (f.profitAmount !== undefined) {
 				uniqueMap.set(f.fiscalYear, f);
@@ -176,7 +176,7 @@
 							fill="var(--chart-2)"
 							stroke="var(--background)"
 							stroke-width="2.5"
-							class="transition-all hover:r-6"
+							class="hover:r-6 transition-all"
 						/>
 					{/each}
 				{/if}

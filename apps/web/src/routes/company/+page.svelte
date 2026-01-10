@@ -33,8 +33,7 @@
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase();
 			companies = companies.filter(
-				(c) =>
-					c.symbol.toLowerCase().includes(query) || c.name.toLowerCase().includes(query)
+				(c) => c.symbol.toLowerCase().includes(query) || c.name.toLowerCase().includes(query)
 			);
 		}
 
@@ -111,9 +110,7 @@
 		{#if filteredCompanies.length === 0}
 			<div class="py-16 text-center">
 				<p class="text-muted-foreground">No companies found</p>
-				<button onclick={clearFilters} class="mt-2 text-sm hover:underline">
-					Clear filters
-				</button>
+				<button onclick={clearFilters} class="mt-2 text-sm hover:underline"> Clear filters </button>
 			</div>
 		{:else}
 			<div class="divide-y divide-border">

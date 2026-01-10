@@ -7,7 +7,12 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 
-	kit: { adapter: adapter() }
+	kit: {
+		adapter: adapter(),
+		paths: {
+			relative: false // Required for PostHog session replay to work correctly
+		}
+	}
 };
 
 export default config;

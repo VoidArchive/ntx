@@ -31,12 +31,14 @@
 
 	// Generate polygon path from values
 	function getPolygonPath(values: { value: number; max: number }[]): string {
-		return values
-			.map((v, i) => {
-				const point = getPoint(i, v.value, v.max);
-				return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
-			})
-			.join(' ') + ' Z';
+		return (
+			values
+				.map((v, i) => {
+					const point = getPoint(i, v.value, v.max);
+					return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
+				})
+				.join(' ') + ' Z'
+		);
 	}
 
 	// Company polygon

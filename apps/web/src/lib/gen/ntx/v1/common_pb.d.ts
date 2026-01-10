@@ -2,8 +2,8 @@
 // @generated from file ntx/v1/common.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
-import type { Message } from "@bufbuild/protobuf";
+import type { GenEnum, GenFile, GenMessage } from '@bufbuild/protobuf/codegenv1';
+import type { Message } from '@bufbuild/protobuf';
 
 /**
  * Describes the file ntx/v1/common.proto.
@@ -13,46 +13,46 @@ export declare const file_ntx_v1_common: GenFile;
 /**
  * @generated from message ntx.v1.Company
  */
-export declare type Company = Message<"ntx.v1.Company"> & {
-  /**
-   * @generated from field: int64 id = 1;
-   */
-  id: bigint;
+export declare type Company = Message<'ntx.v1.Company'> & {
+	/**
+	 * @generated from field: int64 id = 1;
+	 */
+	id: bigint;
 
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
+	/**
+	 * @generated from field: string name = 2;
+	 */
+	name: string;
 
-  /**
-   * @generated from field: string symbol = 3;
-   */
-  symbol: string;
+	/**
+	 * @generated from field: string symbol = 3;
+	 */
+	symbol: string;
 
-  /**
-   * @generated from field: ntx.v1.CompanyStatus status = 4;
-   */
-  status: CompanyStatus;
+	/**
+	 * @generated from field: ntx.v1.CompanyStatus status = 4;
+	 */
+	status: CompanyStatus;
 
-  /**
-   * @generated from field: optional string email = 5;
-   */
-  email?: string;
+	/**
+	 * @generated from field: optional string email = 5;
+	 */
+	email?: string;
 
-  /**
-   * @generated from field: optional string website = 6;
-   */
-  website?: string;
+	/**
+	 * @generated from field: optional string website = 6;
+	 */
+	website?: string;
 
-  /**
-   * @generated from field: ntx.v1.Sector sector = 7;
-   */
-  sector: Sector;
+	/**
+	 * @generated from field: ntx.v1.Sector sector = 7;
+	 */
+	sector: Sector;
 
-  /**
-   * @generated from field: ntx.v1.InstrumentType instrument_type = 8;
-   */
-  instrumentType: InstrumentType;
+	/**
+	 * @generated from field: ntx.v1.InstrumentType instrument_type = 8;
+	 */
+	instrumentType: InstrumentType;
 };
 
 /**
@@ -64,51 +64,51 @@ export declare const CompanySchema: GenMessage<Company>;
 /**
  * @generated from message ntx.v1.Fundamental
  */
-export declare type Fundamental = Message<"ntx.v1.Fundamental"> & {
-  /**
-   * @generated from field: int64 id = 1;
-   */
-  id: bigint;
+export declare type Fundamental = Message<'ntx.v1.Fundamental'> & {
+	/**
+	 * @generated from field: int64 id = 1;
+	 */
+	id: bigint;
 
-  /**
-   * @generated from field: int64 company_id = 2;
-   */
-  companyId: bigint;
+	/**
+	 * @generated from field: int64 company_id = 2;
+	 */
+	companyId: bigint;
 
-  /**
-   * @generated from field: string fiscal_year = 3;
-   */
-  fiscalYear: string;
+	/**
+	 * @generated from field: string fiscal_year = 3;
+	 */
+	fiscalYear: string;
 
-  /**
-   * @generated from field: optional string quarter = 4;
-   */
-  quarter?: string;
+	/**
+	 * @generated from field: optional string quarter = 4;
+	 */
+	quarter?: string;
 
-  /**
-   * @generated from field: optional double eps = 5;
-   */
-  eps?: number;
+	/**
+	 * @generated from field: optional double eps = 5;
+	 */
+	eps?: number;
 
-  /**
-   * @generated from field: optional double pe_ratio = 6;
-   */
-  peRatio?: number;
+	/**
+	 * @generated from field: optional double pe_ratio = 6;
+	 */
+	peRatio?: number;
 
-  /**
-   * @generated from field: optional double book_value = 7;
-   */
-  bookValue?: number;
+	/**
+	 * @generated from field: optional double book_value = 7;
+	 */
+	bookValue?: number;
 
-  /**
-   * @generated from field: optional double paid_up_capital = 8;
-   */
-  paidUpCapital?: number;
+	/**
+	 * @generated from field: optional double paid_up_capital = 8;
+	 */
+	paidUpCapital?: number;
 
-  /**
-   * @generated from field: optional double profit_amount = 9;
-   */
-  profitAmount?: number;
+	/**
+	 * @generated from field: optional double profit_amount = 9;
+	 */
+	profitAmount?: number;
 };
 
 /**
@@ -120,76 +120,76 @@ export declare const FundamentalSchema: GenMessage<Fundamental>;
 /**
  * @generated from message ntx.v1.Price
  */
-export declare type Price = Message<"ntx.v1.Price"> & {
-  /**
-   * @generated from field: int64 id = 1;
-   */
-  id: bigint;
+export declare type Price = Message<'ntx.v1.Price'> & {
+	/**
+	 * @generated from field: int64 id = 1;
+	 */
+	id: bigint;
 
-  /**
-   * @generated from field: int64 company_id = 2;
-   */
-  companyId: bigint;
+	/**
+	 * @generated from field: int64 company_id = 2;
+	 */
+	companyId: bigint;
 
-  /**
-   * @generated from field: string business_date = 3;
-   */
-  businessDate: string;
+	/**
+	 * @generated from field: string business_date = 3;
+	 */
+	businessDate: string;
 
-  /**
-   * @generated from field: optional double open = 4;
-   */
-  open?: number;
+	/**
+	 * @generated from field: optional double open = 4;
+	 */
+	open?: number;
 
-  /**
-   * @generated from field: optional double high = 5;
-   */
-  high?: number;
+	/**
+	 * @generated from field: optional double high = 5;
+	 */
+	high?: number;
 
-  /**
-   * @generated from field: optional double low = 6;
-   */
-  low?: number;
+	/**
+	 * @generated from field: optional double low = 6;
+	 */
+	low?: number;
 
-  /**
-   * @generated from field: optional double close = 7;
-   */
-  close?: number;
+	/**
+	 * @generated from field: optional double close = 7;
+	 */
+	close?: number;
 
-  /**
-   * @generated from field: optional double ltp = 8;
-   */
-  ltp?: number;
+	/**
+	 * @generated from field: optional double ltp = 8;
+	 */
+	ltp?: number;
 
-  /**
-   * @generated from field: optional double previous_close = 9;
-   */
-  previousClose?: number;
+	/**
+	 * @generated from field: optional double previous_close = 9;
+	 */
+	previousClose?: number;
 
-  /**
-   * @generated from field: optional double change = 10;
-   */
-  change?: number;
+	/**
+	 * @generated from field: optional double change = 10;
+	 */
+	change?: number;
 
-  /**
-   * @generated from field: optional double change_percent = 11;
-   */
-  changePercent?: number;
+	/**
+	 * @generated from field: optional double change_percent = 11;
+	 */
+	changePercent?: number;
 
-  /**
-   * @generated from field: optional int64 volume = 12;
-   */
-  volume?: bigint;
+	/**
+	 * @generated from field: optional int64 volume = 12;
+	 */
+	volume?: bigint;
 
-  /**
-   * @generated from field: optional double turnover = 13;
-   */
-  turnover?: number;
+	/**
+	 * @generated from field: optional double turnover = 13;
+	 */
+	turnover?: number;
 
-  /**
-   * @generated from field: optional int32 trades = 14;
-   */
-  trades?: number;
+	/**
+	 * @generated from field: optional int32 trades = 14;
+	 */
+	trades?: number;
 };
 
 /**
@@ -202,25 +202,25 @@ export declare const PriceSchema: GenMessage<Price>;
  * @generated from enum ntx.v1.CompanyStatus
  */
 export enum CompanyStatus {
-  /**
-   * @generated from enum value: COMPANY_STATUS_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
+	/**
+	 * @generated from enum value: COMPANY_STATUS_UNSPECIFIED = 0;
+	 */
+	UNSPECIFIED = 0,
 
-  /**
-   * @generated from enum value: COMPANY_STATUS_ACTIVE = 1;
-   */
-  ACTIVE = 1,
+	/**
+	 * @generated from enum value: COMPANY_STATUS_ACTIVE = 1;
+	 */
+	ACTIVE = 1,
 
-  /**
-   * @generated from enum value: COMPANY_STATUS_SUSPENDED = 2;
-   */
-  SUSPENDED = 2,
+	/**
+	 * @generated from enum value: COMPANY_STATUS_SUSPENDED = 2;
+	 */
+	SUSPENDED = 2,
 
-  /**
-   * @generated from enum value: COMPANY_STATUS_DELISTED = 3;
-   */
-  DELISTED = 3,
+	/**
+	 * @generated from enum value: COMPANY_STATUS_DELISTED = 3;
+	 */
+	DELISTED = 3
 }
 
 /**
@@ -232,75 +232,75 @@ export declare const CompanyStatusSchema: GenEnum<CompanyStatus>;
  * @generated from enum ntx.v1.Sector
  */
 export enum Sector {
-  /**
-   * @generated from enum value: SECTOR_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
+	/**
+	 * @generated from enum value: SECTOR_UNSPECIFIED = 0;
+	 */
+	UNSPECIFIED = 0,
 
-  /**
-   * @generated from enum value: SECTOR_COMMERCIAL_BANK = 1;
-   */
-  COMMERCIAL_BANK = 1,
+	/**
+	 * @generated from enum value: SECTOR_COMMERCIAL_BANK = 1;
+	 */
+	COMMERCIAL_BANK = 1,
 
-  /**
-   * @generated from enum value: SECTOR_DEVELOPMENT_BANK = 2;
-   */
-  DEVELOPMENT_BANK = 2,
+	/**
+	 * @generated from enum value: SECTOR_DEVELOPMENT_BANK = 2;
+	 */
+	DEVELOPMENT_BANK = 2,
 
-  /**
-   * @generated from enum value: SECTOR_FINANCE = 3;
-   */
-  FINANCE = 3,
+	/**
+	 * @generated from enum value: SECTOR_FINANCE = 3;
+	 */
+	FINANCE = 3,
 
-  /**
-   * @generated from enum value: SECTOR_MICROFINANCE = 4;
-   */
-  MICROFINANCE = 4,
+	/**
+	 * @generated from enum value: SECTOR_MICROFINANCE = 4;
+	 */
+	MICROFINANCE = 4,
 
-  /**
-   * @generated from enum value: SECTOR_LIFE_INSURANCE = 5;
-   */
-  LIFE_INSURANCE = 5,
+	/**
+	 * @generated from enum value: SECTOR_LIFE_INSURANCE = 5;
+	 */
+	LIFE_INSURANCE = 5,
 
-  /**
-   * @generated from enum value: SECTOR_NON_LIFE_INSURANCE = 6;
-   */
-  NON_LIFE_INSURANCE = 6,
+	/**
+	 * @generated from enum value: SECTOR_NON_LIFE_INSURANCE = 6;
+	 */
+	NON_LIFE_INSURANCE = 6,
 
-  /**
-   * @generated from enum value: SECTOR_HYDROPOWER = 7;
-   */
-  HYDROPOWER = 7,
+	/**
+	 * @generated from enum value: SECTOR_HYDROPOWER = 7;
+	 */
+	HYDROPOWER = 7,
 
-  /**
-   * @generated from enum value: SECTOR_MANUFACTURING = 8;
-   */
-  MANUFACTURING = 8,
+	/**
+	 * @generated from enum value: SECTOR_MANUFACTURING = 8;
+	 */
+	MANUFACTURING = 8,
 
-  /**
-   * @generated from enum value: SECTOR_HOTEL = 9;
-   */
-  HOTEL = 9,
+	/**
+	 * @generated from enum value: SECTOR_HOTEL = 9;
+	 */
+	HOTEL = 9,
 
-  /**
-   * @generated from enum value: SECTOR_TRADING = 10;
-   */
-  TRADING = 10,
+	/**
+	 * @generated from enum value: SECTOR_TRADING = 10;
+	 */
+	TRADING = 10,
 
-  /**
-   * @generated from enum value: SECTOR_INVESTMENT = 11;
-   */
-  INVESTMENT = 11,
+	/**
+	 * @generated from enum value: SECTOR_INVESTMENT = 11;
+	 */
+	INVESTMENT = 11,
 
-  /**
-   * @generated from enum value: SECTOR_MUTUAL_FUND = 12;
-   */
-  MUTUAL_FUND = 12,
+	/**
+	 * @generated from enum value: SECTOR_MUTUAL_FUND = 12;
+	 */
+	MUTUAL_FUND = 12,
 
-  /**
-   * @generated from enum value: SECTOR_OTHERS = 13;
-   */
-  OTHERS = 13,
+	/**
+	 * @generated from enum value: SECTOR_OTHERS = 13;
+	 */
+	OTHERS = 13
 }
 
 /**
@@ -312,29 +312,28 @@ export declare const SectorSchema: GenEnum<Sector>;
  * @generated from enum ntx.v1.InstrumentType
  */
 export enum InstrumentType {
-  /**
-   * @generated from enum value: INSTRUMENT_TYPE_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
+	/**
+	 * @generated from enum value: INSTRUMENT_TYPE_UNSPECIFIED = 0;
+	 */
+	UNSPECIFIED = 0,
 
-  /**
-   * @generated from enum value: INSTRUMENT_TYPE_EQUITY = 1;
-   */
-  EQUITY = 1,
+	/**
+	 * @generated from enum value: INSTRUMENT_TYPE_EQUITY = 1;
+	 */
+	EQUITY = 1,
 
-  /**
-   * @generated from enum value: INSTRUMENT_TYPE_BOND = 2;
-   */
-  BOND = 2,
+	/**
+	 * @generated from enum value: INSTRUMENT_TYPE_BOND = 2;
+	 */
+	BOND = 2,
 
-  /**
-   * @generated from enum value: INSTRUMENT_TYPE_MUTUAL_FUND = 3;
-   */
-  MUTUAL_FUND = 3,
+	/**
+	 * @generated from enum value: INSTRUMENT_TYPE_MUTUAL_FUND = 3;
+	 */
+	MUTUAL_FUND = 3
 }
 
 /**
  * Describes the enum ntx.v1.InstrumentType.
  */
 export declare const InstrumentTypeSchema: GenEnum<InstrumentType>;
-

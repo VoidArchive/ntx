@@ -7,11 +7,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		open = $bindable(false),
-		children,
-		...restProps
-	}: Props = $props();
+	let { open = $bindable(false), children, ...restProps }: Props = $props();
 </script>
 
 <DialogPrimitive.Root bind:open {...restProps}>

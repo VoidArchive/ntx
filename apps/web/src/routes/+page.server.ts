@@ -7,7 +7,7 @@ export const load: PageServerLoad = async () => {
 		price.listLatestPrices({})
 	]);
 
-	return { 
+	return {
 		companies: companyRes.companies,
 		prices: priceRes.prices
 	};

@@ -51,6 +51,8 @@
 	"dependencies": {
 		"@bufbuild/protobuf": "2.10.2",
 		"@connectrpc/connect": "^2.1.1",
-		"@connectrpc/connect-web": "^2.1.1"
+		"@connectrpc/connect-web": "^2.1.1",
+		"posthog-js": "^1.318.1",
+		"posthog-node": "^5.20.0"
 	}
 }

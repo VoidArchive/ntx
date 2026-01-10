@@ -32,8 +32,7 @@
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase();
 			companies = companies.filter(
-				(c) =>
-					c.symbol.toLowerCase().includes(query) || c.name.toLowerCase().includes(query)
+				(c) => c.symbol.toLowerCase().includes(query) || c.name.toLowerCase().includes(query)
 			);
 		}
 
@@ -71,22 +70,29 @@
 	<!-- Hero Section -->
 	<div class="relative overflow-hidden border-b border-border bg-background/50 py-24 md:py-32">
 		<div class="absolute inset-0 -z-10 opacity-30">
-			<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background"></div>
+			<div
+				class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background"
+			></div>
 		</div>
 
 		<div class="mx-auto max-w-5xl px-4 text-center">
 			<h1 class="font-serif text-5xl font-medium tracking-tight sm:text-7xl">
-				Market <span class="italic text-muted-foreground">Stories</span>
+				Market <span class="text-muted-foreground italic">Stories</span>
 			</h1>
 			<p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-				Discover the narrative behind every stock. Deep fundamental analysis, technical insights, and AI-driven research for {data.companies?.length ?? 0} NEPSE companies.
+				Discover the narrative behind every stock. Deep fundamental analysis, technical insights,
+				and AI-driven research for {data.companies?.length ?? 0} NEPSE companies.
 			</p>
 
 			<!-- Search Bar -->
 			<div class="mx-auto mt-10 max-w-xl">
-				<div class="relative group">
-					<div class="absolute -inset-0.5 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 opacity-50 blur transition duration-1000 group-hover:opacity-100 group-hover:duration-200"></div>
-					<div class="relative flex items-center rounded-full bg-background ring-1 ring-border shadow-sm">
+				<div class="group relative">
+					<div
+						class="absolute -inset-0.5 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 opacity-50 blur transition duration-1000 group-hover:opacity-100 group-hover:duration-200"
+					></div>
+					<div
+						class="relative flex items-center rounded-full bg-background shadow-sm ring-1 ring-border"
+					>
 						<input
 							bind:this={searchInput}
 							type="search"
@@ -94,16 +100,16 @@
 							bind:value={searchQuery}
 							class="flex-1 border-none bg-transparent px-6 py-4 text-base placeholder:text-muted-foreground focus:ring-0 focus:outline-none"
 						/>
-						<button 
+						<button
 							onclick={() => searchInput?.focus()}
-							class="pr-4 text-muted-foreground hover:text-foreground transition-colors"
+							class="pr-4 text-muted-foreground transition-colors hover:text-foreground"
 						>
 							<Search class="size-5" />
 						</button>
 					</div>
 				</div>
 			</div>
-			
+
 			<!-- Scrollable Sector Filter Bar -->
 			<div class="mt-8 flex flex-wrap justify-center gap-2">
 				{#each sectors as sector (sector.value)}
@@ -128,7 +134,10 @@
 				<h2 class="text-lg font-medium">
 					{filteredCompanies.length} Result{filteredCompanies.length === 1 ? '' : 's'}
 				</h2>
-				<button onclick={clearFilters} class="text-sm text-muted-foreground hover:text-foreground hover:underline">
+				<button
+					onclick={clearFilters}
+					class="text-sm text-muted-foreground hover:text-foreground hover:underline"
+				>
 					Clear Filters
 				</button>
 			</div>
@@ -144,11 +153,10 @@
 		{:else}
 			<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{#each filteredCompanies as company (company.id)}
-					{@const price = data.prices?.find(p => p.companyId === company.id)}
+					{@const price = data.prices?.find((p) => p.companyId === company.id)}
 					<CompanyCard {company} {price} />
 				{/each}
 			</div>
 		{/if}
 	</main>
-
 </div>

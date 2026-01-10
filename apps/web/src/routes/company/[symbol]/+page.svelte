@@ -230,21 +230,33 @@ Please be objective, critical, and data-driven.`;
 						<div class="flex items-baseline gap-2">
 							<h1 class="text-2xl tracking-tight">{company.symbol}</h1>
 							{#if company.status === CompanyStatus.ACTIVE}
-								<span class="rounded bg-positive/10 px-1.5 py-0.5 text-[10px] font-medium uppercase text-positive">
+								<span
+									class="rounded bg-positive/10 px-1.5 py-0.5 text-[10px] font-medium text-positive uppercase"
+								>
 									Active
 								</span>
 							{/if}
 						</div>
 						<p class="text-muted-foreground">{company.name}</p>
-						<p class="text-sm text-muted-foreground">{sectorNames[company.sector ?? Sector.OTHERS]}</p>
+						<p class="text-sm text-muted-foreground">
+							{sectorNames[company.sector ?? Sector.OTHERS]}
+						</p>
 					</div>
 
 					<div class="flex items-start gap-4">
 						<div class="text-right">
 							<p class="text-2xl font-medium tabular-nums">Rs. {fmt(priceData.ltp)}</p>
-							<p class="tabular-nums {priceData.changePercent && priceData.changePercent > 0 ? 'text-positive' : priceData.changePercent && priceData.changePercent < 0 ? 'text-negative' : 'text-muted-foreground'}">
+							<p
+								class="tabular-nums {priceData.changePercent && priceData.changePercent > 0
+									? 'text-positive'
+									: priceData.changePercent && priceData.changePercent < 0
+										? 'text-negative'
+										: 'text-muted-foreground'}"
+							>
 								{priceData.change && priceData.change > 0 ? '+' : ''}{fmt(priceData.change)}
-								({priceData.changePercent && priceData.changePercent > 0 ? '+' : ''}{fmt(priceData.changePercent)}%)
+								({priceData.changePercent && priceData.changePercent > 0 ? '+' : ''}{fmt(
+									priceData.changePercent
+								)}%)
 							</p>
 						</div>
 						<Button variant="outline" size="sm" onclick={() => (aiDialogOpen = true)}>
@@ -274,7 +286,9 @@ Please be objective, critical, and data-driven.`;
 							{#each timeRanges as range (range.days)}
 								<button
 									onclick={() => (chartDays = range.days)}
-									class="rounded px-2 py-1 text-xs font-medium {chartDays === range.days ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}"
+									class="rounded px-2 py-1 text-xs font-medium {chartDays === range.days
+										? 'bg-background shadow-sm'
+										: 'text-muted-foreground hover:text-foreground'}"
 								>
 									{range.label}
 								</button>
@@ -299,14 +313,18 @@ Please be objective, critical, and data-driven.`;
 					<!-- 52W Range -->
 					{#if rangeInfo}
 						<div class="rounded-lg border border-border bg-card p-4">
-							<h3 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">52 Week Range</h3>
+							<h3 class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+								52 Week Range
+							</h3>
 							<div class="mt-3">
 								<div class="flex justify-between text-xs text-muted-foreground">
 									<span>Rs. {fmt(rangeInfo.low52w)}</span>
 									<span>Rs. {fmt(rangeInfo.high52w)}</span>
 								</div>
 								<div class="relative mt-1.5 h-1.5 rounded-full bg-muted">
-									<div class="absolute h-full w-full rounded-full bg-gradient-to-r from-negative via-caution to-positive opacity-30"></div>
+									<div
+										class="absolute h-full w-full rounded-full bg-gradient-to-r from-negative via-caution to-positive opacity-30"
+									></div>
 									<div
 										class="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-foreground"
 										style="left: {rangeInfo.position}%"
@@ -329,23 +347,37 @@ Please be objective, critical, and data-driven.`;
 					<!-- Performance -->
 					{#if priceStats}
 						<div class="rounded-lg border border-border bg-card p-4">
-							<h3 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Performance</h3>
+							<h3 class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+								Performance
+							</h3>
 							<div class="mt-3 space-y-2">
 								<div class="flex justify-between text-sm">
 									<span class="text-muted-foreground">1 Week</span>
-									<span class="tabular-nums {priceStats.change1W >= 0 ? 'text-positive' : 'text-negative'}">
+									<span
+										class="tabular-nums {priceStats.change1W >= 0
+											? 'text-positive'
+											: 'text-negative'}"
+									>
 										{priceStats.change1W >= 0 ? '+' : ''}{priceStats.change1W.toFixed(2)}%
 									</span>
 								</div>
 								<div class="flex justify-between text-sm">
 									<span class="text-muted-foreground">1 Month</span>
-									<span class="tabular-nums {priceStats.change1M >= 0 ? 'text-positive' : 'text-negative'}">
+									<span
+										class="tabular-nums {priceStats.change1M >= 0
+											? 'text-positive'
+											: 'text-negative'}"
+									>
 										{priceStats.change1M >= 0 ? '+' : ''}{priceStats.change1M.toFixed(2)}%
 									</span>
 								</div>
 								<div class="flex justify-between text-sm">
 									<span class="text-muted-foreground">3 Months</span>
-									<span class="tabular-nums {priceStats.change3M >= 0 ? 'text-positive' : 'text-negative'}">
+									<span
+										class="tabular-nums {priceStats.change3M >= 0
+											? 'text-positive'
+											: 'text-negative'}"
+									>
 										{priceStats.change3M >= 0 ? '+' : ''}{priceStats.change3M.toFixed(2)}%
 									</span>
 								</div>
@@ -356,7 +388,9 @@ Please be objective, critical, and data-driven.`;
 					<!-- Volume -->
 					{#if priceStats && priceStats.avgVolume > 0}
 						<div class="rounded-lg border border-border bg-card p-4">
-							<h3 class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Volume</h3>
+							<h3 class="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+								Volume
+							</h3>
 							<div class="mt-3 space-y-2">
 								<div class="flex justify-between text-sm">
 									<span class="text-muted-foreground">Today</span>
@@ -368,7 +402,11 @@ Please be objective, critical, and data-driven.`;
 								</div>
 								<div class="flex justify-between text-sm">
 									<span class="text-muted-foreground">vs Avg</span>
-									<span class="tabular-nums {priceStats.volumeRatio >= 1 ? 'text-positive' : 'text-negative'}">
+									<span
+										class="tabular-nums {priceStats.volumeRatio >= 1
+											? 'text-positive'
+											: 'text-negative'}"
+									>
 										{priceStats.volumeRatio.toFixed(2)}x
 									</span>
 								</div>
@@ -391,13 +429,15 @@ Please be objective, critical, and data-driven.`;
 						<div class="rounded-lg border border-border bg-card p-3">
 							<EarningsChart fundamentals={data.fundamentalsHistory ?? []} />
 						</div>
-						<p class="mt-2 text-sm italic text-muted-foreground">{story.earnings.trendSentence}</p>
+						<p class="mt-2 text-sm text-muted-foreground italic">{story.earnings.trendSentence}</p>
 					</div>
 
 					<!-- Radar Chart -->
 					<div class="mt-6">
 						<h3 class="mb-3 text-sm font-medium">Fundamentals vs Sector</h3>
-						<div class="flex items-center justify-center rounded-lg border border-border bg-card p-4">
+						<div
+							class="flex items-center justify-center rounded-lg border border-border bg-card p-4"
+						>
 							<RadarChart data={radarData} />
 						</div>
 					</div>
@@ -449,20 +489,23 @@ Please be objective, critical, and data-driven.`;
 								{@const peDiff = fundamentals.peRatio - sectorStats.avgPeRatio}
 								{#if peDiff < -5}
 									At a P/E of {fmt(fundamentals.peRatio)}, {company.symbol} trades at a significant discount
-									to the sector average of {fmt(sectorStats.avgPeRatio)}. This could indicate the market
-									sees higher risk, or it may represent an undervalued opportunity if earnings remain stable.
+									to the sector average of {fmt(sectorStats.avgPeRatio)}. This could indicate the
+									market sees higher risk, or it may represent an undervalued opportunity if
+									earnings remain stable.
 								{:else if peDiff > 5}
 									At a P/E of {fmt(fundamentals.peRatio)}, {company.symbol} trades at a premium to the
-									sector average of {fmt(sectorStats.avgPeRatio)}. The market may be pricing in expected
-									growth or sees lower risk in this stock compared to peers.
+									sector average of {fmt(sectorStats.avgPeRatio)}. The market may be pricing in
+									expected growth or sees lower risk in this stock compared to peers.
 								{:else}
 									At a P/E of {fmt(fundamentals.peRatio)}, {company.symbol} trades roughly in line with
-									the sector average of {fmt(sectorStats.avgPeRatio)}, suggesting the market views it
-									as fairly valued relative to peers.
+									the sector average of {fmt(sectorStats.avgPeRatio)}, suggesting the market views
+									it as fairly valued relative to peers.
 								{/if}
 							{:else if fundamentals.peRatio}
-								At a P/E of {fmt(fundamentals.peRatio)}, you're paying Rs. {fmt(fundamentals.peRatio)} for
-								every rupee of earnings. Compare this with other stocks in the sector to gauge relative value.
+								At a P/E of {fmt(fundamentals.peRatio)}, you're paying Rs. {fmt(
+									fundamentals.peRatio
+								)} for every rupee of earnings. Compare this with other stocks in the sector to gauge
+								relative value.
 							{/if}
 
 							{#if fundamentals.bookValue}
@@ -471,9 +514,10 @@ Please be objective, critical, and data-driven.`;
 									The stock trades below book value (P/B: {pbRatio.toFixed(2)}), meaning you could
 									theoretically buy the company for less than its net assets are worth.
 								{:else if pbRatio > 3}
-									With a P/B ratio of {pbRatio.toFixed(2)}, the market values the company at more than
-									{pbRatio.toFixed(1)}x its book value, reflecting expectations of strong future earnings
-									or intangible value not captured on the balance sheet.
+									With a P/B ratio of {pbRatio.toFixed(2)}, the market values the company at more
+									than
+									{pbRatio.toFixed(1)}x its book value, reflecting expectations of strong future
+									earnings or intangible value not captured on the balance sheet.
 								{/if}
 							{/if}
 						</p>
@@ -510,14 +554,14 @@ Please be objective, critical, and data-driven.`;
 					<div class="mt-4 text-sm text-muted-foreground">
 						<p>
 							Remember: No single metric tells the whole story. Consider the company's competitive
-							position, management quality, and broader market conditions before making any investment
-							decision. Past performance does not guarantee future results.
+							position, management quality, and broader market conditions before making any
+							investment decision. Past performance does not guarantee future results.
 						</p>
 					</div>
 
 					<p class="mt-4 text-xs text-muted-foreground">
-						This analysis is generated automatically from available data and should not be considered investment advice.
-						Last updated: {priceData.businessDate}
+						This analysis is generated automatically from available data and should not be
+						considered investment advice. Last updated: {priceData.businessDate}
 					</p>
 				</section>
 			{/if}
@@ -542,17 +586,14 @@ Please be objective, critical, and data-driven.`;
 					AI Research Prompt
 				</Dialog.Title>
 				<Dialog.Description>
-					Copy this prompt and paste it into your preferred AI assistant (ChatGPT, Claude, etc.) for detailed investment research and advice.
+					Copy this prompt and paste it into your preferred AI assistant (ChatGPT, Claude, etc.) for
+					detailed investment research and advice.
 				</Dialog.Description>
 			</Dialog.Header>
 			<div class="relative">
-				<pre class="max-h-[400px] overflow-auto rounded-lg bg-muted p-4 text-sm whitespace-pre-wrap">{aiPrompt}</pre>
-				<Button
-					variant="secondary"
-					size="sm"
-					class="absolute right-2 top-2"
-					onclick={copyPrompt}
-				>
+				<pre
+					class="max-h-[400px] overflow-auto rounded-lg bg-muted p-4 text-sm whitespace-pre-wrap">{aiPrompt}</pre>
+				<Button variant="secondary" size="sm" class="absolute top-2 right-2" onclick={copyPrompt}>
 					{#if copied}
 						<Check class="size-4" />
 						Copied!

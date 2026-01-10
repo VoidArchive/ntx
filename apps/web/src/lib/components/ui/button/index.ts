@@ -28,10 +28,4 @@ const buttonVariants = tv({
 type Variant = VariantProps<typeof buttonVariants>['variant'];
 type Size = VariantProps<typeof buttonVariants>['size'];
 
-export {
-	Root,
-	type Variant,
-	type Size,
-	buttonVariants,
-	Root as Button
-};
+export { Root, type Variant, type Size, buttonVariants, Root as Button };
