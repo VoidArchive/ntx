@@ -14,12 +14,3 @@ export function createApiClient(baseUrl: string) {
 		price: createClient(PriceService, transport)
 	};
 }
-
-// Default client for local development
-const defaultTransport = createConnectTransport({
-	baseUrl: 'http://localhost:8080',
-	fetch: (input, init) => fetch(input, { ...init, redirect: 'follow' })
-});
-
-export const company = createClient(CompanyService, defaultTransport);
-export const price = createClient(PriceService, defaultTransport);
