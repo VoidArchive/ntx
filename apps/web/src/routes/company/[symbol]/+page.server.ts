@@ -1,8 +1,10 @@
-import { company, price } from '$lib/api/client';
+import { createApiClient } from '$lib/api/client';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
 
-export const load = async ({ params }) => {
+export const load = async ({ params, platform }) => {
+	const apiUrl = platform?.env?.API_URL ?? 'http://localhost:8080';
+	const { company, price } = createApiClient(apiUrl);
 	try {
 		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
