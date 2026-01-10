@@ -110,6 +110,21 @@
 		month: 'long',
 		day: 'numeric'
 	});
+
+	// Random companies for discovery section
+	let randomCompanies = $derived.by(() => {
+		const companies = data.companies ?? [];
+		if (companies.length === 0) return [];
+
+		// Fisher-Yates shuffle
+		const shuffled = [...companies];
+		for (let i = shuffled.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+
+		return shuffled.slice(0, 6);
+	});
 </script>
 
 <div class="min-h-screen">
@@ -228,99 +243,8 @@
 	<!-- Main Content -->
 	<main class="mx-auto max-w-7xl px-4 py-8">
 		<div class="grid gap-8 lg:grid-cols-[1fr_300px]">
-			<!-- Left Column: Sector Explorer -->
-			<div>
-				<div class="mb-6 flex items-end justify-between">
-					<div>
-						<h2 class="font-serif text-2xl">Explore by Sector</h2>
-						<p class="mt-1 text-sm text-muted-foreground">
-							{selectedSector !== null
-								? `${filteredCompanies.length} companies in sector`
-								: 'Select a sector to browse'}
-						</p>
-					</div>
-					{#if selectedSector !== null}
-						<button
-							onclick={() => (selectedSector = null)}
-							class="text-sm text-muted-foreground hover:text-foreground hover:underline"
-						>
-							Clear selection
-						</button>
-					{/if}
-				</div>
-
-				<!-- Sector Grid -->
-				<div class="mb-8 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-					{#each sectors as sector (sector.value)}
-						{@const count = sectorCounts[sector.value] ?? 0}
-						<button
-							onclick={() => toggleSector(sector.value)}
-							class="group relative overflow-hidden rounded-lg border p-3 text-left transition-all
-								{selectedSector === sector.value
-									? 'border-foreground bg-foreground text-background'
-									: 'border-border hover:border-foreground/50'}"
-						>
-							<span class="text-2xl font-medium tabular-nums opacity-20">{count}</span>
-							<p class="mt-1 text-xs font-medium">{sector.label}</p>
-						</button>
-					{/each}
-				</div>
-
-				<!-- Company Grid -->
-				{#if selectedSector !== null}
-					<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-						{#each filteredCompanies as company (company.id)}
-							{@const price = getPrice(company.id)}
-							<CompanyCard {company} {price} />
-						{/each}
-					</div>
-				{:else}
-					<!-- Featured View when no sector selected -->
-					<div class="space-y-8">
-						<!-- Editorial headline -->
-						<div class="rounded-2xl border border-border bg-card p-8">
-							<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Featured Analysis</p>
-							<h3 class="mt-4 font-serif text-3xl leading-tight md:text-4xl">
-								Deep insights into Nepal's capital markets
-							</h3>
-							<p class="mt-4 max-w-2xl text-muted-foreground">
-								NTX provides comprehensive fundamental analysis, real-time price tracking, and AI-powered research prompts
-								for every listed security on NEPSE. Start by searching for a stock or exploring a sector.
-							</p>
-							<div class="mt-6 flex flex-wrap gap-3">
-								<button
-									onclick={() => toggleSector(Sector.COMMERCIAL_BANK)}
-									class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
-								>
-									Explore Banking
-									<ArrowRight class="size-4" />
-								</button>
-								<button
-									onclick={() => toggleSector(Sector.HYDROPOWER)}
-									class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
-								>
-									Explore Hydropower
-									<ArrowRight class="size-4" />
-								</button>
-							</div>
-						</div>
-
-						<!-- Random featured companies -->
-						<div>
-							<h3 class="mb-4 font-serif text-xl">Discover Companies</h3>
-							<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-								{#each (data.companies ?? []).slice(0, 6) as company (company.id)}
-									{@const price = getPrice(company.id)}
-									<CompanyCard {company} {price} />
-								{/each}
-							</div>
-						</div>
-					</div>
-				{/if}
-			</div>
-
-			<!-- Right Column: Market Movers -->
-			<aside class="space-y-6 overflow-hidden">
+			<!-- Market Movers: First on mobile, second on desktop -->
+			<aside class="space-y-6 overflow-hidden lg:order-2">
 				<!-- Top Gainers -->
 				<div class="rounded-xl border border-border bg-card p-4">
 					<div class="mb-3 flex items-center gap-2">
@@ -393,6 +317,97 @@
 					</div>
 				</div>
 			</aside>
+
+			<!-- Sector Explorer: Second on mobile, first on desktop -->
+			<div class="lg:order-1">
+				<div class="mb-6 flex items-end justify-between">
+					<div>
+						<h2 class="font-serif text-2xl">Explore by Sector</h2>
+						<p class="mt-1 text-sm text-muted-foreground">
+							{selectedSector !== null
+								? `${filteredCompanies.length} companies in sector`
+								: 'Select a sector to browse'}
+						</p>
+					</div>
+					{#if selectedSector !== null}
+						<button
+							onclick={() => (selectedSector = null)}
+							class="text-sm text-muted-foreground hover:text-foreground hover:underline"
+						>
+							Clear selection
+						</button>
+					{/if}
+				</div>
+
+				<!-- Sector Grid -->
+				<div class="mb-8 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+					{#each sectors as sector (sector.value)}
+						{@const count = sectorCounts[sector.value] ?? 0}
+						<button
+							onclick={() => toggleSector(sector.value)}
+							class="group relative overflow-hidden rounded-lg border p-3 text-left transition-all
+								{selectedSector === sector.value
+									? 'border-primary bg-primary/10 ring-1 ring-primary/20'
+									: 'border-border hover:border-foreground/50'}"
+						>
+							<span class="text-2xl font-medium tabular-nums opacity-20">{count}</span>
+							<p class="mt-1 text-xs font-medium">{sector.label}</p>
+						</button>
+					{/each}
+				</div>
+
+				<!-- Company Grid -->
+				{#if selectedSector !== null}
+					<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+						{#each filteredCompanies as company (company.id)}
+							{@const price = getPrice(company.id)}
+							<CompanyCard {company} {price} />
+						{/each}
+					</div>
+				{:else}
+					<!-- Featured View when no sector selected -->
+					<div class="space-y-8">
+						<!-- Editorial headline -->
+						<div class="rounded-2xl border border-border bg-card p-8">
+							<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Featured Analysis</p>
+							<h3 class="mt-4 font-serif text-3xl leading-tight md:text-4xl">
+								Deep insights into Nepal's capital markets
+							</h3>
+							<p class="mt-4 max-w-2xl text-muted-foreground">
+								NTX provides comprehensive fundamental analysis, real-time price tracking, and AI-powered research prompts
+								for every listed security on NEPSE. Start by searching for a stock or exploring a sector.
+							</p>
+							<div class="mt-6 flex flex-wrap gap-3">
+								<button
+									onclick={() => toggleSector(Sector.COMMERCIAL_BANK)}
+									class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
+								>
+									Explore Banking
+									<ArrowRight class="size-4" />
+								</button>
+								<button
+									onclick={() => toggleSector(Sector.HYDROPOWER)}
+									class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
+								>
+									Explore Hydropower
+									<ArrowRight class="size-4" />
+								</button>
+							</div>
+						</div>
+
+						<!-- Random featured companies -->
+						<div>
+							<h3 class="mb-4 font-serif text-xl">Discover Companies</h3>
+							<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+								{#each randomCompanies as company (company.id)}
+									{@const price = getPrice(company.id)}
+									<CompanyCard {company} {price} />
+								{/each}
+							</div>
+						</div>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</main>
 </div>

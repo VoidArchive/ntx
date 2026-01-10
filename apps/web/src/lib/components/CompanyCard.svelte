@@ -61,7 +61,7 @@
 
 		<!-- Sector Badge (Top Right) -->
 		<span
-			class="inline-flex items-center rounded-full border border-border bg-background/50 px-2 py-0.5 text-[10px] font-medium tracking-wider text-muted-foreground uppercase"
+			class="inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-border bg-background/50 px-2 py-0.5 text-[10px] font-medium tracking-wider text-muted-foreground uppercase"
 		>
 			{sectorLabels[company.sector ?? Sector.OTHERS] ?? 'Others'}
 		</span>
