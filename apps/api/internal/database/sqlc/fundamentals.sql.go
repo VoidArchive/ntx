@@ -13,7 +13,15 @@ import (
 const getLatestFundamental = `-- name: GetLatestFundamental :one
 SELECT id, company_id, fiscal_year, quarter, eps, pe_ratio, book_value, paid_up_capital, profit_amount, created_at, updated_at FROM fundamentals
 WHERE company_id = ?
-ORDER BY fiscal_year DESC, quarter DESC NULLS FIRST
+ORDER BY fiscal_year DESC,
+  CASE
+    WHEN quarter = '' THEN 5
+    WHEN quarter = 'Fourth Quarter' THEN 4
+    WHEN quarter = 'Third Quarter' THEN 3
+    WHEN quarter = 'Second Quarter' THEN 2
+    WHEN quarter = 'First Quarter' THEN 1
+    ELSE 0
+  END DESC
 LIMIT 1
 `
 
@@ -48,7 +56,15 @@ WHERE c.sector = ?
   AND f.id IN (
     SELECT f2.id FROM fundamentals f2
     WHERE f2.company_id = c.id
-    ORDER BY f2.fiscal_year DESC, f2.quarter DESC NULLS FIRST
+    ORDER BY f2.fiscal_year DESC,
+      CASE
+        WHEN f2.quarter = '' THEN 5
+        WHEN f2.quarter = 'Fourth Quarter' THEN 4
+        WHEN f2.quarter = 'Third Quarter' THEN 3
+        WHEN f2.quarter = 'Second Quarter' THEN 2
+        WHEN f2.quarter = 'First Quarter' THEN 1
+        ELSE 0
+      END DESC
     LIMIT 1
   )
 `
@@ -75,7 +91,15 @@ func (q *Queries) GetSectorStats(ctx context.Context, sector string) (GetSectorS
 const listFundamentalsByCompany = `-- name: ListFundamentalsByCompany :many
 SELECT id, company_id, fiscal_year, quarter, eps, pe_ratio, book_value, paid_up_capital, profit_amount, created_at, updated_at FROM fundamentals
 WHERE company_id = ?
-ORDER BY fiscal_year DESC, quarter DESC NULLS FIRST
+ORDER BY fiscal_year DESC,
+  CASE
+    WHEN quarter = '' THEN 5
+    WHEN quarter = 'Fourth Quarter' THEN 4
+    WHEN quarter = 'Third Quarter' THEN 3
+    WHEN quarter = 'Second Quarter' THEN 2
+    WHEN quarter = 'First Quarter' THEN 1
+    ELSE 0
+  END DESC
 `
 
 func (q *Queries) ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error) {
@@ -128,7 +152,7 @@ ON CONFLICT(company_id, fiscal_year, quarter) DO UPDATE SET
 type UpsertFundamentalParams struct {
 	CompanyID     int64           `json:"company_id"`
 	FiscalYear    string          `json:"fiscal_year"`
-	Quarter       sql.NullString  `json:"quarter"`
+	Quarter       string          `json:"quarter"`
 	Eps           sql.NullFloat64 `json:"eps"`
 	PeRatio       sql.NullFloat64 `json:"pe_ratio"`
 	BookValue     sql.NullFloat64 `json:"book_value"`

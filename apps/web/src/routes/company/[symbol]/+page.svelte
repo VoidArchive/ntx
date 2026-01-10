@@ -7,7 +7,8 @@
 		AboutSection,
 		FinancialsTable,
 		CorporateActionsTable,
-		AIResearchButton
+		AIResearchButton,
+		type ViewMode
 	} from '$lib/components/company';
 	import { PriceChart, EarningsChart, DividendChart, OwnershipPieChart, RatingsRadar } from '$lib/components/charts';
 
@@ -26,10 +27,21 @@
 
 	let currentPrice = $derived(priceData?.ltp ?? priceData?.close);
 	let chartDays = $state<number>(365);
+	let viewMode = $state<ViewMode>('quarterly');
 
 	function handleDaysChange(days: number) {
 		chartDays = days;
 	}
+
+	function handleViewModeChange(mode: ViewMode) {
+		viewMode = mode;
+	}
+
+	let filteredFundamentals = $derived(
+		fundamentalsHistory.filter((f) =>
+			viewMode === 'quarterly' ? !!f.quarter : !f.quarter
+		)
+	);
 </script>
 
 {#if company}
@@ -67,12 +79,28 @@
 				</div>
 			</div>
 
+			<!-- Financial History & Rating -->
+			<div class="mt-12 border-t border-border pt-8">
+				<div class="grid gap-8 lg:grid-cols-12">
+					<div class="lg:col-span-7">
+						<FinancialsTable
+							fundamentals={fundamentalsHistory}
+							{viewMode}
+							onViewModeChange={handleViewModeChange}
+						/>
+					</div>
+					<div class="lg:col-span-5">
+						<RatingsRadar fundamentals={filteredFundamentals} price={priceData} />
+					</div>
+				</div>
+			</div>
+
 			<!-- Earnings & Ownership -->
 			<div class="mt-12 border-t border-border pt-8">
 				<div class="grid gap-8 lg:grid-cols-12">
 					<div class="lg:col-span-8">
 						<h3 class="mb-4 font-serif text-base font-medium">Earnings</h3>
-						<EarningsChart fundamentals={fundamentalsHistory} />
+						<EarningsChart fundamentals={filteredFundamentals} />
 					</div>
 					<div class="lg:col-span-4">
 						<OwnershipPieChart {ownership} />
@@ -89,18 +117,6 @@
 					<div class="order-1 lg:order-2 lg:col-span-8">
 						<h3 class="mb-4 font-serif text-base font-medium">Dividends</h3>
 						<DividendChart actions={corporateActions} />
-					</div>
-				</div>
-			</div>
-
-			<!-- Detailed Financials -->
-			<div class="mt-12 border-t border-border pt-8">
-				<div class="grid gap-8 lg:grid-cols-12">
-					<div class="lg:col-span-7">
-						<FinancialsTable fundamentals={fundamentalsHistory} />
-					</div>
-					<div class="lg:col-span-5">
-						<RatingsRadar fundamentals={fundamentalsHistory} price={priceData} />
 					</div>
 				</div>
 			</div>

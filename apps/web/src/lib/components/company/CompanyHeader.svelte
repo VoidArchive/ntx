@@ -20,7 +20,7 @@
 	let isPositive = $derived((price?.changePercent ?? 0) >= 0);
 </script>
 
-<header class="px-6 py-4">
+<header class=" py-4">
 	<!-- Add to Watchlist -->
 	<button
 		class="mb-4 inline-flex items-center gap-1.5 rounded border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted"

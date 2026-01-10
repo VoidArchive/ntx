@@ -9,21 +9,37 @@
 
 	let { fundamentals, price, class: className = '' }: Props = $props();
 
-	// Get latest annual fundamental (no quarter)
-	let latestFundamental = $derived.by(() => {
-		const annual = fundamentals
-			.filter((f) => !f.quarter)
-			.sort((a, b) => b.fiscalYear.localeCompare(a.fiscalYear));
-		return annual[0];
+	function quarterToNumber(quarter: string | undefined): number {
+		if (!quarter) return 5;
+		const q = quarter.toLowerCase();
+		if (q.includes('fourth') || q === '4' || q === 'q4') return 4;
+		if (q.includes('third') || q === '3' || q === 'q3') return 3;
+		if (q.includes('second') || q === '2' || q === 'q2') return 2;
+		if (q.includes('first') || q === '1' || q === 'q1') return 1;
+		return 0;
+	}
+
+	// Deduplicate and sort fundamentals by fiscal year and quarter descending
+	let sortedFundamentals = $derived.by(() => {
+		const seen = new Map<string, (typeof fundamentals)[0]>();
+		for (const f of fundamentals) {
+			const key = `${f.fiscalYear}-${f.quarter ?? 'annual'}`;
+			if (!seen.has(key)) {
+				seen.set(key, f);
+			}
+		}
+		return Array.from(seen.values()).sort((a, b) => {
+			const yearCompare = b.fiscalYear.localeCompare(a.fiscalYear);
+			if (yearCompare !== 0) return yearCompare;
+			return quarterToNumber(b.quarter) - quarterToNumber(a.quarter);
+		});
 	});
 
-	// Get previous year for growth calculations
-	let previousFundamental = $derived.by(() => {
-		const annual = fundamentals
-			.filter((f) => !f.quarter)
-			.sort((a, b) => b.fiscalYear.localeCompare(a.fiscalYear));
-		return annual[1];
-	});
+	// Get latest fundamental from passed data (already filtered by page)
+	let latestFundamental = $derived(sortedFundamentals[0]);
+
+	// Get previous entry for growth calculations
+	let previousFundamental = $derived(sortedFundamentals[1]);
 
 	// Calculate metrics and ratings (1-5 scale)
 	let metrics = $derived.by(() => {

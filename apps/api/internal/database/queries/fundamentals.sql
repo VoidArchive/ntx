@@ -12,13 +12,29 @@ ON CONFLICT(company_id, fiscal_year, quarter) DO UPDATE SET
 -- name: GetLatestFundamental :one
 SELECT * FROM fundamentals
 WHERE company_id = ?
-ORDER BY fiscal_year DESC, quarter DESC NULLS FIRST
+ORDER BY fiscal_year DESC,
+  CASE
+    WHEN quarter = '' THEN 5
+    WHEN quarter = 'Fourth Quarter' THEN 4
+    WHEN quarter = 'Third Quarter' THEN 3
+    WHEN quarter = 'Second Quarter' THEN 2
+    WHEN quarter = 'First Quarter' THEN 1
+    ELSE 0
+  END DESC
 LIMIT 1;
 
 -- name: ListFundamentalsByCompany :many
 SELECT * FROM fundamentals
 WHERE company_id = ?
-ORDER BY fiscal_year DESC, quarter DESC NULLS FIRST;
+ORDER BY fiscal_year DESC,
+  CASE
+    WHEN quarter = '' THEN 5
+    WHEN quarter = 'Fourth Quarter' THEN 4
+    WHEN quarter = 'Third Quarter' THEN 3
+    WHEN quarter = 'Second Quarter' THEN 2
+    WHEN quarter = 'First Quarter' THEN 1
+    ELSE 0
+  END DESC;
 
 -- name: GetSectorStats :one
 SELECT
@@ -32,6 +48,14 @@ WHERE c.sector = ?
   AND f.id IN (
     SELECT f2.id FROM fundamentals f2
     WHERE f2.company_id = c.id
-    ORDER BY f2.fiscal_year DESC, f2.quarter DESC NULLS FIRST
+    ORDER BY f2.fiscal_year DESC,
+      CASE
+        WHEN f2.quarter = '' THEN 5
+        WHEN f2.quarter = 'Fourth Quarter' THEN 4
+        WHEN f2.quarter = 'Third Quarter' THEN 3
+        WHEN f2.quarter = 'Second Quarter' THEN 2
+        WHEN f2.quarter = 'First Quarter' THEN 1
+        ELSE 0
+      END DESC
     LIMIT 1
   );

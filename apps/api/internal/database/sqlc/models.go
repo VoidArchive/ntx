@@ -36,7 +36,7 @@ type Fundamental struct {
 	ID            int64           `json:"id"`
 	CompanyID     int64           `json:"company_id"`
 	FiscalYear    string          `json:"fiscal_year"`
-	Quarter       sql.NullString  `json:"quarter"`
+	Quarter       string          `json:"quarter"`
 	Eps           sql.NullFloat64 `json:"eps"`
 	PeRatio       sql.NullFloat64 `json:"pe_ratio"`
 	BookValue     sql.NullFloat64 `json:"book_value"`

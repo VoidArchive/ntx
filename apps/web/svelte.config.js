@@ -12,6 +12,9 @@ const config = {
 		paths: {
 			relative: false // Required for PostHog session replay to work correctly
 		}
+	},
+	vitePlugin: {
+		inspector: true
 	}
 };
 

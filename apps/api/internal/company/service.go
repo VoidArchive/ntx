@@ -123,11 +123,15 @@ func fundamentalsToProto(fundamentals []sqlc.Fundamental) []*ntxv1.Fundamental {
 }
 
 func fundamentalToProto(f sqlc.Fundamental) *ntxv1.Fundamental {
+	var quarter *string
+	if f.Quarter != "" {
+		quarter = &f.Quarter
+	}
 	return &ntxv1.Fundamental{
 		Id:            f.ID,
 		CompanyId:     f.CompanyID,
 		FiscalYear:    f.FiscalYear,
-		Quarter:       nullString(f.Quarter),
+		Quarter:       quarter,
 		Eps:           nullFloat64(f.Eps),
 		PeRatio:       nullFloat64(f.PeRatio),
 		BookValue:     nullFloat64(f.BookValue),

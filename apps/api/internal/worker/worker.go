@@ -67,7 +67,7 @@ func (w *Worker) SyncFundamentals(ctx context.Context) error {
 			params := sqlc.UpsertFundamentalParams{
 				CompanyID:     c.ID,
 				FiscalYear:    f.FiscalYear,
-				Quarter:       nullString(f.Quarter),
+				Quarter:       f.Quarter, // Empty string for annual data
 				Eps:           nullFloat64(f.EPS),
 				PeRatio:       nullFloat64(f.PERatio),
 				BookValue:     nullFloat64(f.BookValue),
