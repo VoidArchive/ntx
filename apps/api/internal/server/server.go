@@ -33,7 +33,7 @@ func NewServer(queries *sqlc.Queries) *Server {
 	return &Server{
 		Server: &http.Server{
 			Addr:         ":" + port,
-			Handler:      withCORS(mux),
+			Handler:      withCORS(loggingMiddleware(mux)),
 			ReadTimeout:  15 * time.Second,
 			WriteTimeout: 15 * time.Second,
 			IdleTimeout:  60 * time.Second,
@@ -49,6 +49,18 @@ func (s *Server) Start() error {
 
 	slog.Info("server starting", "addr", s.Addr)
 	return s.ListenAndServe()
+}
+
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		slog.Info("request",
+			"method", r.Method,
+			"path", r.URL.Path,
+			"duration", time.Since(start),
+		)
+	})
 }
 
 func (s *Server) gracefulShutdown(done <-chan os.Signal) {

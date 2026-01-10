@@ -5,7 +5,8 @@ import { PriceService } from '$lib/gen/ntx/v1/price_pb';
 const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
 const transport = createConnectTransport({
-	baseUrl
+	baseUrl,
+	fetch: (input, init) => fetch(input, { ...init, redirect: 'follow' })
 });
 
 export const company = createClient(CompanyService, transport);
