@@ -45,6 +45,16 @@
 		return 'neutral';
 	});
 
+	// Calculate Y-axis domain with padding for better visibility
+	const yDomain = $derived.by(() => {
+		if (chartData.length === 0) return [0, 100];
+		const prices = chartData.map((d) => d.price);
+		const minPrice = Math.min(...prices);
+		const maxPrice = Math.max(...prices);
+		const padding = (maxPrice - minPrice) * 0.1 || maxPrice * 0.05;
+		return [Math.max(0, minPrice - padding), maxPrice + padding];
+	});
+
 	const chartConfig: ChartConfig = {
 		price: {
 			label: 'Price',
@@ -60,7 +70,7 @@
 			x="date"
 			y="price"
 			xScale={scaleTime()}
-			yScale={scaleLinear().nice()}
+			yScale={scaleLinear().domain(yDomain).nice()}
 			series={[
 				{
 					key: 'price',

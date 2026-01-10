@@ -24,20 +24,21 @@
 		return `${prefix}${value.toFixed(2)}%`;
 	}
 
+	// Short labels for pills
 	const sectorLabels: Record<number, string> = {
-		[Sector.COMMERCIAL_BANK]: 'Banking',
+		[Sector.COMMERCIAL_BANK]: 'Bank',
 		[Sector.DEVELOPMENT_BANK]: 'Dev Bank',
 		[Sector.FINANCE]: 'Finance',
-		[Sector.MICROFINANCE]: 'Microfinance',
-		[Sector.LIFE_INSURANCE]: 'Life Insurance',
-		[Sector.NON_LIFE_INSURANCE]: 'Non-Life Insurance',
-		[Sector.HYDROPOWER]: 'Hydropower',
-		[Sector.MANUFACTURING]: 'Manufacturing',
-		[Sector.HOTEL]: 'Hotels',
+		[Sector.MICROFINANCE]: 'MFI',
+		[Sector.LIFE_INSURANCE]: 'Life Ins.',
+		[Sector.NON_LIFE_INSURANCE]: 'Non-Life',
+		[Sector.HYDROPOWER]: 'Hydro',
+		[Sector.MANUFACTURING]: 'Mfg.',
+		[Sector.HOTEL]: 'Hotel',
 		[Sector.TRADING]: 'Trading',
-		[Sector.INVESTMENT]: 'Investment',
-		[Sector.MUTUAL_FUND]: 'Mutual Fund',
-		[Sector.OTHERS]: 'Others'
+		[Sector.INVESTMENT]: 'Invest.',
+		[Sector.MUTUAL_FUND]: 'MF',
+		[Sector.OTHERS]: 'Other'
 	};
 </script>
 

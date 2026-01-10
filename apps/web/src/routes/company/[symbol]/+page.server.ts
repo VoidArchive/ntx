@@ -6,11 +6,13 @@ export const load = async ({ params, platform }) => {
 	const apiUrl = platform?.env?.API_URL ?? 'http://localhost:8080';
 	const { company, price } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
+		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes, companiesRes, pricesRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
 			price.getPrice({ symbol: params.symbol }),
-			price.getPriceHistory({ symbol: params.symbol, days: 365 })
+			price.getPriceHistory({ symbol: params.symbol, days: 365 }),
+			company.listCompanies({ limit: 500 }),
+			price.listLatestPrices({})
 		]);
 
 		// Fetch sector stats (non-blocking - we can still show page without it)
@@ -30,7 +32,9 @@ export const load = async ({ params, platform }) => {
 			fundamentalsHistory: fundamentalsRes.history,
 			price: priceRes.price,
 			priceHistory: priceHistoryRes.prices,
-			sectorStats
+			sectorStats,
+			companies: companiesRes.companies,
+			prices: pricesRes.prices
 		};
 	} catch (err) {
 		if (err instanceof ConnectError && err.code === Code.NotFound) {
