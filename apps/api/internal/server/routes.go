@@ -19,4 +19,8 @@ func registerRoutes(mux *http.ServeMux, queries *sqlc.Queries) {
 		price.NewPriceService(queries),
 	)
 	mux.Handle(pricePath, priceHandler)
+
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 }

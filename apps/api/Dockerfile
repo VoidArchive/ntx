@@ -15,7 +15,7 @@ COPY apps/api/ .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/ntx ./cmd/ntx
 
 FROM alpine:latest
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates tzdata
 
 WORKDIR /app
 
