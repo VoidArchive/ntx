@@ -1,6 +1,6 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
-	"name": "web",
+	"name": "ntx",
 	"compatibility_date": "2026-01-04",
 	"compatibility_flags": [
 		"nodejs_als"
@@ -11,5 +11,10 @@
 		"directory": ".svelte-kit/cloudflare"
 	},
 	"workers_dev": true,
-	"preview_urls": true
+	"preview_urls": false,
+	"observability": {
+		"logs": {
+			"enabled": true
+		}
+	},
 }
