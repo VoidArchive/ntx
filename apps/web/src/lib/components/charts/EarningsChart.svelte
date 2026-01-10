@@ -16,18 +16,45 @@
 
 	let hoveredIndex = $state<number | null>(null);
 
+	// Convert "First Quarter" → "Q1", "Second Quarter" → "Q2", etc.
+	function abbreviateQuarter(quarter: string): string {
+		const map: Record<string, string> = {
+			'First Quarter': 'Q1',
+			'Second Quarter': 'Q2',
+			'Third Quarter': 'Q3',
+			'Fourth Quarter': 'Q4'
+		};
+		return map[quarter] ?? quarter;
+	}
+
+	// Shorten fiscal year: "2023-2024" → "23/24", "2081" → "81"
+	function shortenFiscalYear(year: string): string {
+		if (year.includes('-')) {
+			const [start, end] = year.split('-');
+			return `${start.slice(-2)}/${end.slice(-2)}`;
+		}
+		return year.slice(-2);
+	}
+
 	let chartData = $derived.by(() => {
 		if (!fundamentals || fundamentals.length === 0) return [];
 
 		const uniqueMap = new Map<string, (typeof fundamentals)[0]>();
 		for (const f of fundamentals) {
 			if (f.profitAmount !== undefined) {
-				uniqueMap.set(f.fiscalYear, f);
+				// Use fiscalYear + quarter as key for quarterly data
+				const key = f.quarter ? `${f.fiscalYear}-${f.quarter}` : f.fiscalYear;
+				uniqueMap.set(key, f);
 			}
 		}
 
 		const sorted = Array.from(uniqueMap.values())
-			.sort((a, b) => a.fiscalYear.localeCompare(b.fiscalYear))
+			.sort((a, b) => {
+				const yearCmp = a.fiscalYear.localeCompare(b.fiscalYear);
+				if (yearCmp !== 0) return yearCmp;
+				// Sort quarters: Q1 < Q2 < Q3 < Q4
+				return (a.quarter ?? '').localeCompare(b.quarter ?? '');
+			})
 			.slice(-6);
 
 		return sorted.map((f, i) => {
@@ -45,8 +72,17 @@
 				}
 			}
 
+			// Build label: "Q1 23/24" for quarterly, "23/24" for annual
+			const shortYear = shortenFiscalYear(f.fiscalYear);
+			const label = f.quarter ? `${abbreviateQuarter(f.quarter)} ${shortYear}` : shortYear;
+			// Full label for tooltip: "Q1 2023-2024" or "2023-2024"
+			const fullLabel = f.quarter ? `${abbreviateQuarter(f.quarter)} ${f.fiscalYear}` : f.fiscalYear;
+
 			return {
 				fiscalYear: f.fiscalYear,
+				quarter: f.quarter,
+				label,
+				fullLabel,
 				profit: currentProfit / 10_000_000,
 				growth
 			};
@@ -203,7 +239,7 @@
 				{/if}
 
 				<!-- Profit bars -->
-				{#each chartData as d, i (d.fiscalYear)}
+				{#each chartData as d, i (d.label)}
 					{@const barHeight = Math.max(0, chartHeight - yScaleProfit(d.profit))}
 					{@const x = xPosition(i) - barWidth / 2}
 					{@const y = yScaleProfit(d.profit)}
@@ -231,7 +267,7 @@
 						stroke-linejoin="round"
 					/>
 
-					{#each chartData as d, i (d.fiscalYear)}
+					{#each chartData as d, i (d.label)}
 						{#if d.growth !== null}
 							{@const x = xPosition(i)}
 							{@const y = yScaleGrowth(d.growth)}
@@ -250,7 +286,7 @@
 				{/if}
 
 				<!-- Hover areas -->
-				{#each chartData as d, i (d.fiscalYear)}
+				{#each chartData as d, i (d.label)}
 					<rect
 						x={xPosition(i) - barSpacing / 2}
 						y="0"
@@ -259,7 +295,7 @@
 						fill="transparent"
 						role="button"
 						tabindex="0"
-						aria-label="{d.fiscalYear}: Profit {formatProfit(d.profit)}"
+						aria-label="{d.label}: Profit {formatProfit(d.profit)}"
 						class="cursor-pointer"
 						onmouseenter={() => handleHover(i)}
 						onmouseleave={() => handleHover(null)}
@@ -269,14 +305,14 @@
 				{/each}
 
 				<!-- X-axis -->
-				{#each chartData as d, i (d.fiscalYear)}
+				{#each chartData as d, i (d.label)}
 					<text
 						x={xPosition(i)}
 						y={chartHeight + 20}
 						text-anchor="middle"
 						class="fill-muted-foreground text-[10px]"
 					>
-						{d.fiscalYear}
+						{d.label}
 					</text>
 				{/each}
 			</g>
@@ -291,7 +327,7 @@
 				style="left: {x}%; top: 0;"
 			>
 				<div class="rounded-lg border border-border/50 bg-popover px-3 py-2 shadow-lg">
-					<p class="text-xs font-medium">{d.fiscalYear}</p>
+					<p class="text-xs font-medium">{d.fullLabel}</p>
 					<div class="mt-1 flex gap-3 text-[11px]">
 						<span class="text-emerald-500">Profit: {formatProfit(d.profit)}</span>
 						{#if d.growth !== null}

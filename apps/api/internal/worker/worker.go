@@ -56,7 +56,7 @@ func (w *Worker) SyncFundamentals(ctx context.Context) error {
 	}
 
 	for _, c := range companies {
-		fundamentals, err := w.nepse.Fundamentals(ctx, int32(c.ID))
+		fundamentals, err := w.nepse.Fundamentals(ctx, safeInt32(c.ID))
 		if err != nil {
 			// Log and continue - don't fail entire sync for one company
 			fmt.Printf("skip fundamentals for %s: %v\n", c.Symbol, err)
@@ -142,7 +142,7 @@ func (w *Worker) SyncOwnership(ctx context.Context) error {
 	}
 
 	for _, c := range companies {
-		ownership, err := w.nepse.SecurityDetail(ctx, int32(c.ID))
+		ownership, err := w.nepse.SecurityDetail(ctx, safeInt32(c.ID))
 		if err != nil {
 			fmt.Printf("skip ownership for %s: %v\n", c.Symbol, err)
 			continue
@@ -173,7 +173,7 @@ func (w *Worker) SyncDividends(ctx context.Context) error {
 	}
 
 	for _, c := range companies {
-		dividends, err := w.nepse.Dividends(ctx, int32(c.ID))
+		dividends, err := w.nepse.Dividends(ctx, safeInt32(c.ID))
 		if err != nil {
 			fmt.Printf("skip dividends for %s: %v\n", c.Symbol, err)
 			continue
@@ -222,4 +222,12 @@ func nullInt64(i int64) sql.NullInt64 {
 		return sql.NullInt64{Valid: false}
 	}
 	return sql.NullInt64{Int64: i, Valid: true}
+}
+
+func safeInt32(v int64) int32 {
+	const maxInt32 = 1<<31 - 1
+	if v > maxInt32 {
+		return maxInt32
+	}
+	return int32(v) //nolint:gosec // bounds checked above
 }

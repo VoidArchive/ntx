@@ -63,6 +63,14 @@ func nullInt32(ni sql.NullInt64) *int32 {
 	if !ni.Valid {
 		return nil
 	}
-	v := int32(ni.Int64)
+	v := safeInt32(ni.Int64)
 	return &v
+}
+
+func safeInt32(v int64) int32 {
+	const maxInt32 = 1<<31 - 1
+	if v > maxInt32 {
+		return maxInt32
+	}
+	return int32(v) //nolint:gosec // bounds checked above
 }

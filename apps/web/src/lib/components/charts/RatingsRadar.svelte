@@ -38,8 +38,20 @@
 	// Get latest fundamental from passed data (already filtered by page)
 	let latestFundamental = $derived(sortedFundamentals[0]);
 
-	// Get previous entry for growth calculations
-	let previousFundamental = $derived(sortedFundamentals[1]);
+	// Get previous entry for growth calculations (YoY for quarterly data)
+	let previousFundamental = $derived.by(() => {
+		if (!latestFundamental) return undefined;
+
+		// For quarterly data, find same quarter from previous year
+		if (latestFundamental.quarter) {
+			return sortedFundamentals.find(
+				(f) => f.quarter === latestFundamental.quarter && f.fiscalYear !== latestFundamental.fiscalYear
+			);
+		}
+
+		// For annual data, just use the previous year
+		return sortedFundamentals[1];
+	});
 
 	// Calculate metrics and ratings (1-5 scale)
 	let metrics = $derived.by(() => {
@@ -251,16 +263,16 @@
 			<div class="space-y-2 text-sm">
 				{#each axes as axis}
 					{@const m = metrics[axis]}
-					<div class="flex items-center justify-between gap-4">
-						<span class="text-muted-foreground">{m.label}</span>
-						<span class="tabular-nums font-medium">{formatValue(axis, m.value)}</span>
+					<div class="flex items-center gap-3">
+						<span class="w-16 text-muted-foreground">{m.label}</span>
+						<span class="w-12 text-right tabular-nums font-medium">{formatValue(axis, m.value)}</span>
 						<span class="w-4 text-center font-semibold text-orange-500">{m.rating}</span>
 					</div>
 				{/each}
 				<div class="border-t border-border pt-2">
-					<div class="flex items-center justify-between gap-4 font-medium">
-						<span>Overall</span>
-						<span class="text-orange-500">{metrics.overall.toFixed(1)}</span>
+					<div class="flex items-center gap-3 font-medium">
+						<span class="w-16">Overall</span>
+						<span class="w-12 text-right tabular-nums text-orange-500">{metrics.overall.toFixed(1)}</span>
 					</div>
 				</div>
 			</div>

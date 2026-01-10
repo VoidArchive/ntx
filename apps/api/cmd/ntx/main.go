@@ -55,7 +55,7 @@ func runBackfillCmd() {
 	fs.BoolVar(&opts.prices, "prices", false, "sync price history")
 	fs.BoolVar(&opts.ownership, "ownership", false, "sync ownership data")
 	fs.BoolVar(&opts.corporateActions, "corporate-actions", false, "sync corporate actions")
-	fs.Parse(os.Args[2:])
+	_ = fs.Parse(os.Args[2:])
 
 	// If no flags specified, sync everything
 	if !opts.companies && !opts.fundamentals && !opts.prices && !opts.ownership && !opts.corporateActions {
@@ -68,7 +68,7 @@ func runBackfillCmd() {
 
 	db, queries, client := setup()
 	defer db.Close()
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()

@@ -168,7 +168,7 @@ func (s *CompanyService) GetSectorStats(
 	return connect.NewResponse(&ntxv1.GetSectorStatsResponse{
 		Stats: &ntxv1.SectorStats{
 			Sector:       sector,
-			CompanyCount: int32(stats.CompanyCount),
+			CompanyCount: safeInt32(stats.CompanyCount),
 			AvgEps:       nullFloat64(stats.AvgEps),
 			AvgPeRatio:   nullFloat64(stats.AvgPeRatio),
 			AvgBookValue: nullFloat64(stats.AvgBookValue),
@@ -267,4 +267,12 @@ func nullStringVal(ns sql.NullString) string {
 		return ""
 	}
 	return ns.String
+}
+
+func safeInt32(v int64) int32 {
+	const maxInt32 = 1<<31 - 1
+	if v > maxInt32 {
+		return maxInt32
+	}
+	return int32(v) //nolint:gosec // bounds checked above
 }

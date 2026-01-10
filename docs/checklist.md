@@ -75,10 +75,10 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Landing page with market status and top movers.
 
-- [ ] DB: Add queries for top gainers/losers
-- [ ] Proto: Define `MarketService.GetStatus`, `ListTopGainers`, `ListTopLosers`
-- [ ] Backend: Implement handlers
-- [ ] Frontend: Build landing page with indices + movers
+- [x] DB: Add queries for top gainers/losers
+- [x] Proto: Define `MarketService.GetStatus`, `ListTopGainers`, `ListTopLosers`
+- [x] Backend: Implement handlers
+- [x] Frontend: Build landing page with indices + movers
 
 **Done when:** Homepage shows market overview.
 
@@ -88,10 +88,10 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Filter stocks by fundamentals.
 
-- [ ] DB: Write dynamic filter query
-- [ ] Proto: Define `ScreenerService.Screen`
-- [ ] Backend: Implement handler
-- [ ] Frontend: Build screener page with filters
+- [x] DB: Write dynamic filter query
+- [x] Proto: Define `ScreenerService.Screen`
+- [x] Backend: Implement handler
+- [x] Frontend: Build screener page with filters
 
 **Done when:** User can filter stocks by PE, market cap, etc.
 
@@ -101,10 +101,10 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Show price chart on company page.
 
-- [ ] DB: Write `ListCandles` query
-- [ ] Proto: Define `PriceService.ListCandles`
-- [ ] Backend: Implement handler + historical backfill
-- [ ] Frontend: Add chart component to company page
+- [x] DB: Write `ListCandles` query
+- [x] Proto: Define `PriceService.ListCandles`
+- [x] Backend: Implement handler + historical backfill
+- [x] Frontend: Add chart component to company page
 
 **Done when:** Company page shows price chart.
 
@@ -114,12 +114,12 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 **Goal:** Production-ready.
 
-- [ ] Backend: Health check endpoint
-- [ ] Backend: Graceful shutdown
-- [ ] Backend: Embed SvelteKit build
-- [ ] Deploy: Dockerfile
-- [ ] Deploy: Railway config
-- [ ] Deploy: Verify everything works
+- [x] Backend: Health check endpoint
+- [x] Backend: Graceful shutdown
+- [x] Backend: Embed SvelteKit build
+- [x] Deploy: Dockerfile
+- [x] Deploy: Railway config
+- [x] Deploy: Verify everything works
 
 **Done when:** App is live on Railway.
 
@@ -127,7 +127,18 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 ## Future Cycles (if needed)
 
-- Sectors page
-- Financial reports (quarterly/annual)
-- Corporate actions (dividends, bonus)
-- User accounts + watchlists
+┌────────────────────┬─────────────────────────────────────────────────┐
+  │      Feature       │                      Value                      │
+  ├────────────────────┼─────────────────────────────────────────────────┤
+  │ Peer Comparison    │ Compare to sector peers (same sector companies) │
+  ├────────────────────┼─────────────────────────────────────────────────┤
+  │ Volume Chart       │ Trading volume trends                           │
+  ├────────────────────┼─────────────────────────────────────────────────┤
+  │ News/Announcements │ Recent company news from NEPSE                  │
+  ├────────────────────┼─────────────────────────────────────────────────┤
+  │ Floorsheet Data    │ Large trades, broker activity                   │
+  ├────────────────────┼─────────────────────────────────────────────────┤
+  │ Book Closure Dates │ Upcoming dividends/AGM dates                    │
+  ├────────────────────┼─────────────────────────────────────────────────┤
+  │ Price Alerts       │ User notifications (requires auth)              │
+  └────────────────────┴─────────────────────────────────────────────────┘

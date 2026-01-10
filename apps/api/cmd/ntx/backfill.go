@@ -129,7 +129,7 @@ func syncCompanyFundamentals(
 	client *nepse.Client,
 	company sqlc.Company,
 ) error {
-	fundamentals, err := client.Fundamentals(ctx, int32(company.ID))
+	fundamentals, err := client.Fundamentals(ctx, safeInt32(company.ID))
 	if err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func syncCompanyFundamentals(
 		params := sqlc.UpsertFundamentalParams{
 			CompanyID:     company.ID,
 			FiscalYear:    f.FiscalYear,
-			Quarter:       nullString(f.Quarter),
+			Quarter:       f.Quarter, // Empty string for annual data
 			Eps:           nullFloat64(f.EPS),
 			PeRatio:       nullFloat64(f.PERatio),
 			BookValue:     nullFloat64(f.BookValue),
@@ -187,7 +187,7 @@ func syncCompanyOwnership(
 	client *nepse.Client,
 	company sqlc.Company,
 ) error {
-	ownership, err := client.SecurityDetail(ctx, int32(company.ID))
+	ownership, err := client.SecurityDetail(ctx, safeInt32(company.ID))
 	if err != nil {
 		return err
 	}
@@ -238,7 +238,7 @@ func syncCompanyDividends(
 	client *nepse.Client,
 	company sqlc.Company,
 ) error {
-	dividends, err := client.Dividends(ctx, int32(company.ID))
+	dividends, err := client.Dividends(ctx, safeInt32(company.ID))
 	if err != nil {
 		return err
 	}
@@ -303,7 +303,7 @@ func syncCompanyPriceHistory(
 	company sqlc.Company,
 	startDate, endDate string,
 ) error {
-	history, err := client.PriceHistory(ctx, int32(company.ID), startDate, endDate)
+	history, err := client.PriceHistory(ctx, safeInt32(company.ID), startDate, endDate)
 	if err != nil {
 		return err
 	}
@@ -354,4 +354,12 @@ func nullFloat64Ptr(f *float64) sql.NullFloat64 {
 		return sql.NullFloat64{Valid: false}
 	}
 	return sql.NullFloat64{Float64: *f, Valid: true}
+}
+
+func safeInt32(v int64) int32 {
+	const maxInt32 = 1<<31 - 1
+	if v > maxInt32 {
+		return maxInt32
+	}
+	return int32(v) //nolint:gosec // bounds checked above
 }
