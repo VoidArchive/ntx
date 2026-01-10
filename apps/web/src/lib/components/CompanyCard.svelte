@@ -10,6 +10,9 @@
 
 	let { company, price }: Props = $props();
 
+	// Use ltp, fallback to close for non-trading days
+	let currentPrice = $derived(price?.ltp ?? price?.close);
+
 	function formatPrice(value: number | undefined): string {
 		if (value === undefined) return '—';
 		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
@@ -65,9 +68,9 @@
 
 	<!-- Middle: Price (Placeholder or Real) -->
 	<div class="mt-6 flex items-baseline gap-3">
-		{#if price?.ltp}
+		{#if currentPrice}
 			<span class="text-3xl font-medium text-foreground tabular-nums">
-				{formatPrice(price.ltp)}
+				{formatPrice(currentPrice)}
 			</span>
 			{#if price.changePercent !== undefined}
 				<span

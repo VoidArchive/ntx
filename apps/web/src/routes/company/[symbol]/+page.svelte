@@ -17,6 +17,9 @@
 	let priceHistory = $derived(data.priceHistory);
 	let sectorStats = $derived(data.sectorStats);
 
+	// Use ltp, fallback to close for non-trading days
+	let currentPrice = $derived(priceData?.ltp ?? priceData?.close);
+
 	let chartDays = $state<30 | 90 | 180 | 365>(365);
 
 	let story = $derived.by(() => {
@@ -75,7 +78,7 @@
 
 		const high52w = Math.max(...highs);
 		const low52w = Math.min(...lows);
-		const current = priceData?.ltp ?? 0;
+		const current = currentPrice ?? 0;
 		const range = high52w - low52w;
 		const position = range > 0 ? ((current - low52w) / range) * 100 : 50;
 		const fromHigh = high52w > 0 ? ((high52w - current) / high52w) * 100 : 0;
@@ -94,7 +97,7 @@
 
 		// Calculate recent performance
 		const sorted = [...priceHistory].sort((a, b) => b.businessDate.localeCompare(a.businessDate));
-		const current = priceData?.ltp ?? 0;
+		const current = currentPrice ?? 0;
 		const week1 = sorted[5]?.ltp ?? sorted[5]?.close ?? current;
 		const month1 = sorted[20]?.ltp ?? sorted[20]?.close ?? current;
 		const month3 = sorted[60]?.ltp ?? sorted[60]?.close ?? current;
@@ -116,7 +119,7 @@
 		const eps = fundamentals.eps ?? 0;
 		const pe = fundamentals.peRatio ?? 0;
 		const bv = fundamentals.bookValue ?? 0;
-		const pbRatio = bv > 0 ? (priceData?.ltp ?? 0) / bv : 0;
+		const pbRatio = bv > 0 ? (currentPrice ?? 0) / bv : 0;
 
 		// For P/E, lower is better, so we invert the scale
 		const peInverted = pe > 0 ? Math.max(0, 50 - pe) : 0;
@@ -154,7 +157,7 @@
 		if (!company || !priceData || !story) return '';
 
 		const sector = sectorNames[company.sector ?? Sector.OTHERS];
-		const price = fmt(priceData.ltp);
+		const price = fmt(currentPrice);
 		const change = priceData.changePercent ?? 0;
 		const changeDir = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
 
@@ -176,7 +179,7 @@
 Your goal is to perform a deep-dive investment analysis of: ${company.name} (${company.symbol}).
 
 ## 1. Provided Data Snapshot (As of ${today})
-- **Price**: Rs. ${fmt(priceData.ltp)}
+- **Price**: Rs. ${fmt(currentPrice)}
 - **Sector**: ${sector}
 - **Sector Avg P/E**: ${fmt(sectorStats?.avgPeRatio ?? 0)}
 - **Fundamentals**:
@@ -245,7 +248,7 @@ Please be objective, critical, and data-driven.`;
 
 					<div class="flex items-start gap-4">
 						<div class="text-right">
-							<p class="text-2xl font-medium tabular-nums">Rs. {fmt(priceData.ltp)}</p>
+							<p class="text-2xl font-medium tabular-nums">Rs. {fmt(currentPrice)}</p>
 							<p
 								class="tabular-nums {priceData.changePercent && priceData.changePercent > 0
 									? 'text-positive'
@@ -469,7 +472,7 @@ Please be objective, critical, and data-driven.`;
 							<p class="text-xs text-muted-foreground">P/B Ratio</p>
 							<p class="mt-1 text-xl font-medium tabular-nums">
 								{fundamentals.bookValue && fundamentals.bookValue > 0
-									? ((priceData.ltp ?? 0) / fundamentals.bookValue).toFixed(2)
+									? ((currentPrice ?? 0) / fundamentals.bookValue).toFixed(2)
 									: '—'}
 							</p>
 						</div>
@@ -509,7 +512,7 @@ Please be objective, critical, and data-driven.`;
 							{/if}
 
 							{#if fundamentals.bookValue}
-								{@const pbRatio = (priceData.ltp ?? 0) / fundamentals.bookValue}
+								{@const pbRatio = (currentPrice ?? 0) / fundamentals.bookValue}
 								{#if pbRatio < 1}
 									The stock trades below book value (P/B: {pbRatio.toFixed(2)}), meaning you could
 									theoretically buy the company for less than its net assets are worth.
