@@ -50,11 +50,11 @@ func runBackfill(ctx context.Context, queries *sqlc.Queries, client *nepse.Clien
 	}
 
 	if opts.corporateActions {
-		slog.Info("syncing corporate actions...", "concurrency", maxConcurrency)
-		if err := syncCorporateActionsConcurrent(ctx, queries, client); err != nil {
-			return fmt.Errorf("sync corporate actions: %w", err)
+		slog.Info("syncing dividends...", "concurrency", maxConcurrency)
+		if err := syncDividendsConcurrent(ctx, queries, client); err != nil {
+			return fmt.Errorf("sync dividends: %w", err)
 		}
-		slog.Info("corporate actions synced")
+		slog.Info("dividends synced")
 	}
 
 	slog.Info("backfill complete", "duration", time.Since(start))
@@ -203,7 +203,7 @@ func syncCompanyOwnership(
 	return queries.UpsertOwnership(ctx, params)
 }
 
-func syncCorporateActionsConcurrent(ctx context.Context, queries *sqlc.Queries, client *nepse.Client) error {
+func syncDividendsConcurrent(ctx context.Context, queries *sqlc.Queries, client *nepse.Client) error {
 	companies, err := queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
 		Limit:  1000,
 		Offset: 0,
@@ -222,8 +222,8 @@ func syncCorporateActionsConcurrent(ctx context.Context, queries *sqlc.Queries, 
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			if err := syncCompanyCorporateActions(ctx, queries, client, company); err != nil {
-				slog.Warn("skip corporate actions", "symbol", company.Symbol, "error", err)
+			if err := syncCompanyDividends(ctx, queries, client, company); err != nil {
+				slog.Warn("skip dividends", "symbol", company.Symbol, "error", err)
 			}
 		}(c)
 	}
@@ -232,28 +232,28 @@ func syncCorporateActionsConcurrent(ctx context.Context, queries *sqlc.Queries, 
 	return nil
 }
 
-func syncCompanyCorporateActions(
+func syncCompanyDividends(
 	ctx context.Context,
 	queries *sqlc.Queries,
 	client *nepse.Client,
 	company sqlc.Company,
 ) error {
-	actions, err := client.CorporateActions(ctx, int32(company.ID))
+	dividends, err := client.Dividends(ctx, int32(company.ID))
 	if err != nil {
 		return err
 	}
 
-	for _, a := range actions {
+	for _, d := range dividends {
 		params := sqlc.UpsertCorporateActionParams{
 			CompanyID:       company.ID,
-			FiscalYear:      a.FiscalYear,
-			BonusPercentage: nullFloat64(a.BonusPercentage),
-			RightPercentage: nullFloat64Ptr(a.RightPercentage),
-			CashDividend:    nullFloat64Ptr(a.CashDividend),
-			SubmittedDate:   nullString(a.SubmittedDate),
+			FiscalYear:      d.FiscalYear,
+			BonusPercentage: nullFloat64(d.BonusPercentage),
+			RightPercentage: nullFloat64Ptr(d.RightPercentage),
+			CashDividend:    nullFloat64Ptr(d.CashDividend),
+			SubmittedDate:   nullString(d.ModifiedDate),
 		}
 		if err := queries.UpsertCorporateAction(ctx, params); err != nil {
-			return fmt.Errorf("upsert corporate action: %w", err)
+			return fmt.Errorf("upsert dividend: %w", err)
 		}
 	}
 	return nil

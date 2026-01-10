@@ -163,7 +163,7 @@ func (w *Worker) SyncOwnership(ctx context.Context) error {
 	return nil
 }
 
-func (w *Worker) SyncCorporateActions(ctx context.Context) error {
+func (w *Worker) SyncDividends(ctx context.Context) error {
 	companies, err := w.queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
 		Limit:  1000,
 		Offset: 0,
@@ -173,23 +173,23 @@ func (w *Worker) SyncCorporateActions(ctx context.Context) error {
 	}
 
 	for _, c := range companies {
-		actions, err := w.nepse.CorporateActions(ctx, int32(c.ID))
+		dividends, err := w.nepse.Dividends(ctx, int32(c.ID))
 		if err != nil {
-			fmt.Printf("skip corporate actions for %s: %v\n", c.Symbol, err)
+			fmt.Printf("skip dividends for %s: %v\n", c.Symbol, err)
 			continue
 		}
 
-		for _, a := range actions {
+		for _, d := range dividends {
 			params := sqlc.UpsertCorporateActionParams{
 				CompanyID:       c.ID,
-				FiscalYear:      a.FiscalYear,
-				BonusPercentage: nullFloat64(a.BonusPercentage),
-				RightPercentage: nullFloat64Ptr(a.RightPercentage),
-				CashDividend:    nullFloat64Ptr(a.CashDividend),
-				SubmittedDate:   nullString(a.SubmittedDate),
+				FiscalYear:      d.FiscalYear,
+				BonusPercentage: nullFloat64(d.BonusPercentage),
+				RightPercentage: nullFloat64Ptr(d.RightPercentage),
+				CashDividend:    nullFloat64Ptr(d.CashDividend),
+				SubmittedDate:   nullString(d.ModifiedDate),
 			}
 			if err := w.queries.UpsertCorporateAction(ctx, params); err != nil {
-				return fmt.Errorf("upsert corporate action for %s: %w", c.Symbol, err)
+				return fmt.Errorf("upsert dividend for %s: %w", c.Symbol, err)
 			}
 		}
 	}

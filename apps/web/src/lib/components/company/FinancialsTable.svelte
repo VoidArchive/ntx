@@ -20,6 +20,16 @@
 		return fmt(value);
 	}
 
+	function formatQuarter(quarter: string | undefined): string {
+		if (!quarter) return '';
+		const q = quarter.toLowerCase();
+		if (q.includes('first') || q === '1' || q === 'q1') return ' Q1';
+		if (q.includes('second') || q === '2' || q === 'q2') return ' Q2';
+		if (q.includes('third') || q === '3' || q === 'q3') return ' Q3';
+		if (q.includes('fourth') || q === '4' || q === 'q4') return ' Q4';
+		return ` ${quarter}`;
+	}
+
 	// Sort by fiscal year descending and take latest 5
 	let sortedFundamentals = $derived(
 		[...fundamentals]
@@ -44,9 +54,9 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each sortedFundamentals as f (f.fiscalYear)}
+					{#each sortedFundamentals as f (f.id)}
 						<tr class="border-b border-dotted border-border last:border-0">
-							<td class="py-2.5 font-medium">{f.fiscalYear}{f.quarter ? ` Q${f.quarter}` : ''}</td>
+							<td class="py-2.5 font-medium">{f.fiscalYear}{formatQuarter(f.quarter)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.eps)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.peRatio)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.bookValue)}</td>

@@ -1,14 +1,15 @@
 <script lang="ts">
-	import type { Price, Fundamental, Ownership } from '$lib/gen/ntx/v1/common_pb';
+	import type { Price, Fundamental, Ownership, CorporateAction } from '$lib/gen/ntx/v1/common_pb';
 
 	interface Props {
 		price?: Price;
 		fundamentals?: Fundamental;
 		priceHistory?: Price[];
 		ownership?: Ownership;
+		corporateActions?: CorporateAction[];
 	}
 
-	let { price, fundamentals, priceHistory, ownership }: Props = $props();
+	let { price, fundamentals, priceHistory, ownership, corporateActions = [] }: Props = $props();
 
 	function fmt(value: number | bigint | undefined): string {
 		if (value === undefined) return '—';
@@ -56,6 +57,21 @@
 		return currentPrice * listedShares;
 	});
 
+	// Calculate dividend yield from latest corporate action
+	let dividendYield = $derived.by(() => {
+		const currentPrice = price?.ltp ?? price?.close;
+		if (!currentPrice || corporateActions.length === 0) return null;
+
+		// Get latest action with cash dividend
+		const sorted = [...corporateActions].sort((a, b) =>
+			b.fiscalYear.localeCompare(a.fiscalYear)
+		);
+		const latest = sorted.find((a) => a.cashDividend && a.cashDividend > 0);
+		if (!latest?.cashDividend) return null;
+
+		return (latest.cashDividend / currentPrice) * 100;
+	});
+
 	interface StatRow {
 		label: string;
 		value: string;
@@ -79,6 +95,10 @@
 
 		if (fundamentals?.eps) {
 			rows.push({ label: 'EPS', value: fmt(fundamentals.eps) });
+		}
+
+		if (dividendYield) {
+			rows.push({ label: 'Div Yield', value: `${dividendYield.toFixed(2)}%` });
 		}
 
 		if (fundamentals?.bookValue) {

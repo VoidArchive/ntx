@@ -20,7 +20,7 @@
 
 	function fmtCash(value: number | undefined): string {
 		if (value === undefined || value === 0) return '—';
-		return `Rs. ${value.toFixed(2)}`;
+		return `${value.toFixed(1)}%`;
 	}
 
 	// Sort by submitted date descending
