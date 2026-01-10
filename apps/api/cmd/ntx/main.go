@@ -17,6 +17,9 @@ import (
 )
 
 func main() {
+	// Configure slog to write to stdout (Railway treats stderr as errors)
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "backfill":

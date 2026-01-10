@@ -6,7 +6,7 @@
 
 	interface Props {
 		prices: Price[];
-		days?: 30 | 90 | 180 | 365;
+		days?: number;
 		class?: string;
 	}
 
