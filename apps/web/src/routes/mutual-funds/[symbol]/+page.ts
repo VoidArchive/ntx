@@ -1,9 +1,9 @@
 import type { Fund } from '$lib/types/fund';
 import { error } from '@sveltejs/kit';
+import navData from '$lib/data/nav_2025_12.json';
 
-export async function load({ params, fetch }) {
-	const response = await fetch('/data/nav_detailed.json');
-	const funds: Fund[] = await response.json();
+export async function load({ params }) {
+	const funds: Fund[] = navData as Fund[];
 
 	const fund = funds.find((f) => f.symbol === params.symbol.toUpperCase());
 

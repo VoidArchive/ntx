@@ -1,8 +1,8 @@
 import type { Fund } from '$lib/types/fund';
+import navData from '$lib/data/nav_2025_12.json';
 
-export async function load({ fetch }) {
-	const response = await fetch('/data/nav_detailed.json');
-	const funds: Fund[] = await response.json();
+export async function load() {
+	const funds: Fund[] = navData as Fund[];
 
 	// Sort by net assets descending
 	funds.sort((a, b) => b.net_assets - a.net_assets);

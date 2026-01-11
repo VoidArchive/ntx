@@ -1,4 +1,5 @@
 import { createApiClient } from '$lib/api/client';
+import navData from '$lib/data/nav_2025_12.json';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
 import type { Fund, Holding } from '$lib/types/fund';
@@ -119,12 +120,12 @@ export const load = async ({ params, platform, fetch }) => {
 			// Corporate actions are optional, continue without them
 		}
 
+
 		// Fetch mutual fund holdings for this company
 		let fundHoldings: FundHolding[] = [];
 		if (companyRes.company?.name) {
 			try {
-				const fundsResponse = await fetch('/data/nav_detailed.json');
-				const funds: Fund[] = await fundsResponse.json();
+				const funds = navData as Fund[];
 				fundHoldings = findCompanyInFunds(funds, companyRes.company.name);
 			} catch {
 				// Fund holdings are optional
