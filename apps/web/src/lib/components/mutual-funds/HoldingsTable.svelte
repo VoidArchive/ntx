@@ -46,13 +46,11 @@
 	});
 
 	function toggleSector(key: string) {
-		const newSet = new SvelteSet(expandedSectors);
-		if (newSet.has(key)) {
-			newSet.delete(key);
+		if (expandedSectors.has(key)) {
+			expandedSectors.delete(key);
 		} else {
-			newSet.add(key);
+			expandedSectors.add(key);
 		}
-		expandedSectors = newSet;
 	}
 
 	function fmtValue(value: number): string {

@@ -14,6 +14,14 @@
 	let { children, data }: { children: Snippet; data: LayoutData } = $props();
 
 	if (browser) {
+		posthog.init('phc_jeqQwskahiaP3wSMZH9WKRkS3Sj6373SAw4pJAWja9m', {
+			api_host: '/ingest',
+			ui_host: 'https://us.i.posthog.com',
+			person_profiles: 'identified_only',
+			capture_pageview: false,
+			capture_pageleave: false
+		});
+
 		beforeNavigate(() => posthog.capture('$pageleave'));
 		afterNavigate(() => posthog.capture('$pageview'));
 	}
