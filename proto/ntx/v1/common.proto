@@ -46,6 +46,7 @@ message Company {
   optional string website = 6;
   Sector sector = 7;
   InstrumentType instrument_type = 8;
+  optional int64 listed_shares = 9;
 }
 
 message Fundamental {

@@ -26,6 +26,24 @@ func companiesToProto(companies []sqlc.Company) []*ntxv1.Company {
 	return out
 }
 
+func listCompaniesRowsToProto(rows []sqlc.ListCompaniesRow) []*ntxv1.Company {
+	out := make([]*ntxv1.Company, len(rows))
+	for i, r := range rows {
+		out[i] = &ntxv1.Company{
+			Id:             r.ID,
+			Name:           r.Name,
+			Symbol:         r.Symbol,
+			Status:         statusFromDB(r.Status),
+			Email:          nullString(r.Email),
+			Website:        nullString(r.Website),
+			InstrumentType: instrumentFromDB(r.InstrumentType),
+			Sector:         sectorFromDB(r.Sector),
+			ListedShares:   nullInt64Ptr(r.ListedShares),
+		}
+	}
+	return out
+}
+
 func companyToProto(c sqlc.Company) *ntxv1.Company {
 	return &ntxv1.Company{
 		Id:             c.ID,
@@ -145,4 +163,11 @@ func nullFloat64(nf sql.NullFloat64) *float64 {
 		return nil
 	}
 	return &nf.Float64
+}
+
+func nullInt64Ptr(ni sql.NullInt64) *int64 {
+	if !ni.Valid {
+		return nil
+	}
+	return &ni.Int64
 }

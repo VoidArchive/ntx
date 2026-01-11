@@ -114,7 +114,7 @@ func (s *CompanyService) ListCompanies(
 	}
 
 	return connect.NewResponse(&ntxv1.ListCompaniesResponse{
-		Companies: companiesToProto(companies),
+		Companies: listCompaniesRowsToProto(companies),
 	}), nil
 }
 

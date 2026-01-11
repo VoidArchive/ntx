@@ -14,7 +14,10 @@ ON CONFLICT(symbol) DO UPDATE SET
 SELECT * FROM companies WHERE symbol = ?;
 
 -- name: ListCompanies :many
-SELECT * FROM companies ORDER by symbol LIMIT ? OFFSET ?;
+SELECT c.*, o.listed_shares
+FROM companies c
+LEFT JOIN ownership o ON c.id = o.company_id
+ORDER by c.symbol LIMIT ? OFFSET ?;
 
 -- name: ListCompaniesBySector :many
 SELECT * FROM companies

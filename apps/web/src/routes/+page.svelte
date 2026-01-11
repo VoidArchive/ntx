@@ -2,8 +2,7 @@
 	import CompanyCard from '$lib/components/CompanyCard.svelte';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
 	import type { Price } from '$lib/gen/ntx/v1/common_pb';
-	import TrendingUp from '@lucide/svelte/icons/trending-up';
-	import TrendingDown from '@lucide/svelte/icons/trending-down';
+	import PieChart from '@lucide/svelte/icons/pie-chart';
 
 	let { data } = $props();
 
@@ -29,37 +28,30 @@
 		return data.prices?.find((p) => p.companyId === companyId);
 	}
 
-	function formatChange(value: number | undefined): string {
-		if (value === undefined) return '';
-		return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
+	function formatLarge(value: number): string {
+		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
+		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(2)} Cr`;
+		if (value >= 100_000) return `${(value / 100_000).toFixed(2)} L`;
+		return value.toLocaleString();
 	}
 
-	// Top gainers
-	let topGainers = $derived.by(() => {
-		if (!data.prices) return [];
-		return [...data.prices]
-			.filter((p) => p.changePercent !== undefined && p.changePercent > 0)
-			.sort((a, b) => (b.changePercent ?? 0) - (a.changePercent ?? 0))
-			.slice(0, 5)
-			.map((p) => ({
-				price: p,
-				company: data.companies?.find((c) => c.id === p.companyId)
-			}))
-			.filter((x) => x.company);
-	});
-
-	// Top losers
-	let topLosers = $derived.by(() => {
-		if (!data.prices) return [];
-		return [...data.prices]
-			.filter((p) => p.changePercent !== undefined && p.changePercent < 0)
-			.sort((a, b) => (a.changePercent ?? 0) - (b.changePercent ?? 0))
-			.slice(0, 5)
-			.map((p) => ({
-				price: p,
-				company: data.companies?.find((c) => c.id === p.companyId)
-			}))
-			.filter((x) => x.company);
+	// Largest Market Cap
+	let largestMarketCap = $derived.by(() => {
+		if (!data.companies) return [];
+		return [...data.companies]
+			.map((c) => {
+				const price = getPrice(c.id);
+				const shares = c.listedShares ? Number(c.listedShares) : 0;
+				const ltp = price?.ltp ?? price?.close ?? 0;
+				return {
+					company: c,
+					price,
+					marketCap: shares * ltp
+				};
+			})
+			.filter((x) => x.marketCap > 0)
+			.sort((a, b) => b.marketCap - a.marketCap)
+			.slice(0, 5);
 	});
 
 	// Most traded by volume
@@ -68,7 +60,7 @@
 		return [...data.prices]
 			.filter((p) => p.volume !== undefined && p.volume > 0)
 			.sort((a, b) => Number(b.volume ?? 0) - Number(a.volume ?? 0))
-			.slice(0, 5)
+			.slice(0, 6)
 			.map((p) => ({
 				price: p,
 				company: data.companies?.find((c) => c.id === p.companyId)
@@ -117,48 +109,32 @@
 		<div class="grid gap-8 lg:grid-cols-[1fr_300px]">
 			<!-- Market Movers: First on mobile, second on desktop -->
 			<aside class="space-y-6 overflow-hidden lg:order-2">
-				<!-- Top Gainers -->
+				<!-- Largest Market Cap -->
 				<div class="rounded-xl border border-border bg-card p-4">
-					<div class="mb-3 flex items-center gap-2">
-						<TrendingUp class="size-4 text-positive" />
-						<h3 class="font-medium">Top Gainers</h3>
+					<div class="mb-2 flex items-center justify-between">
+						<div class="flex items-center gap-2">
+							<PieChart class="size-4 text-primary" />
+							<h3 class="font-medium">Largest Market Cap</h3>
+						</div>
+						<a
+							href="/market-cap"
+							class="text-xs text-muted-foreground hover:text-foreground hover:underline"
+						>
+							View All
+						</a>
 					</div>
 					<div class="space-y-1">
-						{#each topGainers as item (item.company?.id)}
+						{#each largestMarketCap as item (item.company.id)}
 							<a
-								href="/company/{item.company?.symbol}"
+								href="/company/{item.company.symbol}"
 								class="flex items-center justify-between gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-muted"
 							>
 								<div class="min-w-0 flex-1">
-									<span class="font-serif">{item.company?.symbol}</span>
-									<p class="truncate text-xs text-muted-foreground">{item.company?.name}</p>
+									<span class="font-serif">{item.company.symbol}</span>
+									<p class="truncate text-xs text-muted-foreground">{item.company.name}</p>
 								</div>
-								<span class="shrink-0 font-medium text-positive tabular-nums">
-									{formatChange(item.price.changePercent)}
-								</span>
-							</a>
-						{/each}
-					</div>
-				</div>
-
-				<!-- Top Losers -->
-				<div class="rounded-xl border border-border bg-card p-4">
-					<div class="mb-3 flex items-center gap-2">
-						<TrendingDown class="size-4 text-negative" />
-						<h3 class="font-medium">Top Losers</h3>
-					</div>
-					<div class="space-y-1">
-						{#each topLosers as item (item.company?.id)}
-							<a
-								href="/company/{item.company?.symbol}"
-								class="flex items-center justify-between gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-muted"
-							>
-								<div class="min-w-0 flex-1">
-									<span class="font-serif">{item.company?.symbol}</span>
-									<p class="truncate text-xs text-muted-foreground">{item.company?.name}</p>
-								</div>
-								<span class="shrink-0 font-medium text-negative tabular-nums">
-									{formatChange(item.price.changePercent)}
+								<span class="shrink-0 font-medium tabular-nums text-foreground">
+									{formatLarge(item.marketCap)}
 								</span>
 							</a>
 						{/each}
@@ -167,7 +143,7 @@
 
 				<!-- Most Traded -->
 				<div class="rounded-xl border border-border bg-card p-4">
-					<div class="mb-3 flex items-center gap-2">
+					<div class="mb-2 flex items-center gap-2">
 						<div class="size-2 rounded-full bg-chart-1"></div>
 						<h3 class="font-medium">Most Traded</h3>
 					</div>

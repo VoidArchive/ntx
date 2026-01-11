@@ -217,6 +217,7 @@ type Company struct {
 	Website        *string                `protobuf:"bytes,6,opt,name=website,proto3,oneof" json:"website,omitempty"`
 	Sector         Sector                 `protobuf:"varint,7,opt,name=sector,proto3,enum=ntx.v1.Sector" json:"sector,omitempty"`
 	InstrumentType InstrumentType         `protobuf:"varint,8,opt,name=instrument_type,json=instrumentType,proto3,enum=ntx.v1.InstrumentType" json:"instrument_type,omitempty"`
+	ListedShares   *int64                 `protobuf:"varint,9,opt,name=listed_shares,json=listedShares,proto3,oneof" json:"listed_shares,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -305,6 +306,13 @@ func (x *Company) GetInstrumentType() InstrumentType {
 		return x.InstrumentType
 	}
 	return InstrumentType_INSTRUMENT_TYPE_UNSPECIFIED
+}
+
+func (x *Company) GetListedShares() int64 {
+	if x != nil && x.ListedShares != nil {
+		return *x.ListedShares
+	}
+	return 0
 }
 
 type Fundamental struct {
@@ -751,7 +759,7 @@ var File_ntx_v1_common_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"\x13ntx/v1/common.proto\x12\x06ntx.v1\"\xad\x02\n" +
+	"\x13ntx/v1/common.proto\x12\x06ntx.v1\"\xe9\x02\n" +
 	"\aCompany\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -760,10 +768,12 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"\x05email\x18\x05 \x01(\tH\x00R\x05email\x88\x01\x01\x12\x1d\n" +
 	"\awebsite\x18\x06 \x01(\tH\x01R\awebsite\x88\x01\x01\x12&\n" +
 	"\x06sector\x18\a \x01(\x0e2\x0e.ntx.v1.SectorR\x06sector\x12?\n" +
-	"\x0finstrument_type\x18\b \x01(\x0e2\x16.ntx.v1.InstrumentTypeR\x0einstrumentTypeB\b\n" +
+	"\x0finstrument_type\x18\b \x01(\x0e2\x16.ntx.v1.InstrumentTypeR\x0einstrumentType\x12(\n" +
+	"\rlisted_shares\x18\t \x01(\x03H\x02R\flistedShares\x88\x01\x01B\b\n" +
 	"\x06_emailB\n" +
 	"\n" +
-	"\b_website\"\x84\x03\n" +
+	"\b_websiteB\x10\n" +
+	"\x0e_listed_shares\"\x84\x03\n" +
 	"\vFundamental\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +

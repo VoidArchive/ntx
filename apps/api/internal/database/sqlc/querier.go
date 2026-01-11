@@ -21,7 +21,7 @@ type Querier interface {
 	GetOwnershipBySymbol(ctx context.Context, symbol string) (Ownership, error)
 	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
-	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]Company, error)
+	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
 	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)

@@ -8,6 +8,7 @@ package sqlc
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const countCompanies = `-- name: CountCompanies :one
@@ -73,7 +74,10 @@ func (q *Queries) GetCompany(ctx context.Context, symbol string) (Company, error
 }
 
 const listCompanies = `-- name: ListCompanies :many
-SELECT id, name, symbol, status, email, website, sector, instrument_type, created_at, updated_at FROM companies ORDER by symbol LIMIT ? OFFSET ?
+SELECT c.id, c.name, c.symbol, c.status, c.email, c.website, c.sector, c.instrument_type, c.created_at, c.updated_at, o.listed_shares
+FROM companies c
+LEFT JOIN ownership o ON c.id = o.company_id
+ORDER by c.symbol LIMIT ? OFFSET ?
 `
 
 type ListCompaniesParams struct {
@@ -81,15 +85,29 @@ type ListCompaniesParams struct {
 	Offset int64 `json:"offset"`
 }
 
-func (q *Queries) ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]Company, error) {
+type ListCompaniesRow struct {
+	ID             int64          `json:"id"`
+	Name           string         `json:"name"`
+	Symbol         string         `json:"symbol"`
+	Status         string         `json:"status"`
+	Email          sql.NullString `json:"email"`
+	Website        sql.NullString `json:"website"`
+	Sector         string         `json:"sector"`
+	InstrumentType string         `json:"instrument_type"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	ListedShares   sql.NullInt64  `json:"listed_shares"`
+}
+
+func (q *Queries) ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error) {
 	rows, err := q.db.QueryContext(ctx, listCompanies, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Company
+	var items []ListCompaniesRow
 	for rows.Next() {
-		var i Company
+		var i ListCompaniesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -101,6 +119,7 @@ func (q *Queries) ListCompanies(ctx context.Context, arg ListCompaniesParams) ([
 			&i.InstrumentType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ListedShares,
 		); err != nil {
 			return nil, err
 		}

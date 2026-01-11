@@ -20,6 +20,9 @@ importers:
       '@fontsource/fira-code':
         specifier: ^5.2.7
         version: 5.2.7
+      d3-hierarchy:
+        specifier: ^3.1.2
+        version: 3.1.2
       mode-watcher:
         specifier: ^1.1.0
         version: 1.1.0(svelte@5.46.1)
@@ -60,6 +63,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(vite@7.3.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2))
+      '@types/d3-hierarchy':
+        specifier: ^3.1.7
+        version: 3.1.7
       '@types/d3-scale':
         specifier: ^4.0.9
         version: 4.0.9
@@ -1041,6 +1047,9 @@ packages:
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
+
+  '@types/d3-hierarchy@3.1.7':
+    resolution: {integrity: sha512-tJFtNoYBtRtkNysX1Xq4sxtjK8YgoWUNpIiUee0/jHGRwqvzYxkq0hGVbbOGSz+JgFxxRu4K8nb3YpG3CMARtg==}
 
   '@types/d3-scale@4.0.9':
     resolution: {integrity: sha512-dLmtwB8zkAeO/juAMfnV+sItKjlsw2lKdZVVy6LRr0cBmegxSABiLEpGVmSJJ8O08i4+sGR6qQtb6WtuwJdvVw==}
@@ -2896,6 +2905,8 @@ snapshots:
       vite: 7.3.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)
 
   '@types/cookie@0.6.0': {}
+
+  '@types/d3-hierarchy@3.1.7': {}
 
   '@types/d3-scale@4.0.9':
     dependencies:

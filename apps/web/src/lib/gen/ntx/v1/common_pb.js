@@ -2,73 +2,82 @@
 // @generated from file ntx/v1/common.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import { enumDesc, fileDesc, messageDesc, tsEnum } from '@bufbuild/protobuf/codegenv1';
+import { enumDesc, fileDesc, messageDesc, tsEnum } from "@bufbuild/protobuf/codegenv1";
 
 /**
  * Describes the file ntx/v1/common.proto.
  */
-export const file_ntx_v1_common =
-	/*@__PURE__*/
-	fileDesc(
-		'ChNudHgvdjEvY29tbW9uLnByb3RvEgZudHgudjEi6wEKB0NvbXBhbnkSCgoCaWQYASABKAMSDAoEbmFtZRgCIAEoCRIOCgZzeW1ib2wYAyABKAkSJQoGc3RhdHVzGAQgASgOMhUubnR4LnYxLkNvbXBhbnlTdGF0dXMSEgoFZW1haWwYBSABKAlIAIgBARIUCgd3ZWJzaXRlGAYgASgJSAGIAQESHgoGc2VjdG9yGAcgASgOMg4ubnR4LnYxLlNlY3RvchIvCg9pbnN0cnVtZW50X3R5cGUYCCABKA4yFi5udHgudjEuSW5zdHJ1bWVudFR5cGVCCAoGX2VtYWlsQgoKCF93ZWJzaXRlIqoCCgtGdW5kYW1lbnRhbBIKCgJpZBgBIAEoAxISCgpjb21wYW55X2lkGAIgASgDEhMKC2Zpc2NhbF95ZWFyGAMgASgJEhQKB3F1YXJ0ZXIYBCABKAlIAIgBARIQCgNlcHMYBSABKAFIAYgBARIVCghwZV9yYXRpbxgGIAEoAUgCiAEBEhcKCmJvb2tfdmFsdWUYByABKAFIA4gBARIcCg9wYWlkX3VwX2NhcGl0YWwYCCABKAFIBIgBARIaCg1wcm9maXRfYW1vdW50GAkgASgBSAWIAQFCCgoIX3F1YXJ0ZXJCBgoEX2Vwc0ILCglfcGVfcmF0aW9CDQoLX2Jvb2tfdmFsdWVCEgoQX3BhaWRfdXBfY2FwaXRhbEIQCg5fcHJvZml0X2Ftb3VudCKsAwoFUHJpY2USCgoCaWQYASABKAMSEgoKY29tcGFueV9pZBgCIAEoAxIVCg1idXNpbmVzc19kYXRlGAMgASgJEhEKBG9wZW4YBCABKAFIAIgBARIRCgRoaWdoGAUgASgBSAGIAQESEAoDbG93GAYgASgBSAKIAQESEgoFY2xvc2UYByABKAFIA4gBARIQCgNsdHAYCCABKAFIBIgBARIbCg5wcmV2aW91c19jbG9zZRgJIAEoAUgFiAEBEhMKBmNoYW5nZRgKIAEoAUgGiAEBEhsKDmNoYW5nZV9wZXJjZW50GAsgASgBSAeIAQESEwoGdm9sdW1lGAwgASgDSAiIAQESFQoIdHVybm92ZXIYDSABKAFICYgBARITCgZ0cmFkZXMYDiABKAVICogBAUIHCgVfb3BlbkIHCgVfaGlnaEIGCgRfbG93QggKBl9jbG9zZUIGCgRfbHRwQhEKD19wcmV2aW91c19jbG9zZUIJCgdfY2hhbmdlQhEKD19jaGFuZ2VfcGVyY2VudEIJCgdfdm9sdW1lQgsKCV90dXJub3ZlckIJCgdfdHJhZGVzIqwBCglPd25lcnNoaXASEgoKY29tcGFueV9pZBgBIAEoAxIVCg1saXN0ZWRfc2hhcmVzGAIgASgDEhUKDXB1YmxpY19zaGFyZXMYAyABKAMSFgoOcHVibGljX3BlcmNlbnQYBCABKAESFwoPcHJvbW90ZXJfc2hhcmVzGAUgASgDEhgKEHByb21vdGVyX3BlcmNlbnQYBiABKAESEgoKdXBkYXRlZF9hdBgHIAEoCSLaAQoPQ29ycG9yYXRlQWN0aW9uEgoKAmlkGAEgASgDEhIKCmNvbXBhbnlfaWQYAiABKAMSEwoLZmlzY2FsX3llYXIYAyABKAkSGAoQYm9udXNfcGVyY2VudGFnZRgEIAEoARIdChByaWdodF9wZXJjZW50YWdlGAUgASgBSACIAQESGgoNY2FzaF9kaXZpZGVuZBgGIAEoAUgBiAEBEhYKDnN1Ym1pdHRlZF9kYXRlGAcgASgJQhMKEV9yaWdodF9wZXJjZW50YWdlQhAKDl9jYXNoX2RpdmlkZW5kKoUBCg1Db21wYW55U3RhdHVzEh4KGkNPTVBBTllfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGQoVQ09NUEFOWV9TVEFUVVNfQUNUSVZFEAESHAoYQ09NUEFOWV9TVEFUVVNfU1VTUEVOREVEEAISGwoXQ09NUEFOWV9TVEFUVVNfREVMSVNURUQQAyrZAgoGU2VjdG9yEhYKElNFQ1RPUl9VTlNQRUNJRklFRBAAEhoKFlNFQ1RPUl9DT01NRVJDSUFMX0JBTksQARIbChdTRUNUT1JfREVWRUxPUE1FTlRfQkFOSxACEhIKDlNFQ1RPUl9GSU5BTkNFEAMSFwoTU0VDVE9SX01JQ1JPRklOQU5DRRAEEhkKFVNFQ1RPUl9MSUZFX0lOU1VSQU5DRRAFEh0KGVNFQ1RPUl9OT05fTElGRV9JTlNVUkFOQ0UQBhIVChFTRUNUT1JfSFlEUk9QT1dFUhAHEhgKFFNFQ1RPUl9NQU5VRkFDVFVSSU5HEAgSEAoMU0VDVE9SX0hPVEVMEAkSEgoOU0VDVE9SX1RSQURJTkcQChIVChFTRUNUT1JfSU5WRVNUTUVOVBALEhYKElNFQ1RPUl9NVVRVQUxfRlVORBAMEhEKDVNFQ1RPUl9PVEhFUlMQDSqIAQoOSW5zdHJ1bWVudFR5cGUSHwobSU5TVFJVTUVOVF9UWVBFX1VOU1BFQ0lGSUVEEAASGgoWSU5TVFJVTUVOVF9UWVBFX0VRVUlUWRABEhgKFElOU1RSVU1FTlRfVFlQRV9CT05EEAISHwobSU5TVFJVTUVOVF9UWVBFX01VVFVBTF9GVU5EEANCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z'
-	);
+export const file_ntx_v1_common = /*@__PURE__*/
+  fileDesc("ChNudHgvdjEvY29tbW9uLnByb3RvEgZudHgudjEimQIKB0NvbXBhbnkSCgoCaWQYASABKAMSDAoEbmFtZRgCIAEoCRIOCgZzeW1ib2wYAyABKAkSJQoGc3RhdHVzGAQgASgOMhUubnR4LnYxLkNvbXBhbnlTdGF0dXMSEgoFZW1haWwYBSABKAlIAIgBARIUCgd3ZWJzaXRlGAYgASgJSAGIAQESHgoGc2VjdG9yGAcgASgOMg4ubnR4LnYxLlNlY3RvchIvCg9pbnN0cnVtZW50X3R5cGUYCCABKA4yFi5udHgudjEuSW5zdHJ1bWVudFR5cGUSGgoNbGlzdGVkX3NoYXJlcxgJIAEoA0gCiAEBQggKBl9lbWFpbEIKCghfd2Vic2l0ZUIQCg5fbGlzdGVkX3NoYXJlcyKqAgoLRnVuZGFtZW50YWwSCgoCaWQYASABKAMSEgoKY29tcGFueV9pZBgCIAEoAxITCgtmaXNjYWxfeWVhchgDIAEoCRIUCgdxdWFydGVyGAQgASgJSACIAQESEAoDZXBzGAUgASgBSAGIAQESFQoIcGVfcmF0aW8YBiABKAFIAogBARIXCgpib29rX3ZhbHVlGAcgASgBSAOIAQESHAoPcGFpZF91cF9jYXBpdGFsGAggASgBSASIAQESGgoNcHJvZml0X2Ftb3VudBgJIAEoAUgFiAEBQgoKCF9xdWFydGVyQgYKBF9lcHNCCwoJX3BlX3JhdGlvQg0KC19ib29rX3ZhbHVlQhIKEF9wYWlkX3VwX2NhcGl0YWxCEAoOX3Byb2ZpdF9hbW91bnQirAMKBVByaWNlEgoKAmlkGAEgASgDEhIKCmNvbXBhbnlfaWQYAiABKAMSFQoNYnVzaW5lc3NfZGF0ZRgDIAEoCRIRCgRvcGVuGAQgASgBSACIAQESEQoEaGlnaBgFIAEoAUgBiAEBEhAKA2xvdxgGIAEoAUgCiAEBEhIKBWNsb3NlGAcgASgBSAOIAQESEAoDbHRwGAggASgBSASIAQESGwoOcHJldmlvdXNfY2xvc2UYCSABKAFIBYgBARITCgZjaGFuZ2UYCiABKAFIBogBARIbCg5jaGFuZ2VfcGVyY2VudBgLIAEoAUgHiAEBEhMKBnZvbHVtZRgMIAEoA0gIiAEBEhUKCHR1cm5vdmVyGA0gASgBSAmIAQESEwoGdHJhZGVzGA4gASgFSAqIAQFCBwoFX29wZW5CBwoFX2hpZ2hCBgoEX2xvd0IICgZfY2xvc2VCBgoEX2x0cEIRCg9fcHJldmlvdXNfY2xvc2VCCQoHX2NoYW5nZUIRCg9fY2hhbmdlX3BlcmNlbnRCCQoHX3ZvbHVtZUILCglfdHVybm92ZXJCCQoHX3RyYWRlcyKsAQoJT3duZXJzaGlwEhIKCmNvbXBhbnlfaWQYASABKAMSFQoNbGlzdGVkX3NoYXJlcxgCIAEoAxIVCg1wdWJsaWNfc2hhcmVzGAMgASgDEhYKDnB1YmxpY19wZXJjZW50GAQgASgBEhcKD3Byb21vdGVyX3NoYXJlcxgFIAEoAxIYChBwcm9tb3Rlcl9wZXJjZW50GAYgASgBEhIKCnVwZGF0ZWRfYXQYByABKAki2gEKD0NvcnBvcmF0ZUFjdGlvbhIKCgJpZBgBIAEoAxISCgpjb21wYW55X2lkGAIgASgDEhMKC2Zpc2NhbF95ZWFyGAMgASgJEhgKEGJvbnVzX3BlcmNlbnRhZ2UYBCABKAESHQoQcmlnaHRfcGVyY2VudGFnZRgFIAEoAUgAiAEBEhoKDWNhc2hfZGl2aWRlbmQYBiABKAFIAYgBARIWCg5zdWJtaXR0ZWRfZGF0ZRgHIAEoCUITChFfcmlnaHRfcGVyY2VudGFnZUIQCg5fY2FzaF9kaXZpZGVuZCqFAQoNQ29tcGFueVN0YXR1cxIeChpDT01QQU5ZX1NUQVRVU19VTlNQRUNJRklFRBAAEhkKFUNPTVBBTllfU1RBVFVTX0FDVElWRRABEhwKGENPTVBBTllfU1RBVFVTX1NVU1BFTkRFRBACEhsKF0NPTVBBTllfU1RBVFVTX0RFTElTVEVEEAMq2QIKBlNlY3RvchIWChJTRUNUT1JfVU5TUEVDSUZJRUQQABIaChZTRUNUT1JfQ09NTUVSQ0lBTF9CQU5LEAESGwoXU0VDVE9SX0RFVkVMT1BNRU5UX0JBTksQAhISCg5TRUNUT1JfRklOQU5DRRADEhcKE1NFQ1RPUl9NSUNST0ZJTkFOQ0UQBBIZChVTRUNUT1JfTElGRV9JTlNVUkFOQ0UQBRIdChlTRUNUT1JfTk9OX0xJRkVfSU5TVVJBTkNFEAYSFQoRU0VDVE9SX0hZRFJPUE9XRVIQBxIYChRTRUNUT1JfTUFOVUZBQ1RVUklORxAIEhAKDFNFQ1RPUl9IT1RFTBAJEhIKDlNFQ1RPUl9UUkFESU5HEAoSFQoRU0VDVE9SX0lOVkVTVE1FTlQQCxIWChJTRUNUT1JfTVVUVUFMX0ZVTkQQDBIRCg1TRUNUT1JfT1RIRVJTEA0qiAEKDkluc3RydW1lbnRUeXBlEh8KG0lOU1RSVU1FTlRfVFlQRV9VTlNQRUNJRklFRBAAEhoKFklOU1RSVU1FTlRfVFlQRV9FUVVJVFkQARIYChRJTlNUUlVNRU5UX1RZUEVfQk9ORBACEh8KG0lOU1RSVU1FTlRfVFlQRV9NVVRVQUxfRlVORBADQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw");
 
 /**
  * Describes the message ntx.v1.Company.
  * Use `create(CompanySchema)` to create a new message.
  */
-export const CompanySchema = /*@__PURE__*/ messageDesc(file_ntx_v1_common, 0);
+export const CompanySchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 0);
 
 /**
  * Describes the message ntx.v1.Fundamental.
  * Use `create(FundamentalSchema)` to create a new message.
  */
-export const FundamentalSchema = /*@__PURE__*/ messageDesc(file_ntx_v1_common, 1);
+export const FundamentalSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 1);
 
 /**
  * Describes the message ntx.v1.Price.
  * Use `create(PriceSchema)` to create a new message.
  */
-export const PriceSchema = /*@__PURE__*/ messageDesc(file_ntx_v1_common, 2);
+export const PriceSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 2);
 
 /**
  * Describes the message ntx.v1.Ownership.
  * Use `create(OwnershipSchema)` to create a new message.
  */
-export const OwnershipSchema = /*@__PURE__*/ messageDesc(file_ntx_v1_common, 3);
+export const OwnershipSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 3);
 
 /**
  * Describes the message ntx.v1.CorporateAction.
  * Use `create(CorporateActionSchema)` to create a new message.
  */
-export const CorporateActionSchema = /*@__PURE__*/ messageDesc(file_ntx_v1_common, 4);
+export const CorporateActionSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_common, 4);
 
 /**
  * Describes the enum ntx.v1.CompanyStatus.
  */
-export const CompanyStatusSchema = /*@__PURE__*/ enumDesc(file_ntx_v1_common, 0);
+export const CompanyStatusSchema = /*@__PURE__*/
+  enumDesc(file_ntx_v1_common, 0);
 
 /**
  * @generated from enum ntx.v1.CompanyStatus
  */
-export const CompanyStatus = /*@__PURE__*/ tsEnum(CompanyStatusSchema);
+export const CompanyStatus = /*@__PURE__*/
+  tsEnum(CompanyStatusSchema);
 
 /**
  * Describes the enum ntx.v1.Sector.
  */
-export const SectorSchema = /*@__PURE__*/ enumDesc(file_ntx_v1_common, 1);
+export const SectorSchema = /*@__PURE__*/
+  enumDesc(file_ntx_v1_common, 1);
 
 /**
  * @generated from enum ntx.v1.Sector
  */
-export const Sector = /*@__PURE__*/ tsEnum(SectorSchema);
+export const Sector = /*@__PURE__*/
+  tsEnum(SectorSchema);
 
 /**
  * Describes the enum ntx.v1.InstrumentType.
  */
-export const InstrumentTypeSchema = /*@__PURE__*/ enumDesc(file_ntx_v1_common, 2);
+export const InstrumentTypeSchema = /*@__PURE__*/
+  enumDesc(file_ntx_v1_common, 2);
 
 /**
  * @generated from enum ntx.v1.InstrumentType
  */
-export const InstrumentType = /*@__PURE__*/ tsEnum(InstrumentTypeSchema);
+export const InstrumentType = /*@__PURE__*/
+  tsEnum(InstrumentTypeSchema);
+

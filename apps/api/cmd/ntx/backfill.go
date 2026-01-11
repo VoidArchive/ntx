@@ -98,17 +98,18 @@ func syncFundamentalsConcurrent(ctx context.Context, queries *sqlc.Queries, clie
 	sem := make(chan struct{}, maxConcurrency)
 	errChan := make(chan error, len(companies))
 
-	for _, c := range companies {
+	for _, r := range companies {
 		wg.Add(1)
-		go func(company sqlc.Company) {
+		go func(row sqlc.ListCompaniesRow) {
 			defer wg.Done()
 			sem <- struct{}{}        // acquire
 			defer func() { <-sem }() // release
 
+			company := rowToCompany(row)
 			if err := syncCompanyFundamentals(ctx, queries, client, company); err != nil {
 				slog.Warn("skip fundamentals", "symbol", company.Symbol, "error", err)
 			}
-		}(c)
+		}(r)
 	}
 
 	wg.Wait()
@@ -164,17 +165,18 @@ func syncOwnershipConcurrent(ctx context.Context, queries *sqlc.Queries, client 
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, maxConcurrency)
 
-	for _, c := range companies {
+	for _, r := range companies {
 		wg.Add(1)
-		go func(company sqlc.Company) {
+		go func(row sqlc.ListCompaniesRow) {
 			defer wg.Done()
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
+			company := rowToCompany(row)
 			if err := syncCompanyOwnership(ctx, queries, client, company); err != nil {
 				slog.Warn("skip ownership", "symbol", company.Symbol, "error", err)
 			}
-		}(c)
+		}(r)
 	}
 
 	wg.Wait()
@@ -215,17 +217,18 @@ func syncDividendsConcurrent(ctx context.Context, queries *sqlc.Queries, client 
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, maxConcurrency)
 
-	for _, c := range companies {
+	for _, r := range companies {
 		wg.Add(1)
-		go func(company sqlc.Company) {
+		go func(row sqlc.ListCompaniesRow) {
 			defer wg.Done()
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
+			company := rowToCompany(row)
 			if err := syncCompanyDividends(ctx, queries, client, company); err != nil {
 				slog.Warn("skip dividends", "symbol", company.Symbol, "error", err)
 			}
-		}(c)
+		}(r)
 	}
 
 	wg.Wait()
@@ -279,17 +282,18 @@ func syncPriceHistoryConcurrent(ctx context.Context, queries *sqlc.Queries, clie
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, maxConcurrency)
 
-	for _, c := range companies {
+	for _, r := range companies {
 		wg.Add(1)
-		go func(company sqlc.Company) {
+		go func(row sqlc.ListCompaniesRow) {
 			defer wg.Done()
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
+			company := rowToCompany(row)
 			if err := syncCompanyPriceHistory(ctx, queries, client, company, startStr, endStr); err != nil {
 				slog.Warn("skip price history", "symbol", company.Symbol, "error", err)
 			}
-		}(c)
+		}(r)
 	}
 
 	wg.Wait()
@@ -362,4 +366,19 @@ func safeInt32(v int64) int32 {
 		return maxInt32
 	}
 	return int32(v) //nolint:gosec // bounds checked above
+}
+
+func rowToCompany(r sqlc.ListCompaniesRow) sqlc.Company {
+	return sqlc.Company{
+		ID:             r.ID,
+		Name:           r.Name,
+		Symbol:         r.Symbol,
+		Status:         r.Status,
+		Email:          r.Email,
+		Website:        r.Website,
+		Sector:         r.Sector,
+		InstrumentType: r.InstrumentType,
+		CreatedAt:      r.CreatedAt,
+		UpdatedAt:      r.UpdatedAt,
+	}
 }

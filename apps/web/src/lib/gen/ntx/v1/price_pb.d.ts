@@ -2,9 +2,9 @@
 // @generated from file ntx/v1/price.proto (package ntx.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from '@bufbuild/protobuf/codegenv1';
-import type { Message } from '@bufbuild/protobuf';
-import type { Price } from './common_pb';
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import type { Message } from "@bufbuild/protobuf";
+import type { Price } from "./common_pb";
 
 /**
  * Describes the file ntx/v1/price.proto.
@@ -14,11 +14,11 @@ export declare const file_ntx_v1_price: GenFile;
 /**
  * @generated from message ntx.v1.GetPriceRequest
  */
-export declare type GetPriceRequest = Message<'ntx.v1.GetPriceRequest'> & {
-	/**
-	 * @generated from field: string symbol = 1;
-	 */
-	symbol: string;
+export declare type GetPriceRequest = Message<"ntx.v1.GetPriceRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
 };
 
 /**
@@ -30,11 +30,11 @@ export declare const GetPriceRequestSchema: GenMessage<GetPriceRequest>;
 /**
  * @generated from message ntx.v1.GetPriceResponse
  */
-export declare type GetPriceResponse = Message<'ntx.v1.GetPriceResponse'> & {
-	/**
-	 * @generated from field: ntx.v1.Price price = 1;
-	 */
-	price?: Price;
+export declare type GetPriceResponse = Message<"ntx.v1.GetPriceResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Price price = 1;
+   */
+  price?: Price;
 };
 
 /**
@@ -46,18 +46,18 @@ export declare const GetPriceResponseSchema: GenMessage<GetPriceResponse>;
 /**
  * @generated from message ntx.v1.GetPriceHistoryRequest
  */
-export declare type GetPriceHistoryRequest = Message<'ntx.v1.GetPriceHistoryRequest'> & {
-	/**
-	 * @generated from field: string symbol = 1;
-	 */
-	symbol: string;
+export declare type GetPriceHistoryRequest = Message<"ntx.v1.GetPriceHistoryRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
 
-	/**
-	 * defaults to 365
-	 *
-	 * @generated from field: optional int32 days = 2;
-	 */
-	days?: number;
+  /**
+   * defaults to 365
+   *
+   * @generated from field: optional int32 days = 2;
+   */
+  days?: number;
 };
 
 /**
@@ -69,11 +69,11 @@ export declare const GetPriceHistoryRequestSchema: GenMessage<GetPriceHistoryReq
 /**
  * @generated from message ntx.v1.GetPriceHistoryResponse
  */
-export declare type GetPriceHistoryResponse = Message<'ntx.v1.GetPriceHistoryResponse'> & {
-	/**
-	 * @generated from field: repeated ntx.v1.Price prices = 1;
-	 */
-	prices: Price[];
+export declare type GetPriceHistoryResponse = Message<"ntx.v1.GetPriceHistoryResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.Price prices = 1;
+   */
+  prices: Price[];
 };
 
 /**
@@ -87,7 +87,8 @@ export declare const GetPriceHistoryResponseSchema: GenMessage<GetPriceHistoryRe
  *
  * @generated from message ntx.v1.ListLatestPricesRequest
  */
-export declare type ListLatestPricesRequest = Message<'ntx.v1.ListLatestPricesRequest'> & {};
+export declare type ListLatestPricesRequest = Message<"ntx.v1.ListLatestPricesRequest"> & {
+};
 
 /**
  * Describes the message ntx.v1.ListLatestPricesRequest.
@@ -98,11 +99,11 @@ export declare const ListLatestPricesRequestSchema: GenMessage<ListLatestPricesR
 /**
  * @generated from message ntx.v1.ListLatestPricesResponse
  */
-export declare type ListLatestPricesResponse = Message<'ntx.v1.ListLatestPricesResponse'> & {
-	/**
-	 * @generated from field: repeated ntx.v1.Price prices = 1;
-	 */
-	prices: Price[];
+export declare type ListLatestPricesResponse = Message<"ntx.v1.ListLatestPricesResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.Price prices = 1;
+   */
+  prices: Price[];
 };
 
 /**
@@ -115,28 +116,29 @@ export declare const ListLatestPricesResponseSchema: GenMessage<ListLatestPrices
  * @generated from service ntx.v1.PriceService
  */
 export declare const PriceService: GenService<{
-	/**
-	 * @generated from rpc ntx.v1.PriceService.GetPrice
-	 */
-	getPrice: {
-		methodKind: 'unary';
-		input: typeof GetPriceRequestSchema;
-		output: typeof GetPriceResponseSchema;
-	};
-	/**
-	 * @generated from rpc ntx.v1.PriceService.GetPriceHistory
-	 */
-	getPriceHistory: {
-		methodKind: 'unary';
-		input: typeof GetPriceHistoryRequestSchema;
-		output: typeof GetPriceHistoryResponseSchema;
-	};
-	/**
-	 * @generated from rpc ntx.v1.PriceService.ListLatestPrices
-	 */
-	listLatestPrices: {
-		methodKind: 'unary';
-		input: typeof ListLatestPricesRequestSchema;
-		output: typeof ListLatestPricesResponseSchema;
-	};
+  /**
+   * @generated from rpc ntx.v1.PriceService.GetPrice
+   */
+  getPrice: {
+    methodKind: "unary";
+    input: typeof GetPriceRequestSchema;
+    output: typeof GetPriceResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PriceService.GetPriceHistory
+   */
+  getPriceHistory: {
+    methodKind: "unary";
+    input: typeof GetPriceHistoryRequestSchema;
+    output: typeof GetPriceHistoryResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PriceService.ListLatestPrices
+   */
+  listLatestPrices: {
+    methodKind: "unary";
+    input: typeof ListLatestPricesRequestSchema;
+    output: typeof ListLatestPricesResponseSchema;
+  },
 }>;
+
