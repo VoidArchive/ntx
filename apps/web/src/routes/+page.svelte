@@ -1,11 +1,11 @@
 <script lang="ts">
 	import CompanyCard from '$lib/components/CompanyCard.svelte';
 	import SearchCommand from '$lib/components/SearchCommand.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
 	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
-	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
 	let { data } = $props();
 
@@ -133,19 +133,19 @@
 			<!-- Top bar -->
 			<div class="flex items-center justify-between py-3 text-xs text-muted-foreground">
 				<span>{today}</span>
-				<span>{data.companies?.length ?? 0} Securities Listed</span>
+				<div class="flex items-center gap-3">
+					<span>{data.companies?.length ?? 0} Securities Listed</span>
+					<ThemeToggle />
+				</div>
 			</div>
 
 			<!-- Logo & Search -->
 			<div
 				class="flex flex-col items-center gap-6 border-t border-border py-8 md:flex-row md:justify-between"
 			>
-				<a href="/" class="flex items-center gap-4">
-					<img src="/logo.png" alt="NTX" class="size-12" />
-					<div>
-						<h1 class="font-serif text-4xl tracking-tight md:text-5xl">NTX</h1>
-						<p class="text-sm tracking-[0.3em] text-muted-foreground uppercase">Market Stories</p>
-					</div>
+				<a href="/" class="text-center md:text-left">
+					<h1 class="font-serif text-4xl tracking-tight md:text-5xl">NTX</h1>
+					<p class="text-sm tracking-[0.3em] text-muted-foreground uppercase">Market Stories</p>
 				</a>
 
 				<SearchCommand
@@ -157,89 +157,6 @@
 			</div>
 		</div>
 	</header>
-
-	<!-- Market Pulse - Horizontal ticker-style section -->
-	<div class="border-b border-border bg-card/50">
-		<div class="mx-auto max-w-7xl px-4 py-4">
-			<div class="grid gap-4 md:grid-cols-3">
-				<!-- Top Gainer highlight -->
-				{#if topGainers[0]}
-					{@const top = topGainers[0]}
-					<a
-						href="/company/{top.company?.symbol}"
-						class="group flex items-center justify-between rounded-lg border border-positive/20 bg-positive/5 px-4 py-3 transition-colors hover:border-positive/40"
-					>
-						<div>
-							<div class="flex items-center gap-2">
-								<TrendingUp class="size-4 text-positive" />
-								<span class="text-xs font-medium text-positive uppercase">Top Gainer</span>
-							</div>
-							<p class="mt-1 font-serif text-xl">{top.company?.symbol}</p>
-						</div>
-						<div class="text-right">
-							<p class="text-2xl font-medium text-positive tabular-nums">
-								{formatChange(top.price.changePercent)}
-							</p>
-							<p class="text-sm text-muted-foreground tabular-nums">
-								Rs. {formatPrice(top.price.ltp ?? top.price.close)}
-							</p>
-						</div>
-					</a>
-				{/if}
-
-				<!-- Top Loser highlight -->
-				{#if topLosers[0]}
-					{@const top = topLosers[0]}
-					<a
-						href="/company/{top.company?.symbol}"
-						class="group flex items-center justify-between rounded-lg border border-negative/20 bg-negative/5 px-4 py-3 transition-colors hover:border-negative/40"
-					>
-						<div>
-							<div class="flex items-center gap-2">
-								<TrendingDown class="size-4 text-negative" />
-								<span class="text-xs font-medium text-negative uppercase">Top Loser</span>
-							</div>
-							<p class="mt-1 font-serif text-xl">{top.company?.symbol}</p>
-						</div>
-						<div class="text-right">
-							<p class="text-2xl font-medium text-negative tabular-nums">
-								{formatChange(top.price.changePercent)}
-							</p>
-							<p class="text-sm text-muted-foreground tabular-nums">
-								Rs. {formatPrice(top.price.ltp ?? top.price.close)}
-							</p>
-						</div>
-					</a>
-				{/if}
-
-				<!-- Most Active -->
-				{#if mostTraded[0]}
-					{@const top = mostTraded[0]}
-					{@const change = top.price.changePercent ?? 0}
-					<a
-						href="/company/{top.company?.symbol}"
-						class="group flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3 transition-colors hover:border-foreground/20"
-					>
-						<div>
-							<div class="flex items-center gap-2">
-								<div class="size-2 animate-pulse rounded-full bg-chart-1"></div>
-								<span class="text-xs font-medium text-muted-foreground uppercase">Most Active</span>
-							</div>
-							<p class="mt-1 font-serif text-xl">{top.company?.symbol}</p>
-						</div>
-						<div class="text-right">
-							<p class="text-lg font-medium tabular-nums">
-								{Number(top.price.volume).toLocaleString()}
-							</p>
-							<p class="text-sm tabular-nums {change >= 0 ? 'text-positive' : 'text-negative'}">
-								{formatChange(change)}
-							</p>
-						</div>
-					</a>
-				{/if}
-			</div>
-		</div>
-	</div>
 
 	<!-- Main Content -->
 	<main class="mx-auto max-w-7xl px-4 py-8">
@@ -366,48 +283,14 @@
 						{/each}
 					</div>
 				{:else}
-					<!-- Featured View when no sector selected -->
-					<div class="space-y-8">
-						<!-- Editorial headline -->
-						<div class="rounded-2xl border border-border bg-card p-8">
-							<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-								Featured Analysis
-							</p>
-							<h3 class="mt-4 font-serif text-3xl leading-tight md:text-4xl">
-								Deep insights into Nepal's capital markets
-							</h3>
-							<p class="mt-4 max-w-2xl text-muted-foreground">
-								NTX provides comprehensive fundamental analysis, real-time price tracking, and
-								AI-powered research prompts for every listed security on NEPSE. Start by searching
-								for a stock or exploring a sector.
-							</p>
-							<div class="mt-6 flex flex-wrap gap-3">
-								<button
-									onclick={() => toggleSector(Sector.COMMERCIAL_BANK)}
-									class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
-								>
-									Explore Banking
-									<ArrowRight class="size-4" />
-								</button>
-								<button
-									onclick={() => toggleSector(Sector.HYDROPOWER)}
-									class="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
-								>
-									Explore Hydropower
-									<ArrowRight class="size-4" />
-								</button>
-							</div>
-						</div>
-
-						<!-- Random featured companies -->
-						<div>
-							<h3 class="mb-4 font-serif text-xl">Discover Companies</h3>
-							<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-								{#each randomCompanies as company (company.id)}
-									{@const price = getPrice(company.id)}
-									<CompanyCard {company} {price} />
-								{/each}
-							</div>
+					<!-- Random featured companies when no sector selected -->
+					<div>
+						<h3 class="mb-4 font-serif text-xl">Discover Companies</h3>
+						<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+							{#each randomCompanies as company (company.id)}
+								{@const price = getPrice(company.id)}
+								<CompanyCard {company} {price} />
+							{/each}
 						</div>
 					</div>
 				{/if}

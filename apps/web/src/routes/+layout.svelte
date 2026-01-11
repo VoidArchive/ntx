@@ -6,6 +6,7 @@
 	import { browser } from '$app/environment';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
 	import posthog from 'posthog-js';
+	import { ModeWatcher } from 'mode-watcher';
 
 	let { children } = $props();
 
@@ -16,6 +17,7 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<ModeWatcher />
 {@render children()}
 
 <footer class="mt-20 border-t border-border/50 bg-background/50 py-12 backdrop-blur-sm">
