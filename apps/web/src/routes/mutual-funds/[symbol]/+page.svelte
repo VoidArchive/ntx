@@ -25,25 +25,19 @@
 		<div class="mt-8 grid gap-8 lg:grid-cols-3">
 			<!-- Portfolio Chart: span 2 columns -->
 			<div class="min-w-0 lg:col-span-2">
-				<div class="rounded-xl border border-border bg-card/50 p-6">
-					<PortfolioDonut holdings={fund.holdings} />
-				</div>
+				<PortfolioDonut holdings={fund.holdings} />
 			</div>
 
 			<!-- Stats Panel -->
 			<div class="min-w-0">
-				<div class="rounded-xl border border-border bg-card/50 p-6">
-					<h3 class="mb-4 font-serif text-lg font-medium">Fund Statistics</h3>
-					<FundStats {fund} />
-				</div>
+				<h3 class="mb-4 font-serif text-lg font-medium">Fund Statistics</h3>
+				<FundStats {fund} />
 			</div>
 		</div>
 
 		<!-- Holdings Table -->
 		<div class="mt-8">
-			<div class="rounded-xl border border-border bg-card/50 p-6">
-				<HoldingsTable holdings={fund.holdings} netAssets={fund.net_assets} />
-			</div>
+			<HoldingsTable holdings={fund.holdings} netAssets={fund.net_assets} />
 		</div>
 
 		<!-- Footer note -->

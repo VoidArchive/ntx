@@ -110,7 +110,7 @@
 			<!-- Market Movers: First on mobile, second on desktop -->
 			<aside class="space-y-6 overflow-hidden lg:order-2">
 				<!-- Largest Market Cap -->
-				<div class="rounded-xl border border-border bg-card p-4">
+				<div class="rounded-xl border border-border bg-card/50 p-4 backdrop-blur-sm">
 					<div class="mb-2 flex items-center justify-between">
 						<div class="flex items-center gap-2">
 							<PieChart class="size-4 text-primary" />
@@ -142,7 +142,7 @@
 				</div>
 
 				<!-- Most Traded -->
-				<div class="rounded-xl border border-border bg-card p-4">
+				<div class="rounded-xl border border-border bg-card/50 p-4 backdrop-blur-sm">
 					<div class="mb-2 flex items-center gap-2">
 						<div class="size-2 rounded-full bg-chart-1"></div>
 						<h3 class="font-medium">Most Traded</h3>
