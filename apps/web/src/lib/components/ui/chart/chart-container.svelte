@@ -31,7 +31,7 @@
 	data-chart={chartId}
 	data-slot="chart"
 	class={cn(
-		'flex aspect-video justify-center overflow-visible text-xs',
+		'flex aspect-video max-w-full justify-center overflow-hidden text-xs',
 		// Overrides
 		//
 		// Stroke around dots/marks when hovering

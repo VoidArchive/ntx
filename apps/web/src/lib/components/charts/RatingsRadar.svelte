@@ -191,9 +191,9 @@
 			</p>
 		</div>
 
-		<div class="flex items-start gap-6">
+		<div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
 			<!-- Radar Chart -->
-			<svg viewBox="0 0 {size} {size}" class="h-48 w-48">
+			<svg viewBox="0 0 {size} {size}" class="h-40 w-40 sm:h-48 sm:w-48">
 				<!-- Grid levels -->
 				{#each Array(levels) as _, level}
 					{@const r = ((level + 1) / levels) * radius}

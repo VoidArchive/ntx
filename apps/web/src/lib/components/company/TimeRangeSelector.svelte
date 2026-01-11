@@ -32,11 +32,11 @@
 	}
 </script>
 
-<div class="flex gap-1.5 px-6">
+<div class="flex gap-1.5">
 	{#each ranges as range (range.label)}
 		<button
 			onclick={() => onSelect(getDays(range))}
-			class="rounded-md border px-3 py-1.5 text-sm font-medium transition-colors
+			class="shrink-0 rounded-md border px-2.5 py-1 text-sm font-medium transition-colors sm:px-3 sm:py-1.5
 				{isSelected(range)
 				? 'border-foreground bg-foreground text-background'
 				: 'border-border bg-background text-muted-foreground hover:border-foreground/50 hover:text-foreground'}"
