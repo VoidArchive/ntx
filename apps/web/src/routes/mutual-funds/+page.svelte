@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { FundCard } from '$lib/components/mutual-funds';
+	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
+	import List from '@lucide/svelte/icons/list';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
 	import Wallet from '@lucide/svelte/icons/wallet';
 	import type { Fund } from '$lib/types/fund';
 
 	let { data } = $props();
+
+	let viewMode = $state<'grid' | 'table'>('grid');
 
 	// Calculate totals
 	let totalAUM = $derived(data.funds.reduce((sum: number, f: Fund) => sum + f.net_assets, 0));
@@ -36,11 +40,37 @@
 	<!-- Main Content -->
 	<main class="mx-auto max-w-7xl px-4 py-8">
 		<!-- Page Header -->
-		<div class="mb-8">
-			<h1 class="font-serif text-3xl tracking-tight">Mutual Funds</h1>
-			<p class="mt-1 text-sm text-muted-foreground">
-				Open-End Mutual Fund NAV and Portfolio Analysis · Data as of {reportDate}
-			</p>
+		<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+			<div>
+				<h1 class="font-serif text-3xl tracking-tight">Mutual Funds</h1>
+				<p class="mt-1 text-sm text-muted-foreground">
+					Open-End Mutual Fund NAV and Portfolio Analysis · Data as of {reportDate}
+				</p>
+			</div>
+
+			<!-- View Toggle -->
+			<div class="flex items-center gap-1 rounded-lg border border-border bg-muted/30 p-1">
+				<button
+					onclick={() => (viewMode = 'grid')}
+					class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors {viewMode ===
+					'grid'
+						? 'bg-background text-foreground shadow-sm'
+						: 'text-muted-foreground hover:text-foreground'}"
+				>
+					<LayoutGrid class="size-4" />
+					<span class="hidden sm:inline">Grid</span>
+				</button>
+				<button
+					onclick={() => (viewMode = 'table')}
+					class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors {viewMode ===
+					'table'
+						? 'bg-background text-foreground shadow-sm'
+						: 'text-muted-foreground hover:text-foreground'}"
+				>
+					<List class="size-4" />
+					<span class="hidden sm:inline">Table</span>
+				</button>
+			</div>
 		</div>
 		<!-- Summary Cards -->
 		<div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -85,10 +115,63 @@
 		</div>
 
 		<!-- Fund Grid -->
-		<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			{#each data.funds as fund (fund.symbol)}
-				<FundCard {fund} />
-			{/each}
-		</div>
+		{#if viewMode === 'grid'}
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{#each data.funds as fund (fund.symbol)}
+					<FundCard {fund} />
+				{/each}
+			</div>
+		{:else}
+			<div class="overflow-hidden rounded-xl border border-border bg-card/50 backdrop-blur-sm">
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-sm">
+						<thead class="bg-muted/50 text-xs uppercase text-muted-foreground">
+							<tr>
+								<th class="px-4 py-3 font-medium">Fund</th>
+								<th class="px-4 py-3 text-right font-medium">NAV</th>
+								<th class="px-4 py-3 text-right font-medium">Net Assets</th>
+								<th class="hidden px-4 py-3 text-right font-medium sm:table-cell">Report Date</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-border">
+							{#each data.funds as fund (fund.symbol)}
+								<tr class="group transition-colors hover:bg-muted/50">
+									<td class="px-4 py-3">
+										<a href="/mutual-funds/{fund.symbol}" class="block">
+											<div class="font-medium group-hover:text-primary group-hover:underline">
+												{fund.symbol}
+											</div>
+											<div class="max-w-[200px] truncate text-xs text-muted-foreground sm:max-w-none">
+												{fund.fund_name}
+											</div>
+										</a>
+									</td>
+									<td class="px-4 py-3 text-right tabular-nums">
+										{fund.nav_per_unit.toFixed(2)}
+										{#if fund.nav_per_unit > 10}
+											<span class="ml-1 text-xs text-positive">
+												(+{(((fund.nav_per_unit - 10) / 10) * 100).toFixed(1)}%)
+											</span>
+										{:else if fund.nav_per_unit < 10}
+											<span class="ml-1 text-xs text-negative">
+												(-{(((10 - fund.nav_per_unit) / 10) * 100).toFixed(1)}%)
+											</span>
+										{/if}
+									</td>
+									<td class="px-4 py-3 text-right tabular-nums text-muted-foreground">
+										{fmtLarge(fund.net_assets)}
+									</td>
+									<td
+										class="hidden px-4 py-3 text-right tabular-nums text-muted-foreground sm:table-cell"
+									>
+										{fund.report_date_nepali}
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
 	</main>
 </div>
