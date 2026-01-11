@@ -89,21 +89,38 @@ def fetch_fund_announcements(symbol: str, fund_name: str) -> list[dict]:
     symbol_val = symbol_elem.get_text(strip=True) if symbol_elem else symbol
     sector_val = sector_elem.get_text(strip=True) if sector_elem else ""
 
-    # Make the AJAX request with proper headers and data
+    # Make the AJAX request with full DataTables parameters
     ajax_url = "https://www.sharesansar.com/company-announcements"
 
     ajax_headers = {
         **headers,
+        "Accept": "application/json, text/javascript, */*; q=0.01",
         "X-Requested-With": "XMLHttpRequest",
         "X-CSRF-Token": csrf_token,
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Origin": "https://www.sharesansar.com",
         "Referer": company_url,
     }
 
+    # Full DataTables params required for the API to work
     data = {
         "draw": "1",
+        "columns[0][data]": "DT_RowIndex",
+        "columns[0][name]": "",
+        "columns[0][searchable]": "false",
+        "columns[0][orderable]": "false",
+        "columns[1][data]": "title",
+        "columns[1][name]": "",
+        "columns[1][searchable]": "true",
+        "columns[1][orderable]": "false",
+        "columns[2][data]": "published_date",
+        "columns[2][name]": "",
+        "columns[2][searchable]": "true",
+        "columns[2][orderable]": "false",
         "start": "0",
         "length": "10",
+        "search[value]": "",
+        "search[regex]": "false",
         "company": company_id,
         "symbol": symbol_val,
         "sector": sector_val,
@@ -117,8 +134,9 @@ def fetch_fund_announcements(symbol: str, fund_name: str) -> list[dict]:
 
     for item in result.get("data", []):
         title_html = item.get("title", "")
-        url_match = re.search(r'href="([^"]+)"', title_html)
-        title_match = re.search(r'>([^<]+)</a>', title_html)
+        # API returns escaped quotes like href=\'...\' or href="..."
+        url_match = re.search(r"href=['\"]([^'\"]+)['\"]", title_html)
+        title_match = re.search(r">([^<]+)</a>", title_html)
 
         if url_match:
             announcements.append({
@@ -283,32 +301,9 @@ def main():
         json.dump(downloaded, fp, indent=2)
 
     print(f"\nDownloaded {len(downloaded)} images to {IMAGES_DIR}/")
-
-    # Step 4: Test OCR on first image
-    if downloaded:
-        print("\n[4/4] Testing EasyOCR on first image...")
-        first = downloaded[0]
-        print(f"  Processing {first['symbol']}...")
-
-        try:
-            ocr_results = run_easyocr(Path(first["image_path"]))
-            nav_data = extract_nav_data(ocr_results)
-
-            print(f"\n  OCR Results ({nav_data['line_count']} text blocks detected):")
-            print("  " + "-" * 50)
-            for text, confidence in nav_data["ocr_results"]:
-                print(f"  [{confidence:.0%}] {text[:60]}")
-
-            # Save OCR results
-            with open(DATA_DIR / f"{first['symbol']}_ocr.json", "w") as fp:
-                json.dump(nav_data, fp, indent=2, ensure_ascii=False)
-
-        except Exception as e:
-            print(f"  OCR error: {e}")
-            print("  Make sure easyocr is installed: uv add easyocr")
-
     print("\n" + "=" * 60)
     print("Done! Check the data/ and images/ directories.")
+    print("Use Claude Code vision to extract data from the images.")
     print("=" * 60)
 
 

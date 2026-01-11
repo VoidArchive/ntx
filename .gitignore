@@ -36,3 +36,8 @@ go.work.sum
 data/
 tmp/
 .playwright-mcp/
+
+# Scripts
+scripts/images/
+scripts/.venv/
+scripts/uv.lock
