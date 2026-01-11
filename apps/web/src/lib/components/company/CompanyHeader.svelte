@@ -22,12 +22,12 @@
 
 <header class=" py-4">
 	<!-- Add to Watchlist -->
-	<button
+	<!-- <button
 		class="mb-4 inline-flex items-center gap-1.5 rounded border border-border px-3 py-1.5 text-sm transition-colors hover:bg-muted"
 	>
 		<Plus class="size-4" />
 		Add To Watchlist
-	</button>
+	</button> -->
 
 	<!-- Company Info Row -->
 	<div class="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -50,10 +50,10 @@
 		<!-- Change (only show if data available) -->
 		{#if hasChange}
 			<span class="tabular-nums {isPositive ? 'text-positive' : 'text-negative'}">
-				{#if price.changePercent < 0}▼{:else if price.changePercent > 0}▲{/if}
-				{price.changePercent > 0 ? '+' : ''}{fmt(price.changePercent)}%
+				{#if (price?.changePercent ?? 0) < 0}▼{:else if (price?.changePercent ?? 0) > 0}▲{/if}
+				{(price?.changePercent ?? 0) > 0 ? '+' : ''}{fmt(price?.changePercent)}%
 				<span class="text-sm"
-					>({price.change && price.change > 0 ? '+' : ''}{fmt(price.change)})</span
+					>({(price?.change ?? 0) > 0 ? '+' : ''}{fmt(price?.change)})</span
 				>
 			</span>
 		{/if}

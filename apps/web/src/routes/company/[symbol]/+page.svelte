@@ -50,7 +50,7 @@
 			<Navbar {companies} prices={allPrices} />
 		</div>
 
-		<div class="mx-auto max-w-6xl px-4 py-8">
+		<div class="mx-auto max-w-7xl px-4 py-8">
 			<!-- Header -->
 			<CompanyHeader {company} price={priceData} />
 

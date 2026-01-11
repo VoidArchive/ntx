@@ -12,7 +12,7 @@
 </script>
 
 <nav class="border-b border-border/60 bg-background">
-	<div class="mx-auto max-w-6xl px-2 py-4">
+	<div class="mx-auto max-w-7xl px-2 py-4">
 		<div class="flex items-center justify-between gap-4">
 			<!-- Logo -->
 			<a href="/" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-80">
