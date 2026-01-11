@@ -26,7 +26,7 @@ function normalizeName(name: string): string {
 }
 
 function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
-	const results: FundHolding[] = [];
+	const resultsMap = new Map<string, FundHolding>();
 	const normalizedTarget = normalizeName(companyName);
 
 	// Create regex for word boundary matching
@@ -51,21 +51,29 @@ function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
 						continue;
 					}
 
-					results.push({
-						fundSymbol: fund.symbol,
-						fundName: fund.fund_name,
-						units: holding.units,
-						value: holding.value,
-						percentOfFund: (holding.value / fund.net_assets) * 100
-					});
-					break; // Found in this fund, move to next fund
+					const existing = resultsMap.get(fund.symbol);
+					if (existing) {
+						// Aggregate if already found (e.g. in another category)
+						existing.units = (existing.units || 0) + (holding.units || 0);
+						existing.value += holding.value;
+						existing.percentOfFund = (existing.value / fund.net_assets) * 100;
+					} else {
+						resultsMap.set(fund.symbol, {
+							fundSymbol: fund.symbol,
+							fundName: fund.fund_name,
+							units: holding.units,
+							value: holding.value,
+							percentOfFund: (holding.value / fund.net_assets) * 100
+						});
+					}
+					break; // Found in this category, move to next category for this fund
 				}
 			}
 		}
 	}
 
 	// Sort by value descending
-	return results.sort((a, b) => b.value - a.value);
+	return Array.from(resultsMap.values()).sort((a, b) => b.value - a.value);
 }
 
 export const load = async ({ params, platform, fetch }) => {
