@@ -71,6 +71,7 @@
 			y="price"
 			xScale={scaleTime()}
 			yScale={scaleLinear().domain(yDomain).nice()}
+			padding={{ top: 10, bottom: 30, left: 45, right: 15 }}
 			series={[
 				{
 					key: 'price',

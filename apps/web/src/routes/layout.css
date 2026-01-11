@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@fontsource/fira-code/300.css';
+@import '@fontsource/fira-code/400.css';
+@import '@fontsource/fira-code/500.css';
+@import '@fontsource/fira-code/600.css';
+@import '@fontsource/fira-code/700.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -57,9 +62,9 @@
 	--sidebar-border: oklch(0.85 0.01 85);
 	--sidebar-ring: oklch(0.3 0.02 30);
 
-	/* Typography */
-	--font-serif: 'Instrument Serif', Georgia, serif;
-	--font-sans: 'DM Sans', system-ui, sans-serif;
+	/* Typography - Experimenting with Fira Code */
+	--font-serif: 'Fira Code', monospace;
+	--font-sans: 'Fira Code', monospace;
 }
 
 .dark {
@@ -154,8 +159,8 @@
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
 
-	--font-serif: 'Instrument Serif', Georgia, serif;
-	--font-sans: 'DM Sans', system-ui, sans-serif;
+	--font-serif: var(--font-serif);
+	--font-sans: var(--font-sans);
 }
 
 @layer base {

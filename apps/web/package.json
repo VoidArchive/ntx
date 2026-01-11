@@ -53,6 +53,7 @@
 		"@bufbuild/protobuf": "2.10.2",
 		"@connectrpc/connect": "^2.1.1",
 		"@connectrpc/connect-web": "^2.1.1",
+		"@fontsource/fira-code": "^5.2.7",
 		"mode-watcher": "^1.1.0",
 		"posthog-js": "^1.318.1",
 		"posthog-node": "^5.20.0"
