@@ -35,7 +35,16 @@ function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
 
 	for (const fund of funds) {
 		// Search all holding categories
-		for (const holdings of Object.values(fund.holdings)) {
+		for (const [category, holdings] of Object.entries(fund.holdings)) {
+			// Skip non-equity categories to avoid confusion (e.g. matching "Sanima Bank Debenture" when looking for "Sanima Bank")
+			if (
+				category === 'fixed_deposits' ||
+				category === 'government_bonds' ||
+				category === 'corporate_debentures'
+			) {
+				continue;
+			}
+
 			if (!Array.isArray(holdings)) continue;
 
 			for (const holding of holdings as Holding[]) {
