@@ -1,8 +1,7 @@
 import { createApiClient } from '$lib/api/client';
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ platform }) => {
-	// In dev mode, always use localhost. In prod, use platform env.
+export const load: LayoutServerLoad = async ({ platform }) => {
 	const apiUrl = import.meta.env.DEV
 		? 'http://localhost:8080'
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');

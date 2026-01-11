@@ -1,23 +1,59 @@
 import { createApiClient } from '$lib/api/client';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
+import type { Fund, Holding } from '$lib/types/fund';
 
-export const load = async ({ params, platform }) => {
+export interface FundHolding {
+	fundSymbol: string;
+	fundName: string;
+	units: number | undefined;
+	value: number;
+	percentOfFund: number;
+}
+
+function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
+	const results: FundHolding[] = [];
+	const nameLower = companyName.toLowerCase();
+
+	for (const fund of funds) {
+		// Search all holding categories
+		for (const holdings of Object.values(fund.holdings)) {
+			if (!Array.isArray(holdings)) continue;
+
+			for (const holding of holdings as Holding[]) {
+				// Match if company name contains or is contained in holding name
+				const holdingLower = holding.name.toLowerCase();
+				if (holdingLower.includes(nameLower) || nameLower.includes(holdingLower)) {
+					results.push({
+						fundSymbol: fund.symbol,
+						fundName: fund.fund_name,
+						units: holding.units,
+						value: holding.value,
+						percentOfFund: (holding.value / fund.net_assets) * 100
+					});
+					break; // Found in this fund, move to next fund
+				}
+			}
+		}
+	}
+
+	// Sort by value descending
+	return results.sort((a, b) => b.value - a.value);
+}
+
+export const load = async ({ params, platform, fetch }) => {
 	// In dev mode, always use localhost. In prod, use platform env.
 	const apiUrl = import.meta.env.DEV
 		? 'http://localhost:8080'
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');
 	const { company, price } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes, companiesRes, pricesRes] =
-			await Promise.all([
-				company.getCompany({ symbol: params.symbol }),
-				company.getFundamentals({ symbol: params.symbol }),
-				price.getPrice({ symbol: params.symbol }),
-				price.getPriceHistory({ symbol: params.symbol, days: 365 }),
-				company.listCompanies({ limit: 500 }),
-				price.listLatestPrices({})
-			]);
+		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
+			company.getCompany({ symbol: params.symbol }),
+			company.getFundamentals({ symbol: params.symbol }),
+			price.getPrice({ symbol: params.symbol }),
+			price.getPriceHistory({ symbol: params.symbol, days: 365 })
+		]);
 
 		// Fetch sector stats (non-blocking - we can still show page without it)
 		let sectorStats = undefined;
@@ -48,6 +84,18 @@ export const load = async ({ params, platform }) => {
 			// Corporate actions are optional, continue without them
 		}
 
+		// Fetch mutual fund holdings for this company
+		let fundHoldings: FundHolding[] = [];
+		if (companyRes.company?.name) {
+			try {
+				const fundsResponse = await fetch('/data/nav_detailed.json');
+				const funds: Fund[] = await fundsResponse.json();
+				fundHoldings = findCompanyInFunds(funds, companyRes.company.name);
+			} catch {
+				// Fund holdings are optional
+			}
+		}
+
 		return {
 			company: companyRes.company,
 			fundamentals: fundamentalsRes.latest,
@@ -57,8 +105,7 @@ export const load = async ({ params, platform }) => {
 			sectorStats,
 			ownership,
 			corporateActions,
-			companies: companiesRes.companies,
-			prices: pricesRes.prices
+			fundHoldings
 		};
 	} catch (err) {
 		if (err instanceof ConnectError && err.code === Code.NotFound) {

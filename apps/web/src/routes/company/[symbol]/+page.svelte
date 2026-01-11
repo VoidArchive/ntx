@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		Navbar,
 		CompanyHeader,
 		TimeRangeSelector,
 		StatsPanel,
@@ -8,6 +7,7 @@
 		FinancialsTable,
 		CorporateActionsTable,
 		AIResearchButton,
+		MutualFundHoldings,
 		type ViewMode
 	} from '$lib/components/company';
 	import {
@@ -26,12 +26,10 @@
 	let priceData = $derived(data.price);
 	let priceHistory = $derived(data.priceHistory);
 	let sectorStats = $derived(data.sectorStats);
-	let companies = $derived(data.companies ?? []);
-	let allPrices = $derived(data.prices ?? []);
 	let ownership = $derived(data.ownership);
 	let corporateActions = $derived(data.corporateActions ?? []);
+	let fundHoldings = $derived(data.fundHoldings ?? []);
 
-	let currentPrice = $derived(priceData?.ltp ?? priceData?.close);
 	let chartDays = $state<number>(365);
 	let viewMode = $state<ViewMode>('quarterly');
 
@@ -50,10 +48,6 @@
 
 {#if company}
 	<div class="min-h-screen bg-background text-foreground">
-		<div class="sticky top-0 z-50">
-			<Navbar {companies} prices={allPrices} />
-		</div>
-
 		<div class="mx-auto max-w-7xl px-4 py-8">
 			<!-- Header -->
 			<CompanyHeader {company} price={priceData} />
@@ -117,6 +111,13 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Mutual Fund Holdings -->
+			{#if fundHoldings.length > 0}
+				<div class="mt-12 border-t border-border pt-8">
+					<MutualFundHoldings holdings={fundHoldings} />
+				</div>
+			{/if}
 
 			<!-- Dividends -->
 			<div class="mt-12 border-t border-border pt-8">

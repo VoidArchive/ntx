@@ -4,10 +4,9 @@
 
 	interface Props {
 		holdings: Holdings;
-		netAssets: number;
 	}
 
-	let { holdings, netAssets }: Props = $props();
+	let { holdings }: Props = $props();
 
 	const size = 220;
 	const center = size / 2;
@@ -24,7 +23,7 @@
 
 	// Calculate sector totals
 	let sectorData = $derived.by((): SectorData[] => {
-		const data: SectorData[] = [];
+		const data: { key: keyof Holdings; label: string; value: number; color: string }[] = [];
 
 		for (const [key, items] of Object.entries(holdings)) {
 			if (!Array.isArray(items) || items.length === 0) continue;
@@ -35,14 +34,21 @@
 					key: key as keyof Holdings,
 					label: SECTOR_LABELS[key as keyof Holdings] || key,
 					value: total,
-					percent: (total / netAssets) * 100,
 					color: SECTOR_COLORS[key as keyof Holdings] || '#64748b'
 				});
 			}
 		}
 
-		// Sort by value descending
-		return data.sort((a, b) => b.value - a.value);
+		// Calculate total holdings value for full circle
+		const totalHoldings = data.reduce((sum, d) => sum + d.value, 0);
+
+		// Sort by value descending and add percentages
+		return data
+			.sort((a, b) => b.value - a.value)
+			.map((d) => ({
+				...d,
+				percent: (d.value / totalHoldings) * 100
+			}));
 	});
 
 	// Hover state
@@ -200,7 +206,7 @@
 
 		<!-- Legend -->
 		<div class="grid w-full grid-cols-2 gap-x-4 gap-y-2 text-xs lg:grid-cols-1">
-			{#each sectorData.slice(0, 8) as sector (sector.key)}
+			{#each sectorData as sector (sector.key)}
 				<button
 					class="flex items-center gap-2 rounded px-1 py-0.5 text-left transition-colors hover:bg-muted/50"
 					onmouseenter={() => (hoveredSector = sector.key)}
@@ -213,11 +219,6 @@
 					</span>
 				</button>
 			{/each}
-			{#if sectorData.length > 8}
-				<p class="col-span-2 text-muted-foreground lg:col-span-1">
-					+{sectorData.length - 8} more sectors
-				</p>
-			{/if}
 		</div>
 	</div>
 </div>

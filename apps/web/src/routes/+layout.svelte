@@ -7,8 +7,10 @@
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
 	import posthog from 'posthog-js';
 	import { ModeWatcher } from 'mode-watcher';
+	import Navbar from '$lib/components/Navbar.svelte';
+	import type { LayoutData } from './$types';
 
-	let { children } = $props();
+	let { children, data }: { children: any; data: LayoutData } = $props();
 
 	if (browser) {
 		beforeNavigate(() => posthog.capture('$pageleave'));
@@ -18,6 +20,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <ModeWatcher />
+<Navbar companies={data.companies ?? []} prices={data.prices ?? []} />
 {@render children()}
 
 <footer class="mt-20 border-t border-border/50 bg-background/50 py-12 backdrop-blur-sm">

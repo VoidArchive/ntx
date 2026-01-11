@@ -1,9 +1,7 @@
 <script lang="ts">
 	import CompanyCard from '$lib/components/CompanyCard.svelte';
-	import SearchCommand from '$lib/components/SearchCommand.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
+	import type { Price } from '$lib/gen/ntx/v1/common_pb';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
 
@@ -29,11 +27,6 @@
 	// Get price for a company
 	function getPrice(companyId: bigint): Price | undefined {
 		return data.prices?.find((p) => p.companyId === companyId);
-	}
-
-	function formatPrice(value: number | undefined): string {
-		if (value === undefined) return '—';
-		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
 	}
 
 	function formatChange(value: number | undefined): string {
@@ -102,13 +95,6 @@
 		selectedSector = selectedSector === sector ? null : sector;
 	}
 
-	// Get today's date
-	const today = new Date().toLocaleDateString('en-US', {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	});
 
 	// Random companies for discovery section
 	let randomCompanies = $derived.by(() => {
@@ -127,37 +113,6 @@
 </script>
 
 <div class="min-h-screen">
-	<!-- Masthead -->
-	<header class="border-b border-border">
-		<div class="mx-auto max-w-7xl px-4">
-			<!-- Top bar -->
-			<div class="flex items-center justify-between py-3 text-xs text-muted-foreground">
-				<span>{today}</span>
-				<div class="flex items-center gap-3">
-					<span>{data.companies?.length ?? 0} Securities Listed</span>
-					<ThemeToggle />
-				</div>
-			</div>
-
-			<!-- Logo & Search -->
-			<div
-				class="flex flex-col items-center gap-6 border-t border-border py-8 md:flex-row md:justify-between"
-			>
-				<a href="/" class="text-center md:text-left">
-					<h1 class="font-serif text-4xl tracking-tight md:text-5xl">NTX</h1>
-					<p class="text-sm tracking-[0.3em] text-muted-foreground uppercase">Market Stories</p>
-				</a>
-
-				<SearchCommand
-					companies={data.companies ?? []}
-					prices={data.prices ?? []}
-					variant="hero"
-					placeholder="Search {data.companies?.length ?? 0} stocks..."
-				/>
-			</div>
-		</div>
-	</header>
-
 	<!-- Main Content -->
 	<main class="mx-auto max-w-7xl px-4 py-8">
 		<div class="grid gap-8 lg:grid-cols-[1fr_300px]">

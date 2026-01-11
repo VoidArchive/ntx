@@ -50,18 +50,19 @@ export const SECTOR_LABELS: Record<keyof Holdings, string> = {
 	corporate_debentures: 'Debentures'
 };
 
+// Warm-to-cool gradient palette for visual harmony
 export const SECTOR_COLORS: Record<keyof Holdings, string> = {
-	commercial_banks: '#3b82f6', // blue
-	development_banks: '#6366f1', // indigo
-	finance_companies: '#8b5cf6', // violet
-	life_insurance: '#ec4899', // pink
-	non_life_insurance: '#f43f5e', // rose
-	hydropower: '#14b8a6', // teal
-	hotels: '#f97316', // orange
-	manufacturing: '#eab308', // yellow
-	microfinance: '#22c55e', // green
-	others: '#64748b', // slate
-	fixed_deposits: '#0ea5e9', // sky
-	government_bonds: '#06b6d4', // cyan
-	corporate_debentures: '#a855f7' // purple
+	fixed_deposits: '#f97316', // orange (primary - largest)
+	commercial_banks: '#fb923c', // orange-400
+	life_insurance: '#fbbf24', // amber-400
+	hydropower: '#a3e635', // lime-400
+	others: '#4ade80', // green-400
+	manufacturing: '#2dd4bf', // teal-400
+	development_banks: '#22d3ee', // cyan-400
+	microfinance: '#38bdf8', // sky-400
+	non_life_insurance: '#60a5fa', // blue-400
+	finance_companies: '#818cf8', // indigo-400
+	government_bonds: '#a78bfa', // violet-400
+	corporate_debentures: '#c084fc', // purple-400
+	hotels: '#e879f9' // fuchsia-400
 };

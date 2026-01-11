@@ -1,23 +1,21 @@
 <script lang="ts">
 	import { FundCard } from '$lib/components/mutual-funds';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
 	import Wallet from '@lucide/svelte/icons/wallet';
+	import type { Fund } from '$lib/types/fund';
 
 	let { data } = $props();
 
 	// Calculate totals
-	let totalAUM = $derived(data.funds.reduce((sum, f) => sum + f.net_assets, 0));
+	let totalAUM = $derived(data.funds.reduce((sum: number, f: Fund) => sum + f.net_assets, 0));
 
 	// Funds above/below par
 	let abovePar = $derived(data.funds.filter((f) => f.nav_per_unit > 10));
 	let belowPar = $derived(data.funds.filter((f) => f.nav_per_unit < 10));
 
-	// Best and worst performing
+	// Best performer
 	let bestFund = $derived([...data.funds].sort((a, b) => b.nav_per_unit - a.nav_per_unit)[0]);
-	let worstFund = $derived([...data.funds].sort((a, b) => a.nav_per_unit - b.nav_per_unit)[0]);
 
 	function fmtLarge(value: number): string {
 		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
@@ -35,31 +33,15 @@
 </svelte:head>
 
 <div class="min-h-screen">
-	<!-- Header -->
-	<header class="border-b border-border">
-		<div class="mx-auto max-w-7xl px-4">
-			<!-- Top bar -->
-			<div class="flex items-center justify-between py-3 text-xs text-muted-foreground">
-				<a href="/" class="flex items-center gap-2 transition-colors hover:text-foreground">
-					<ArrowLeft class="size-4" />
-					<span>Back to Market</span>
-				</a>
-				<div class="flex items-center gap-3">
-					<span>Data as of {reportDate}</span>
-					<ThemeToggle />
-				</div>
-			</div>
-
-			<!-- Title -->
-			<div class="border-t border-border py-8">
-				<h1 class="font-serif text-4xl tracking-tight md:text-5xl">Mutual Funds</h1>
-				<p class="mt-2 text-muted-foreground">Open-End Mutual Fund NAV and Portfolio Analysis</p>
-			</div>
-		</div>
-	</header>
-
 	<!-- Main Content -->
 	<main class="mx-auto max-w-7xl px-4 py-8">
+		<!-- Page Header -->
+		<div class="mb-8">
+			<h1 class="font-serif text-3xl tracking-tight">Mutual Funds</h1>
+			<p class="mt-1 text-sm text-muted-foreground">
+				Open-End Mutual Fund NAV and Portfolio Analysis · Data as of {reportDate}
+			</p>
+		</div>
 		<!-- Summary Cards -->
 		<div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 			<!-- Total AUM -->

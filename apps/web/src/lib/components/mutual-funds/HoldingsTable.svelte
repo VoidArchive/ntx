@@ -75,7 +75,7 @@
 			<div class="overflow-hidden rounded-lg border border-border">
 				<!-- Sector Header -->
 				<button
-					class="flex w-full items-center gap-3 bg-card/50 px-4 py-3 text-left transition-colors hover:bg-muted/50"
+					class="flex w-full items-center gap-2 bg-card/50 px-3 py-3 text-left transition-colors hover:bg-muted/50 sm:gap-3 sm:px-4"
 					onclick={() => toggleSector(group.key)}
 				>
 					{#if isExpanded}
@@ -86,18 +86,18 @@
 
 					<div class="size-3 shrink-0 rounded-sm" style="background: {group.color};"></div>
 
-					<span class="flex-1 font-medium">{group.label}</span>
+					<span class="min-w-0 flex-1 truncate text-sm font-medium sm:text-base">{group.label}</span>
 
-					<span class="text-sm text-muted-foreground tabular-nums">
+					<span class="hidden text-sm text-muted-foreground tabular-nums sm:inline">
 						{group.items.length}
 						{group.items.length === 1 ? 'holding' : 'holdings'}
 					</span>
 
-					<span class="w-20 text-right text-sm font-medium tabular-nums">
+					<span class="w-14 text-right text-sm font-medium tabular-nums sm:w-20">
 						{group.percent.toFixed(1)}%
 					</span>
 
-					<span class="w-24 text-right text-sm text-muted-foreground tabular-nums">
+					<span class="hidden w-24 text-right text-sm text-muted-foreground tabular-nums sm:inline">
 						{fmtValue(group.total)}
 					</span>
 				</button>
@@ -105,7 +105,20 @@
 				<!-- Holdings List -->
 				{#if isExpanded}
 					<div class="border-t border-border bg-background">
-						<table class="w-full text-sm">
+						<!-- Mobile: Card layout -->
+						<div class="sm:hidden">
+							{#each group.items as item (item.name)}
+								<div class="flex items-start justify-between gap-2 px-3 py-2">
+									<span class="text-sm">{item.name}</span>
+									<span class="shrink-0 text-sm tabular-nums text-muted-foreground">
+										{fmtValue(item.value)}
+									</span>
+								</div>
+							{/each}
+						</div>
+
+						<!-- Desktop: Table layout -->
+						<table class="hidden w-full text-sm sm:table">
 							<thead>
 								<tr class="border-b border-border text-xs text-muted-foreground">
 									<th class="px-4 py-2 text-left font-medium">Company</th>
@@ -115,19 +128,16 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each group.items as item, i (item.name)}
-									<tr class="border-b border-border/50 last:border-0 hover:bg-muted/30">
-										<td class="px-4 py-2.5">
-											<span class="text-muted-foreground">{i + 1}.</span>
-											{item.name}
-										</td>
-										<td class="px-4 py-2.5 text-right text-muted-foreground tabular-nums">
+								{#each group.items as item (item.name)}
+									<tr class="hover:bg-muted/30">
+										<td class="px-4 py-2">{item.name}</td>
+										<td class="px-4 py-2 text-right text-muted-foreground tabular-nums">
 											{fmtUnits(item.units)}
 										</td>
-										<td class="px-4 py-2.5 text-right tabular-nums">
+										<td class="px-4 py-2 text-right tabular-nums">
 											{fmtValue(item.value)}
 										</td>
-										<td class="px-4 py-2.5 text-right text-muted-foreground tabular-nums">
+										<td class="px-4 py-2 text-right text-muted-foreground tabular-nums">
 											{((item.value / netAssets) * 100).toFixed(2)}%
 										</td>
 									</tr>

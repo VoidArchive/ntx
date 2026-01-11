@@ -5,7 +5,6 @@
 		PortfolioDonut,
 		HoldingsTable
 	} from '$lib/components/mutual-funds';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	let { data } = $props();
 
@@ -18,17 +17,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-background text-foreground">
-	<!-- Sticky Header -->
-	<div class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-		<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-			<span class="font-serif text-lg">{fund.symbol}</span>
-			<div class="flex items-center gap-4">
-				<span class="text-sm tabular-nums">NAV {fund.nav_per_unit.toFixed(2)}</span>
-				<ThemeToggle />
-			</div>
-		</div>
-	</div>
-
 	<div class="mx-auto max-w-7xl px-4 py-8">
 		<!-- Header -->
 		<FundHeader {fund} />
@@ -38,7 +26,7 @@
 			<!-- Portfolio Chart: span 2 columns -->
 			<div class="min-w-0 lg:col-span-2">
 				<div class="rounded-xl border border-border bg-card/50 p-6">
-					<PortfolioDonut holdings={fund.holdings} netAssets={fund.net_assets} />
+					<PortfolioDonut holdings={fund.holdings} />
 				</div>
 			</div>
 
