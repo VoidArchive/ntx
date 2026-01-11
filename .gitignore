@@ -33,7 +33,6 @@ go.work.sum
 # .idea/
 # .vscode/
 
-data/
 tmp/
 .playwright-mcp/
 

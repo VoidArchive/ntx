@@ -30,12 +30,11 @@
 		<div class="space-y-3">
 			{#each holdings as holding (holding.fundSymbol)}
 				{@const barWidth = (holding.value / maxValue) * 100}
-				<a
-					href="/mutual-funds/{holding.fundSymbol}"
-					class="group flex items-center gap-3"
-				>
+				<a href="/mutual-funds/{holding.fundSymbol}" class="group flex items-center gap-3">
 					<!-- Fund Symbol -->
-					<span class="w-16 shrink-0 text-sm font-medium transition-colors group-hover:text-primary">
+					<span
+						class="w-16 shrink-0 text-sm font-medium transition-colors group-hover:text-primary"
+					>
 						{holding.fundSymbol}
 					</span>
 
@@ -48,7 +47,7 @@
 					</div>
 
 					<!-- Value -->
-					<span class="w-20 shrink-0 text-right text-sm tabular-nums text-muted-foreground">
+					<span class="w-20 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
 						{fmtValue(holding.value)}
 					</span>
 				</a>

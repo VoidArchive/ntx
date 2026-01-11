@@ -95,7 +95,6 @@
 		selectedSector = selectedSector === sector ? null : sector;
 	}
 
-
 	// Random companies for discovery section
 	let randomCompanies = $derived.by(() => {
 		const companies = data.companies ?? [];

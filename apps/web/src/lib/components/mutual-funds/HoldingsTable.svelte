@@ -86,7 +86,8 @@
 
 					<div class="size-3 shrink-0 rounded-sm" style="background: {group.color};"></div>
 
-					<span class="min-w-0 flex-1 truncate text-sm font-medium sm:text-base">{group.label}</span>
+					<span class="min-w-0 flex-1 truncate text-sm font-medium sm:text-base">{group.label}</span
+					>
 
 					<span class="hidden text-sm text-muted-foreground tabular-nums sm:inline">
 						{group.items.length}
@@ -110,7 +111,7 @@
 							{#each group.items as item (item.name)}
 								<div class="flex items-start justify-between gap-2 px-3 py-2">
 									<span class="text-sm">{item.name}</span>
-									<span class="shrink-0 text-sm tabular-nums text-muted-foreground">
+									<span class="shrink-0 text-sm text-muted-foreground tabular-nums">
 										{fmtValue(item.value)}
 									</span>
 								</div>
