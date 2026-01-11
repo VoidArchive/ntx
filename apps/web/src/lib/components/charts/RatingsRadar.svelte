@@ -45,7 +45,8 @@
 		// For quarterly data, find same quarter from previous year
 		if (latestFundamental.quarter) {
 			return sortedFundamentals.find(
-				(f) => f.quarter === latestFundamental.quarter && f.fiscalYear !== latestFundamental.fiscalYear
+				(f) =>
+					f.quarter === latestFundamental.quarter && f.fiscalYear !== latestFundamental.fiscalYear
 			);
 		}
 
@@ -114,8 +115,15 @@
 		const epsGrowthRating = rateGrowth(epsGrowth);
 		const profitGrowthRating = rateGrowth(profitGrowth);
 
-		const validRatings = [peRating, pbRating, roeRating, epsGrowthRating, profitGrowthRating].filter((r) => r > 0);
-		const overall = validRatings.length > 0 ? validRatings.reduce((a, b) => a + b, 0) / validRatings.length : 0;
+		const validRatings = [
+			peRating,
+			pbRating,
+			roeRating,
+			epsGrowthRating,
+			profitGrowthRating
+		].filter((r) => r > 0);
+		const overall =
+			validRatings.length > 0 ? validRatings.reduce((a, b) => a + b, 0) / validRatings.length : 0;
 
 		return {
 			pe: { value: pe, rating: peRating, label: 'P/E' },
@@ -156,12 +164,14 @@
 
 	let radarPath = $derived.by(() => {
 		if (!metrics) return '';
-		return axes
-			.map((axis, i) => {
-				const point = getPoint(i, metrics[axis].rating);
-				return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
-			})
-			.join(' ') + ' Z';
+		return (
+			axes
+				.map((axis, i) => {
+					const point = getPoint(i, metrics[axis].rating);
+					return `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
+				})
+				.join(' ') + ' Z'
+		);
 	});
 
 	function getGrade(score: number): string {
@@ -198,10 +208,12 @@
 				{#each Array(levels) as _, level}
 					{@const r = ((level + 1) / levels) * radius}
 					<polygon
-						points={axes.map((_, i) => {
-							const angle = (Math.PI * 2 * i) / axes.length - Math.PI / 2;
-							return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
-						}).join(' ')}
+						points={axes
+							.map((_, i) => {
+								const angle = (Math.PI * 2 * i) / axes.length - Math.PI / 2;
+								return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
+							})
+							.join(' ')}
 						fill="none"
 						stroke="currentColor"
 						stroke-opacity="0.1"
@@ -236,12 +248,7 @@
 				<!-- Data points -->
 				{#each axes as axis, i}
 					{@const point = getPoint(i, metrics[axis].rating)}
-					<circle
-						cx={point.x}
-						cy={point.y}
-						r="4"
-						fill="#f97316"
-					/>
+					<circle cx={point.x} cy={point.y} r="4" fill="#f97316" />
 				{/each}
 
 				<!-- Labels -->
@@ -265,14 +272,18 @@
 					{@const m = metrics[axis]}
 					<div class="flex items-center gap-3">
 						<span class="w-16 text-muted-foreground">{m.label}</span>
-						<span class="w-12 text-right tabular-nums font-medium">{formatValue(axis, m.value)}</span>
+						<span class="w-12 text-right font-medium tabular-nums"
+							>{formatValue(axis, m.value)}</span
+						>
 						<span class="w-4 text-center font-semibold text-orange-500">{m.rating}</span>
 					</div>
 				{/each}
 				<div class="border-t border-border pt-2">
 					<div class="flex items-center gap-3 font-medium">
 						<span class="w-16">Overall</span>
-						<span class="w-12 text-right tabular-nums text-orange-500">{metrics.overall.toFixed(1)}</span>
+						<span class="w-12 text-right text-orange-500 tabular-nums"
+							>{metrics.overall.toFixed(1)}</span
+						>
 					</div>
 				</div>
 			</div>

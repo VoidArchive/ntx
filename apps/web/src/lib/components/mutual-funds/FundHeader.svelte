@@ -39,7 +39,11 @@
 							? 'border-negative/30 bg-negative/10 text-negative'
 							: 'border-border bg-muted text-muted-foreground'}"
 				>
-					{navStatus === 'positive' ? 'Above Par' : navStatus === 'negative' ? 'Below Par' : 'At Par'}
+					{navStatus === 'positive'
+						? 'Above Par'
+						: navStatus === 'negative'
+							? 'Below Par'
+							: 'At Par'}
 				</span>
 			</div>
 			<p class="mt-2 text-lg text-muted-foreground">{fund.fund_name}</p>
@@ -69,7 +73,8 @@
 						? 'text-positive'
 						: 'text-negative'}"
 				>
-					{navStatus === 'positive' ? '+' : ''}{((fund.nav_per_unit - 10) / 10 * 100).toFixed(2)}% from par
+					{navStatus === 'positive' ? '+' : ''}{(((fund.nav_per_unit - 10) / 10) * 100).toFixed(2)}%
+					from par
 				</p>
 			{/if}
 		</div>

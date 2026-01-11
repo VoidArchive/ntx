@@ -76,7 +76,9 @@
 			const shortYear = shortenFiscalYear(f.fiscalYear);
 			const label = f.quarter ? `${abbreviateQuarter(f.quarter)} ${shortYear}` : shortYear;
 			// Full label for tooltip: "Q1 2023-2024" or "2023-2024"
-			const fullLabel = f.quarter ? `${abbreviateQuarter(f.quarter)} ${f.fiscalYear}` : f.fiscalYear;
+			const fullLabel = f.quarter
+				? `${abbreviateQuarter(f.quarter)} ${f.fiscalYear}`
+				: f.fiscalYear;
 
 			return {
 				fiscalYear: f.fiscalYear,
@@ -92,7 +94,9 @@
 	let maxProfit = $derived(Math.max(...chartData.map((d) => d.profit), 1));
 	let maxGrowth = $derived(Math.max(...chartData.map((d) => Math.abs(d.growth ?? 0)), 30));
 
-	let barWidth = $derived(chartData.length > 0 ? Math.min(chartWidth / chartData.length / 3, 36) : 36);
+	let barWidth = $derived(
+		chartData.length > 0 ? Math.min(chartWidth / chartData.length / 3, 36) : 36
+	);
 	let barSpacing = $derived(chartData.length > 0 ? chartWidth / chartData.length : 60);
 
 	function yScaleProfit(value: number): number {
@@ -229,11 +233,15 @@
 
 				<!-- Growth area -->
 				{#if growthLinePath}
-					{@const validIndices = chartData.map((d, i) => (d.growth !== null ? i : -1)).filter((i) => i >= 0)}
+					{@const validIndices = chartData
+						.map((d, i) => (d.growth !== null ? i : -1))
+						.filter((i) => i >= 0)}
 					{@const firstIdx = validIndices[0]}
 					{@const lastIdx = validIndices[validIndices.length - 1]}
 					<path
-						d="{growthLinePath} L {xPosition(lastIdx)} {yScaleGrowth(0)} L {xPosition(firstIdx)} {yScaleGrowth(0)} Z"
+						d="{growthLinePath} L {xPosition(lastIdx)} {yScaleGrowth(0)} L {xPosition(
+							firstIdx
+						)} {yScaleGrowth(0)} Z"
 						fill="url(#growthAreaGradient)"
 					/>
 				{/if}
@@ -321,9 +329,9 @@
 		<!-- Tooltip -->
 		{#if hoveredIndex !== null}
 			{@const d = chartData[hoveredIndex]}
-			{@const x = (xPosition(hoveredIndex) + padding.left) / width * 100}
+			{@const x = ((xPosition(hoveredIndex) + padding.left) / width) * 100}
 			<div
-				class="pointer-events-none absolute -translate-x-1/2 animate-in fade-in-0 zoom-in-95 duration-100"
+				class="pointer-events-none absolute -translate-x-1/2 animate-in duration-100 fade-in-0 zoom-in-95"
 				style="left: {x}%; top: 0;"
 			>
 				<div class="rounded-lg border border-border/50 bg-popover px-3 py-2 shadow-lg">
@@ -354,7 +362,9 @@
 		</div>
 	</div>
 {:else}
-	<div class="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-border">
+	<div
+		class="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-border"
+	>
 		<p class="text-sm text-muted-foreground">No earnings data available</p>
 	</div>
 {/if}

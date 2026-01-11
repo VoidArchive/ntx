@@ -10,7 +10,12 @@
 		class?: string;
 	}
 
-	let { fundamentals = [], viewMode = 'quarterly', onViewModeChange, class: className = '' }: Props = $props();
+	let {
+		fundamentals = [],
+		viewMode = 'quarterly',
+		onViewModeChange,
+		class: className = ''
+	}: Props = $props();
 
 	function setViewMode(mode: ViewMode) {
 		onViewModeChange?.(mode);

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Company, Price, Fundamental } from '$lib/gen/ntx/v1/common_pb';
-    import type {SectorStats } from '$lib/gen/ntx/v1/company_pb';
+	import type { SectorStats } from '$lib/gen/ntx/v1/company_pb';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import Sparkles from '@lucide/svelte/icons/sparkles';

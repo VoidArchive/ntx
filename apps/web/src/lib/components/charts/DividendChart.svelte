@@ -37,8 +37,12 @@
 			}));
 	});
 
-	let maxValue = $derived(Math.max(...chartData.map((d) => Math.max(d.bonus, d.cash, d.total)), 20));
-	let barWidth = $derived(chartData.length > 0 ? Math.min(chartWidth / chartData.length / 3, 36) : 36);
+	let maxValue = $derived(
+		Math.max(...chartData.map((d) => Math.max(d.bonus, d.cash, d.total)), 20)
+	);
+	let barWidth = $derived(
+		chartData.length > 0 ? Math.min(chartWidth / chartData.length / 3, 36) : 36
+	);
 	let barSpacing = $derived(chartData.length > 0 ? chartWidth / chartData.length : 60);
 
 	function yScale(value: number): number {
@@ -132,7 +136,9 @@
 				<!-- Cash area -->
 				{#if cashLinePath}
 					<path
-						d="{cashLinePath} L {xPosition(chartData.length - 1)} {chartHeight} L {xPosition(0)} {chartHeight} Z"
+						d="{cashLinePath} L {xPosition(chartData.length - 1)} {chartHeight} L {xPosition(
+							0
+						)} {chartHeight} Z"
 						fill="url(#cashAreaGradient)"
 					/>
 				{/if}
@@ -218,9 +224,9 @@
 		<!-- Tooltip -->
 		{#if hoveredIndex !== null}
 			{@const d = chartData[hoveredIndex]}
-			{@const x = (xPosition(hoveredIndex) + padding.left) / width * 100}
+			{@const x = ((xPosition(hoveredIndex) + padding.left) / width) * 100}
 			<div
-				class="pointer-events-none absolute -translate-x-1/2 animate-in fade-in-0 zoom-in-95 duration-100"
+				class="pointer-events-none absolute -translate-x-1/2 animate-in duration-100 fade-in-0 zoom-in-95"
 				style="left: {x}%; top: 0;"
 			>
 				<div class="rounded-lg border border-border/50 bg-popover px-3 py-2 shadow-lg">
@@ -250,7 +256,9 @@
 		</div>
 	</div>
 {:else}
-	<div class="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-border">
+	<div
+		class="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-border"
+	>
 		<p class="text-sm text-muted-foreground">No dividend data available</p>
 	</div>
 {/if}

@@ -101,10 +101,9 @@
 							: priceDirection === 'down'
 								? 'fill-negative/15'
 								: 'fill-chart-1/20'
-							},
-						grid: { class: 'stroke-border/20' }
-					}
-				}
+				},
+				grid: { class: 'stroke-border/20' }
+			}}
 		/>
 	</ChartContainer>
 {:else}

@@ -44,10 +44,28 @@
 		const largeArc = endPercent - startPercent > 50 ? 1 : 0;
 
 		return [
-			'M', outerStart.x, outerStart.y,
-			'A', radius, radius, 0, largeArc, 0, outerEnd.x, outerEnd.y,
-			'L', innerEnd.x, innerEnd.y,
-			'A', innerRadius, innerRadius, 0, largeArc, 1, innerStart.x, innerStart.y,
+			'M',
+			outerStart.x,
+			outerStart.y,
+			'A',
+			radius,
+			radius,
+			0,
+			largeArc,
+			0,
+			outerEnd.x,
+			outerEnd.y,
+			'L',
+			innerEnd.x,
+			innerEnd.y,
+			'A',
+			innerRadius,
+			innerRadius,
+			0,
+			largeArc,
+			1,
+			innerStart.x,
+			innerStart.y,
 			'Z'
 		].join(' ');
 	}
@@ -132,10 +150,20 @@
 					</g>
 
 					<!-- Center text -->
-					<text x={center} y={center - 4} text-anchor="middle" class="fill-foreground text-sm font-semibold">
+					<text
+						x={center}
+						y={center - 4}
+						text-anchor="middle"
+						class="fill-foreground text-sm font-semibold"
+					>
 						{formatShares(ownership.listedShares)}
 					</text>
-					<text x={center} y={center + 12} text-anchor="middle" class="fill-muted-foreground text-[10px]">
+					<text
+						x={center}
+						y={center + 12}
+						text-anchor="middle"
+						class="fill-muted-foreground text-[10px]"
+					>
 						listed
 					</text>
 				</svg>

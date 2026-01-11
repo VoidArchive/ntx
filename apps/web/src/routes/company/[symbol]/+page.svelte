@@ -10,7 +10,13 @@
 		AIResearchButton,
 		type ViewMode
 	} from '$lib/components/company';
-	import { PriceChart, EarningsChart, DividendChart, OwnershipPieChart, RatingsRadar } from '$lib/components/charts';
+	import {
+		PriceChart,
+		EarningsChart,
+		DividendChart,
+		OwnershipPieChart,
+		RatingsRadar
+	} from '$lib/components/charts';
 
 	let { data } = $props();
 
@@ -38,9 +44,7 @@
 	}
 
 	let filteredFundamentals = $derived(
-		fundamentalsHistory.filter((f) =>
-			viewMode === 'quarterly' ? !!f.quarter : !f.quarter
-		)
+		fundamentalsHistory.filter((f) => (viewMode === 'quarterly' ? !!f.quarter : !f.quarter))
 	);
 </script>
 
@@ -69,7 +73,13 @@
 
 				<!-- Stats + AI: single column, stacked -->
 				<div class="flex min-w-0 flex-col gap-6">
-					<StatsPanel price={priceData} {fundamentals} {priceHistory} {ownership} {corporateActions} />
+					<StatsPanel
+						price={priceData}
+						{fundamentals}
+						{priceHistory}
+						{ownership}
+						{corporateActions}
+					/>
 					<AIResearchButton {company} price={priceData} {fundamentals} {sectorStats} />
 				</div>
 

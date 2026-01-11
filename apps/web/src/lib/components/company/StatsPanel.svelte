@@ -63,9 +63,7 @@
 		if (!currentPrice || corporateActions.length === 0) return null;
 
 		// Get latest action with cash dividend
-		const sorted = [...corporateActions].sort((a, b) =>
-			b.fiscalYear.localeCompare(a.fiscalYear)
-		);
+		const sorted = [...corporateActions].sort((a, b) => b.fiscalYear.localeCompare(a.fiscalYear));
 		const latest = sorted.find((a) => a.cashDividend && a.cashDividend > 0);
 		if (!latest?.cashDividend) return null;
 

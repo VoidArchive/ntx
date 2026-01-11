@@ -47,7 +47,7 @@
 					{#each sortedActions as a (a.id)}
 						<tr class="border-b border-dotted border-border last:border-0">
 							<td class="py-2.5 font-medium">{a.fiscalYear}</td>
-							<td class="py-2.5 text-right tabular-nums text-positive">
+							<td class="py-2.5 text-right text-positive tabular-nums">
 								{fmtPercent(a.bonusPercentage)}
 							</td>
 							<td class="py-2.5 text-right tabular-nums">{fmtPercent(a.rightPercentage)}</td>
