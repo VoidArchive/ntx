@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Fundamental, Price } from '$lib/gen/ntx/v1/common_pb';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		fundamentals: Fundamental[];
@@ -21,7 +22,7 @@
 
 	// Deduplicate and sort fundamentals by fiscal year and quarter descending
 	let sortedFundamentals = $derived.by(() => {
-		const seen = new Map<string, (typeof fundamentals)[0]>();
+		const seen = new SvelteMap<string, (typeof fundamentals)[0]>();
 		for (const f of fundamentals) {
 			const key = `${f.fiscalYear}-${f.quarter ?? 'annual'}`;
 			if (!seen.has(key)) {
@@ -205,11 +206,11 @@
 			<!-- Radar Chart -->
 			<svg viewBox="0 0 {size} {size}" class="h-40 w-40 sm:h-48 sm:w-48">
 				<!-- Grid levels -->
-				{#each Array(levels) as _, level}
+				{#each Array(levels) as _, level (level)}
 					{@const r = ((level + 1) / levels) * radius}
 					<polygon
 						points={axes
-							.map((_, i) => {
+							.map((_a, i) => {
 								const angle = (Math.PI * 2 * i) / axes.length - Math.PI / 2;
 								return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
 							})
@@ -222,7 +223,7 @@
 				{/each}
 
 				<!-- Axis lines -->
-				{#each axes as _, i}
+				{#each axes as _axis, i (i)}
 					{@const point = getPoint(i, 5)}
 					<line
 						x1={center}
@@ -246,13 +247,13 @@
 				/>
 
 				<!-- Data points -->
-				{#each axes as axis, i}
+				{#each axes as axis, i (axis)}
 					{@const point = getPoint(i, metrics[axis].rating)}
 					<circle cx={point.x} cy={point.y} r="4" fill="#f97316" />
 				{/each}
 
 				<!-- Labels -->
-				{#each axes as axis, i}
+				{#each axes as axis, i (axis)}
 					{@const labelPoint = getLabelPoint(i)}
 					<text
 						x={labelPoint.x}
@@ -268,7 +269,7 @@
 
 			<!-- Values list -->
 			<div class="space-y-2 text-sm">
-				{#each axes as axis}
+				{#each axes as axis (axis)}
 					{@const m = metrics[axis]}
 					<div class="flex items-center gap-3">
 						<span class="w-16 text-muted-foreground">{m.label}</span>

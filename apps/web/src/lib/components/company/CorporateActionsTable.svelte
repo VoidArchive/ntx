@@ -8,11 +8,6 @@
 
 	let { actions = [], class: className = '' }: Props = $props();
 
-	function fmt(value: number | undefined): string {
-		if (value === undefined || value === 0) return '—';
-		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
-	}
-
 	function fmtPercent(value: number | undefined): string {
 		if (value === undefined || value === 0) return '—';
 		return `${value.toFixed(1)}%`;

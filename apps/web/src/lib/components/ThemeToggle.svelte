@@ -26,7 +26,7 @@
 		{/snippet}
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end">
-		{#each themes as theme}
+		{#each themes as theme (theme.value)}
 			<DropdownMenu.Item
 				onclick={() => setMode(theme.value)}
 				class="flex items-center gap-2 {mode.current === theme.value ? 'bg-accent' : ''}"

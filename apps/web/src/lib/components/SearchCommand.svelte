@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
 	import Search from '@lucide/svelte/icons/search';
@@ -13,15 +12,13 @@
 		prices?: Price[];
 		variant?: 'hero' | 'compact';
 		placeholder?: string;
-		autofocus?: boolean;
 	}
 
 	let {
 		companies = [],
 		prices = [],
 		variant = 'compact',
-		placeholder = 'Search stocks...',
-		autofocus = false
+		placeholder = 'Search stocks...'
 	}: Props = $props();
 
 	let query = $state('');

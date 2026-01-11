@@ -9,8 +9,9 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 
-	let { children, data }: { children: any; data: LayoutData } = $props();
+	let { children, data }: { children: Snippet; data: LayoutData } = $props();
 
 	if (browser) {
 		beforeNavigate(() => posthog.capture('$pageleave'));

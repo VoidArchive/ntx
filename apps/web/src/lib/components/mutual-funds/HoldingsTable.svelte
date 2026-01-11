@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Holdings, Holding } from '$lib/types/fund';
 	import { SECTOR_LABELS, SECTOR_COLORS } from '$lib/types/fund';
+	import { SvelteSet } from 'svelte/reactivity';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
 
@@ -12,7 +13,7 @@
 	let { holdings, netAssets }: Props = $props();
 
 	// Track expanded sectors
-	let expandedSectors = $state<Set<string>>(new Set());
+	let expandedSectors = new SvelteSet<string>();
 
 	interface SectorGroup {
 		key: keyof Holdings;
@@ -45,7 +46,7 @@
 	});
 
 	function toggleSector(key: string) {
-		const newSet = new Set(expandedSectors);
+		const newSet = new SvelteSet(expandedSectors);
 		if (newSet.has(key)) {
 			newSet.delete(key);
 		} else {

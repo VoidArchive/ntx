@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Fundamental } from '$lib/gen/ntx/v1/common_pb';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		fundamentals: Fundamental[];
@@ -39,7 +40,7 @@
 	let chartData = $derived.by(() => {
 		if (!fundamentals || fundamentals.length === 0) return [];
 
-		const uniqueMap = new Map<string, (typeof fundamentals)[0]>();
+		const uniqueMap = new SvelteMap<string, (typeof fundamentals)[0]>();
 		for (const f of fundamentals) {
 			if (f.profitAmount !== undefined) {
 				// Use fiscalYear + quarter as key for quarterly data

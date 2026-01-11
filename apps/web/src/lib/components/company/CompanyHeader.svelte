@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
-	import Plus from '@lucide/svelte/icons/plus';
 
 	interface Props {
 		company: Company;

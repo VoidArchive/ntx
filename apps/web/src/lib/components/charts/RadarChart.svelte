@@ -54,7 +54,7 @@
 
 	// Grid lines (concentric polygons)
 	function getGridPath(level: number): string {
-		const points = data.map((_, i) => {
+		const points = data.map((_d, i) => {
 			const angle = (Math.PI * 2 * i) / data.length - Math.PI / 2;
 			const r = (radius * level) / levels;
 			return { x: center + r * Math.cos(angle), y: center + r * Math.sin(angle) };

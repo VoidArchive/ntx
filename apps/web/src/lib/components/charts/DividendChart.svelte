@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CorporateAction } from '$lib/gen/ntx/v1/common_pb';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {
 		actions: CorporateAction[];
@@ -19,7 +20,7 @@
 	let chartData = $derived.by(() => {
 		if (!actions || actions.length === 0) return [];
 
-		const uniqueMap = new Map<string, (typeof actions)[0]>();
+		const uniqueMap = new SvelteMap<string, (typeof actions)[0]>();
 		for (const a of actions) {
 			if (!uniqueMap.has(a.fiscalYear) || a.bonusPercentage || a.cashDividend) {
 				uniqueMap.set(a.fiscalYear, a);

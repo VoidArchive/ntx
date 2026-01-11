@@ -56,7 +56,7 @@ function countGrowthStreak(history: Fundamental[]): number {
 /**
  * Generate headline based on EPS growth
  */
-function generateHeadline(epsGrowth: number | undefined, streak: number): string {
+function generateHeadline(epsGrowth: number | undefined): string {
 	if (epsGrowth === undefined) {
 		return 'Earnings data available';
 	}
@@ -156,7 +156,7 @@ export function generateEarningsStory(context: EarningsContext): EarningsStory {
 	const streak = countGrowthStreak(history);
 
 	return {
-		headline: generateHeadline(epsGrowth, streak),
+		headline: generateHeadline(epsGrowth),
 		detail: generateDetail(current, previous, epsGrowth),
 		trendSentence: generateTrendSentence(streak, history),
 		epsGrowth,

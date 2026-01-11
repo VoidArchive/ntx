@@ -80,7 +80,7 @@ function combineSignals(
 /**
  * Generate summary sentence based on signals
  */
-function generateSummary(context: VerdictContext, overallSignal: Signal): string {
+function generateSummary(context: VerdictContext): string {
 	const { companyName, price, earnings, valuation } = context;
 
 	// Build the summary sentence
@@ -134,7 +134,7 @@ export function generateVerdictStory(context: VerdictContext): VerdictStory {
 
 	return {
 		title: 'The Story So Far',
-		summary: generateSummary(context, signal),
+		summary: generateSummary(context),
 		signal
 	};
 }
