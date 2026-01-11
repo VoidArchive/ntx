@@ -11,9 +11,26 @@ export interface FundHolding {
 	percentOfFund: number;
 }
 
+function escapeRegExp(string: string): string {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function normalizeName(name: string): string {
+	return name
+		.toLowerCase()
+		.replace(/hydro\s+power/g, 'hydropower')
+		.replace(/\b(limited|ltd|pvt|private|company|co|inc|corporation|development)\b/g, '')
+		.replace(/[^\w\s]/g, '')
+		.replace(/\s+/g, ' ')
+		.trim();
+}
+
 function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
 	const results: FundHolding[] = [];
-	const nameLower = companyName.toLowerCase();
+	const normalizedTarget = normalizeName(companyName);
+
+	// Create regex for word boundary matching
+	const targetRegex = new RegExp(`\\b${escapeRegExp(normalizedTarget)}\\b`, 'i');
 
 	for (const fund of funds) {
 		// Search all holding categories
@@ -21,9 +38,19 @@ function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
 			if (!Array.isArray(holdings)) continue;
 
 			for (const holding of holdings as Holding[]) {
-				// Match if company name contains or is contained in holding name
-				const holdingLower = holding.name.toLowerCase();
-				if (holdingLower.includes(nameLower) || nameLower.includes(holdingLower)) {
+				const holdingName = holding.name;
+				const normalizedHolding = normalizeName(holdingName);
+
+				// Create reverse regex (if holding is shorter than target)
+				const holdingRegex = new RegExp(`\\b${escapeRegExp(normalizedHolding)}\\b`, 'i');
+
+				// Check both directions
+				if (targetRegex.test(normalizedHolding) || holdingRegex.test(normalizedTarget)) {
+					// Safety check: Avoid very short matches
+					if (normalizedTarget.length < 4 || normalizedHolding.length < 4) {
+						continue;
+					}
+
 					results.push({
 						fundSymbol: fund.symbol,
 						fundName: fund.fund_name,

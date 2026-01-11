@@ -20,7 +20,7 @@
 {#if holdings.length > 0}
 	<div>
 		<div class="mb-6 flex items-baseline justify-between">
-			<h3 class="font-serif text-base font-medium">Mutual Fund Holdings</h3>
+			<h3 class="font-serif text-base font-medium">Open-Ended Mutual Fund Holdings</h3>
 			<span class="text-sm text-muted-foreground">
 				Held by {holdings.length} fund{holdings.length === 1 ? '' : 's'}
 			</span>
@@ -42,7 +42,7 @@
 					<!-- Bar -->
 					<div class="relative h-6 flex-1">
 						<div
-							class="absolute inset-y-0 left-0 rounded bg-primary/80 transition-all group-hover:bg-primary"
+							class="absolute inset-y-0 left-0 rounded bg-orange-400 transition-all group-hover:bg-orange-300"
 							style="width: {barWidth}%"
 						></div>
 					</div>

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import CompanyCard from '$lib/components/CompanyCard.svelte';
+	import type { LayoutData } from '../$types';
 	import { Sector } from '$lib/gen/ntx/v1/common_pb';
 
-	let { data } = $props();
+	let { data }: { data: LayoutData } = $props();
 
 	let selectedSector = $state<number | null>(null);
 	let searchQuery = $state('');

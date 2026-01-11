@@ -112,13 +112,6 @@
 				</div>
 			</div>
 
-			<!-- Mutual Fund Holdings -->
-			{#if fundHoldings.length > 0}
-				<div class="mt-12 border-t border-border pt-8">
-					<MutualFundHoldings holdings={fundHoldings} />
-				</div>
-			{/if}
-
 			<!-- Dividends -->
 			<div class="mt-12 border-t border-border pt-8">
 				<div class="grid gap-8 lg:grid-cols-12">
@@ -131,6 +124,13 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Mutual Fund Holdings -->
+			{#if fundHoldings.length > 0}
+				<div class="mt-12 border-t border-border pt-8">
+					<MutualFundHoldings holdings={fundHoldings} />
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
