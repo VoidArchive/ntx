@@ -4,7 +4,7 @@
 	import Github from '@lucide/svelte/icons/github';
 	import AlertCircle from '@lucide/svelte/icons/alert-circle';
 	import { browser } from '$app/environment';
-	import { beforeNavigate, afterNavigate } from '$app/navigation';
+	import { beforeNavigate, afterNavigate, onNavigate } from '$app/navigation';
 	import posthog from 'posthog-js';
 	import { ModeWatcher } from 'mode-watcher';
 	import Navbar from '$lib/components/Navbar.svelte';
@@ -25,6 +25,17 @@
 		beforeNavigate(() => posthog.capture('$pageleave'));
 		afterNavigate(() => posthog.capture('$pageview'));
 	}
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
