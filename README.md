@@ -1,13 +1,10 @@
 # NTX
 
-> The best stock screener for NEPSE
+> The best company snapshot for NEPSE
 
-A focused, information-dense stock screener for Nepal Stock Exchange. Like [StockTapper](https://stocktapper.com) but for NEPSE.
+A focused, information-dense stock snapshot for Nepal Stock Exchange. 
 
 ## What NTX Does
-
-One thing, really well: **Stock screening with useful company pages.**
-
 - Stock screener with fundamental filters
 - Company pages with dense, actionable data
 - Market overview (indices, top movers)
