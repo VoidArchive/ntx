@@ -38,7 +38,33 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>
+	<link rel="icon" href={favicon} />
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			"name": "NTX",
+			"url": "https://ntx.anishshrestha.com",
+			"description": "Real-time Nepal Stock Exchange (NEPSE) explorer and analytics platform.",
+			"potentialAction": {
+				"@type": "SearchAction",
+				"target": "https://ntx.anishshrestha.com/company?q={search_term_string}",
+				"query-input": "required name=search_term_string"
+			}
+		}
+	</script>
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "NTX",
+			"url": "https://ntx.anishshrestha.com",
+			"logo": "https://ntx.anishshrestha.com/favicon.png",
+			"sameAs": ["https://github.com/voidarchive/ntx"]
+		}
+	</script>
+</svelte:head>
 <ModeWatcher />
 <Navbar companies={data.companies ?? []} prices={data.prices ?? []} />
 {@render children()}

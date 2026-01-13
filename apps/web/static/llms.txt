@@ -1,0 +1,18 @@
+# NTX
+
+NTX is a modern, real-time explorer and analytics platform for the Nepal Stock Exchange (NEPSE).
+It offers detailed insights into market trends, company performance, and trading activities.
+
+## Features
+
+- **Real-time Data**: Live market status, indices, and stock prices.
+- **Company Analysis**: Comprehensive profiles, dividends, and financial reports.
+- **Market Depth**: Visual representation of buy/sell orders.
+- **Floorsheet**: Live trading flow and broker analysis.
+
+## Key Pages
+
+- [Home](https://ntx.anishshrestha.com/)
+- [Company List](https://ntx.anishshrestha.com/company)
+- [Largest Market Cap](https://ntx.anishshrestha.com/market-cap)
+- [Mutual Funds](https://ntx.anishshrestha.com/mutual-funds)

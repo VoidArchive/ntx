@@ -127,7 +127,7 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
 
 ## Future Cycles (if needed)
 
-┌────────────────────┬─────────────────────────────────────────────────┐
+  ┌────────────────────┬─────────────────────────────────────────────────┐
   │      Feature       │                      Value                      │
   ├────────────────────┼─────────────────────────────────────────────────┤
   │ Peer Comparison    │ Compare to sector peers (same sector companies) │
