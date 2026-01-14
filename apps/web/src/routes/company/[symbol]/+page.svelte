@@ -12,6 +12,7 @@
 	} from '$lib/components/company';
 	import {
 		PriceChart,
+		VolumeChart,
 		EarningsChart,
 		DividendChart,
 		OwnershipPieChart,
@@ -62,6 +63,10 @@
 					</div>
 					<div class="h-[350px] overflow-hidden">
 						<PriceChart prices={priceHistory} days={chartDays} />
+					</div>
+					<div class="mt-2">
+						<h3 class="mb-1 text-xs font-medium text-muted-foreground">Volume</h3>
+						<VolumeChart prices={priceHistory} days={chartDays} />
 					</div>
 				</div>
 
