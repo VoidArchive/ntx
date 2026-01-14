@@ -130,9 +130,9 @@ Shape Up style: each cycle is a complete vertical slice (DB -> Proto -> Backend 
   ┌────────────────────┬─────────────────────────────────────────────────┐
   │      Feature       │                      Value                      │
   ├────────────────────┼─────────────────────────────────────────────────┤
-  │ Peer Comparison    │ Compare to sector peers (same sector companies) │
+  │ Peer Comparison    │ Compare to sector peers (same sector companies) │ done
   ├────────────────────┼─────────────────────────────────────────────────┤
-  │ Volume Chart       │ Trading volume trends                           │
+  │ Volume Chart       │ Trading volume trends                           │ done
   ├────────────────────┼─────────────────────────────────────────────────┤
   │ News/Announcements │ Recent company news from NEPSE                  │
   ├────────────────────┼─────────────────────────────────────────────────┤
