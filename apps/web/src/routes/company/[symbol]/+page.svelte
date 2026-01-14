@@ -16,7 +16,8 @@
 		EarningsChart,
 		DividendChart,
 		OwnershipPieChart,
-		RatingsRadar
+		RatingsRadar,
+		SectorPeers
 	} from '$lib/components/charts';
 
 	let { data } = $props();
@@ -136,6 +137,15 @@
 					<MutualFundHoldings holdings={fundHoldings} />
 				</div>
 			{/if}
+
+			<!-- Sector Peers -->
+			<div class="mt-12 border-t border-border pt-8">
+				<SectorPeers
+					{company}
+					allCompanies={data.companies ?? []}
+					allPrices={data.prices ?? []}
+				/>
+			</div>
 		</div>
 	</div>
 {/if}
