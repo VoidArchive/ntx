@@ -363,6 +363,16 @@ export declare type PortfolioSummary = Message<"ntx.v1.PortfolioSummary"> & {
    * @generated from field: double total_profit_loss_percent = 7;
    */
   totalProfitLossPercent: number;
+
+  /**
+   * @generated from field: double projected_dividend = 8;
+   */
+  projectedDividend: number;
+
+  /**
+   * @generated from field: repeated ntx.v1.HealthTip health_tips = 9;
+   */
+  healthTips: HealthTip[];
 };
 
 /**
@@ -370,6 +380,34 @@ export declare type PortfolioSummary = Message<"ntx.v1.PortfolioSummary"> & {
  * Use `create(PortfolioSummarySchema)` to create a new message.
  */
 export declare const PortfolioSummarySchema: GenMessage<PortfolioSummary>;
+
+/**
+ * @generated from message ntx.v1.HealthTip
+ */
+export declare type HealthTip = Message<"ntx.v1.HealthTip"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+
+  /**
+   * "WARNING", "INFO", "GOOD"
+   *
+   * @generated from field: string type = 3;
+   */
+  type: string;
+};
+
+/**
+ * Describes the message ntx.v1.HealthTip.
+ * Use `create(HealthTipSchema)` to create a new message.
+ */
+export declare const HealthTipSchema: GenMessage<HealthTip>;
 
 /**
  * @generated from message ntx.v1.GetPortfolioSummaryRequest

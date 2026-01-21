@@ -819,6 +819,8 @@ type PortfolioSummary struct {
 	TotalCurrentValue      float64                `protobuf:"fixed64,5,opt,name=total_current_value,json=totalCurrentValue,proto3" json:"total_current_value,omitempty"`
 	TotalProfitLoss        float64                `protobuf:"fixed64,6,opt,name=total_profit_loss,json=totalProfitLoss,proto3" json:"total_profit_loss,omitempty"`
 	TotalProfitLossPercent float64                `protobuf:"fixed64,7,opt,name=total_profit_loss_percent,json=totalProfitLossPercent,proto3" json:"total_profit_loss_percent,omitempty"`
+	ProjectedDividend      float64                `protobuf:"fixed64,8,opt,name=projected_dividend,json=projectedDividend,proto3" json:"projected_dividend,omitempty"`
+	HealthTips             []*HealthTip           `protobuf:"bytes,9,rep,name=health_tips,json=healthTips,proto3" json:"health_tips,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -902,6 +904,80 @@ func (x *PortfolioSummary) GetTotalProfitLossPercent() float64 {
 	return 0
 }
 
+func (x *PortfolioSummary) GetProjectedDividend() float64 {
+	if x != nil {
+		return x.ProjectedDividend
+	}
+	return 0
+}
+
+func (x *PortfolioSummary) GetHealthTips() []*HealthTip {
+	if x != nil {
+		return x.HealthTips
+	}
+	return nil
+}
+
+type HealthTip struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"` // "WARNING", "INFO", "GOOD"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthTip) Reset() {
+	*x = HealthTip{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthTip) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthTip) ProtoMessage() {}
+
+func (x *HealthTip) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthTip.ProtoReflect.Descriptor instead.
+func (*HealthTip) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *HealthTip) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *HealthTip) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *HealthTip) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
 type GetPortfolioSummaryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PortfolioId   int64                  `protobuf:"varint,1,opt,name=portfolio_id,json=portfolioId,proto3" json:"portfolio_id,omitempty"`
@@ -911,7 +987,7 @@ type GetPortfolioSummaryRequest struct {
 
 func (x *GetPortfolioSummaryRequest) Reset() {
 	*x = GetPortfolioSummaryRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -923,7 +999,7 @@ func (x *GetPortfolioSummaryRequest) String() string {
 func (*GetPortfolioSummaryRequest) ProtoMessage() {}
 
 func (x *GetPortfolioSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -936,7 +1012,7 @@ func (x *GetPortfolioSummaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortfolioSummaryRequest.ProtoReflect.Descriptor instead.
 func (*GetPortfolioSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{14}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetPortfolioSummaryRequest) GetPortfolioId() int64 {
@@ -955,7 +1031,7 @@ type GetPortfolioSummaryResponse struct {
 
 func (x *GetPortfolioSummaryResponse) Reset() {
 	*x = GetPortfolioSummaryResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -967,7 +1043,7 @@ func (x *GetPortfolioSummaryResponse) String() string {
 func (*GetPortfolioSummaryResponse) ProtoMessage() {}
 
 func (x *GetPortfolioSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -980,7 +1056,7 @@ func (x *GetPortfolioSummaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortfolioSummaryResponse.ProtoReflect.Descriptor instead.
 func (*GetPortfolioSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{15}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetPortfolioSummaryResponse) GetSummary() *PortfolioSummary {
@@ -1050,7 +1126,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x06sector\x18\b \x01(\tR\x06sector\x12,\n" +
 	"\x12day_change_percent\x18\t \x01(\x01R\x10dayChangePercent\x12(\n" +
 	"\x10day_change_value\x18\n" +
-	" \x01(\x01R\x0edayChangeValue\"\xc7\x02\n" +
+	" \x01(\x01R\x0edayChangeValue\"\xaa\x03\n" +
 	"\x10PortfolioSummary\x12!\n" +
 	"\fportfolio_id\x18\x01 \x01(\x03R\vportfolioId\x12%\n" +
 	"\x0eportfolio_name\x18\x02 \x01(\tR\rportfolioName\x12+\n" +
@@ -1058,7 +1134,14 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x0etotal_invested\x18\x04 \x01(\x01R\rtotalInvested\x12.\n" +
 	"\x13total_current_value\x18\x05 \x01(\x01R\x11totalCurrentValue\x12*\n" +
 	"\x11total_profit_loss\x18\x06 \x01(\x01R\x0ftotalProfitLoss\x129\n" +
-	"\x19total_profit_loss_percent\x18\a \x01(\x01R\x16totalProfitLossPercent\"?\n" +
+	"\x19total_profit_loss_percent\x18\a \x01(\x01R\x16totalProfitLossPercent\x12-\n" +
+	"\x12projected_dividend\x18\b \x01(\x01R\x11projectedDividend\x122\n" +
+	"\vhealth_tips\x18\t \x03(\v2\x11.ntx.v1.HealthTipR\n" +
+	"healthTips\"Q\n" +
+	"\tHealthTip\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x12\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\"?\n" +
 	"\x1aGetPortfolioSummaryRequest\x12!\n" +
 	"\fportfolio_id\x18\x01 \x01(\x03R\vportfolioId\"Q\n" +
 	"\x1bGetPortfolioSummaryResponse\x122\n" +
@@ -1088,7 +1171,7 @@ func file_ntx_v1_portfolio_proto_rawDescGZIP() []byte {
 }
 
 var file_ntx_v1_portfolio_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_ntx_v1_portfolio_proto_goTypes = []any{
 	(TransactionType)(0),                // 0: ntx.v1.TransactionType
 	(*Portfolio)(nil),                   // 1: ntx.v1.Portfolio
@@ -1105,8 +1188,9 @@ var file_ntx_v1_portfolio_proto_goTypes = []any{
 	(*DeleteTransactionResponse)(nil),   // 12: ntx.v1.DeleteTransactionResponse
 	(*Holding)(nil),                     // 13: ntx.v1.Holding
 	(*PortfolioSummary)(nil),            // 14: ntx.v1.PortfolioSummary
-	(*GetPortfolioSummaryRequest)(nil),  // 15: ntx.v1.GetPortfolioSummaryRequest
-	(*GetPortfolioSummaryResponse)(nil), // 16: ntx.v1.GetPortfolioSummaryResponse
+	(*HealthTip)(nil),                   // 15: ntx.v1.HealthTip
+	(*GetPortfolioSummaryRequest)(nil),  // 16: ntx.v1.GetPortfolioSummaryRequest
+	(*GetPortfolioSummaryResponse)(nil), // 17: ntx.v1.GetPortfolioSummaryResponse
 }
 var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	1,  // 0: ntx.v1.ListPortfoliosResponse.portfolios:type_name -> ntx.v1.Portfolio
@@ -1116,24 +1200,25 @@ var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	6,  // 4: ntx.v1.AddTransactionResponse.transaction:type_name -> ntx.v1.Transaction
 	6,  // 5: ntx.v1.ListTransactionsResponse.transactions:type_name -> ntx.v1.Transaction
 	13, // 6: ntx.v1.PortfolioSummary.holdings:type_name -> ntx.v1.Holding
-	14, // 7: ntx.v1.GetPortfolioSummaryResponse.summary:type_name -> ntx.v1.PortfolioSummary
-	2,  // 8: ntx.v1.PortfolioService.ListPortfolios:input_type -> ntx.v1.ListPortfoliosRequest
-	4,  // 9: ntx.v1.PortfolioService.CreatePortfolio:input_type -> ntx.v1.CreatePortfolioRequest
-	7,  // 10: ntx.v1.PortfolioService.AddTransaction:input_type -> ntx.v1.AddTransactionRequest
-	9,  // 11: ntx.v1.PortfolioService.ListTransactions:input_type -> ntx.v1.ListTransactionsRequest
-	11, // 12: ntx.v1.PortfolioService.DeleteTransaction:input_type -> ntx.v1.DeleteTransactionRequest
-	15, // 13: ntx.v1.PortfolioService.GetPortfolioSummary:input_type -> ntx.v1.GetPortfolioSummaryRequest
-	3,  // 14: ntx.v1.PortfolioService.ListPortfolios:output_type -> ntx.v1.ListPortfoliosResponse
-	5,  // 15: ntx.v1.PortfolioService.CreatePortfolio:output_type -> ntx.v1.CreatePortfolioResponse
-	8,  // 16: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
-	10, // 17: ntx.v1.PortfolioService.ListTransactions:output_type -> ntx.v1.ListTransactionsResponse
-	12, // 18: ntx.v1.PortfolioService.DeleteTransaction:output_type -> ntx.v1.DeleteTransactionResponse
-	16, // 19: ntx.v1.PortfolioService.GetPortfolioSummary:output_type -> ntx.v1.GetPortfolioSummaryResponse
-	14, // [14:20] is the sub-list for method output_type
-	8,  // [8:14] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	15, // 7: ntx.v1.PortfolioSummary.health_tips:type_name -> ntx.v1.HealthTip
+	14, // 8: ntx.v1.GetPortfolioSummaryResponse.summary:type_name -> ntx.v1.PortfolioSummary
+	2,  // 9: ntx.v1.PortfolioService.ListPortfolios:input_type -> ntx.v1.ListPortfoliosRequest
+	4,  // 10: ntx.v1.PortfolioService.CreatePortfolio:input_type -> ntx.v1.CreatePortfolioRequest
+	7,  // 11: ntx.v1.PortfolioService.AddTransaction:input_type -> ntx.v1.AddTransactionRequest
+	9,  // 12: ntx.v1.PortfolioService.ListTransactions:input_type -> ntx.v1.ListTransactionsRequest
+	11, // 13: ntx.v1.PortfolioService.DeleteTransaction:input_type -> ntx.v1.DeleteTransactionRequest
+	16, // 14: ntx.v1.PortfolioService.GetPortfolioSummary:input_type -> ntx.v1.GetPortfolioSummaryRequest
+	3,  // 15: ntx.v1.PortfolioService.ListPortfolios:output_type -> ntx.v1.ListPortfoliosResponse
+	5,  // 16: ntx.v1.PortfolioService.CreatePortfolio:output_type -> ntx.v1.CreatePortfolioResponse
+	8,  // 17: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
+	10, // 18: ntx.v1.PortfolioService.ListTransactions:output_type -> ntx.v1.ListTransactionsResponse
+	12, // 19: ntx.v1.PortfolioService.DeleteTransaction:output_type -> ntx.v1.DeleteTransactionResponse
+	17, // 20: ntx.v1.PortfolioService.GetPortfolioSummary:output_type -> ntx.v1.GetPortfolioSummaryResponse
+	15, // [15:21] is the sub-list for method output_type
+	9,  // [9:15] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_portfolio_proto_init() }
@@ -1148,7 +1233,7 @@ func file_ntx_v1_portfolio_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_portfolio_proto_rawDesc), len(file_ntx_v1_portfolio_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   16,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -14,6 +14,7 @@ export const load: LayoutServerLoad = async ({ platform }) => {
 
 	return {
 		companies: companyRes.companies,
-		prices: priceRes.prices
+		prices: priceRes.prices,
+		apiUrl
 	};
 };

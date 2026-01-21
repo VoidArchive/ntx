@@ -95,6 +95,14 @@ message PortfolioSummary {
   double total_current_value = 5;
   double total_profit_loss = 6;
   double total_profit_loss_percent = 7;
+  double projected_dividend = 8;
+  repeated HealthTip health_tips = 9;
+}
+
+message HealthTip {
+  string symbol = 1;
+  string message = 2;
+  string type = 3; // "WARNING", "INFO", "GOOD"
 }
 
 message GetPortfolioSummaryRequest { int64 portfolio_id = 1; }

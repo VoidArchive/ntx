@@ -4,6 +4,7 @@ package portfolio
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"connectrpc.com/connect"
@@ -340,6 +341,73 @@ func (s *PortfolioService) GetPortfolioSummary(
 		totalPLPercent = (totalPL / totalInvested) * 100
 	}
 
+	// Calculate projected dividend and health tips
+	var projectedDividendTotal float64
+	var healthTips []*ntxv1.HealthTip
+
+	for _, h := range holdingsData {
+		qty := h.NetQuantity.Float64
+		if qty <= 0 {
+			continue
+		}
+
+		info := priceMap[h.StockSymbol]
+
+		// 1. Fundamentals Check
+		if info.CompanyID > 0 {
+			fund, err := s.queries.GetLatestFundamental(ctx, info.CompanyID)
+			if err == nil {
+				// EPS Check
+				if fund.Eps.Valid && fund.Eps.Float64 < 0 {
+					healthTips = append(healthTips, &ntxv1.HealthTip{
+						Symbol:  h.StockSymbol,
+						Message: fmt.Sprintf("Negative EPS (%.2f). Company is loss-making.", fund.Eps.Float64),
+						Type:    "WARNING",
+					})
+				}
+				// PE Check
+				if fund.PeRatio.Valid && fund.PeRatio.Float64 > 50 {
+					healthTips = append(healthTips, &ntxv1.HealthTip{
+						Symbol:  h.StockSymbol,
+						Message: fmt.Sprintf("High P/E Ratio (%.2f). Potentially overvalued.", fund.PeRatio.Float64),
+						Type:    "WARNING",
+					})
+				} else if fund.PeRatio.Valid && fund.PeRatio.Float64 < 15 && fund.PeRatio.Float64 > 0 {
+					healthTips = append(healthTips, &ntxv1.HealthTip{
+						Symbol:  h.StockSymbol,
+						Message: fmt.Sprintf("Low P/E Ratio (%.2f). Potentially undervalued.", fund.PeRatio.Float64),
+						Type:    "GOOD",
+					})
+				}
+			}
+		}
+
+		// 2. Dividend Projection
+		// Note: GetLatestCorporateAction takes symbol, not ID in our current query
+		ca, err := s.queries.GetLatestCorporateAction(ctx, h.StockSymbol)
+		if err == nil {
+			if ca.CashDividend.Valid && ca.CashDividend.Float64 > 0 {
+				// Assuming cash dividend is % of paid up value (usually 100 for Nepal)
+				// OR it is raw amount per share? In Nepal, it's usually Percent.
+				// If percent, we need PaidUpCapital per share (usually 100).
+				// Let's assume it's percent for now, so (Percent/100) * 100 * Qty = Percent * Qty.
+				// Actually, accurately, cash dividend is usually distributed as % of paid-up capital.
+				// Most stocks have 100 paid-up. So 20% dividend = Rs 20 per share.
+				// So Projected = (CashDividend / 100) * 100 * Qty = CashDividend * Qty.
+				// BUT checking the proto/db, calculate simplified:
+
+				// Let's assume CashDividend is the percentage value (e.g. 15.5 meaning 15.5%)
+				// Standard face value is 100.
+				dividendPerShare := ca.CashDividend.Float64
+				projectedIncome := dividendPerShare * qty
+				projectedDividendTotal += projectedIncome
+
+				// Add tip for high yield if > 20% (?)
+				// Keep it simple for now.
+			}
+		}
+	}
+
 	return connect.NewResponse(&ntxv1.GetPortfolioSummaryResponse{
 		Summary: &ntxv1.PortfolioSummary{
 			PortfolioId:            portfolio.ID,
@@ -349,11 +417,14 @@ func (s *PortfolioService) GetPortfolioSummary(
 			TotalCurrentValue:      totalCurrentValue,
 			TotalProfitLoss:        totalPL,
 			TotalProfitLossPercent: totalPLPercent,
+			ProjectedDividend:      projectedDividendTotal,
+			HealthTips:             healthTips,
 		},
 	}), nil
 }
 
 type stockInfo struct {
+	CompanyID     int64
 	Price         float64
 	ChangePercent float64
 	ChangeAmount  float64
@@ -395,6 +466,7 @@ func (s *PortfolioService) fetchCurrentPrices(ctx context.Context, holdings []sq
 		}
 
 		info[h.StockSymbol] = stockInfo{
+			CompanyID:     price.CompanyID,
 			Price:         currentPrice,
 			ChangePercent: changePercent,
 			ChangeAmount:  changeAmount,

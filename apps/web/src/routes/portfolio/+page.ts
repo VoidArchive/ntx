@@ -1,10 +1,9 @@
 import type { PageLoad } from './$types';
 import { createApiClient } from '$lib/api/client';
 
-const API_URL = import.meta.env.DEV ? 'http://localhost:8080' : 'https://ntx-api.anishshrestha.com';
-
-export const load: PageLoad = async () => {
-	const api = createApiClient(API_URL);
+export const load: PageLoad = async ({ parent }) => {
+	const { apiUrl } = await parent();
+	const api = createApiClient(apiUrl);
 	
 	// Fetch companies for the stock symbol autocomplete
 	try {

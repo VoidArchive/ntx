@@ -12,13 +12,17 @@
 	import Trash2 from '@lucide/svelte/icons/trash-2';
 	import ArrowUp from '@lucide/svelte/icons/arrow-up';
 	import ArrowDown from '@lucide/svelte/icons/arrow-down';
+	import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
+	import CheckCircle from '@lucide/svelte/icons/check-circle';
+	import Info from '@lucide/svelte/icons/info';
+	import Banknote from '@lucide/svelte/icons/banknote';
 	import { SectorChart } from '$lib/components/charts';
-	import type { Portfolio, PortfolioSummary, Transaction } from '$lib/gen/ntx/v1/portfolio_pb';
+	import type { Portfolio, PortfolioSummary, Transaction, HealthTip } from '$lib/gen/ntx/v1/portfolio_pb';
 	import type { Company } from '$lib/gen/ntx/v1/common_pb';
 
-	const API_URL = import.meta.env.DEV ? 'http://localhost:8080' : 'https://ntx-api.anishshrestha.com';
-
+	
 	let { data } = $props();
+	const API_URL = data.apiUrl;
 	
 	// Companies from page load
 	let companies = $derived<Company[]>(data.companies ?? []);
@@ -321,6 +325,15 @@
 							{formatPercent(selectedPortfolio.totalProfitLossPercent)}
 						</p>
 					</div>
+					<div class="rounded-xl border border-border bg-card/50 p-5 backdrop-blur-sm">
+						<p class="text-xs text-muted-foreground">Est. Annual Yield</p>
+						<div class="mt-1 flex items-center gap-2">
+							<Banknote class="size-5 text-emerald-500" />
+							<p class="text-2xl font-medium tabular-nums text-emerald-500">
+								{formatCurrency(selectedPortfolio.projectedDividend ?? 0)}
+							</p>
+						</div>
+					</div>
 				</div>
 
 				<!-- Analysis Grid -->
@@ -371,6 +384,33 @@
 							</div>
 						{/if}
 					</div>
+				</div>
+
+				<!-- Recommendations / Health -->
+				<div class="mb-8 rounded-xl border border-border bg-card/50 p-6 backdrop-blur-sm">
+					<h3 class="mb-4 font-serif text-lg font-medium">Portfolio Health</h3>
+					{#if !selectedPortfolio.healthTips || selectedPortfolio.healthTips.length === 0}
+						<div class="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/10 p-4 text-green-600">
+							<CheckCircle class="size-5 shrink-0" />
+							<p class="text-sm font-medium">Your portfolio looks healthy! No immediate risks detected.</p>
+						</div>
+					{:else}
+						<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+							{#each selectedPortfolio.healthTips as tip}
+								<div class="flex items-start gap-3 rounded-lg border p-3 {tip.type === 'WARNING' ? 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400'}">
+									{#if tip.type === 'WARNING'}
+										<AlertTriangle class="size-5 shrink-0 mt-0.5" />
+									{:else}
+										<Info class="size-5 shrink-0 mt-0.5" />
+									{/if}
+									<div>
+										<a href="/company/{tip.symbol}" class="font-medium text-sm hover:underline">{tip.symbol}</a>
+										<p class="text-xs opacity-90">{tip.message}</p>
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
 				</div>
 
 				<!-- Holdings table -->

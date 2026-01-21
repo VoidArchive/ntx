@@ -42,7 +42,7 @@ func (q *Queries) GetLatestPrice(ctx context.Context, companyID int64) (Price, e
 }
 
 const getLatestPriceBySymbol = `-- name: GetLatestPriceBySymbol :one
-SELECT p.id, p.company_id, p.business_date, p.open_price, p.high_price, p.low_price, p.close_price, p.last_traded_price, p.previous_close, p.change_amount, p.change_percent, p.volume, p.turnover, p.trades, p.created_at, c.sector as company_sector FROM prices p
+SELECT p.id, p.company_id, p.business_date, p.open_price, p.high_price, p.low_price, p.close_price, p.last_traded_price, p.previous_close, p.change_amount, p.change_percent, p.volume, p.turnover, p.trades, p.created_at, c.sector as company_sector, c.id as company_id FROM prices p
 JOIN companies c ON p.company_id = c.id
 WHERE c.symbol = ?
 ORDER BY p.business_date DESC
@@ -66,6 +66,7 @@ type GetLatestPriceBySymbolRow struct {
 	Trades          sql.NullInt64   `json:"trades"`
 	CreatedAt       time.Time       `json:"created_at"`
 	CompanySector   string          `json:"company_sector"`
+	CompanyID_2     int64           `json:"company_id_2"`
 }
 
 func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error) {
@@ -88,6 +89,7 @@ func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (Ge
 		&i.Trades,
 		&i.CreatedAt,
 		&i.CompanySector,
+		&i.CompanyID_2,
 	)
 	return i, err
 }

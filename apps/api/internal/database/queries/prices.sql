@@ -45,7 +45,7 @@ FROM prices p
 JOIN LatestDates ld ON p.company_id = ld.company_id AND p.business_date = ld.max_date;
 
 -- name: GetLatestPriceBySymbol :one
-SELECT p.*, c.sector as company_sector FROM prices p
+SELECT p.*, c.sector as company_sector, c.id as company_id FROM prices p
 JOIN companies c ON p.company_id = c.id
 WHERE c.symbol = ?
 ORDER BY p.business_date DESC

@@ -6,7 +6,8 @@
 	import Mail from '@lucide/svelte/icons/mail';
 	import Loader2 from '@lucide/svelte/icons/loader-2';
 
-	const API_URL = import.meta.env.DEV ? 'http://localhost:8080' : 'https://ntx-api.anishshrestha.com';
+	let { data } = $props();
+	const API_URL = data.apiUrl;
 
 	let email = $state('');
 	let password = $state('');
