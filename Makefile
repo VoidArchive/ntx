@@ -31,13 +31,13 @@ migrate-create:
 	goose -dir apps/api/internal/database/migrations create $(NAME) sql
 
 migrate-up:
-	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db up
+	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db up
 
 migrate-down:
-	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db down
+	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db down
 
 migrate-status:
-	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/ntx.db status
+	goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db status
 
 sqlc:
 	cd apps/api && sqlc generate

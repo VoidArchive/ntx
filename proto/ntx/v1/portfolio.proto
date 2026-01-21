@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+service PortfolioService {
+  rpc ListPortfolios(ListPortfoliosRequest) returns (ListPortfoliosResponse);
+  rpc CreatePortfolio(CreatePortfolioRequest) returns (CreatePortfolioResponse);
+  rpc AddTransaction(AddTransactionRequest) returns (AddTransactionResponse);
+  rpc GetPortfolioSummary(GetPortfolioSummaryRequest)
+      returns (GetPortfolioSummaryResponse);
+}
+
+// Portfolio
+
+message Portfolio {
+  int64 id = 1;
+  string name = 2;
+  string created_at = 3;
+}
+
+message ListPortfoliosRequest {}
+
+message ListPortfoliosResponse { repeated Portfolio portfolios = 1; }
+
+message CreatePortfolioRequest { string name = 1; }
+
+message CreatePortfolioResponse { Portfolio portfolio = 1; }
+
+// Transactions
+
+enum TransactionType {
+  TRANSACTION_TYPE_UNSPECIFIED = 0;
+  TRANSACTION_TYPE_BUY = 1;
+  TRANSACTION_TYPE_SELL = 2;
+}
+
+message Transaction {
+  int64 id = 1;
+  int64 portfolio_id = 2;
+  string stock_symbol = 3;
+  TransactionType transaction_type = 4;
+  int64 quantity = 5;
+  double unit_price = 6;
+  string transaction_date = 7;
+}
+
+message AddTransactionRequest {
+  int64 portfolio_id = 1;
+  string stock_symbol = 2;
+  TransactionType transaction_type = 3;
+  int64 quantity = 4;
+  double unit_price = 5;
+  string transaction_date = 6;
+}
+
+message AddTransactionResponse { Transaction transaction = 1; }
+
+// Summary
+
+message Holding {
+  string stock_symbol = 1;
+  int64 quantity = 2;
+  double avg_buy_price = 3;
+  double current_price = 4;
+  double total_value = 5;
+  double profit_loss = 6;
+  double profit_loss_percent = 7;
+}
+
+message PortfolioSummary {
+  int64 portfolio_id = 1;
+  string portfolio_name = 2;
+  repeated Holding holdings = 3;
+  double total_invested = 4;
+  double total_current_value = 5;
+  double total_profit_loss = 6;
+  double total_profit_loss_percent = 7;
+}
+
+message GetPortfolioSummaryRequest { int64 portfolio_id = 1; }
+
+message GetPortfolioSummaryResponse { PortfolioSummary summary = 1; }

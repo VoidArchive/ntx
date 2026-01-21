@@ -56,6 +56,13 @@ type Ownership struct {
 	UpdatedAt       time.Time       `json:"updated_at"`
 }
 
+type Portfolio struct {
+	ID        int64        `json:"id"`
+	UserID    int64        `json:"user_id"`
+	Name      string       `json:"name"`
+	CreatedAt sql.NullTime `json:"created_at"`
+}
+
 type Price struct {
 	ID              int64           `json:"id"`
 	CompanyID       int64           `json:"company_id"`
@@ -72,4 +79,22 @@ type Price struct {
 	Turnover        sql.NullFloat64 `json:"turnover"`
 	Trades          sql.NullInt64   `json:"trades"`
 	CreatedAt       time.Time       `json:"created_at"`
+}
+
+type Transaction struct {
+	ID              int64        `json:"id"`
+	PortfolioID     int64        `json:"portfolio_id"`
+	StockSymbol     string       `json:"stock_symbol"`
+	TransactionType string       `json:"transaction_type"`
+	Quantity        int64        `json:"quantity"`
+	UnitPrice       float64      `json:"unit_price"`
+	TransactionDate time.Time    `json:"transaction_date"`
+	CreatedAt       sql.NullTime `json:"created_at"`
+}
+
+type User struct {
+	ID           int64        `json:"id"`
+	Email        string       `json:"email"`
+	PasswordHash string       `json:"password_hash"`
+	CreatedAt    sql.NullTime `json:"created_at"`
 }

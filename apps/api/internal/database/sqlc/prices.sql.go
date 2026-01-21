@@ -40,6 +40,37 @@ func (q *Queries) GetLatestPrice(ctx context.Context, companyID int64) (Price, e
 	return i, err
 }
 
+const getLatestPriceBySymbol = `-- name: GetLatestPriceBySymbol :one
+SELECT p.id, p.company_id, p.business_date, p.open_price, p.high_price, p.low_price, p.close_price, p.last_traded_price, p.previous_close, p.change_amount, p.change_percent, p.volume, p.turnover, p.trades, p.created_at FROM prices p
+JOIN companies c ON p.company_id = c.id
+WHERE c.symbol = ?
+ORDER BY p.business_date DESC
+LIMIT 1
+`
+
+func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (Price, error) {
+	row := q.db.QueryRowContext(ctx, getLatestPriceBySymbol, symbol)
+	var i Price
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.BusinessDate,
+		&i.OpenPrice,
+		&i.HighPrice,
+		&i.LowPrice,
+		&i.ClosePrice,
+		&i.LastTradedPrice,
+		&i.PreviousClose,
+		&i.ChangeAmount,
+		&i.ChangePercent,
+		&i.Volume,
+		&i.Turnover,
+		&i.Trades,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getPriceByDate = `-- name: GetPriceByDate :one
 SELECT id, company_id, business_date, open_price, high_price, low_price, close_price, last_traded_price, previous_close, change_amount, change_percent, volume, turnover, trades, created_at FROM prices
 WHERE company_id = ? AND business_date = ?

@@ -43,3 +43,11 @@ WITH LatestDates AS (
 SELECT p.*
 FROM prices p
 JOIN LatestDates ld ON p.company_id = ld.company_id AND p.business_date = ld.max_date;
+
+-- name: GetLatestPriceBySymbol :one
+SELECT p.* FROM prices p
+JOIN companies c ON p.company_id = c.id
+WHERE c.symbol = ?
+ORDER BY p.business_date DESC
+LIMIT 1;
+

@@ -76,10 +76,11 @@ func (s *Server) gracefulShutdown(done <-chan os.Signal) {
 func withCORS(h http.Handler) http.Handler {
 	origins := getCORSOrigins()
 	middleware := cors.New(cors.Options{
-		AllowedOrigins: origins,
-		AllowedMethods: connectcors.AllowedMethods(),
-		AllowedHeaders: connectcors.AllowedHeaders(),
-		ExposedHeaders: connectcors.ExposedHeaders(),
+		AllowedOrigins:   origins,
+		AllowedMethods:   connectcors.AllowedMethods(),
+		AllowedHeaders:   append(connectcors.AllowedHeaders(), "Authorization"),
+		ExposedHeaders:   connectcors.ExposedHeaders(),
+		AllowCredentials: true,
 	})
 	return middleware.Handler(h)
 }
