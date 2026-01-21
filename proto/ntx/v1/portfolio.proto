@@ -8,6 +8,10 @@ service PortfolioService {
   rpc ListPortfolios(ListPortfoliosRequest) returns (ListPortfoliosResponse);
   rpc CreatePortfolio(CreatePortfolioRequest) returns (CreatePortfolioResponse);
   rpc AddTransaction(AddTransactionRequest) returns (AddTransactionResponse);
+  rpc ListTransactions(ListTransactionsRequest)
+      returns (ListTransactionsResponse);
+  rpc DeleteTransaction(DeleteTransactionRequest)
+      returns (DeleteTransactionResponse);
   rpc GetPortfolioSummary(GetPortfolioSummaryRequest)
       returns (GetPortfolioSummaryResponse);
 }
@@ -57,6 +61,17 @@ message AddTransactionRequest {
 
 message AddTransactionResponse { Transaction transaction = 1; }
 
+message ListTransactionsRequest {
+  int64 portfolio_id = 1;
+  optional string stock_symbol = 2;
+}
+
+message ListTransactionsResponse { repeated Transaction transactions = 1; }
+
+message DeleteTransactionRequest { int64 transaction_id = 1; }
+
+message DeleteTransactionResponse {}
+
 // Summary
 
 message Holding {
@@ -67,6 +82,9 @@ message Holding {
   double total_value = 5;
   double profit_loss = 6;
   double profit_loss_percent = 7;
+  string sector = 8;
+  double day_change_percent = 9;
+  double day_change_value = 10;
 }
 
 message PortfolioSummary {

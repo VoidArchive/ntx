@@ -16,18 +16,20 @@ type Querier interface {
 	CreateTransaction(ctx context.Context, arg CreateTransactionParams) (Transaction, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeletePortfolio(ctx context.Context, arg DeletePortfolioParams) error
+	DeleteTransaction(ctx context.Context, id int64) error
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetHoldingsByPortfolio(ctx context.Context, portfolioID int64) ([]GetHoldingsByPortfolioRow, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
 	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
-	GetLatestPriceBySymbol(ctx context.Context, symbol string) (Price, error)
+	GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error)
 	GetOwnership(ctx context.Context, companyID int64) (Ownership, error)
 	GetOwnershipBySymbol(ctx context.Context, symbol string) (Ownership, error)
 	GetPortfolio(ctx context.Context, arg GetPortfolioParams) (Portfolio, error)
 	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
+	GetTransaction(ctx context.Context, id int64) (Transaction, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
@@ -37,6 +39,7 @@ type Querier interface {
 	ListPortfoliosByUser(ctx context.Context, userID int64) ([]Portfolio, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
 	ListTransactionsByPortfolio(ctx context.Context, portfolioID int64) ([]Transaction, error)
+	ListTransactionsBySymbol(ctx context.Context, arg ListTransactionsBySymbolParams) ([]Transaction, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error

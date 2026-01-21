@@ -171,6 +171,95 @@ func (s *PortfolioService) AddTransaction(
 	}), nil
 }
 
+// ListTransactions returns transactions for a portfolio, optionally filtered by symbol.
+func (s *PortfolioService) ListTransactions(
+	ctx context.Context,
+	req *connect.Request[ntxv1.ListTransactionsRequest],
+) (*connect.Response[ntxv1.ListTransactionsResponse], error) {
+	userID, err := getUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Verify portfolio belongs to user
+	_, err = s.queries.GetPortfolio(ctx, sqlc.GetPortfolioParams{
+		ID:     req.Msg.PortfolioId,
+		UserID: userID,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("portfolio not found"))
+	}
+
+	var transactions []sqlc.Transaction
+
+	if req.Msg.StockSymbol != nil && *req.Msg.StockSymbol != "" {
+		transactions, err = s.queries.ListTransactionsBySymbol(ctx, sqlc.ListTransactionsBySymbolParams{
+			PortfolioID: req.Msg.PortfolioId,
+			StockSymbol: *req.Msg.StockSymbol,
+		})
+	} else {
+		transactions, err = s.queries.ListTransactionsByPortfolio(ctx, req.Msg.PortfolioId)
+	}
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	result := make([]*ntxv1.Transaction, len(transactions))
+	for i, tx := range transactions {
+		txType := ntxv1.TransactionType_TRANSACTION_TYPE_BUY
+		if tx.TransactionType == "SELL" {
+			txType = ntxv1.TransactionType_TRANSACTION_TYPE_SELL
+		}
+		result[i] = &ntxv1.Transaction{
+			Id:              tx.ID,
+			PortfolioId:     tx.PortfolioID,
+			StockSymbol:     tx.StockSymbol,
+			TransactionType: txType,
+			Quantity:        tx.Quantity,
+			UnitPrice:       tx.UnitPrice,
+			TransactionDate: tx.TransactionDate.Format("2006-01-02"),
+		}
+	}
+
+	return connect.NewResponse(&ntxv1.ListTransactionsResponse{
+		Transactions: result,
+	}), nil
+}
+
+// DeleteTransaction deletes a transaction by ID.
+func (s *PortfolioService) DeleteTransaction(
+	ctx context.Context,
+	req *connect.Request[ntxv1.DeleteTransactionRequest],
+) (*connect.Response[ntxv1.DeleteTransactionResponse], error) {
+	userID, err := getUserID(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the transaction to verify ownership
+	tx, err := s.queries.GetTransaction(ctx, req.Msg.TransactionId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("transaction not found"))
+	}
+
+	// Verify portfolio belongs to user
+	_, err = s.queries.GetPortfolio(ctx, sqlc.GetPortfolioParams{
+		ID:     tx.PortfolioID,
+		UserID: userID,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("not authorized"))
+	}
+
+	// Delete the transaction
+	if err := s.queries.DeleteTransaction(ctx, req.Msg.TransactionId); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&ntxv1.DeleteTransactionResponse{}), nil
+}
+
 // GetPortfolioSummary returns the portfolio summary with holdings.
 func (s *PortfolioService) GetPortfolioSummary(
 	ctx context.Context,
@@ -216,7 +305,8 @@ func (s *PortfolioService) GetPortfolioSummary(
 			avgBuyPrice = h.TotalBuyCost.Float64 / h.TotalBuyQuantity.Float64
 		}
 
-		currentPrice := priceMap[h.StockSymbol]
+		info := priceMap[h.StockSymbol]
+		currentPrice := info.Price
 		totalValue := qty * currentPrice
 		invested := qty * avgBuyPrice
 		profitLoss := totalValue - invested
@@ -224,6 +314,8 @@ func (s *PortfolioService) GetPortfolioSummary(
 		if invested > 0 {
 			profitLossPercent = (profitLoss / invested) * 100
 		}
+
+		dayChangeValue := info.ChangeAmount * qty
 
 		holdings = append(holdings, &ntxv1.Holding{
 			StockSymbol:       h.StockSymbol,
@@ -233,6 +325,9 @@ func (s *PortfolioService) GetPortfolioSummary(
 			TotalValue:        totalValue,
 			ProfitLoss:        profitLoss,
 			ProfitLossPercent: profitLossPercent,
+			Sector:            info.Sector,
+			DayChangePercent:  info.ChangePercent,
+			DayChangeValue:    dayChangeValue,
 		})
 
 		totalInvested += invested
@@ -258,28 +353,54 @@ func (s *PortfolioService) GetPortfolioSummary(
 	}), nil
 }
 
+type stockInfo struct {
+	Price         float64
+	ChangePercent float64
+	ChangeAmount  float64
+	Sector        string
+}
+
 // fetchCurrentPrices fetches current prices for the given holdings.
-func (s *PortfolioService) fetchCurrentPrices(ctx context.Context, holdings []sqlc.GetHoldingsByPortfolioRow) (map[string]float64, error) {
-	prices := make(map[string]float64)
+func (s *PortfolioService) fetchCurrentPrices(ctx context.Context, holdings []sqlc.GetHoldingsByPortfolioRow) (map[string]stockInfo, error) {
+	info := make(map[string]stockInfo)
 
 	for _, h := range holdings {
 		// Try to get price from our database by symbol
 		price, err := s.queries.GetLatestPriceBySymbol(ctx, h.StockSymbol)
 		if err != nil {
-			// If no price found, use 0
-			prices[h.StockSymbol] = 0
+			// If no price found, use defaults
+			info[h.StockSymbol] = stockInfo{
+				Price:  0,
+				Sector: "Unknown",
+			}
 			continue
 		}
 
+		currentPrice := 0.0
 		// Use LTP if available, otherwise close
 		if price.LastTradedPrice.Valid {
-			prices[h.StockSymbol] = price.LastTradedPrice.Float64
+			currentPrice = price.LastTradedPrice.Float64
 		} else if price.ClosePrice.Valid {
-			prices[h.StockSymbol] = price.ClosePrice.Float64
-		} else {
-			prices[h.StockSymbol] = 0
+			currentPrice = price.ClosePrice.Float64
+		}
+
+		changePercent := 0.0
+		if price.ChangePercent.Valid {
+			changePercent = price.ChangePercent.Float64
+		}
+
+		changeAmount := 0.0
+		if price.ChangeAmount.Valid {
+			changeAmount = price.ChangeAmount.Float64
+		}
+
+		info[h.StockSymbol] = stockInfo{
+			Price:         currentPrice,
+			ChangePercent: changePercent,
+			ChangeAmount:  changeAmount,
+			Sector:        price.CompanySector,
 		}
 	}
 
-	return prices, nil
+	return info, nil
 }

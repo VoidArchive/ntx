@@ -200,6 +200,71 @@ export declare type AddTransactionResponse = Message<"ntx.v1.AddTransactionRespo
 export declare const AddTransactionResponseSchema: GenMessage<AddTransactionResponse>;
 
 /**
+ * @generated from message ntx.v1.ListTransactionsRequest
+ */
+export declare type ListTransactionsRequest = Message<"ntx.v1.ListTransactionsRequest"> & {
+  /**
+   * @generated from field: int64 portfolio_id = 1;
+   */
+  portfolioId: bigint;
+
+  /**
+   * @generated from field: optional string stock_symbol = 2;
+   */
+  stockSymbol?: string;
+};
+
+/**
+ * Describes the message ntx.v1.ListTransactionsRequest.
+ * Use `create(ListTransactionsRequestSchema)` to create a new message.
+ */
+export declare const ListTransactionsRequestSchema: GenMessage<ListTransactionsRequest>;
+
+/**
+ * @generated from message ntx.v1.ListTransactionsResponse
+ */
+export declare type ListTransactionsResponse = Message<"ntx.v1.ListTransactionsResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.Transaction transactions = 1;
+   */
+  transactions: Transaction[];
+};
+
+/**
+ * Describes the message ntx.v1.ListTransactionsResponse.
+ * Use `create(ListTransactionsResponseSchema)` to create a new message.
+ */
+export declare const ListTransactionsResponseSchema: GenMessage<ListTransactionsResponse>;
+
+/**
+ * @generated from message ntx.v1.DeleteTransactionRequest
+ */
+export declare type DeleteTransactionRequest = Message<"ntx.v1.DeleteTransactionRequest"> & {
+  /**
+   * @generated from field: int64 transaction_id = 1;
+   */
+  transactionId: bigint;
+};
+
+/**
+ * Describes the message ntx.v1.DeleteTransactionRequest.
+ * Use `create(DeleteTransactionRequestSchema)` to create a new message.
+ */
+export declare const DeleteTransactionRequestSchema: GenMessage<DeleteTransactionRequest>;
+
+/**
+ * @generated from message ntx.v1.DeleteTransactionResponse
+ */
+export declare type DeleteTransactionResponse = Message<"ntx.v1.DeleteTransactionResponse"> & {
+};
+
+/**
+ * Describes the message ntx.v1.DeleteTransactionResponse.
+ * Use `create(DeleteTransactionResponseSchema)` to create a new message.
+ */
+export declare const DeleteTransactionResponseSchema: GenMessage<DeleteTransactionResponse>;
+
+/**
  * @generated from message ntx.v1.Holding
  */
 export declare type Holding = Message<"ntx.v1.Holding"> & {
@@ -237,6 +302,21 @@ export declare type Holding = Message<"ntx.v1.Holding"> & {
    * @generated from field: double profit_loss_percent = 7;
    */
   profitLossPercent: number;
+
+  /**
+   * @generated from field: string sector = 8;
+   */
+  sector: string;
+
+  /**
+   * @generated from field: double day_change_percent = 9;
+   */
+  dayChangePercent: number;
+
+  /**
+   * @generated from field: double day_change_value = 10;
+   */
+  dayChangeValue: number;
 };
 
 /**
@@ -375,6 +455,22 @@ export declare const PortfolioService: GenService<{
     methodKind: "unary";
     input: typeof AddTransactionRequestSchema;
     output: typeof AddTransactionResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.ListTransactions
+   */
+  listTransactions: {
+    methodKind: "unary";
+    input: typeof ListTransactionsRequestSchema;
+    output: typeof ListTransactionsResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.DeleteTransaction
+   */
+  deleteTransaction: {
+    methodKind: "unary";
+    input: typeof DeleteTransactionRequestSchema;
+    output: typeof DeleteTransactionResponseSchema;
   },
   /**
    * @generated from rpc ntx.v1.PortfolioService.GetPortfolioSummary

@@ -109,6 +109,15 @@ func (q *Queries) DeletePortfolio(ctx context.Context, arg DeletePortfolioParams
 	return err
 }
 
+const deleteTransaction = `-- name: DeleteTransaction :exec
+DELETE FROM transactions WHERE id = ?
+`
+
+func (q *Queries) DeleteTransaction(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTransaction, id)
+	return err
+}
+
 const getHoldingsByPortfolio = `-- name: GetHoldingsByPortfolio :many
 SELECT
     stock_symbol,
@@ -177,6 +186,28 @@ func (q *Queries) GetPortfolio(ctx context.Context, arg GetPortfolioParams) (Por
 	return i, err
 }
 
+const getTransaction = `-- name: GetTransaction :one
+SELECT id, portfolio_id, stock_symbol, transaction_type, quantity, unit_price, transaction_date, created_at
+FROM transactions
+WHERE id = ?
+`
+
+func (q *Queries) GetTransaction(ctx context.Context, id int64) (Transaction, error) {
+	row := q.db.QueryRowContext(ctx, getTransaction, id)
+	var i Transaction
+	err := row.Scan(
+		&i.ID,
+		&i.PortfolioID,
+		&i.StockSymbol,
+		&i.TransactionType,
+		&i.Quantity,
+		&i.UnitPrice,
+		&i.TransactionDate,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, email, password_hash, created_at FROM users WHERE email = ?
 `
@@ -234,6 +265,50 @@ ORDER BY transaction_date DESC, created_at DESC
 
 func (q *Queries) ListTransactionsByPortfolio(ctx context.Context, portfolioID int64) ([]Transaction, error) {
 	rows, err := q.db.QueryContext(ctx, listTransactionsByPortfolio, portfolioID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Transaction
+	for rows.Next() {
+		var i Transaction
+		if err := rows.Scan(
+			&i.ID,
+			&i.PortfolioID,
+			&i.StockSymbol,
+			&i.TransactionType,
+			&i.Quantity,
+			&i.UnitPrice,
+			&i.TransactionDate,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTransactionsBySymbol = `-- name: ListTransactionsBySymbol :many
+SELECT id, portfolio_id, stock_symbol, transaction_type, quantity, unit_price, transaction_date, created_at
+FROM transactions
+WHERE portfolio_id = ? AND stock_symbol = ?
+ORDER BY transaction_date DESC, created_at DESC
+`
+
+type ListTransactionsBySymbolParams struct {
+	PortfolioID int64  `json:"portfolio_id"`
+	StockSymbol string `json:"stock_symbol"`
+}
+
+func (q *Queries) ListTransactionsBySymbol(ctx context.Context, arg ListTransactionsBySymbolParams) ([]Transaction, error) {
+	rows, err := q.db.QueryContext(ctx, listTransactionsBySymbol, arg.PortfolioID, arg.StockSymbol)
 	if err != nil {
 		return nil, err
 	}

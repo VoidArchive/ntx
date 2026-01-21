@@ -8,6 +8,7 @@ package sqlc
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const getLatestPrice = `-- name: GetLatestPrice :one
@@ -41,16 +42,35 @@ func (q *Queries) GetLatestPrice(ctx context.Context, companyID int64) (Price, e
 }
 
 const getLatestPriceBySymbol = `-- name: GetLatestPriceBySymbol :one
-SELECT p.id, p.company_id, p.business_date, p.open_price, p.high_price, p.low_price, p.close_price, p.last_traded_price, p.previous_close, p.change_amount, p.change_percent, p.volume, p.turnover, p.trades, p.created_at FROM prices p
+SELECT p.id, p.company_id, p.business_date, p.open_price, p.high_price, p.low_price, p.close_price, p.last_traded_price, p.previous_close, p.change_amount, p.change_percent, p.volume, p.turnover, p.trades, p.created_at, c.sector as company_sector FROM prices p
 JOIN companies c ON p.company_id = c.id
 WHERE c.symbol = ?
 ORDER BY p.business_date DESC
 LIMIT 1
 `
 
-func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (Price, error) {
+type GetLatestPriceBySymbolRow struct {
+	ID              int64           `json:"id"`
+	CompanyID       int64           `json:"company_id"`
+	BusinessDate    string          `json:"business_date"`
+	OpenPrice       sql.NullFloat64 `json:"open_price"`
+	HighPrice       sql.NullFloat64 `json:"high_price"`
+	LowPrice        sql.NullFloat64 `json:"low_price"`
+	ClosePrice      sql.NullFloat64 `json:"close_price"`
+	LastTradedPrice sql.NullFloat64 `json:"last_traded_price"`
+	PreviousClose   sql.NullFloat64 `json:"previous_close"`
+	ChangeAmount    sql.NullFloat64 `json:"change_amount"`
+	ChangePercent   sql.NullFloat64 `json:"change_percent"`
+	Volume          sql.NullInt64   `json:"volume"`
+	Turnover        sql.NullFloat64 `json:"turnover"`
+	Trades          sql.NullInt64   `json:"trades"`
+	CreatedAt       time.Time       `json:"created_at"`
+	CompanySector   string          `json:"company_sector"`
+}
+
+func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error) {
 	row := q.db.QueryRowContext(ctx, getLatestPriceBySymbol, symbol)
-	var i Price
+	var i GetLatestPriceBySymbolRow
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
@@ -67,6 +87,7 @@ func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (Pr
 		&i.Turnover,
 		&i.Trades,
 		&i.CreatedAt,
+		&i.CompanySector,
 	)
 	return i, err
 }

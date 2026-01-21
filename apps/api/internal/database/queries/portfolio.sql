@@ -26,6 +26,20 @@ FROM transactions
 WHERE portfolio_id = ?
 ORDER BY transaction_date DESC, created_at DESC;
 
+-- name: ListTransactionsBySymbol :many
+SELECT id, portfolio_id, stock_symbol, transaction_type, quantity, unit_price, transaction_date, created_at
+FROM transactions
+WHERE portfolio_id = ? AND stock_symbol = ?
+ORDER BY transaction_date DESC, created_at DESC;
+
+-- name: GetTransaction :one
+SELECT id, portfolio_id, stock_symbol, transaction_type, quantity, unit_price, transaction_date, created_at
+FROM transactions
+WHERE id = ?;
+
+-- name: DeleteTransaction :exec
+DELETE FROM transactions WHERE id = ?;
+
 -- name: CreateTransaction :one
 INSERT INTO transactions (portfolio_id, stock_symbol, transaction_type, quantity, unit_price, transaction_date)
 VALUES (?, ?, ?, ?, ?, ?)
@@ -41,3 +55,4 @@ FROM transactions
 WHERE portfolio_id = ?
 GROUP BY stock_symbol
 HAVING net_quantity > 0;
+

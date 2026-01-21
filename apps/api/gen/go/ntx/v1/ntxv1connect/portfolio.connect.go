@@ -42,6 +42,12 @@ const (
 	// PortfolioServiceAddTransactionProcedure is the fully-qualified name of the PortfolioService's
 	// AddTransaction RPC.
 	PortfolioServiceAddTransactionProcedure = "/ntx.v1.PortfolioService/AddTransaction"
+	// PortfolioServiceListTransactionsProcedure is the fully-qualified name of the PortfolioService's
+	// ListTransactions RPC.
+	PortfolioServiceListTransactionsProcedure = "/ntx.v1.PortfolioService/ListTransactions"
+	// PortfolioServiceDeleteTransactionProcedure is the fully-qualified name of the PortfolioService's
+	// DeleteTransaction RPC.
+	PortfolioServiceDeleteTransactionProcedure = "/ntx.v1.PortfolioService/DeleteTransaction"
 	// PortfolioServiceGetPortfolioSummaryProcedure is the fully-qualified name of the
 	// PortfolioService's GetPortfolioSummary RPC.
 	PortfolioServiceGetPortfolioSummaryProcedure = "/ntx.v1.PortfolioService/GetPortfolioSummary"
@@ -52,6 +58,8 @@ type PortfolioServiceClient interface {
 	ListPortfolios(context.Context, *connect.Request[v1.ListPortfoliosRequest]) (*connect.Response[v1.ListPortfoliosResponse], error)
 	CreatePortfolio(context.Context, *connect.Request[v1.CreatePortfolioRequest]) (*connect.Response[v1.CreatePortfolioResponse], error)
 	AddTransaction(context.Context, *connect.Request[v1.AddTransactionRequest]) (*connect.Response[v1.AddTransactionResponse], error)
+	ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error)
+	DeleteTransaction(context.Context, *connect.Request[v1.DeleteTransactionRequest]) (*connect.Response[v1.DeleteTransactionResponse], error)
 	GetPortfolioSummary(context.Context, *connect.Request[v1.GetPortfolioSummaryRequest]) (*connect.Response[v1.GetPortfolioSummaryResponse], error)
 }
 
@@ -84,6 +92,18 @@ func NewPortfolioServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(portfolioServiceMethods.ByName("AddTransaction")),
 			connect.WithClientOptions(opts...),
 		),
+		listTransactions: connect.NewClient[v1.ListTransactionsRequest, v1.ListTransactionsResponse](
+			httpClient,
+			baseURL+PortfolioServiceListTransactionsProcedure,
+			connect.WithSchema(portfolioServiceMethods.ByName("ListTransactions")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteTransaction: connect.NewClient[v1.DeleteTransactionRequest, v1.DeleteTransactionResponse](
+			httpClient,
+			baseURL+PortfolioServiceDeleteTransactionProcedure,
+			connect.WithSchema(portfolioServiceMethods.ByName("DeleteTransaction")),
+			connect.WithClientOptions(opts...),
+		),
 		getPortfolioSummary: connect.NewClient[v1.GetPortfolioSummaryRequest, v1.GetPortfolioSummaryResponse](
 			httpClient,
 			baseURL+PortfolioServiceGetPortfolioSummaryProcedure,
@@ -98,6 +118,8 @@ type portfolioServiceClient struct {
 	listPortfolios      *connect.Client[v1.ListPortfoliosRequest, v1.ListPortfoliosResponse]
 	createPortfolio     *connect.Client[v1.CreatePortfolioRequest, v1.CreatePortfolioResponse]
 	addTransaction      *connect.Client[v1.AddTransactionRequest, v1.AddTransactionResponse]
+	listTransactions    *connect.Client[v1.ListTransactionsRequest, v1.ListTransactionsResponse]
+	deleteTransaction   *connect.Client[v1.DeleteTransactionRequest, v1.DeleteTransactionResponse]
 	getPortfolioSummary *connect.Client[v1.GetPortfolioSummaryRequest, v1.GetPortfolioSummaryResponse]
 }
 
@@ -116,6 +138,16 @@ func (c *portfolioServiceClient) AddTransaction(ctx context.Context, req *connec
 	return c.addTransaction.CallUnary(ctx, req)
 }
 
+// ListTransactions calls ntx.v1.PortfolioService.ListTransactions.
+func (c *portfolioServiceClient) ListTransactions(ctx context.Context, req *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error) {
+	return c.listTransactions.CallUnary(ctx, req)
+}
+
+// DeleteTransaction calls ntx.v1.PortfolioService.DeleteTransaction.
+func (c *portfolioServiceClient) DeleteTransaction(ctx context.Context, req *connect.Request[v1.DeleteTransactionRequest]) (*connect.Response[v1.DeleteTransactionResponse], error) {
+	return c.deleteTransaction.CallUnary(ctx, req)
+}
+
 // GetPortfolioSummary calls ntx.v1.PortfolioService.GetPortfolioSummary.
 func (c *portfolioServiceClient) GetPortfolioSummary(ctx context.Context, req *connect.Request[v1.GetPortfolioSummaryRequest]) (*connect.Response[v1.GetPortfolioSummaryResponse], error) {
 	return c.getPortfolioSummary.CallUnary(ctx, req)
@@ -126,6 +158,8 @@ type PortfolioServiceHandler interface {
 	ListPortfolios(context.Context, *connect.Request[v1.ListPortfoliosRequest]) (*connect.Response[v1.ListPortfoliosResponse], error)
 	CreatePortfolio(context.Context, *connect.Request[v1.CreatePortfolioRequest]) (*connect.Response[v1.CreatePortfolioResponse], error)
 	AddTransaction(context.Context, *connect.Request[v1.AddTransactionRequest]) (*connect.Response[v1.AddTransactionResponse], error)
+	ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error)
+	DeleteTransaction(context.Context, *connect.Request[v1.DeleteTransactionRequest]) (*connect.Response[v1.DeleteTransactionResponse], error)
 	GetPortfolioSummary(context.Context, *connect.Request[v1.GetPortfolioSummaryRequest]) (*connect.Response[v1.GetPortfolioSummaryResponse], error)
 }
 
@@ -154,6 +188,18 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 		connect.WithSchema(portfolioServiceMethods.ByName("AddTransaction")),
 		connect.WithHandlerOptions(opts...),
 	)
+	portfolioServiceListTransactionsHandler := connect.NewUnaryHandler(
+		PortfolioServiceListTransactionsProcedure,
+		svc.ListTransactions,
+		connect.WithSchema(portfolioServiceMethods.ByName("ListTransactions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	portfolioServiceDeleteTransactionHandler := connect.NewUnaryHandler(
+		PortfolioServiceDeleteTransactionProcedure,
+		svc.DeleteTransaction,
+		connect.WithSchema(portfolioServiceMethods.ByName("DeleteTransaction")),
+		connect.WithHandlerOptions(opts...),
+	)
 	portfolioServiceGetPortfolioSummaryHandler := connect.NewUnaryHandler(
 		PortfolioServiceGetPortfolioSummaryProcedure,
 		svc.GetPortfolioSummary,
@@ -168,6 +214,10 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 			portfolioServiceCreatePortfolioHandler.ServeHTTP(w, r)
 		case PortfolioServiceAddTransactionProcedure:
 			portfolioServiceAddTransactionHandler.ServeHTTP(w, r)
+		case PortfolioServiceListTransactionsProcedure:
+			portfolioServiceListTransactionsHandler.ServeHTTP(w, r)
+		case PortfolioServiceDeleteTransactionProcedure:
+			portfolioServiceDeleteTransactionHandler.ServeHTTP(w, r)
 		case PortfolioServiceGetPortfolioSummaryProcedure:
 			portfolioServiceGetPortfolioSummaryHandler.ServeHTTP(w, r)
 		default:
@@ -189,6 +239,14 @@ func (UnimplementedPortfolioServiceHandler) CreatePortfolio(context.Context, *co
 
 func (UnimplementedPortfolioServiceHandler) AddTransaction(context.Context, *connect.Request[v1.AddTransactionRequest]) (*connect.Response[v1.AddTransactionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.AddTransaction is not implemented"))
+}
+
+func (UnimplementedPortfolioServiceHandler) ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.ListTransactions is not implemented"))
+}
+
+func (UnimplementedPortfolioServiceHandler) DeleteTransaction(context.Context, *connect.Request[v1.DeleteTransactionRequest]) (*connect.Response[v1.DeleteTransactionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.DeleteTransaction is not implemented"))
 }
 
 func (UnimplementedPortfolioServiceHandler) GetPortfolioSummary(context.Context, *connect.Request[v1.GetPortfolioSummaryRequest]) (*connect.Response[v1.GetPortfolioSummaryResponse], error) {
