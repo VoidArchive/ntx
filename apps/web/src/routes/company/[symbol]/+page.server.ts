@@ -1,5 +1,5 @@
 import { createApiClient } from '$lib/api/client';
-import navData from '$lib/data/nav_2025_12.json';
+import navData from '$lib/data/nav_2026_01.json';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
 import type { Fund, Holding } from '$lib/types/fund';

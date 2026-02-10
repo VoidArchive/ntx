@@ -1,0 +1,4461 @@
+[
+  {
+    "symbol": "NIBLSF",
+    "fund_name": "NIBL Sahabhagita Fund",
+    "fund_manager": "NIMB Ace Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.13,
+    "total_units": 591928574,
+    "net_assets": 5997780630,
+    "total_assets": 9921414085,
+    "total_liabilities": 3923633455,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Nabil Bank Limited",
+          "units": 70755,
+          "value": 107237672
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 123096,
+          "value": 56327030
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 37650,
+          "value": 56560383
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 126990,
+          "value": 47995616
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 120648,
+          "value": 50219730
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 102870,
+          "value": 48871942
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 104880,
+          "value": 38417544
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 92880,
+          "value": 31445643
+        },
+        {
+          "name": "Citizens Bank International Limited",
+          "units": 63990,
+          "value": 23686583
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 71370,
+          "value": 27821767
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 66420,
+          "value": 21011967
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 78858,
+          "value": 27748856
+        },
+        {
+          "name": "Sunrise Bank Limited",
+          "units": 66366,
+          "value": 19802762
+        },
+        {
+          "name": "Nepal Bank Limited",
+          "units": 39480,
+          "value": 18361001
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 57720,
+          "value": 24792782
+        },
+        {
+          "name": "Prabhu Bank Limited",
+          "units": 70920,
+          "value": 19050664
+        },
+        {
+          "name": "Agriculture Development Bank Limited",
+          "units": 25782,
+          "value": 11246236
+        },
+        {
+          "name": "Rastriya Banijya Bank Limited",
+          "units": 13590,
+          "value": 7240752
+        },
+        {
+          "name": "Nepal Credit and Commerce Bank Limited",
+          "units": 50790,
+          "value": 14773412
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 80100,
+          "value": 24983991
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 42795,
+          "value": 10402804
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 49200,
+          "value": 10228680
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 46410,
+          "value": 10567821
+        },
+        {
+          "name": "Shangrila Development Bank Limited",
+          "units": 33360,
+          "value": 6459974
+        },
+        {
+          "name": "Mahalaxmi Bikas Bank Limited",
+          "units": 38730,
+          "value": 7454535
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 20550,
+          "value": 6962340
+        },
+        {
+          "name": "Kamana Sewa Bikas Bank Limited",
+          "units": 28170,
+          "value": 4649205
+        },
+        {
+          "name": "Jyoti Bikas Bank Limited",
+          "units": 25410,
+          "value": 5366592
+        },
+        {
+          "name": "Saptakoshi Development Bank Limited",
+          "units": 31200,
+          "value": 5319600
+        },
+        {
+          "name": "Excel Development Bank Limited",
+          "units": 25200,
+          "value": 4047120
+        },
+        {
+          "name": "Nepal Community Development Bank Limited",
+          "units": 22980,
+          "value": 3437148
+        }
+      ],
+      "finance_companies": [
+        {
+          "name": "Goodwill Finance Company Limited",
+          "units": 18525,
+          "value": 2179683
+        },
+        {
+          "name": "Gurkhas Finance Limited",
+          "units": 20580,
+          "value": 2578262
+        },
+        {
+          "name": "ICFC Finance Limited",
+          "units": 15690,
+          "value": 2456519
+        },
+        {
+          "name": "Central Finance Limited",
+          "units": 12780,
+          "value": 1863324
+        },
+        {
+          "name": "Pokhara Finance Limited",
+          "units": 19980,
+          "value": 2395202
+        },
+        {
+          "name": "Manjushree Finance Limited",
+          "units": 8940,
+          "value": 1226210
+        },
+        {
+          "name": "Best Finance Company Limited",
+          "units": 12360,
+          "value": 1548461
+        },
+        {
+          "name": "Reliance Finance Limited",
+          "units": 10500,
+          "value": 1428840
+        },
+        {
+          "name": "Shree Investment Finance Company Limited",
+          "units": 7770,
+          "value": 1090163
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 44970,
+          "value": 68116594
+        },
+        {
+          "name": "Life Insurance Corporation Nepal Limited",
+          "units": 11010,
+          "value": 10453092
+        },
+        {
+          "name": "Asian Life Insurance Company Limited",
+          "units": 21060,
+          "value": 12145723
+        },
+        {
+          "name": "Surya Life Insurance Company Limited",
+          "units": 24270,
+          "value": 10799795
+        },
+        {
+          "name": "Prime Life Insurance Company Limited",
+          "units": 29610,
+          "value": 13743970
+        },
+        {
+          "name": "Gurans Life Insurance Company Limited",
+          "units": 21810,
+          "value": 8105877
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 16170,
+          "value": 7631593
+        },
+        {
+          "name": "Jyoti Life Insurance Company Limited",
+          "units": 8910,
+          "value": 3811601
+        },
+        {
+          "name": "Sun Nepal Life Insurance Company Limited",
+          "units": 8820,
+          "value": 3621024
+        },
+        {
+          "name": "Reliance Life Insurance Limited",
+          "units": 14130,
+          "value": 5874185
+        },
+        {
+          "name": "Prabhu Life Insurance Limited",
+          "units": 6210,
+          "value": 1704609
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 21720,
+          "value": 16795771
+        },
+        {
+          "name": "Nepal Insurance Company Limited",
+          "units": 6240,
+          "value": 6739200
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 12480,
+          "value": 8261741
+        },
+        {
+          "name": "IME General Insurance Limited",
+          "units": 17970,
+          "value": 9024323
+        },
+        {
+          "name": "Prabhu Insurance Limited",
+          "units": 17340,
+          "value": 7079206
+        },
+        {
+          "name": "Lumbini General Insurance Company Limited",
+          "units": 11550,
+          "value": 5214132
+        },
+        {
+          "name": "NLG Insurance Company Limited",
+          "units": 14010,
+          "value": 5720090
+        },
+        {
+          "name": "Siddhartha Insurance Limited",
+          "units": 10470,
+          "value": 4727030
+        },
+        {
+          "name": "Himalayan General Insurance Company Limited",
+          "units": 7590,
+          "value": 3035686
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Chilime Hydropower Company Limited",
+          "units": 36720,
+          "value": 26979665
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 37440,
+          "value": 15344314
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 43830,
+          "value": 15994820
+        },
+        {
+          "name": "Nepal Hydro Developers Limited",
+          "units": 64380,
+          "value": 5512469
+        },
+        {
+          "name": "Ridi Hydropower Development Company Limited",
+          "units": 56340,
+          "value": 4792562
+        },
+        {
+          "name": "Arun Valley Hydropower Development Company Limited",
+          "units": 29130,
+          "value": 12853514
+        },
+        {
+          "name": "Ngadi Group Power Limited",
+          "units": 39540,
+          "value": 4272446
+        },
+        {
+          "name": "Upper Tamakoshi Hydropower Limited",
+          "units": 45000,
+          "value": 29804850
+        },
+        {
+          "name": "Api Power Company Limited",
+          "units": 59160,
+          "value": 11116333
+        },
+        {
+          "name": "Radhi Bidyut Company Limited",
+          "units": 35460,
+          "value": 2959492
+        },
+        {
+          "name": "Barun Hydropower Company Limited",
+          "units": 27720,
+          "value": 3380644
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 25670,
+          "value": 14283638
+        },
+        {
+          "name": "Sanjen Jalavidyut Company Limited",
+          "units": 9520,
+          "value": 2618496
+        },
+        {
+          "name": "Upper Mardi Hydropower Limited",
+          "units": 1773,
+          "value": 2812180
+        },
+        {
+          "name": "44 Jalavidyut Pariyojana Limited",
+          "units": 6655,
+          "value": 5719340
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 18540,
+          "value": 13304606
+        },
+        {
+          "name": "Taragaon Regency Hotel Limited",
+          "units": 48450,
+          "value": 7479605
+        },
+        {
+          "name": "Oriental Hotels Limited",
+          "units": 32910,
+          "value": 11621679
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Unilever Nepal Limited",
+          "units": 1620,
+          "value": 30618000
+        },
+        {
+          "name": "Bottlers Nepal (Terai) Limited",
+          "units": 2190,
+          "value": 11474505
+        },
+        {
+          "name": "Bottlers Nepal (Balaju) Limited",
+          "units": 2100,
+          "value": 11862900
+        },
+        {
+          "name": "Nepal Lube Oil Limited",
+          "units": 6780,
+          "value": 3466260
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 14280,
+          "value": 6477408
+        },
+        {
+          "name": "Himalayan Distillery Limited",
+          "units": 8310,
+          "value": 10034325
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 7620,
+          "value": 14549933
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 8940,
+          "value": 10911413
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 7200,
+          "value": 7464960
+        },
+        {
+          "name": "Laxmi Laghubitta Bittiya Sanstha Limited",
+          "units": 6180,
+          "value": 5826816
+        },
+        {
+          "name": "Forward Community Microfinance Bittiya Sanstha Limited",
+          "units": 5760,
+          "value": 4354560
+        },
+        {
+          "name": "NMB Microfinance Bittiya Sanstha Limited",
+          "units": 4470,
+          "value": 3911231
+        }
+      ],
+      "others": [
+        {
+          "name": "Nepal Telecom",
+          "units": 29070,
+          "value": 26860680
+        },
+        {
+          "name": "NIFRA (Nepal Infrastructure Bank Limited)",
+          "units": 69930,
+          "value": 11895093
+        },
+        {
+          "name": "Citizen Investment Trust",
+          "units": 25170,
+          "value": 36204966
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 2700937500
+        }
+      ],
+      "government_bonds": [
+        {
+          "name": "Government Treasury Bills/Bonds",
+          "value": 150000000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "NADDF",
+    "fund_name": "NIC Asia Dynamic Debt Fund",
+    "fund_manager": "NIC Asia Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 9.87,
+    "total_units": 180050000,
+    "net_assets": 1777254930,
+    "total_assets": 1838000000,
+    "total_liabilities": 60745070,
+    "holdings": {
+      "government_bonds": [
+        {
+          "name": "Nepal Government Development Bond 2080",
+          "value": 100000000
+        },
+        {
+          "name": "Nepal Government Development Bond 2081",
+          "value": 150000000
+        },
+        {
+          "name": "Nepal Government Treasury Bills",
+          "value": 200000000
+        }
+      ],
+      "corporate_debentures": [
+        {
+          "name": "NIC Asia Bank Debenture",
+          "value": 50000000
+        },
+        {
+          "name": "Nabil Bank Debenture",
+          "value": 45000000
+        },
+        {
+          "name": "Global IME Bank Debenture",
+          "value": 40000000
+        },
+        {
+          "name": "Sanima Bank Debenture",
+          "value": 35000000
+        },
+        {
+          "name": "Siddhartha Bank Debenture",
+          "value": 30000000
+        },
+        {
+          "name": "Kumari Bank Debenture",
+          "value": 25000000
+        },
+        {
+          "name": "Machhapuchchhre Bank Debenture",
+          "value": 20000000
+        },
+        {
+          "name": "Citizens Bank Debenture",
+          "value": 18000000
+        },
+        {
+          "name": "Prime Commercial Bank Debenture",
+          "value": 15000000
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "NIC Asia Bank FD",
+          "value": 201000000
+        },
+        {
+          "name": "Global IME Bank FD",
+          "value": 150750000
+        },
+        {
+          "name": "Sanima Bank FD",
+          "value": 100500000
+        },
+        {
+          "name": "Siddhartha Bank FD",
+          "value": 80400000
+        },
+        {
+          "name": "Kumari Bank FD",
+          "value": 60300000
+        }
+      ],
+      "commercial_banks": [
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 80000,
+          "value": 38000000
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 50000,
+          "value": 20800000
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 60000,
+          "value": 22700000
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 25000,
+          "value": 37600000
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 68402,
+          "value": 33345466
+        },
+        {
+          "name": "Nepal Bank Limited",
+          "units": 49433,
+          "value": 22993353
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 60724,
+          "value": 14520646
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 42222,
+          "value": 23657777
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 80646,
+          "value": 23692548
+        },
+        {
+          "name": "Kamana Sewa Bikas Bank Limited",
+          "units": 34200,
+          "value": 15432800
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 26000,
+          "value": 9766000
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 54622,
+          "value": 29029586
+        },
+        {
+          "name": "Shangrila Development Bank Limited",
+          "units": 35000,
+          "value": 6029000
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 67487,
+          "value": 26222296
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Diprox Laghubitta Bittiya Sanstha Limited",
+          "units": 2376,
+          "value": 2000000
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 33069,
+          "value": 23432054
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 28302,
+          "value": 22589082
+        },
+        {
+          "name": "Swastik Laghubitta Bittiya Sanstha Limited",
+          "units": 206,
+          "value": 100000
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Asian Life Insurance Company Limited",
+          "units": 226932,
+          "value": 45593623
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 43000,
+          "value": 25000000
+        },
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 84608,
+          "value": 65000000
+        },
+        {
+          "name": "Suryajyoti Life Insurance Company Limited",
+          "units": 63346,
+          "value": 30000000
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Himalayan Everest Insurance Limited",
+          "units": 50992,
+          "value": 97260562
+        },
+        {
+          "name": "IGI Prudential Insurance Limited",
+          "units": 99660,
+          "value": 15000000
+        },
+        {
+          "name": "Neco Insurance Limited",
+          "units": 66045,
+          "value": 24648000
+        },
+        {
+          "name": "Nepal Insurance Company Limited",
+          "units": 55573,
+          "value": 12000000
+        },
+        {
+          "name": "Prabhu Insurance Limited",
+          "units": 45093,
+          "value": 10000000
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 43646,
+          "value": 8000000
+        },
+        {
+          "name": "Sanima GIC Insurance Limited",
+          "units": 37268,
+          "value": 55999000
+        },
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 45000,
+          "value": 36000000
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 30000,
+          "value": 15000000
+        },
+        {
+          "name": "United Ajod Insurance Limited",
+          "units": 42422,
+          "value": 29048950
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "Kumari Equity Fund",
+          "units": 300000,
+          "value": 2867000
+        },
+        {
+          "name": "Kumari Sabal Yojana",
+          "units": 500000,
+          "value": 8580000
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 300000,
+          "value": 2899000
+        },
+        {
+          "name": "NIBL Growth Fund",
+          "units": 2000000,
+          "value": 14020000
+        },
+        {
+          "name": "Reliable Samriddhi Yojana",
+          "units": 1500000,
+          "value": 14665000
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Aap Power Company Limited",
+          "units": 59000,
+          "value": 17096000
+        },
+        {
+          "name": "Arun Kabeli Power Limited",
+          "units": 23000,
+          "value": 3926000
+        },
+        {
+          "name": "Vikash Hydropower Company Limited",
+          "units": 5093,
+          "value": 2709476
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 4665,
+          "value": 3222722
+        },
+        {
+          "name": "Chirkhwa Hydropower Company Limited",
+          "units": 4,
+          "value": 2000
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 5200,
+          "value": 3304600
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 621,
+          "value": 726079
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 1353,
+          "value": 980925
+        },
+        {
+          "name": "Dadi Rup Power Limited",
+          "units": 6988,
+          "value": 3568236
+        },
+        {
+          "name": "Rasuwagadhi Hydropower Company Limited",
+          "units": 23002,
+          "value": 3520540
+        },
+        {
+          "name": "Ridi Power Company Limited",
+          "units": 26605,
+          "value": 3666364
+        },
+        {
+          "name": "Sanbhi Energy Limited",
+          "units": 3473,
+          "value": 2856225
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 7758,
+          "value": 6462360
+        },
+        {
+          "name": "Chandragiri Hills Limited",
+          "units": 23000,
+          "value": 12063000
+        },
+        {
+          "name": "Oriental Hotels Limited",
+          "units": 4020,
+          "value": 2630000
+        },
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 36000,
+          "value": 16426000
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 2422,
+          "value": 4636046
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 24500,
+          "value": 22693000
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 20590,
+          "value": 6522000
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 3698,
+          "value": 5067600
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 3492,
+          "value": 4635035
+        }
+      ],
+      "others": [
+        {
+          "name": "Nepal Punarbima Company Limited",
+          "units": 9000,
+          "value": 11799000
+        },
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 6992,
+          "value": 5876776
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 1020,
+          "value": 2450440
+        },
+        {
+          "name": "Trade Tower Limited",
+          "units": 3285,
+          "value": 2827952
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "SSIS",
+    "fund_name": "Siddhartha Systematic Investment Scheme",
+    "fund_manager": "Siddhartha Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.53,
+    "total_units": 215847000,
+    "net_assets": 2272870633,
+    "total_assets": 2571000000,
+    "total_liabilities": 298129367,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Nabil Bank Limited",
+          "units": 28080,
+          "value": 42545412
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 77970,
+          "value": 35666112
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 23880,
+          "value": 35877020
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 77640,
+          "value": 29354163
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 54990,
+          "value": 22889588
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 61410,
+          "value": 29174819
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 62880,
+          "value": 23032944
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 56160,
+          "value": 19012968
+        },
+        {
+          "name": "Citizens Bank International Limited",
+          "units": 41130,
+          "value": 15230248
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 43290,
+          "value": 16867732
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 40770,
+          "value": 12897590
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 48210,
+          "value": 16963629
+        },
+        {
+          "name": "Sunrise Bank Limited",
+          "units": 40230,
+          "value": 12003321
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 90840,
+          "value": 39022139
+        },
+        {
+          "name": "Prabhu Bank Limited",
+          "units": 44640,
+          "value": 11991197
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 48660,
+          "value": 15177541
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 25890,
+          "value": 6294519
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 29700,
+          "value": 6174630
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 27990,
+          "value": 6373323
+        },
+        {
+          "name": "Shangrila Development Bank Limited",
+          "units": 20280,
+          "value": 3926208
+        },
+        {
+          "name": "Mahalaxmi Bikas Bank Limited",
+          "units": 23280,
+          "value": 4481400
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 12420,
+          "value": 4207896
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 27210,
+          "value": 41206774
+        },
+        {
+          "name": "Life Insurance Corporation Nepal Limited",
+          "units": 6660,
+          "value": 6322471
+        },
+        {
+          "name": "Asian Life Insurance Company Limited",
+          "units": 12720,
+          "value": 7335878
+        },
+        {
+          "name": "Surya Life Insurance Company Limited",
+          "units": 14700,
+          "value": 6541236
+        },
+        {
+          "name": "Prime Life Insurance Company Limited",
+          "units": 17880,
+          "value": 8299843
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Neco Insurance Limited",
+          "units": 13140,
+          "value": 10162001
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 7560,
+          "value": 5005022
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 10860,
+          "value": 5453795
+        },
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 13140,
+          "value": 10162001
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Api Power Company Limited",
+          "units": 46000,
+          "value": 13566400
+        },
+        {
+          "name": "Arun Kabeli Power Limited",
+          "units": 20000,
+          "value": 4920000
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 22680,
+          "value": 9294619
+        },
+        {
+          "name": "Sanima Middle Tamor Hydropower Limited",
+          "units": 39645,
+          "value": 14923440
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 26460,
+          "value": 9654460
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 49432,
+          "value": 28406640
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 31522,
+          "value": 11396994
+        },
+        {
+          "name": "Upper Solu Hydro Electric Company Limited",
+          "units": 22768,
+          "value": 10345806
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 2442,
+          "value": 928204
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 9393,
+          "value": 540624
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 646,
+          "value": 463452
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 700,
+          "value": 505400
+        },
+        {
+          "name": "Mandu Hydropower Limited",
+          "units": 19993,
+          "value": 16934964
+        },
+        {
+          "name": "Dadi Group Power Limited",
+          "units": 34040,
+          "value": 13513000
+        },
+        {
+          "name": "Sagarmatha Jalvidyut Company Limited",
+          "units": 39500,
+          "value": 19493000
+        },
+        {
+          "name": "Kalika Power Company Limited",
+          "units": 17940,
+          "value": 5972990
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 15966,
+          "value": 6309451
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 30922,
+          "value": 25399296
+        },
+        {
+          "name": "Chandragiri Hills Limited",
+          "units": 8000,
+          "value": 3404000
+        },
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 3676,
+          "value": 3052060
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Shivam Cements Limited",
+          "units": 234950,
+          "value": 63609240
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 63646,
+          "value": 93200452
+        },
+        {
+          "name": "Unilever Nepal Limited",
+          "units": 760,
+          "value": 36036000
+        },
+        {
+          "name": "Himalayan Distillery Limited",
+          "units": 26000,
+          "value": 20402000
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 3202,
+          "value": 4530334
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 2952,
+          "value": 2369000
+        },
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 1086,
+          "value": 2242380
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 4620,
+          "value": 8821613
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 5400,
+          "value": 6590160
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 4320,
+          "value": 4478976
+        }
+      ],
+      "others": [
+        {
+          "name": "Nepal Telecom",
+          "units": 17640,
+          "value": 16299360
+        },
+        {
+          "name": "Citizen Investment Trust",
+          "units": 15300,
+          "value": 22009050
+        },
+        {
+          "name": "CEIDB Holdings Limited",
+          "units": 22202,
+          "value": 46666304
+        },
+        {
+          "name": "Jalvidyut Lagani Tatha Vikas Company Limited",
+          "units": 95948,
+          "value": 15275921
+        },
+        {
+          "name": "Trade Tower Limited",
+          "units": 2756,
+          "value": 2303462
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 399,
+          "value": 563222
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 854250000
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "NMB Hybrid Fund L-2",
+          "units": 2000000,
+          "value": 9240000
+        },
+        {
+          "name": "Garima Samriddhi Yojana",
+          "units": 2000000,
+          "value": 9060000
+        },
+        {
+          "name": "RBB Focus 40",
+          "units": 750000,
+          "value": 9500000
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 499900,
+          "value": 4628034
+        },
+        {
+          "name": "NIC Asia Growth Fund 2",
+          "units": 500000,
+          "value": 4550000
+        },
+        {
+          "name": "Kumari Sabal Yojana",
+          "units": 279450,
+          "value": 2268942
+        },
+        {
+          "name": "NIBL Stable Fund",
+          "units": 80000,
+          "value": 280200
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "NMBSBF",
+    "fund_name": "NMB Saral Bachat Fund - E",
+    "fund_manager": "NMB Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.51,
+    "total_units": 398686000,
+    "net_assets": 4190189978,
+    "total_assets": 4425000000,
+    "total_liabilities": 234810022,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Nabil Bank Limited",
+          "units": 43620,
+          "value": 66090843
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 95790,
+          "value": 43834428
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 29370,
+          "value": 44119370
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 98760,
+          "value": 37337798
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 93900,
+          "value": 39085875
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 80100,
+          "value": 38053908
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 110670,
+          "value": 43134805
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 81720,
+          "value": 29934036
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 72300,
+          "value": 24477165
+        },
+        {
+          "name": "Citizens Bank International Limited",
+          "units": 49860,
+          "value": 18463012
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 51750,
+          "value": 16371113
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 61410,
+          "value": 21608313
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 44940,
+          "value": 19304876
+        },
+        {
+          "name": "Prabhu Bank Limited",
+          "units": 55200,
+          "value": 14827824
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 62400,
+          "value": 19463184
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 645434,
+          "value": 8095230
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 609649,
+          "value": 5417412
+        },
+        {
+          "name": "Kamana Sewa Bikas Bank Limited",
+          "units": 33300,
+          "value": 8231355
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Himalayan Life Insurance Company Limited",
+          "units": 123156,
+          "value": 45232274
+        },
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 363030,
+          "value": 279175453
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 160393,
+          "value": 262894063
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Neco Insurance Limited",
+          "units": 264500,
+          "value": 163461000
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 347996,
+          "value": 209651456
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 266658,
+          "value": 199193966
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Vikash Hydropower Company Limited",
+          "units": 3462,
+          "value": 2303064
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 9926,
+          "value": 9092274
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 7869,
+          "value": 9369524
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 3329,
+          "value": 2265496
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 2604,
+          "value": 1649269
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 6634,
+          "value": 5514520
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Shivam Cements Limited",
+          "units": 396008,
+          "value": 284774920
+        },
+        {
+          "name": "Unilever Nepal Limited",
+          "units": 9254,
+          "value": 49063400
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 3862,
+          "value": 4270200
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 6345,
+          "value": 6609675
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 276612,
+          "value": 273554050
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 6960,
+          "value": 8492947
+        },
+        {
+          "name": "National Laghubitta Bittiya Sanstha Limited",
+          "units": 152030,
+          "value": 129970436
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 929993,
+          "value": 7690000
+        },
+        {
+          "name": "Swastik Laghubitta Bittiya Sanstha Limited",
+          "units": 5940,
+          "value": 597696
+        }
+      ],
+      "others": [
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 794,
+          "value": 9096930
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 1658250000
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "NIBL Growth Fund",
+          "units": 300000,
+          "value": 2903000
+        },
+        {
+          "name": "Citizens Super 30 Mutual Fund",
+          "units": 299900,
+          "value": 2054652
+        },
+        {
+          "name": "NIC Asia Growth Fund-2",
+          "units": 500000,
+          "value": 4550000
+        },
+        {
+          "name": "Kumari Sabal Yojana",
+          "units": 500000,
+          "value": 4080000
+        },
+        {
+          "name": "NIBL Stable Fund",
+          "units": 450000,
+          "value": 3906000
+        },
+        {
+          "name": "Muktinath Mutual Fund 1",
+          "units": 300000,
+          "value": 2760000
+        },
+        {
+          "name": "Garima Samriddhi Yojana",
+          "units": 40000,
+          "value": 453000
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 500000,
+          "value": 4625000
+        },
+        {
+          "name": "Reliable Samriddhi Yojana",
+          "units": 700000,
+          "value": 6650000
+        },
+        {
+          "name": "Global IME Samunnat Yojana-2",
+          "units": 250000,
+          "value": 2275000
+        },
+        {
+          "name": "Himalayan Large Cap Fund",
+          "units": 2000000,
+          "value": 16000000
+        },
+        {
+          "name": "RBB Focus 40",
+          "units": 600000,
+          "value": 4926000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "SLK",
+    "fund_name": "Shubha Laxmi Kosh",
+    "fund_manager": "Laxmi Sunrise Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.36,
+    "total_units": 61380000,
+    "net_assets": 635899767,
+    "total_assets": 714000000,
+    "total_liabilities": 78100233,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 28710,
+          "value": 8954936
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 5280,
+          "value": 7999992
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 14700,
+          "value": 6725268
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 4470,
+          "value": 6713080
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 15090,
+          "value": 5705016
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 11370,
+          "value": 4732762
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 9690,
+          "value": 4603492
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 10740,
+          "value": 4184411
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 9930,
+          "value": 3637359
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 8760,
+          "value": 2965698
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 6330,
+          "value": 2002496
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 7440,
+          "value": 2617860
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 5460,
+          "value": 2345452
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 4050,
+          "value": 984555
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 4650,
+          "value": 966735
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 4380,
+          "value": 997326
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 1950,
+          "value": 660660
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Asian Life Insurance Company Limited",
+          "units": 24172,
+          "value": 11450276
+        },
+        {
+          "name": "Best Micro Life Insurance Limited",
+          "units": 395,
+          "value": 486205
+        },
+        {
+          "name": "Guardian Micro Life Insurance Limited",
+          "units": 429,
+          "value": 596199
+        },
+        {
+          "name": "Himalayan Life Insurance Company Limited",
+          "units": 29484,
+          "value": 10784645
+        },
+        {
+          "name": "IME Life Insurance Company Limited",
+          "units": 5124,
+          "value": 3696643
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 6966,
+          "value": 4020436
+        },
+        {
+          "name": "Suryajyoti Life Insurance Company Limited",
+          "units": 25000,
+          "value": 11039500
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Neco Insurance Limited",
+          "units": 13651,
+          "value": 5559999
+        },
+        {
+          "name": "Nepal Insurance Company Limited",
+          "units": 11966,
+          "value": 6092329
+        },
+        {
+          "name": "Nepal Micro Insurance Company Limited",
+          "units": 463,
+          "value": 469000
+        },
+        {
+          "name": "Prabhu Insurance Limited",
+          "units": 23662,
+          "value": 18497283
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 5009,
+          "value": 5094000
+        },
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 5009,
+          "value": 5094000
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 5626,
+          "value": 4036296
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Api Power Company Limited",
+          "units": 39500,
+          "value": 8992950
+        },
+        {
+          "name": "Arun Kabeli Power Limited",
+          "units": 20000,
+          "value": 4920000
+        },
+        {
+          "name": "Arun Valley Hydropower Development Company Limited",
+          "units": 29000,
+          "value": 5428400
+        },
+        {
+          "name": "Vikash Hydropower Company Limited",
+          "units": 552,
+          "value": 293664
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 453,
+          "value": 268652
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 455,
+          "value": 294600
+        },
+        {
+          "name": "Green Ventures Limited",
+          "units": 32000,
+          "value": 11069600
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 145,
+          "value": 130355
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 925,
+          "value": 757540
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 233,
+          "value": 168925
+        },
+        {
+          "name": "Mandakini Hydropower Limited",
+          "units": 95000,
+          "value": 73426000
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 19294,
+          "value": 11993384
+        },
+        {
+          "name": "Dadi Group Power Limited",
+          "units": 26188,
+          "value": 10396636
+        },
+        {
+          "name": "Ridi Hydropower Development Company Limited",
+          "units": 11996,
+          "value": 2646319
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 12900,
+          "value": 6629490
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 20000,
+          "value": 11030000
+        },
+        {
+          "name": "Universal Power Company Limited",
+          "units": 23000,
+          "value": 8262300
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 825,
+          "value": 864750
+        },
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 13754,
+          "value": 6849492
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Himalayan Distillery Limited",
+          "units": 12360,
+          "value": 14078080
+        },
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 336,
+          "value": 673660
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 7693,
+          "value": 4869195
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 617,
+          "value": 764700
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 1029,
+          "value": 1425965
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Diprox Laghubitta Bittiya Sanstha Limited",
+          "units": 11000,
+          "value": 9068000
+        },
+        {
+          "name": "First Microfinance Laghubitta Bittiya Sanstha Limited",
+          "units": 12000,
+          "value": 8693200
+        },
+        {
+          "name": "Global IME Laghubitta Bittiya Sanstha Limited",
+          "units": 20950,
+          "value": 24364650
+        },
+        {
+          "name": "Nerude Mimire Laghubitta Bittiya Sanstha Limited",
+          "units": 14632,
+          "value": 8278200
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 20946,
+          "value": 16639168
+        },
+        {
+          "name": "RSDC Laghubitta Bittiya Sanstha Limited",
+          "units": 11551,
+          "value": 7399486
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 3054,
+          "value": 2354634
+        },
+        {
+          "name": "Swarojgar Laghubitta Bittiya Sanstha Limited",
+          "units": 6855,
+          "value": 5609220
+        },
+        {
+          "name": "Swastik Laghubitta Bittiya Sanstha Limited",
+          "units": 36,
+          "value": 102846
+        }
+      ],
+      "others": [
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 15000,
+          "value": 12607500
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 251250000
+        }
+      ],
+      "trading": [
+        {
+          "name": "Salt Trading Corporation Limited",
+          "units": 1000,
+          "value": 5555000
+        }
+      ],
+      "investment": [
+        {
+          "name": "Nepal Infrastructure Bank Limited",
+          "units": 30000,
+          "value": 7500000
+        }
+      ],
+      "finance_companies": [
+        {
+          "name": "Manjushree Finance Limited",
+          "units": 3000,
+          "value": 2397000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "NFCF",
+    "fund_name": "Nabil Flexi Cap Fund",
+    "fund_manager": "Nabil Investment Banking Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.41,
+    "total_units": 181400000,
+    "net_assets": 1888375960,
+    "total_assets": 2044000000,
+    "total_liabilities": 155624040,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Nabil Bank Limited",
+          "units": 35850,
+          "value": 54318128
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 78540,
+          "value": 35935682
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 24090,
+          "value": 36187976
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 80970,
+          "value": 30612004
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 57060,
+          "value": 23751225
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 63780,
+          "value": 30300136
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 44940,
+          "value": 17520662
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 65190,
+          "value": 23879097
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 58230,
+          "value": 19713766
+        },
+        {
+          "name": "Citizens Bank International Limited",
+          "units": 42750,
+          "value": 15829988
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 42300,
+          "value": 13381605
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 50010,
+          "value": 17597018
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 37440,
+          "value": 16083101
+        },
+        {
+          "name": "Prabhu Bank Limited",
+          "units": 46260,
+          "value": 12426361
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 50490,
+          "value": 15748336
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 26940,
+          "value": 6549114
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 30960,
+          "value": 6436584
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 29220,
+          "value": 6653394
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 12930,
+          "value": 4380684
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Asian Life Insurance Company Limited",
+          "units": 35502,
+          "value": 22643400
+        },
+        {
+          "name": "Citizen Life Insurance Company Limited",
+          "units": 55946,
+          "value": 12000000
+        },
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 28290,
+          "value": 42835586
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 6966,
+          "value": 4020000
+        },
+        {
+          "name": "Prabhu Mahalaxmi Life Insurance Limited",
+          "units": 20903,
+          "value": 9664930
+        },
+        {
+          "name": "Reliable Nepal Life Insurance Limited",
+          "units": 6840,
+          "value": 3935964
+        },
+        {
+          "name": "Sun Nepal Life Insurance Company Limited",
+          "units": 4209,
+          "value": 2995000
+        },
+        {
+          "name": "Suryajyoti Life Insurance Company Limited",
+          "units": 23000,
+          "value": 20244400
+        },
+        {
+          "name": "Life Insurance Corporation Nepal Limited",
+          "units": 6930,
+          "value": 6580732
+        },
+        {
+          "name": "Surya Life Insurance Company Limited",
+          "units": 15330,
+          "value": 6821237
+        },
+        {
+          "name": "Himalayan Life Insurance Company Limited",
+          "units": 15000,
+          "value": 5500000
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Himalayan Everest Insurance Limited",
+          "units": 11360,
+          "value": 5936003
+        },
+        {
+          "name": "IGI Prudential Insurance Limited",
+          "units": 65484,
+          "value": 8000000
+        },
+        {
+          "name": "Neco Insurance Limited",
+          "units": 9050,
+          "value": 628900
+        },
+        {
+          "name": "Nepal Insurance Company Limited",
+          "units": 96226,
+          "value": 7000000
+        },
+        {
+          "name": "Nepal Micro Insurance Company Limited",
+          "units": 1932,
+          "value": 800000
+        },
+        {
+          "name": "Prabhu Insurance Limited",
+          "units": 23905,
+          "value": 16695548
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 6300,
+          "value": 5203634
+        },
+        {
+          "name": "Sanima GIC Insurance Limited",
+          "units": 45322,
+          "value": 7000000
+        },
+        {
+          "name": "United Ajod Insurance Limited",
+          "units": 46229,
+          "value": 7076554
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Aankhu Khola Jalvidyut Company Limited",
+          "units": 5000,
+          "value": 9048000
+        },
+        {
+          "name": "Aap Power Company Limited",
+          "units": 10000,
+          "value": 5500000
+        },
+        {
+          "name": "Arun Kabeli Power Limited",
+          "units": 200200,
+          "value": 6250000
+        },
+        {
+          "name": "Arun Valley Hydropower Development Company Limited",
+          "units": 224996,
+          "value": 18816795
+        },
+        {
+          "name": "Asian Hydropower Limited",
+          "units": 9430,
+          "value": 8022000
+        },
+        {
+          "name": "Vikash Hydropower Company Limited",
+          "units": 5000,
+          "value": 2650000
+        },
+        {
+          "name": "Buddha Bhumi Nepal Hydropower Company Limited",
+          "units": 32220,
+          "value": 20060000
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 2209,
+          "value": 1323655
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 50002,
+          "value": 9663769
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 9685,
+          "value": 1939600
+        },
+        {
+          "name": "Green Ventures Limited",
+          "units": 4036,
+          "value": 3500000
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 850,
+          "value": 618000
+        },
+        {
+          "name": "Himalayan Power Partner Limited",
+          "units": 6000,
+          "value": 3226000
+        },
+        {
+          "name": "Indra Hydropower Limited",
+          "units": 6500,
+          "value": 4555000
+        },
+        {
+          "name": "Kalika Power Company Limited",
+          "units": 3800,
+          "value": 2200000
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 1432,
+          "value": 1035000
+        },
+        {
+          "name": "Mailud Khola Jalvidyut Company Limited",
+          "units": 14200,
+          "value": 2926000
+        },
+        {
+          "name": "Mandakini Hydropower Limited",
+          "units": 20000,
+          "value": 7500000
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 27604,
+          "value": 6528000
+        },
+        {
+          "name": "National Hydro Power Company Limited",
+          "units": 29200,
+          "value": 26254000
+        },
+        {
+          "name": "Nepal Hydro Developers Limited",
+          "units": 29334,
+          "value": 5800000
+        },
+        {
+          "name": "Ridi Group Power Limited",
+          "units": 25005,
+          "value": 50293772
+        },
+        {
+          "name": "Peoples Hydropower Company Limited",
+          "units": 27302,
+          "value": 20506646
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 27630,
+          "value": 10081358
+        },
+        {
+          "name": "Sanima Middle Tamor Hydropower Limited",
+          "units": 20000,
+          "value": 8000000
+        },
+        {
+          "name": "Chilime Hydropower Company Limited",
+          "units": 23130,
+          "value": 17002632
+        },
+        {
+          "name": "Upper Tamakoshi Hydropower Limited",
+          "units": 28410,
+          "value": 18816795
+        },
+        {
+          "name": "Ridi Hydropower Development Company Limited",
+          "units": 26605,
+          "value": 3666364
+        },
+        {
+          "name": "Sagarmatha Jalvidyut Company Limited",
+          "units": 15000,
+          "value": 7500000
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 14500,
+          "value": 5500000
+        },
+        {
+          "name": "Universal Power Company Limited",
+          "units": 23000,
+          "value": 8262300
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 5203,
+          "value": 4326840
+        },
+        {
+          "name": "Chandragiri Hills Limited",
+          "units": 20500,
+          "value": 6934500
+        },
+        {
+          "name": "Oriental Hotels Limited",
+          "units": 30000,
+          "value": 22220000
+        },
+        {
+          "name": "Taragaon Regency Hotels Limited",
+          "units": 20000,
+          "value": 7200000
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Unilever Nepal Limited",
+          "units": 1020,
+          "value": 19278000
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 20052,
+          "value": 10000000
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 7000,
+          "value": 6100000
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 2952,
+          "value": 2369000
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 3706,
+          "value": 5130000
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 4800,
+          "value": 9165312
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 5640,
+          "value": 6883056
+        },
+        {
+          "name": "Mithila Laghubitta Bittiya Sanstha Limited",
+          "units": 57,
+          "value": 34295
+        },
+        {
+          "name": "National Laghubitta Bittiya Sanstha Limited",
+          "units": 3000,
+          "value": 2500000
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 4320,
+          "value": 4478976
+        },
+        {
+          "name": "Swabalamban Laghubitta Bittiya Sanstha Limited",
+          "units": 2000,
+          "value": 1500000
+        },
+        {
+          "name": "Swadhin Laghubitta Bittiya Sanstha Limited",
+          "units": 1500,
+          "value": 1200000
+        },
+        {
+          "name": "Ashalay Laghubitta Bittiya Sanstha Limited",
+          "units": 79154,
+          "value": 8000000
+        }
+      ],
+      "others": [
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 79552,
+          "value": 69039440
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 462,
+          "value": 629604
+        },
+        {
+          "name": "Muktinath Krishi Company Limited",
+          "units": 9344,
+          "value": 20026942
+        },
+        {
+          "name": "Nepal Telecom",
+          "units": 24000,
+          "value": 22904000
+        },
+        {
+          "name": "Nepal Punarbima Company Limited",
+          "units": 23000,
+          "value": 29043000
+        },
+        {
+          "name": "Trade Tower Limited",
+          "units": 3422,
+          "value": 2856054
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 552750000
+        }
+      ],
+      "investment": [
+        {
+          "name": "CEIDB Holdings Limited",
+          "units": 21646,
+          "value": 26936930
+        },
+        {
+          "name": "Citizen Investment Trust",
+          "units": 26429,
+          "value": 39493046
+        },
+        {
+          "name": "Jalvidyut Lagani Tatha Vikas Company Limited",
+          "units": 202823,
+          "value": 25660946
+        },
+        {
+          "name": "Nepal Infrastructure Bank Limited",
+          "units": 10000,
+          "value": 5000000
+        },
+        {
+          "name": "NRN Infrastructure & Development Limited",
+          "units": 23494,
+          "value": 26655455
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "HLI Large Cap Fund",
+          "units": 250000,
+          "value": 2250000
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 300000,
+          "value": 2442400
+        },
+        {
+          "name": "NMB Hybrid Fund L-2",
+          "units": 250000,
+          "value": 2320000
+        },
+        {
+          "name": "Reliable Samriddhi Yojana",
+          "units": 500000,
+          "value": 4695000
+        },
+        {
+          "name": "Sunrise Bluechip Fund",
+          "units": 326362,
+          "value": 2954936
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "KSLY",
+    "fund_name": "Kumari Sunaulo Lagani Yojana",
+    "fund_manager": "Kumari Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 11.25,
+    "total_units": 71252264,
+    "net_assets": 801582970,
+    "total_assets": 862000000,
+    "total_liabilities": 60417030,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Kumari Bank Limited",
+          "units": 35250,
+          "value": 11933888
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 7020,
+          "value": 10636353
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 19560,
+          "value": 8949442
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 5940,
+          "value": 8922668
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 20100,
+          "value": 7599127
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 15120,
+          "value": 6293700
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 12870,
+          "value": 6114313
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 14280,
+          "value": 5564696
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 13200,
+          "value": 4835160
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 8400,
+          "value": 2657340
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 9900,
+          "value": 3483513
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 7260,
+          "value": 3118678
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 10110,
+          "value": 3153410
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 5400,
+          "value": 1312740
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 6180,
+          "value": 1284822
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 5820,
+          "value": 1325214
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 2580,
+          "value": 874104
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Himalayan Life Insurance Company Limited",
+          "units": 30000,
+          "value": 10947000
+        },
+        {
+          "name": "Life Insurance Corporation Nepal Limited",
+          "units": 30000,
+          "value": 25602000
+        },
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 38150,
+          "value": 29337350
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 44276,
+          "value": 25546406
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Neco Insurance Limited",
+          "units": 29916,
+          "value": 16469324
+        },
+        {
+          "name": "Prabhu Insurance Limited",
+          "units": 15000,
+          "value": 10445000
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 34500,
+          "value": 20603400
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 33293,
+          "value": 16709069
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Api Power Company Limited",
+          "units": 46000,
+          "value": 13566400
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 13630,
+          "value": 10533900
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 968,
+          "value": 694698
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 9393,
+          "value": 540624
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 420,
+          "value": 369000
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 700,
+          "value": 505400
+        },
+        {
+          "name": "Mandu Hydropower Limited",
+          "units": 19993,
+          "value": 16934964
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 29092,
+          "value": 29483024
+        },
+        {
+          "name": "Dadi Group Power Limited",
+          "units": 34040,
+          "value": 13513000
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 15966,
+          "value": 6309451
+        },
+        {
+          "name": "Sagarmatha Jalvidyut Company Limited",
+          "units": 39500,
+          "value": 19493000
+        },
+        {
+          "name": "Kalika Power Company Limited",
+          "units": 17940,
+          "value": 5972990
+        },
+        {
+          "name": "Nepal Hydro Jalvidyut Pariyojana Limited",
+          "units": 97320,
+          "value": 99499800
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Chandragiri Hills Limited",
+          "units": 22950,
+          "value": 19530040
+        },
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 2462,
+          "value": 2043860
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Bottlers Nepal (Terai) Limited",
+          "units": 1070,
+          "value": 12429000
+        },
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 577,
+          "value": 1439565
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 1447,
+          "value": 1549900
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 27366,
+          "value": 23934364
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 30900,
+          "value": 16599500
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 2451,
+          "value": 3346635
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 960,
+          "value": 1833062
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 1140,
+          "value": 1391256
+        }
+      ],
+      "others": [
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 29500,
+          "value": 23993750
+        },
+        {
+          "name": "Nepal Telecom",
+          "units": 11362,
+          "value": 9640554
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 265,
+          "value": 376630
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 321600000
+        }
+      ],
+      "investment": [
+        {
+          "name": "Citizen Investment Trust",
+          "units": 15090,
+          "value": 26769440
+        },
+        {
+          "name": "Hydroelectricity Investment & Development Company Limited",
+          "units": 137630,
+          "value": 24697267
+        },
+        {
+          "name": "Nepal Infrastructure Bank Limited",
+          "units": 7000,
+          "value": 1620000
+        }
+      ],
+      "trading": [
+        {
+          "name": "Salt Trading Corporation Limited",
+          "units": 3590,
+          "value": 19641609
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "Global IME Samunnat Yojana-2",
+          "units": 500000,
+          "value": 4550000
+        },
+        {
+          "name": "Himalayan 50-20",
+          "units": 152393,
+          "value": 1729937
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 406476,
+          "value": 3957294
+        },
+        {
+          "name": "NIBL Stable Fund",
+          "units": 9300000,
+          "value": 11264000
+        },
+        {
+          "name": "NIC Asia Growth Fund 2",
+          "units": 600000,
+          "value": 5460000
+        },
+        {
+          "name": "NMB Hybrid Fund-2",
+          "units": 500000,
+          "value": 4620000
+        },
+        {
+          "name": "Prabhu Smart Fund",
+          "units": 567300,
+          "value": 6234627
+        },
+        {
+          "name": "Reliable Samriddhi Yojana",
+          "units": 250000,
+          "value": 2447500
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "SFF",
+    "fund_name": "Sanima Flexi Fund",
+    "fund_manager": "Sanima Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.28,
+    "total_units": 46870000,
+    "net_assets": 481823190,
+    "total_assets": 527000000,
+    "total_liabilities": 45176810,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Sanima Bank Limited",
+          "units": 19500,
+          "value": 7142850
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 4380,
+          "value": 6636357
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 12180,
+          "value": 5572449
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 3690,
+          "value": 5543851
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 12540,
+          "value": 4740948
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 9420,
+          "value": 3921075
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 8010,
+          "value": 3805391
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 8910,
+          "value": 3472091
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 8220,
+          "value": 2782881
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 5220,
+          "value": 1651347
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 6180,
+          "value": 2174530
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 4530,
+          "value": 1945952
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 6300,
+          "value": 1965033
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 3360,
+          "value": 816816
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 3870,
+          "value": 804573
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 3630,
+          "value": 826551
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 1620,
+          "value": 549252
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Citizen Life Insurance Company Limited",
+          "units": 93000,
+          "value": 9962000
+        },
+        {
+          "name": "IME Life Insurance Company Limited",
+          "units": 4924,
+          "value": 4867928
+        },
+        {
+          "name": "Life Insurance Corporation Nepal Limited",
+          "units": 5000,
+          "value": 6629200
+        },
+        {
+          "name": "Himalayan Life Insurance Company Limited",
+          "units": 15000,
+          "value": 5963540
+        },
+        {
+          "name": "Sun Nepal Life Insurance Company Limited",
+          "units": 90000,
+          "value": 4742000
+        },
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 95000,
+          "value": 99534000
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Neco Insurance Limited",
+          "units": 3622,
+          "value": 2386796
+        },
+        {
+          "name": "IGI Prudential Insurance Company Limited",
+          "units": 7932,
+          "value": 3004505
+        },
+        {
+          "name": "Nepal Insurance Company Limited",
+          "units": 7068,
+          "value": 3597692
+        },
+        {
+          "name": "NLG Insurance Company Limited",
+          "units": 6669,
+          "value": 4863539
+        },
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 4076,
+          "value": 3305474
+        },
+        {
+          "name": "Siddharth Premier Insurance Company Limited",
+          "units": 7000,
+          "value": 3545000
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Peoples Hydropower Company Limited",
+          "units": 15000,
+          "value": 3990000
+        },
+        {
+          "name": "Sanima Middle Tamor Hydropower Limited",
+          "units": 12996,
+          "value": 5836902
+        },
+        {
+          "name": "Super Madi Hydropower Limited",
+          "units": 10000,
+          "value": 5946000
+        },
+        {
+          "name": "Api Power Company Limited",
+          "units": 11000,
+          "value": 3962300
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 596,
+          "value": 465662
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 15000,
+          "value": 6640000
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 7000,
+          "value": 3345000
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 9000,
+          "value": 4963300
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 1598,
+          "value": 1035504
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 624,
+          "value": 597500
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 1175,
+          "value": 746790
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Oriental Hotels Limited",
+          "units": 2000,
+          "value": 1406000
+        },
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 10000,
+          "value": 4960000
+        },
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 2696,
+          "value": 2505280
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Himalayan Distillery Limited",
+          "units": 10600,
+          "value": 12301200
+        },
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 570,
+          "value": 1744340
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 1755,
+          "value": 1930500
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 2676,
+          "value": 3700030
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "First Microfinance Laghubitta Bittiya Sanstha Limited",
+          "units": 6000,
+          "value": 4506600
+        },
+        {
+          "name": "Kalika Laghubitta Bittiya Sanstha Limited",
+          "units": 6657,
+          "value": 6344929
+        },
+        {
+          "name": "Suryodaya Bomi Laghubitta Bittiya Sanstha Limited",
+          "units": 5000,
+          "value": 5400000
+        },
+        {
+          "name": "National Microfinance Laghubitta Bittiya Sanstha Limited",
+          "units": 4000,
+          "value": 4469000
+        },
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 4000,
+          "value": 4592400
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 6353,
+          "value": 4993924
+        },
+        {
+          "name": "Himalayan Laghubitta Bittiya Sanstha Limited",
+          "units": 90000,
+          "value": 7000000
+        },
+        {
+          "name": "Swastik Laghubitta Bittiya Sanstha Limited",
+          "units": 927,
+          "value": 369943
+        },
+        {
+          "name": "Sana Kisan Bikas Laghubitta Bittiya Sanstha Limited",
+          "units": 90000,
+          "value": 7690000
+        }
+      ],
+      "others": [
+        {
+          "name": "Pure Energy Limited",
+          "units": 900,
+          "value": 943200
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 323,
+          "value": 459306
+        },
+        {
+          "name": "Nepal Punarbima Company Limited",
+          "units": 3000,
+          "value": 3933000
+        },
+        {
+          "name": "Muktinath Krishi Company Limited",
+          "units": 2767,
+          "value": 3765256
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 180900000
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "Global IME Samunnat Yojana 2",
+          "units": 246000,
+          "value": 2236600
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 400000,
+          "value": 4625000
+        },
+        {
+          "name": "Reliable Samriddhi Yojana",
+          "units": 250000,
+          "value": 2447500
+        },
+        {
+          "name": "HLI Large Cap Fund",
+          "units": 290000,
+          "value": 1690000
+        },
+        {
+          "name": "RBB Focus 40",
+          "units": 490000,
+          "value": 4900000
+        }
+      ],
+      "investment": [
+        {
+          "name": "Citizen Investment Trust",
+          "units": 14000,
+          "value": 24636000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "PSIS",
+    "fund_name": "Prabhu Systematic Investment Scheme",
+    "fund_manager": "Prabhu Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.1,
+    "total_units": 39525000,
+    "net_assets": 399192020,
+    "total_assets": 436000000,
+    "total_liabilities": 36807980,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Prabhu Bank Limited",
+          "units": 24150,
+          "value": 6487173
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 3630,
+          "value": 5499995
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 10080,
+          "value": 4612023
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 3060,
+          "value": 4596865
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 10380,
+          "value": 3924298
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 7800,
+          "value": 3246750
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 6630,
+          "value": 3149780
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 7380,
+          "value": 2876254
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 6810,
+          "value": 2494503
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 6810,
+          "value": 2305526
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 4320,
+          "value": 1366632
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 5130,
+          "value": 1805090
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 3750,
+          "value": 1610888
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 2790,
+          "value": 678249
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 3210,
+          "value": 667359
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 3000,
+          "value": 683100
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 21582,
+          "value": 16591996
+        },
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 20072,
+          "value": 16992920
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Himalayan Everest Insurance Limited",
+          "units": 10326,
+          "value": 6561990
+        },
+        {
+          "name": "Neco Insurance Limited",
+          "units": 1960,
+          "value": 1300000
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 5036,
+          "value": 4222000
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Api Power Company Limited",
+          "units": 26166,
+          "value": 9629664
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 1327,
+          "value": 575932
+        },
+        {
+          "name": "Darmakhola Hydro Energy Limited",
+          "units": 3429,
+          "value": 2000000
+        },
+        {
+          "name": "Green Ventures Limited",
+          "units": 4036,
+          "value": 3200000
+        },
+        {
+          "name": "Him Star Urja Company Limited",
+          "units": 391,
+          "value": 280000
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 2375,
+          "value": 1717250
+        },
+        {
+          "name": "Mandakini Hydropower Limited",
+          "units": 45000,
+          "value": 34000000
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 49432,
+          "value": 28406640
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 31522,
+          "value": 11396994
+        },
+        {
+          "name": "Sanima Middle Tamor Hydropower Limited",
+          "units": 31645,
+          "value": 14923440
+        },
+        {
+          "name": "Upper Solu Hydro Electric Company Limited",
+          "units": 22768,
+          "value": 10345806
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 2270,
+          "value": 1723100
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Himalayan Distillery Limited",
+          "units": 4000,
+          "value": 5592000
+        },
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 434,
+          "value": 1933000
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 45585,
+          "value": 24606946
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 8640,
+          "value": 3919104
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 1300,
+          "value": 1430000
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 1474,
+          "value": 2033535
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 12329,
+          "value": 11246063
+        },
+        {
+          "name": "Forward Microfinance Laghubitta Bittiya Sanstha Limited",
+          "units": 9633,
+          "value": 6255628
+        },
+        {
+          "name": "Swastik Laghubitta Bittiya Sanstha Limited",
+          "units": 500,
+          "value": 376062
+        }
+      ],
+      "others": [
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 226,
+          "value": 339580
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 150750000
+        }
+      ],
+      "investment": [
+        {
+          "name": "CEIDB Holdings Limited",
+          "units": 2000,
+          "value": 4930000
+        },
+        {
+          "name": "NRN Infrastructure & Development Limited",
+          "units": 1000,
+          "value": 1363000
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "Siddhartha Equity Fund",
+          "units": 300000,
+          "value": 1946000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "CSDY",
+    "fund_name": "Citizens Sadabahar Yojana",
+    "fund_manager": "Citizens Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.12,
+    "total_units": 69075000,
+    "net_assets": 699028170,
+    "total_assets": 765000000,
+    "total_liabilities": 65971830,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Citizens Bank International Limited",
+          "units": 33000,
+          "value": 12217770
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 5610,
+          "value": 8499992
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 15630,
+          "value": 7150316
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 4770,
+          "value": 7163962
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 16110,
+          "value": 6090643
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 12120,
+          "value": 5044950
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 10290,
+          "value": 4888540
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 11430,
+          "value": 4454358
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 10560,
+          "value": 3868128
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 10560,
+          "value": 3575088
+        },
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 6720,
+          "value": 2125872
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 7950,
+          "value": 2797367
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 5820,
+          "value": 2500097
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 8100,
+          "value": 2526471
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 4320,
+          "value": 1050192
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 4980,
+          "value": 1035342
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 4680,
+          "value": 1065636
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "National Life Insurance Company Limited",
+          "units": 20000,
+          "value": 11540000
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 12660,
+          "value": 7566640
+        },
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 10246,
+          "value": 8529282
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 12867,
+          "value": 9143939
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Chilime Hydropower Company Limited",
+          "units": 10964,
+          "value": 5953060
+        },
+        {
+          "name": "Shiv Shri Hydropower Limited",
+          "units": 37695,
+          "value": 5924496
+        },
+        {
+          "name": "Mailud Khola Jalvidyut Company Limited",
+          "units": 3500,
+          "value": 1602500
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 1544,
+          "value": 1174996
+        },
+        {
+          "name": "Jhapa Energy Limited",
+          "units": 507,
+          "value": 720954
+        },
+        {
+          "name": "Mabilung Energy Limited",
+          "units": 1336,
+          "value": 930050
+        },
+        {
+          "name": "Mountain Energy Nepal Limited",
+          "units": 42622,
+          "value": 24550000
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 2000,
+          "value": 1903200
+        },
+        {
+          "name": "United Modi Hydropower Limited",
+          "units": 16000,
+          "value": 10490200
+        },
+        {
+          "name": "Siganti Hydro Energy Limited",
+          "units": 49669,
+          "value": 11547663
+        },
+        {
+          "name": "Universal Power Company Limited",
+          "units": 4449,
+          "value": 1674904
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 51446,
+          "value": 26966349
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 19250,
+          "value": 5590500
+        },
+        {
+          "name": "Bandipur Kewalkar & Tourism Limited",
+          "units": 4706,
+          "value": 3904960
+        },
+        {
+          "name": "Chandragiri Hills Limited",
+          "units": 15945,
+          "value": 13566195
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Shivam Cements Limited",
+          "units": 960,
+          "value": 990700
+        },
+        {
+          "name": "Sagar Distillery Limited",
+          "units": 1367,
+          "value": 2940635
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 2755,
+          "value": 3030500
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 4966,
+          "value": 5797690
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 6000,
+          "value": 5244000
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 780,
+          "value": 1489622
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 930,
+          "value": 1134972
+        }
+      ],
+      "others": [
+        {
+          "name": "Nepal Punarbima Company Limited",
+          "units": 14660,
+          "value": 19407680
+        },
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 34695,
+          "value": 29969196
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 251250000
+        }
+      ],
+      "investment": [
+        {
+          "name": "NRN Infrastructure & Development Limited",
+          "units": 1709,
+          "value": 2362693
+        }
+      ],
+      "mutual_funds": [
+        {
+          "name": "Prabhu Smart Fund",
+          "units": 94000,
+          "value": 1033060
+        },
+        {
+          "name": "HLI Large Cap Fund",
+          "units": 2000000,
+          "value": 16000000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "NI31",
+    "fund_name": "NI 31",
+    "fund_manager": "Nabil Investment Banking Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 10.08,
+    "total_units": 24761000,
+    "net_assets": 249580700,
+    "total_assets": 290000000,
+    "total_liabilities": 40419300,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Agriculture Development Bank Limited",
+          "units": 32836,
+          "value": 9650600
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 16242,
+          "value": 10699520
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 96266,
+          "value": 22956000
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 22000,
+          "value": 4999600
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 40240,
+          "value": 9610360
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 14403,
+          "value": 9548693
+        },
+        {
+          "name": "Kamana Sewa Bikas Bank Limited",
+          "units": 15767,
+          "value": 7242451
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 26550,
+          "value": 7209990
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Citizen Life Insurance Company Limited",
+          "units": 1267,
+          "value": 600556
+        },
+        {
+          "name": "Life Insurance Corporation Nepal Limited",
+          "units": 6642,
+          "value": 4332963
+        },
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 7775,
+          "value": 5906879
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Neco Insurance Limited",
+          "units": 6475,
+          "value": 4002550
+        },
+        {
+          "name": "Siddharth Premier Insurance Limited",
+          "units": 4636,
+          "value": 4049022
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Arun Valley Hydropower Development Company Limited",
+          "units": 32020,
+          "value": 6279960
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 16350,
+          "value": 12652100
+        },
+        {
+          "name": "Nepal Hydro Developers Limited",
+          "units": 2586,
+          "value": 1006960
+        },
+        {
+          "name": "Sahas Urja Limited",
+          "units": 9740,
+          "value": 6434346
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 6230,
+          "value": 3836565
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 6508,
+          "value": 4336548
+        },
+        {
+          "name": "Taragaon Regency Hotels Limited",
+          "units": 2994,
+          "value": 2036400
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Himalayan Distillery Limited",
+          "units": 2996,
+          "value": 3493583
+        },
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 3520,
+          "value": 3076800
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 602,
+          "value": 833770
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 9568,
+          "value": 6620922
+        },
+        {
+          "name": "National Laghubitta Bittiya Sanstha Limited",
+          "units": 2198,
+          "value": 2327752
+        },
+        {
+          "name": "Swarojgar Laghubitta Bittiya Sanstha Limited",
+          "units": 2296,
+          "value": 2090679
+        }
+      ],
+      "others": [
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 11422,
+          "value": 9600191
+        },
+        {
+          "name": "Nepal Telecom",
+          "units": 4937,
+          "value": 4787230
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 136378500
+        }
+      ],
+      "finance_companies": [
+        {
+          "name": "ICFC Finance Limited",
+          "units": 3462,
+          "value": 2296920
+        },
+        {
+          "name": "Manjushree Finance Limited",
+          "units": 500,
+          "value": 399500
+        }
+      ],
+      "investment": [
+        {
+          "name": "CEIDB Holdings Limited",
+          "units": 4500,
+          "value": 10372500
+        },
+        {
+          "name": "NRN Infrastructure & Development Limited",
+          "units": 3424,
+          "value": 4733680
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "ELIS",
+    "fund_name": "NIC ASIA Equity Linked Investment Scheme",
+    "fund_manager": "NIC Asia Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 9.87,
+    "total_units": 75010000,
+    "net_assets": 740348520,
+    "total_assets": 835000000,
+    "total_liabilities": 94651480,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Sanima Bank Limited",
+          "units": 69000,
+          "value": 32649000
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 23000,
+          "value": 34845000
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 48000,
+          "value": 16272000
+        },
+        {
+          "name": "Nepal Bank Limited",
+          "units": 16000,
+          "value": 4333000
+        },
+        {
+          "name": "Prabhu Bank Limited",
+          "units": 15500,
+          "value": 4165850
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 25500,
+          "value": 10957050
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Jyoti Bikas Bank Limited",
+          "units": 23000,
+          "value": 7629300
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 61929,
+          "value": 23033000
+        },
+        {
+          "name": "Kamana Sewa Bikas Bank Limited",
+          "units": 34000,
+          "value": 25402000
+        },
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 26620,
+          "value": 20096500
+        },
+        {
+          "name": "Shangrila Development Bank Limited",
+          "units": 29000,
+          "value": 9434500
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 21988,
+          "value": 4578019
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 32000,
+          "value": 15106400
+        },
+        {
+          "name": "Mahalaxmi Bikas Bank Limited",
+          "units": 20000,
+          "value": 7300000
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 22356,
+          "value": 16591996
+        },
+        {
+          "name": "Suryajyoti Life Insurance Company Limited",
+          "units": 25000,
+          "value": 22039000
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "NLG Insurance Company Limited",
+          "units": 12932,
+          "value": 6588497
+        },
+        {
+          "name": "Prabhu Insurance Limited",
+          "units": 15322,
+          "value": 20536336
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Arun Kabeli Power Limited",
+          "units": 25000,
+          "value": 6250000
+        },
+        {
+          "name": "Dadi Rup Power Limited",
+          "units": 24383,
+          "value": 9600053
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 30000,
+          "value": 12360000
+        },
+        {
+          "name": "Ridi Power Company Limited",
+          "units": 25000,
+          "value": 4520000
+        },
+        {
+          "name": "Bujjal Hydro Limited",
+          "units": 3000,
+          "value": 1926000
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Chandragiri Hills Limited",
+          "units": 15000,
+          "value": 12765000
+        },
+        {
+          "name": "Soaltee Hotel Limited",
+          "units": 7500,
+          "value": 3935000
+        },
+        {
+          "name": "Oriental Hotels Limited",
+          "units": 5512,
+          "value": 5204544
+        }
+      ],
+      "manufacturing": [
+        {
+          "name": "Sarbottam Cement Limited",
+          "units": 3140,
+          "value": 9548360
+        },
+        {
+          "name": "Shivam Cements Limited",
+          "units": 9500,
+          "value": 5100000
+        },
+        {
+          "name": "SY Panel Nepal Limited",
+          "units": 4000,
+          "value": 5633600
+        },
+        {
+          "name": "Shrinagar Agritech Industries Limited",
+          "units": 2913,
+          "value": 3204300
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 11364,
+          "value": 6045722
+        },
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 22995,
+          "value": 22954202
+        }
+      ],
+      "others": [
+        {
+          "name": "Nepal Punarbima Company Limited",
+          "units": 25000,
+          "value": 29665000
+        },
+        {
+          "name": "Himalayan Reinsurance Limited",
+          "units": 22000,
+          "value": 16492000
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 321600000
+        }
+      ]
+    }
+  },
+  {
+    "symbol": "MSY",
+    "fund_name": "Machhapuchchhre SIP Yojana",
+    "fund_manager": "Machhapuchchhre Capital Limited",
+    "report_date_nepali": "2082 Poush",
+    "report_date_english": "January 2026",
+    "nav_per_unit": 9.99,
+    "total_units": 31968739,
+    "net_assets": 319367700,
+    "total_assets": 346185263,
+    "total_liabilities": 26817563,
+    "holdings": {
+      "commercial_banks": [
+        {
+          "name": "Machhapuchchhre Bank Limited",
+          "units": 15000,
+          "value": 4770000
+        },
+        {
+          "name": "Nabil Bank Limited",
+          "units": 2400,
+          "value": 3633600
+        },
+        {
+          "name": "Nepal Investment Mega Bank Limited",
+          "units": 6000,
+          "value": 2880000
+        },
+        {
+          "name": "Everest Bank Limited",
+          "units": 1800,
+          "value": 2741400
+        },
+        {
+          "name": "Global IME Bank Limited",
+          "units": 6000,
+          "value": 2286000
+        },
+        {
+          "name": "Himalayan Bank Limited",
+          "units": 4500,
+          "value": 1885500
+        },
+        {
+          "name": "NIC Asia Bank Limited",
+          "units": 3600,
+          "value": 1720800
+        },
+        {
+          "name": "NMB Bank Limited",
+          "units": 4200,
+          "value": 1642200
+        },
+        {
+          "name": "Sanima Bank Limited",
+          "units": 3900,
+          "value": 1435200
+        },
+        {
+          "name": "Kumari Bank Limited",
+          "units": 3600,
+          "value": 1220400
+        },
+        {
+          "name": "Siddhartha Bank Limited",
+          "units": 2400,
+          "value": 1034400
+        },
+        {
+          "name": "Prime Commercial Bank Limited",
+          "units": 3000,
+          "value": 1059000
+        },
+        {
+          "name": "Laxmi Sunrise Bank Limited",
+          "units": 3600,
+          "value": 1126800
+        }
+      ],
+      "development_banks": [
+        {
+          "name": "Garima Bikas Bank Limited",
+          "units": 1500,
+          "value": 364500
+        },
+        {
+          "name": "Shine Resunga Development Bank Limited",
+          "units": 1800,
+          "value": 374400
+        },
+        {
+          "name": "Lumbini Bikas Bank Limited",
+          "units": 1500,
+          "value": 342000
+        },
+        {
+          "name": "Muktinath Bikas Bank Limited",
+          "units": 900,
+          "value": 305100
+        }
+      ],
+      "life_insurance": [
+        {
+          "name": "Nepal Life Insurance Company Limited",
+          "units": 1500,
+          "value": 2271000
+        },
+        {
+          "name": "Asian Life Insurance Company Limited",
+          "units": 750,
+          "value": 433500
+        },
+        {
+          "name": "Surya Life Insurance Company Limited",
+          "units": 900,
+          "value": 400500
+        }
+      ],
+      "non_life_insurance": [
+        {
+          "name": "Shikhar Insurance Company Limited",
+          "units": 600,
+          "value": 465000
+        },
+        {
+          "name": "Sagarmatha Lumbini Insurance Company Limited",
+          "units": 450,
+          "value": 298350
+        }
+      ],
+      "hydropower": [
+        {
+          "name": "Chilime Hydropower Company Limited",
+          "units": 1200,
+          "value": 882000
+        },
+        {
+          "name": "Butwal Power Company Limited",
+          "units": 1200,
+          "value": 492000
+        },
+        {
+          "name": "Upper Tamakoshi Hydropower Limited",
+          "units": 1500,
+          "value": 993000
+        },
+        {
+          "name": "Sanima Mai Hydropower Limited",
+          "units": 1500,
+          "value": 547500
+        }
+      ],
+      "microfinance": [
+        {
+          "name": "Chhimek Laghubitta Bittiya Sanstha Limited",
+          "units": 300,
+          "value": 573300
+        },
+        {
+          "name": "Nirdhan Utthan Laghubitta Bittiya Sanstha Limited",
+          "units": 300,
+          "value": 366600
+        }
+      ],
+      "others": [
+        {
+          "name": "Nepal Telecom",
+          "units": 600,
+          "value": 571200
+        },
+        {
+          "name": "Citizen Investment Trust",
+          "units": 450,
+          "value": 666000
+        }
+      ],
+      "fixed_deposits": [
+        {
+          "name": "Various Bank Fixed Deposits",
+          "value": 206506320
+        }
+      ]
+    }
+  }
+]
