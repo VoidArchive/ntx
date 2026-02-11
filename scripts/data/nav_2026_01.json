@@ -507,6 +507,98 @@
           "name": "Government Treasury Bills/Bonds",
           "value": 150000000
         }
+      ],
+      "mutual_funds": [
+        {
+          "name": "NIC Asia Flexi Cap Fund",
+          "units": 469000,
+          "value": 4370540
+        },
+        {
+          "name": "Sanima Growth Fund",
+          "units": 600000,
+          "value": 5636000
+        },
+        {
+          "name": "Sunrise Focused Equity Fund",
+          "units": 1243600,
+          "value": 11926124
+        },
+        {
+          "name": "Prabhu Smart Fund",
+          "units": 200000,
+          "value": 2196000
+        },
+        {
+          "name": "RBB Mutual Fund - 2",
+          "units": 136000,
+          "value": 1052261
+        },
+        {
+          "name": "Siddhartha Investment Growth Scheme 1",
+          "units": 231000,
+          "value": 2332330
+        },
+        {
+          "name": "Citizens Super 30 Mutual Fund",
+          "units": 732000,
+          "value": 6928660
+        },
+        {
+          "name": "Laxmi Value Fund 2",
+          "units": 435000,
+          "value": 4493020
+        },
+        {
+          "name": "Himalayan 50-20",
+          "units": 600000,
+          "value": 7080000
+        },
+        {
+          "name": "NIC Asia Growth Fund-2",
+          "units": 2400000,
+          "value": 22040000
+        },
+        {
+          "name": "Kumari Sabal Yojana",
+          "units": 2640000,
+          "value": 15228000
+        },
+        {
+          "name": "Muktinath Mutual Fund 1",
+          "units": 240000,
+          "value": 2300000
+        },
+        {
+          "name": "Garima Samriddhi Yojana",
+          "units": 2000000,
+          "value": 9060000
+        },
+        {
+          "name": "NMB Hybrid Fund L-2",
+          "units": 600000,
+          "value": 4524000
+        },
+        {
+          "name": "MBL Equity Fund",
+          "units": 300000,
+          "value": 2654000
+        },
+        {
+          "name": "Reliable Samriddhi Yojana",
+          "units": 300000,
+          "value": 2930000
+        },
+        {
+          "name": "Global IME Samunnat Yojana 2",
+          "units": 1400000,
+          "value": 13950000
+        },
+        {
+          "name": "HLI Large Cap Fund",
+          "units": 1000000,
+          "value": 9000000
+        }
       ]
     }
   },

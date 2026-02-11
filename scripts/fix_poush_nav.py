@@ -42,6 +42,34 @@ def save_nav(data):
 # Each function takes the fund dict and modifies holdings in-place
 # ---------------------------------------------------------------------------
 
+def fix_niblsf(fund):
+    """NIBLSF - NIBL Sahabhagita Fund (image: scripts/images/NIBLSF.jpg)
+    Image shows 18 mutual fund holdings under सामूहिक लगानी कोष समूह.
+    """
+    holdings = fund["holdings"]
+
+    holdings["mutual_funds"] = [
+        h("NIC Asia Flexi Cap Fund", 469000, 4370540),
+        h("Sanima Growth Fund", 600000, 5636000),
+        h("Sunrise Focused Equity Fund", 1243600, 11926124),
+        h("Prabhu Smart Fund", 200000, 2196000),
+        h("RBB Mutual Fund - 2", 136000, 1052261),
+        h("Siddhartha Investment Growth Scheme 1", 231000, 2332330),
+        h("Citizens Super 30 Mutual Fund", 732000, 6928660),
+        h("Laxmi Value Fund 2", 435000, 4493020),
+        h("Himalayan 50-20", 600000, 7080000),
+        h("NIC Asia Growth Fund-2", 2400000, 22040000),
+        h("Kumari Sabal Yojana", 2640000, 15228000),
+        h("Muktinath Mutual Fund 1", 240000, 2300000),
+        h("Garima Samriddhi Yojana", 2000000, 9060000),
+        h("NMB Hybrid Fund L-2", 600000, 4524000),
+        h("MBL Equity Fund", 300000, 2654000),
+        h("Reliable Samriddhi Yojana", 300000, 2930000),
+        h("Global IME Samunnat Yojana 2", 1400000, 13950000),
+        h("HLI Large Cap Fund", 1000000, 9000000),
+    ]
+
+
 def fix_nmbsbf(fund):
     """NMBSBF - NMB Saral Bachat Fund - E (image: scripts/images/NMBSBF.jpg)
     Image shows 42 listed holdings + debentures + public issue shares + mutual funds.
@@ -1050,6 +1078,7 @@ def main():
     fund_map = {f["symbol"]: f for f in data}
 
     fixes = {
+        "NIBLSF": fix_niblsf,
         "NMBSBF": fix_nmbsbf,
         "SSIS": fix_ssis,
         "NFCF": fix_nfcf,

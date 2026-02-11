@@ -107,7 +107,7 @@
 					<div class="border-t border-border bg-background">
 						<!-- Mobile: Card layout -->
 						<div class="sm:hidden">
-							{#each group.items as item (item.name)}
+							{#each group.items as item, i (item.name + i)}
 								<div class="flex items-start justify-between gap-2 px-3 py-2">
 									<span class="text-sm">{item.name}</span>
 									<span class="shrink-0 text-sm text-muted-foreground tabular-nums">
@@ -128,7 +128,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each group.items as item (item.name)}
+								{#each group.items as item, i (item.name + i)}
 									<tr class="hover:bg-muted/30">
 										<td class="px-4 py-2">{item.name}</td>
 										<td class="px-4 py-2 text-right text-muted-foreground tabular-nums">

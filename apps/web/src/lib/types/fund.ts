@@ -15,6 +15,9 @@ export interface Holdings {
 	manufacturing?: Holding[];
 	microfinance?: Holding[];
 	others?: Holding[];
+	mutual_funds?: Holding[];
+	investment?: Holding[];
+	trading?: Holding[];
 	fixed_deposits?: Holding[];
 	government_bonds?: Holding[];
 	corporate_debentures?: Holding[];
@@ -45,6 +48,9 @@ export const SECTOR_LABELS: Record<keyof Holdings, string> = {
 	manufacturing: 'Manufacturing',
 	microfinance: 'Microfinance',
 	others: 'Others',
+	mutual_funds: 'Mutual Funds',
+	investment: 'Investment',
+	trading: 'Trading',
 	fixed_deposits: 'Fixed Deposits',
 	government_bonds: 'Govt. Bonds',
 	corporate_debentures: 'Debentures'
@@ -62,7 +68,10 @@ export const SECTOR_COLORS: Record<keyof Holdings, string> = {
 	microfinance: '#38bdf8', // sky-400
 	non_life_insurance: '#60a5fa', // blue-400
 	finance_companies: '#818cf8', // indigo-400
-	government_bonds: '#a78bfa', // violet-400
-	corporate_debentures: '#c084fc', // purple-400
-	hotels: '#e879f9' // fuchsia-400
+	mutual_funds: '#a78bfa', // violet-400
+	investment: '#c084fc', // purple-400
+	trading: '#e879f9', // fuchsia-400
+	government_bonds: '#f0abfc', // fuchsia-300
+	corporate_debentures: '#d8b4fe', // purple-300
+	hotels: '#f9a8d4' // pink-300
 };
