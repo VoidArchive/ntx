@@ -71,14 +71,21 @@ func payout(rows []FiscalYear, actions []sqlc.CorporateAction) []Claim {
 		out = append(out, claim(fmt.Sprintf("It paid out in each of the last %d fiscal years.", run), float64(run), ""))
 	}
 
-	if last.Cash != nil && *last.Cash > 0 && last.Shares != nil && last.Profit != nil && *last.Profit > 0 {
-		share := *last.Cash / 100 * parValue * *last.Shares / *last.Profit * 100
+	if share, ok := cashShare(last); ok && deref(last.Cash) > 0 {
 		out = append(
 			out,
 			claim(fmt.Sprintf("The cash dividend was %.2f%% of %s profit.", share, fy), share, "%"),
 		)
 	}
 	return out
+}
+
+// cashShare is the year's cash dividend as % of its profit; missing cash counts as none.
+func cashShare(row FiscalYear) (float64, bool) {
+	if row.Shares == nil || row.Profit == nil || *row.Profit <= 0 {
+		return 0, false
+	}
+	return deref(row.Cash) / 100 * parValue * *row.Shares / *row.Profit * 100, true
 }
 
 // paid lists the year's non-zero parts, e.g. "10% bonus shares and 12.5% cash".

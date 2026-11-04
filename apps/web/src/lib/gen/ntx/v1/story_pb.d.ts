@@ -142,6 +142,13 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
    * @generated from field: repeated ntx.v1.OwnershipObservation ownership = 12;
    */
   ownership: OwnershipObservation[];
+
+  /**
+   * The eight published rules, in a fixed order (GLOSSARY: Check).
+   *
+   * @generated from field: repeated ntx.v1.Check checks = 30;
+   */
+  checks: Check[];
 };
 
 /**
@@ -149,6 +156,38 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
  * Use `create(GetCompanyStoryResponseSchema)` to create a new message.
  */
 export declare const GetCompanyStoryResponseSchema: GenMessage<GetCompanyStoryResponse>;
+
+/**
+ * One published rule and its verdict; a verdict is not a recommendation.
+ *
+ * @generated from message ntx.v1.Check
+ */
+export declare type Check = Message<"ntx.v1.Check"> & {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * the sentence, threshold included
+   *
+   * @generated from field: string rule = 2;
+   */
+  rule: string;
+
+  /**
+   * holds | watch | needs more history
+   *
+   * @generated from field: string verdict = 3;
+   */
+  verdict: string;
+};
+
+/**
+ * Describes the message ntx.v1.Check.
+ * Use `create(CheckSchema)` to create a new message.
+ */
+export declare const CheckSchema: GenMessage<Check>;
 
 /**
  * One fiscal year's results and payout (GLOSSARY: Payout, Bonus-adjusted return).
