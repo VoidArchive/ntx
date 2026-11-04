@@ -37,10 +37,10 @@
 			.map((c) => `- ${c.name}: ${c.verdict} (${c.rule})`)
 			.join('\n');
 
-		return `Act as a Senior Financial Analyst specializing in the Nepalese Stock Market (NEPSE).
-Your goal is to perform a deep-dive investment analysis of: ${company.name} (${company.symbol}).
+		return `You are helping research ${company.name} (${company.symbol}), listed on the Nepal Stock Exchange (NEPSE).
+Check the claims and checks below against the company's own filings; do not give advice or a recommendation.
 
-## 1. Provided Data Snapshot (As of ${quote?.businessDate ?? 'no recorded close'})
+## 1. Data from NTX (close of ${quote?.businessDate ?? 'no recorded close'})
 - **Price**: Rs. ${fmt(quote?.close)}
 - **Sector**: ${sectorNames[company.sector] ?? 'Others'}
 - **Newest filing**: ${story?.lastFiling || 'none'}
@@ -54,25 +54,15 @@ ${strips || '- None recorded.'}
 Published checks:
 ${checks || '- None.'}
 
-## 2. Research Tasks (MANDATORY WEB SEARCH)
-Please SEARCH THE WEB (using browsing capabilities) for the following real-time information:
-1.  **Recent News**: Look for the latest news on "sharesansar", "merolagani", or "bizmandu" regarding ${company.symbol} in the last 6 months.
-2.  **Regulatory Impacts**: Are there any recent NRB directives, BFI regulations, or insurance board policies affecting this sector?
-3.  **Corporate Actions**: Check for recent AGM announcements, dividend declarations, or right share issues.
+## 2. Check against the filings
+1. For each claim and check above, find the quarterly report, annual report or notice it rests on (nepalstock.com.np, the company's website) and say whether the figure matches.
+2. Note any filing, AGM notice, dividend or rights announcement newer than ${story?.lastFiling || 'the newest filing above'}.
+3. Note any NRB directive or regulator policy in the last six months that applies to this sector.
 
-## 3. Analysis Requirements
-Combine the provided data with your web research to answer:
-- **Valuation**: Is ${company.symbol} undervalued compared to its sector peers? (Compare P/E and P/B).
-- **Growth Outlook**: Based on the latest quarterly reports you find, is the company growing its core business?
-- **Risk Assessment**: What are the specific regulatory or macro risks for this company right now?
+## 3. What would change them
+For each claim and check, list the specific figure or event in a coming filing that would make it no longer hold.
 
-## 4. Investment Verdict
-Conclude with a structured verdict:
-- **Recommendation**: [Buy / Hold / Sell]
-- **Time Horizon**: [Short-term / Long-term]
-- **Key Catalyst**: [One specific event to watch]
-
-Please be objective, critical, and data-driven.`;
+Cite the filing or page for every figure you use, and say "not found" where you cannot find one.`;
 	});
 
 	async function copyPrompt() {
@@ -96,8 +86,8 @@ Please be objective, critical, and data-driven.`;
 				AI Research Prompt
 			</Dialog.Title>
 			<Dialog.Description>
-				Copy this prompt and paste it into your preferred AI assistant (ChatGPT, Claude, etc.) for
-				detailed investment research.
+				Copy this prompt and paste it into your preferred AI assistant (ChatGPT, Claude, etc.) to
+				check what the filings say.
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="relative">

@@ -129,7 +129,8 @@ export const load = async ({ params, platform }) => {
 			story: storyRes,
 			fundamentalsHistory: fundamentalsRes.history,
 			priceHistory: priceHistoryRes.prices,
-			fundHoldings
+			fundHoldings,
+			navMonths: [...new Set((navData as Fund[]).map((f) => f.report_date_nepali))].join(', ')
 		};
 	} catch (err) {
 		if (err instanceof ConnectError && err.code === Code.NotFound) {

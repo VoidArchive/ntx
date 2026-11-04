@@ -1,25 +1,22 @@
 <script lang="ts">
 	import type { Peer, Range } from '#lib/gen/ntx/v1/story_pb.js';
+	import { at } from '#lib/utils.js';
 
 	interface Props {
 		peers: Peer[];
 		// The PE strip's sector range, so a peer sits where it would on that strip.
 		range?: Range;
 		symbol: string;
+		// This company's newest filed period.
+		period: string;
 	}
 
-	let { peers, range, symbol }: Props = $props();
+	let { peers, range, symbol, period }: Props = $props();
 
 	function fmt(value: number | undefined): string {
 		return value === undefined
 			? '—'
 			: `${value.toLocaleString('en-NP', { maximumFractionDigits: 2 })}x`;
-	}
-
-	// Clamped like the valuation strips, so outliers sit at the ends.
-	function at(r: Range, value: number): number {
-		if (r.high === r.low) return 50;
-		return Math.min(100, Math.max(0, ((value - r.low) / (r.high - r.low)) * 100));
 	}
 </script>
 
@@ -75,4 +72,8 @@
 			</tbody>
 		</table>
 	</div>
+	<p class="mt-2 text-xs text-muted-foreground">
+		PE and PB from each company's latest filed quarter and latest close; this company's is {period ||
+			'not recorded'}.
+	</p>
 </section>

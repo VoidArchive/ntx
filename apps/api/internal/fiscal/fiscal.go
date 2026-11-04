@@ -12,6 +12,7 @@
 //	end, err := fy.End()                 // Ashadh end
 //	bs, err := fiscal.BSDate(date)       // "Kartik 18, 2083"
 //	fy, err := fiscal.ParseYear(s)       // "2025-2026", "2080-2081", "2082/83" -> 2082/83, 2080/81, 2082/83
+//	fy, err := fiscal.ParseFilingYear(np, gregorian) // Nepali name first, Gregorian span as fallback
 //	q, err := fiscal.ParseQuarter(s)     // "First Quarter", "Q1" -> Q1; "Annual", "" -> Annual
 //
 // Dates are supported from Shrawan 1, 2075 (17 Jul 2018) up to but not
@@ -160,6 +161,15 @@ func ParseYear(s string) (Year, error) {
 		return Year(first + 57), nil
 	}
 	return Year(first), nil
+}
+
+// ParseFilingYear reads a filing's year from the exchange's Nepali name, and
+// from its Gregorian span when the Nepali name is missing or unreadable.
+func ParseFilingYear(nepali, gregorian string) (Year, error) {
+	if y, err := ParseYear(nepali); err == nil {
+		return y, nil
+	}
+	return ParseYear(gregorian)
 }
 
 // ParseQuarter normalizes a quarter name to its Quarter. It accepts "Q1".."Q4",

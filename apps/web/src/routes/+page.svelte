@@ -1,17 +1,11 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
 
 	let { data } = $props();
 
 	function getPrice(companyId: bigint): Price | undefined {
 		return data.prices?.find((p) => p.companyId === companyId);
-	}
-
-	function formatLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(2)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(2)} L`;
-		return value.toLocaleString();
 	}
 
 	// Sign and glyph carry direction, so colour is never the only signal.
@@ -232,6 +226,12 @@
 					</ul>
 				</div>
 			{/each}
+			{#if marketDay}
+				<p class="text-xs text-muted-foreground sm:col-span-2 lg:col-span-4">
+					Session of {marketDay.businessDateBs} · {marketDay.businessDate}; market cap is listed
+					shares times that close.
+				</p>
+			{/if}
 		</section>
 	</main>
 </div>

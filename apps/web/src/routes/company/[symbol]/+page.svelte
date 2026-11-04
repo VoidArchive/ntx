@@ -45,7 +45,7 @@
 
 			<!-- 2. Where the ratios sit -->
 			{#if story?.strips.length}
-				<ValuationStrips strips={story.strips} />
+				<ValuationStrips strips={story.strips} period={story.lastFiling} />
 			{:else}
 				{@render empty('strips', 'Valuation', `No ratios recorded. ${lastFiling}`)}
 			{/if}
@@ -65,7 +65,7 @@
 					</div>
 				</section>
 			{:else}
-				{@render empty('price', 'Price and volume', 'No closes recorded.')}
+				{@render empty('price', 'Price and volume', `No closes recorded. ${lastFiling}`)}
 			{/if}
 
 			<!-- 4. One row per fiscal year with compounded growth beside it -->
@@ -110,7 +110,7 @@
 					<OwnershipHistory observations={story.ownership} />
 				</div>
 			{:else}
-				{@render empty('ownership', 'Ownership', 'No shareholding observations recorded.')}
+				{@render empty('ownership', 'Ownership', 'No observations recorded.')}
 			{/if}
 			{#if fundHoldings.length > 0}
 				<div id="funds" class="mt-12 border-t border-border pt-8">
@@ -120,7 +120,7 @@
 				{@render empty(
 					'funds',
 					'Fund holdings',
-					'No open-ended fund lists it in the NAV reports on file.'
+					`No open-ended fund lists it in the NAV reports for ${data.navMonths || 'no month on file'}.`
 				)}
 			{/if}
 
@@ -131,10 +131,15 @@
 						peers={story.peers}
 						range={story.strips.find((s) => s.ratio === 'pe')?.sector}
 						symbol={company.symbol}
+						period={story.lastFiling}
 					/>
 				</div>
 			{:else}
-				{@render empty('peers', 'Peers', 'No sector company has a quarterly filing and a close.')}
+				{@render empty(
+					'peers',
+					'Peers',
+					`No sector company has a quarterly filing and a close. ${lastFiling}`
+				)}
 			{/if}
 
 			<!-- 8. How fresh the data is, and the research prompt built from it -->

@@ -7,6 +7,7 @@ import (
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/fiscal"
 )
 
 type CompanyService struct {
@@ -154,7 +155,22 @@ func fundamentalToProto(f sqlc.Fundamental) *ntxv1.Fundamental {
 		PublishedAt:   nullString(f.PublishedAt),
 		SourceUrl:     nullString(f.SourceUrl),
 		FiscalYearNp:  nullString(f.FiscalYearNp),
+		Period:        period(f),
 	}
+}
+
+// period is the canonical display name of a filing's period; the stored
+// Gregorian span is never displayed.
+func period(f sqlc.Fundamental) string {
+	y, err := fiscal.ParseFilingYear(f.FiscalYearNp.String, f.FiscalYear)
+	if err != nil {
+		return ""
+	}
+	q, err := fiscal.ParseQuarter(f.Quarter)
+	if err != nil {
+		return ""
+	}
+	return q.String() + " " + y.String()
 }
 
 func nullFloat64(nf sql.NullFloat64) *float64 {

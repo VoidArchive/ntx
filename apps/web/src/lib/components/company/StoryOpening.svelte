@@ -17,7 +17,8 @@
 	let watch = $derived(checks.filter((c) => c.verdict === 'watch'));
 	let lacking = $derived(checks.filter((c) => c.verdict === 'needs more history').length);
 
-	// Claim text is computed in the API; only its numbers become links to their evidence.
+	// Claim text is computed in the API; its numbers (or, without numbers, the
+	// whole sentence) link to their evidence, and its period and filing follow it.
 	const NUMBER = /(Rs [\d,]+(?:\.\d+)? crore|Rs [\d,]+(?:\.\d+)?|[\d,]+(?:\.\d+)?(?:%|x))/;
 
 	function fmt(value: number): string {
@@ -42,14 +43,22 @@
 				Not enough filings to say anything yet. Last filing: {story?.lastFiling || 'none'}.
 			{:else}
 				{#each claims as claim, i (i)}
-					{#each claim.text.split(NUMBER) as part, j (j)}
+					{@const parts = claim.text.split(NUMBER)}
+					{#each parts.length === 1 ? ['', claim.text, ''] : parts as part, j (j)}
 						{#if j % 2 === 1}
 							<a
 								href="#{claim.anchor}"
 								class="underline decoration-dotted underline-offset-4 hover:text-primary">{part}</a
 							>
 						{:else}{part}{/if}
-					{/each}{i < claims.length - 1 ? ' ' : ''}
+					{/each}{#if claim.period && !claim.text.includes(claim.period)}
+						<span class="text-xs text-muted-foreground">({claim.period})</span
+						>{/if}{#if claim.source}
+						<a
+							href={claim.source}
+							class="text-xs text-muted-foreground underline underline-offset-2 hover:text-primary"
+							>filing</a
+						>{/if}{i < claims.length - 1 ? ' ' : ''}
 				{/each}
 			{/if}
 		</p>

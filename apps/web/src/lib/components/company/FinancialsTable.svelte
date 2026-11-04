@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
@@ -13,42 +14,14 @@
 		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
 	}
 
-	function fmtLarge(value: number | undefined): string {
-		if (value === undefined || value === 0) return '—';
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(1)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(1)} L`;
-		return fmt(value);
-	}
-
-	function formatQuarter(quarter: string | undefined): string {
-		if (!quarter) return '';
-		const q = quarter.toLowerCase();
-		if (q.includes('first') || q === '1' || q === 'q1') return 'Q1';
-		if (q.includes('second') || q === '2' || q === 'q2') return 'Q2';
-		if (q.includes('third') || q === '3' || q === 'q3') return 'Q3';
-		if (q.includes('fourth') || q === '4' || q === 'q4') return 'Q4';
-		return quarter;
-	}
-
-	function quarterToNumber(quarter: string | undefined): number {
-		if (!quarter) return 5;
-		const q = quarter.toLowerCase();
-		if (q.includes('fourth') || q === '4' || q === 'q4') return 4;
-		if (q.includes('third') || q === '3' || q === 'q3') return 3;
-		if (q.includes('second') || q === '2' || q === 'q2') return 2;
-		if (q.includes('first') || q === '1' || q === 'q1') return 1;
-		return 0;
-	}
+	const yearFirst = (period: string) => period.split(' ').reverse().join(' ');
 
 	// Rows as filed: profit is year-to-date and EPS annualized, unlike the bars above.
 	let rows = $derived(
 		fundamentals
 			.filter((f) => !!f.quarter)
-			.sort((a, b) => {
-				const yearCompare = b.fiscalYear.localeCompare(a.fiscalYear);
-				if (yearCompare !== 0) return yearCompare;
-				return quarterToNumber(b.quarter) - quarterToNumber(a.quarter);
-			})
+			// "Q1 2083/84" sorts as "2083/84 Q1": year first, then quarter.
+			.sort((a, b) => yearFirst(b.period).localeCompare(yearFirst(a.period)))
 			.slice(0, 8)
 	);
 </script>
@@ -76,13 +49,14 @@
 					{#each rows as f (f.id)}
 						<tr class="border-b border-dotted border-border last:border-0">
 							<td class="py-2.5 font-medium">
-								{formatQuarter(f.quarter)}
-								{f.fiscalYear}
+								{f.period}
 							</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.eps)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.peRatio)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.bookValue)}</td>
-							<td class="py-2.5 text-right tabular-nums">{fmtLarge(f.profitAmount)}</td>
+							<td class="py-2.5 text-right tabular-nums"
+								>{f.profitAmount ? formatLarge(f.profitAmount, 1) : '—'}</td
+							>
 							<td
 								class="py-2.5 text-right tabular-nums {f.publishedAt
 									? ''

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Fund } from '#lib/types/fund.js';
 
 	interface Props {
@@ -6,13 +7,6 @@
 	}
 
 	let { fund }: Props = $props();
-
-	function fmtLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(2)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(2)} L`;
-		return value.toLocaleString('en-NP');
-	}
 
 	function fmtNumber(value: number): string {
 		return value.toLocaleString('en-NP');
@@ -47,15 +41,15 @@
 
 	function optional(label: string, value: number | undefined): StatRow[] {
 		if (value === undefined) return [];
-		return [{ label, value: fmtLarge(value) }];
+		return [{ label, value: formatLarge(value) }];
 	}
 
 	// Balance sheet totals are only present in reports that publish them
 	let stats = $derived.by((): StatRow[] => [
-		{ label: 'Net Assets', value: fmtLarge(fund.net_assets) },
+		{ label: 'Net Assets', value: formatLarge(fund.net_assets) },
 		...optional('Total Assets', fund.total_assets),
 		...optional('Total Liabilities', fund.total_liabilities),
-		{ label: 'Total Units', value: fmtLarge(fund.total_units) },
+		{ label: 'Total Units', value: formatLarge(fund.total_units) },
 		{ label: 'NAV/Unit', value: `Rs. ${fund.nav_per_unit.toFixed(2)}` },
 		{ label: 'Holdings', value: holdingsLabel },
 		...(fund.holdings_disclosure === 'full'

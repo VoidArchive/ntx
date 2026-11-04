@@ -38,10 +38,10 @@
 		return value > 0 ? '▲ ' : '▼ ';
 	}
 
-	// A missing payout figure reads as the year's status, never as zero.
+	// A missing payout figure is only zero when the year is known to have paid none.
 	function part(row: FiscalYear, value: number | undefined): string {
 		if (value !== undefined) return `${num(value, 1)}%`;
-		return row.payout === 'not recorded' ? 'n/r' : '0%';
+		return row.payout === 'none' ? '0%' : 'not recorded';
 	}
 </script>
 
@@ -95,8 +95,8 @@
 			</table>
 			<p class="mt-2 text-xs text-muted-foreground">
 				Return is close at fiscal-year end with bonus shares and cash added, over close at the
-				start. *Rights are shown but excluded from the return. n/r: payout not recorded. Full-year
-				figures come from the annual report, else the Q4 filing.
+				start. *Rights are shown but excluded from the return. Full-year figures come from the
+				annual report, else the Q4 filing.
 			</p>
 		{/if}
 	</div>
@@ -123,6 +123,9 @@
 				{/each}
 			</tbody>
 		</table>
-		<p class="mt-2 text-xs text-muted-foreground">— where a year in the span is missing.</p>
+		<p class="mt-2 text-xs text-muted-foreground">
+			Each span ends at the newest fiscal year with that figure{#if years[0]}, at most FY {years[0]
+					.year}{/if}. — where a year in the span is missing.
+		</p>
 	</div>
 </section>

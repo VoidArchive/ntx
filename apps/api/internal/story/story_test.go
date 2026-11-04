@@ -3,6 +3,7 @@ package story
 import (
 	"math"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/voidarchive/ntx/internal/database/sqlc"
@@ -191,5 +192,23 @@ func TestStreakAndFirstLoss(t *testing.T) {
 				t.Errorf("want %q in %q", tc.want, texts(s))
 			}
 		})
+	}
+}
+
+// A median over fewer than twelve quarters is not three years, so it is not claimed.
+func TestShortHistoryClaimsNoThreeYearMedian(t *testing.T) {
+	s := Build(Input{
+		Company:      nabil,
+		Fundamentals: fundamentals(131, asOf(nabilRows, "2024-2025", "First Quarter")),
+		Prices:       []sqlc.Price{price("2026-11-03", 552.0)},
+		Sector:       bankSector,
+	})
+	if pe := s.Strips[0]; pe.Own.Count == 0 || pe.Own.Count >= ownQuarters {
+		t.Fatalf("fixture should have a short own range, got %+v", pe.Own)
+	}
+	for _, text := range texts(s) {
+		if strings.Contains(text, "three-year median") {
+			t.Errorf("claimed %q from %d quarters", text, s.Strips[0].Own.Count)
+		}
 	}
 }

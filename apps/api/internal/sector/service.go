@@ -4,6 +4,7 @@ package sector
 import (
 	"context"
 	"fmt"
+	"math"
 	"slices"
 
 	"connectrpc.com/connect"
@@ -95,7 +96,7 @@ func (s *Service) summary(ctx context.Context, c sqlc.ListSectorCountsRow) (*ntx
 		return nil, fmt.Errorf("sector profit: %w", err)
 	}
 	if yoy.PreviousProfit != 0 {
-		change := (yoy.CurrentProfit - yoy.PreviousProfit) / abs(yoy.PreviousProfit) * 100
+		change := (yoy.CurrentProfit - yoy.PreviousProfit) / math.Abs(yoy.PreviousProfit) * 100
 		row.ProfitChangeYoy = &change
 	}
 	return row, nil
@@ -154,5 +155,3 @@ func median(r story.Range) *float64 {
 	}
 	return &r.Median
 }
-
-func abs(v float64) float64 { return max(v, -v) }

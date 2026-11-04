@@ -134,6 +134,7 @@ WHERE c.sector = ? AND f.eps != 0
 // Sector distributions for the story strips: one value per company in the
 // sector, from its latest quarterly row and its latest close. Divisions by
 // zero are filtered so every value is a number.
+// shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
 func (q *Queries) ListSectorPE(ctx context.Context, sector string) ([]float64, error) {
 	rows, err := q.db.QueryContext(ctx, listSectorPE, sector)
 	if err != nil {
