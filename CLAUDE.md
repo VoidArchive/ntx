@@ -93,6 +93,20 @@ Web requests never hit go-nepse directly. All reads come from the database.
 
 ## Common Gotchas
 
-- **Proto changes need regeneration** - `make proto` after any .proto change
+- **Proto changes need regeneration** - `mise run proto` after any .proto change
 - **SQLC queries need comments** - `-- name: GetCompany :one`
 - **Market hours** - NEPSE is 11:00-15:05 NPT, Sun-Thu
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for VoidArchive/ntx, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
