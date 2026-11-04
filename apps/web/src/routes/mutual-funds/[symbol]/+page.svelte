@@ -3,7 +3,9 @@
 		FundHeader,
 		FundStats,
 		PortfolioDonut,
-		HoldingsTable
+		HoldingsTable,
+		fundOpeningSentence,
+		fundProvenance
 	} from '#lib/components/mutual-funds/index.js';
 
 	let { data } = $props();
@@ -20,6 +22,9 @@
 	<div class="mx-auto max-w-7xl px-4 py-8">
 		<!-- Header -->
 		<FundHeader {fund} />
+
+		<p class="mt-6 max-w-3xl text-lg leading-relaxed">{fundOpeningSentence(fund)}</p>
+		<p class="mt-2 text-sm text-muted-foreground">{fundProvenance(fund)}</p>
 
 		<!-- Main Content Grid -->
 		<div class="mt-8 grid gap-8 lg:grid-cols-3">
@@ -42,8 +47,7 @@
 
 		<!-- Footer note -->
 		<div class="mt-8 text-center text-xs text-muted-foreground">
-			<p>Data as of {fund.report_date_english} ({fund.report_date_nepali})</p>
-			<p class="mt-1">Managed by {fund.fund_manager}</p>
+			<p>Managed by {fund.fund_manager}</p>
 			{#if fund.holdings_disclosure === 'top10'}
 				<p class="mt-1">
 					Only the 10 largest holdings are published; the rest of the share portfolio is shown as
