@@ -3,9 +3,11 @@
 
 	interface Props {
 		strips: Strip[];
+		// Newest filed period, which the company's own figures come from.
+		period: string;
 	}
 
-	let { strips }: Props = $props();
+	let { strips, period }: Props = $props();
 
 	const LABELS: Record<string, string> = {
 		pe: 'PE',
@@ -76,4 +78,8 @@
 			</div>
 		</div>
 	{/each}
+	<p class="text-xs text-muted-foreground sm:col-span-2 lg:col-span-4">
+		This company's figures are from {period || 'no filing'} and the latest close. Sector ranges are over
+		each sector company's latest filed quarter.
+	</p>
 </section>

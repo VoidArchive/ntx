@@ -232,6 +232,12 @@
 					</ul>
 				</div>
 			{/each}
+			{#if marketDay}
+				<p class="text-xs text-muted-foreground sm:col-span-2 lg:col-span-4">
+					Session of {marketDay.businessDateBs} · {marketDay.businessDate}; market cap is listed
+					shares times that close.
+				</p>
+			{/if}
 		</section>
 	</main>
 </div>

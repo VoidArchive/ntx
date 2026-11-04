@@ -6,9 +6,11 @@
 		// The PE strip's sector range, so a peer sits where it would on that strip.
 		range?: Range;
 		symbol: string;
+		// This company's newest filed period.
+		period: string;
 	}
 
-	let { peers, range, symbol }: Props = $props();
+	let { peers, range, symbol, period }: Props = $props();
 
 	function fmt(value: number | undefined): string {
 		return value === undefined
@@ -75,4 +77,8 @@
 			</tbody>
 		</table>
 	</div>
+	<p class="mt-2 text-xs text-muted-foreground">
+		PE and PB from each company's latest filed quarter and latest close; this company's is {period ||
+			'not recorded'}.
+	</p>
 </section>
