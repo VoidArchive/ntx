@@ -15,6 +15,7 @@ type Querier interface {
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
+	GetLatestCorporateActionByCompany(ctx context.Context, companyID int64) (CorporateAction, error)
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
 	GetLatestOwnershipHistory(ctx context.Context, companyID int64) (OwnershipHistory, error)
 	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
@@ -30,6 +31,14 @@ type Querier interface {
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
+	ListSectorEPS(ctx context.Context, sector string) ([]float64, error)
+	ListSectorPB(ctx context.Context, sector string) ([]float64, error)
+	// Sector distributions for the story strips: one value per company in the
+	// sector, from its latest quarterly row and its latest close. Divisions by
+	// zero are filtered so every value is a number.
+	ListSectorPE(ctx context.Context, sector string) ([]float64, error)
+	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
+	ListSectorYield(ctx context.Context, sector string) ([]float64, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error

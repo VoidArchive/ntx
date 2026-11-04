@@ -91,13 +91,14 @@ export const load = async ({ params, platform }) => {
 	const apiUrl = import.meta.env.DEV
 		? 'http://localhost:8080'
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');
-	const { company, price } = createApiClient(apiUrl);
+	const { company, price, story } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
+		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes, storyRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
 			price.getPrice({ symbol: params.symbol }),
-			price.getPriceHistory({ symbol: params.symbol, days: 365 })
+			price.getPriceHistory({ symbol: params.symbol, days: 365 }),
+			story.getCompanyStory({ symbol: params.symbol })
 		]);
 
 		// Fetch sector stats (non-blocking - we can still show page without it)
@@ -142,6 +143,7 @@ export const load = async ({ params, platform }) => {
 
 		return {
 			company: companyRes.company,
+			story: storyRes,
 			fundamentals: fundamentalsRes.latest,
 			fundamentalsHistory: fundamentalsRes.history,
 			price: priceRes.price,

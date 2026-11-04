@@ -1,4 +1,5 @@
-export { default as CompanyHeader } from './CompanyHeader.svelte';
+export { default as StoryOpening } from './StoryOpening.svelte';
+export { default as ValuationStrips } from './ValuationStrips.svelte';
 export { default as TimeRangeSelector } from './TimeRangeSelector.svelte';
 export { default as StatsPanel } from './StatsPanel.svelte';
 export { default as AboutSection } from './AboutSection.svelte';

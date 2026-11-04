@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+// StoryService returns what a company's filings say, computed in the API (ADR 0001).
+service StoryService {
+  rpc GetCompanyStory(GetCompanyStoryRequest) returns (GetCompanyStoryResponse);
+}
+
+message GetCompanyStoryRequest { string symbol = 1; }
+
+message GetCompanyStoryResponse {
+  repeated Claim claims = 1;
+  repeated Strip strips = 2;
+  // Period of the newest filing, e.g. "Q1 2083/84"; empty when there is none.
+  string last_filing = 3;
+  Quote quote = 4;
+}
+
+// One sentence computed from a company's rows (GLOSSARY: Claim).
+message Claim {
+  string kind = 1; // earnings | valuation | record
+  string text = 2;
+  double value = 3;
+  string unit = 4;   // "Rs", "%", "x", ""
+  string period = 5; // "Q1 2083/84" or "FY 2082/83"
+  string source = 6; // filing URL, empty when not recorded
+  string anchor = 7; // id of the evidence section the sentence links to
+}
+
+// Where one ratio sits on the sector's distribution and on its own range (GLOSSARY: Strip).
+message Strip {
+  string ratio = 1; // pe | pb | eps | yield
+  optional double value = 2;
+  Range sector = 3; // unset when the sector has no values
+  Range own = 4;    // unset when the company has no history
+}
+
+message Range {
+  double low = 1;
+  double median = 2;
+  double high = 3;
+  int32 count = 4;
+}
+
+// The latest close and its change on the previous trading day.
+message Quote {
+  double close = 1;
+  optional double change = 2;
+  optional double change_percent = 3;
+  string business_date = 4;    // "2026-11-03"
+  string business_date_bs = 5; // "Kartik 17, 2083"
+}

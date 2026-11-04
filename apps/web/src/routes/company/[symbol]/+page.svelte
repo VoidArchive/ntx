@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
-		CompanyHeader,
+		StoryOpening,
+		ValuationStrips,
 		TimeRangeSelector,
 		StatsPanel,
 		AboutSection,
@@ -23,6 +24,7 @@
 	let { data } = $props();
 
 	let company = $derived(data.company);
+	let story = $derived(data.story);
 	let fundamentals = $derived(data.fundamentals);
 	let fundamentalsHistory = $derived(data.fundamentalsHistory ?? []);
 	let priceData = $derived(data.price);
@@ -51,8 +53,9 @@
 {#if company}
 	<div class="min-h-screen bg-background text-foreground">
 		<div class="mx-auto max-w-7xl px-4 py-8">
-			<!-- Header -->
-			<CompanyHeader {company} price={priceData} />
+			<!-- Opening: what the filings say, then where the ratios sit -->
+			<StoryOpening {company} {story} />
+			<ValuationStrips strips={story?.strips ?? []} />
 
 			<!-- Main Content Grid -->
 			<div class="mt-8 grid gap-8 lg:grid-cols-3">
@@ -108,7 +111,7 @@
 			<!-- Earnings & Ownership -->
 			<div class="mt-12 border-t border-border pt-8">
 				<div class="grid gap-8 lg:grid-cols-12">
-					<div class="min-w-0 lg:col-span-8">
+					<div id="quarterly" class="min-w-0 lg:col-span-8">
 						<h3 class="mb-4 font-serif text-base font-medium">Earnings</h3>
 						<EarningsChart fundamentals={filteredFundamentals} />
 					</div>

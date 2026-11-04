@@ -1,0 +1,89 @@
+package story
+
+import (
+	"context"
+	"errors"
+	"testing"
+
+	"connectrpc.com/connect"
+
+	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
+	"github.com/voidarchive/ntx/internal/database"
+	"github.com/voidarchive/ntx/internal/database/sqlc"
+)
+
+func TestGetCompanyStory(t *testing.T) {
+	ctx := context.Background()
+	q := database.OpenTestDB(t)
+
+	seed(t, q)
+
+	res, err := NewService(q).GetCompanyStory(ctx, connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NABIL"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := res.Msg
+	if got := m.GetClaims()[0].GetText(); got != "Net profit for Q1 2083/84 was Rs 255.51 crore." {
+		t.Errorf("first claim = %q", got)
+	}
+	if got := m.GetClaims()[4].GetText(); got != "PE is 16.29x at Rs 552.00, against a sector median of 16.29x (1 profitable)." {
+		t.Errorf("pe claim = %q", got)
+	}
+	pb := m.GetStrips()[1]
+	if pb.GetRatio() != "pb" || pb.GetSector().GetCount() != 2 {
+		t.Errorf("pb strip counts both banks: %v", pb)
+	}
+	if m.GetStrips()[3].Sector != nil {
+		t.Errorf("yield strip without dividends should have no sector range: %v", m.GetStrips()[3])
+	}
+	if qt := m.GetQuote(); qt.GetChange() != 1 || qt.GetBusinessDateBs() != "Kartik 17, 2083" {
+		t.Errorf("quote = %v", qt)
+	}
+	if m.GetLastFiling() != "Q1 2083/84" {
+		t.Errorf("last filing = %q", m.GetLastFiling())
+	}
+
+	_, err = NewService(q).GetCompanyStory(ctx, connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NOPE"}))
+	if ce := new(connect.Error); !errors.As(err, &ce) || ce.Code() != connect.CodeNotFound {
+		t.Errorf("unknown symbol: %v", err)
+	}
+}
+
+// seed stores NABIL, API and a loss-making bank in NABIL's sector.
+func seed(t *testing.T, q *sqlc.Queries) {
+	t.Helper()
+	ctx := context.Background()
+	loser := sqlc.Company{ID: 1, Name: "Loss Bank", Symbol: "LOSS", Sector: "Commercial Banks"}
+	for _, c := range []sqlc.Company{nabil, loser, api} {
+		if err := q.UpsertCompany(ctx, sqlc.UpsertCompanyParams{
+			ID: c.ID, Name: c.Name, Symbol: c.Symbol, Status: "A", Sector: c.Sector, InstrumentType: "Equity",
+		}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	seed := map[int64][]fixtureRow{
+		nabil.ID: nabilRows,
+		loser.ID: {{"2026-2027", "First Quarter", -2, -100, 150, 1e10, -5e7}},
+		api.ID:   apiRows,
+	}
+	for id, rows := range seed {
+		for _, f := range fundamentals(id, rows) {
+			if err := q.UpsertFundamental(ctx, sqlc.UpsertFundamentalParams{
+				CompanyID: f.CompanyID, FiscalYear: f.FiscalYear, Quarter: f.Quarter, Eps: f.Eps, PeRatio: f.PeRatio,
+				BookValue: f.BookValue, PaidUpCapital: f.PaidUpCapital, ProfitAmount: f.ProfitAmount,
+			}); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	for _, p := range []sqlc.UpsertPriceParams{
+		{CompanyID: nabil.ID, BusinessDate: "2026-11-02", ClosePrice: num(551)},
+		{CompanyID: nabil.ID, BusinessDate: "2026-11-03", ClosePrice: num(552)},
+		{CompanyID: loser.ID, BusinessDate: "2026-11-03", ClosePrice: num(200)},
+		{CompanyID: api.ID, BusinessDate: "2026-11-03", ClosePrice: num(340)},
+	} {
+		if err := q.UpsertPrice(ctx, p); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
