@@ -27,7 +27,8 @@ func NewScheduler(worker *Worker) (*Scheduler, error) {
 }
 
 func (s *Scheduler) Start(ctx context.Context) error {
-	spec := "0 5 15 * * 0-4"
+	// NEPSE moved to a Mon-Fri week in April 2026; holidays are caught by SyncPrices via the market status.
+	spec := "0 5 15 * * 1-5"
 
 	_, err := s.c.AddFunc(spec, func() {
 		jobCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
@@ -41,14 +42,10 @@ func (s *Scheduler) Start(ctx context.Context) error {
 		}
 		slog.Info("companies sync finished", slog.Duration("took", time.Since(start)))
 
-		// Sync fundamentals after companies
-		start = time.Now()
-		slog.Info("fundamentals sync started", slog.Time("start", start))
-		if err := s.worker.SyncFundamentals(jobCtx); err != nil {
+		if err := s.worker.EachCompany(jobCtx, 1, "fundamentals", s.worker.SyncFundamentals); err != nil {
 			slog.Error("fundamentals sync failed", slog.Any("err", err))
 			return
 		}
-		slog.Info("fundamentals sync finished", slog.Duration("took", time.Since(start)))
 
 		// Sync prices
 		start = time.Now()
