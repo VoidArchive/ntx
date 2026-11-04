@@ -502,7 +502,7 @@ func valuation(cur filing, q *Quote, strips []Strip) []Claim {
 			),
 		)
 	}
-	if pe.Value != nil && pe.Own.Count > 0 {
+	if pe.Value != nil && pe.Own.Count >= ownQuarters {
 		out = append(
 			out,
 			claim(fmt.Sprintf("Its three-year median PE is %.2fx.", pe.Own.Median), pe.Own.Median, "strip-pe"),
@@ -518,7 +518,7 @@ func valuation(cur filing, q *Quote, strips []Strip) []Claim {
 			),
 		)
 	}
-	if pb.Value != nil && pb.Own.Count > 0 {
+	if pb.Value != nil && pb.Own.Count >= ownQuarters {
 		out = append(
 			out,
 			claim(fmt.Sprintf("Its three-year median PB is %.2fx.", pb.Own.Median), pb.Own.Median, "strip-pb"),
