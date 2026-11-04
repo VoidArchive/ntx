@@ -5,6 +5,7 @@ package worker
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log/slog"
 	"sync"
@@ -63,7 +64,8 @@ func (w *Worker) EachCompany(
 	wg.Wait()
 
 	slog.Info(name+" sync finished", "took", time.Since(start))
-	return nil
+	// A deadline hit mid-run left companies unsynced; report it so the step is logged as failed.
+	return ctx.Err()
 }
 
 func (w *Worker) SyncCompanies(ctx context.Context) error {
@@ -122,16 +124,51 @@ func (w *Worker) SyncOwnership(ctx context.Context, c Company) error {
 	if err != nil {
 		return err
 	}
+	return w.storeOwnership(ctx, c.ID, *ownership)
+}
 
+// storeOwnership keeps the latest values in ownership and appends to
+// ownership_history only when they differ from the last recorded row, so the
+// history is a list of real changes rather than one row per day.
+func (w *Worker) storeOwnership(ctx context.Context, companyID int64, o nepse.Ownership) error {
 	params := sqlc.UpsertOwnershipParams{
-		CompanyID:       c.ID,
-		ListedShares:    nullInt64(ownership.ListedShares),
-		PublicShares:    nullInt64(ownership.PublicShares),
-		PublicPercent:   nullFloat64(ownership.PublicPercent),
-		PromoterShares:  nullInt64(ownership.PromoterShares),
-		PromoterPercent: nullFloat64(ownership.PromoterPercent),
+		CompanyID:       companyID,
+		ListedShares:    nullInt64(o.ListedShares),
+		PublicShares:    nullInt64(o.PublicShares),
+		PublicPercent:   nullFloat64(o.PublicPercent),
+		PromoterShares:  nullInt64(o.PromoterShares),
+		PromoterPercent: nullFloat64(o.PromoterPercent),
 	}
-	return w.queries.UpsertOwnership(ctx, params)
+	if err := w.queries.UpsertOwnership(ctx, params); err != nil {
+		return fmt.Errorf("upsert ownership: %w", err)
+	}
+
+	last, err := w.queries.GetLatestOwnershipHistory(ctx, companyID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("latest ownership history: %w", err)
+	}
+	if err == nil &&
+		last.ListedShares == params.ListedShares &&
+		last.PublicShares == params.PublicShares &&
+		last.PublicPercent == params.PublicPercent &&
+		last.PromoterShares == params.PromoterShares &&
+		last.PromoterPercent == params.PromoterPercent {
+		return nil
+	}
+
+	asOf := o.AsOf
+	if asOf == "" {
+		asOf = time.Now().In(nepalTime).Format("2006-01-02")
+	}
+	return w.queries.UpsertOwnershipHistory(ctx, sqlc.UpsertOwnershipHistoryParams{
+		CompanyID:       companyID,
+		AsOf:            asOf,
+		ListedShares:    params.ListedShares,
+		PublicShares:    params.PublicShares,
+		PublicPercent:   params.PublicPercent,
+		PromoterShares:  params.PromoterShares,
+		PromoterPercent: params.PromoterPercent,
+	})
 }
 
 func (w *Worker) SyncDividends(ctx context.Context, c Company) error {
@@ -148,6 +185,9 @@ func (w *Worker) SyncDividends(ctx context.Context, c Company) error {
 			RightPercentage: nullFloat64Ptr(d.RightPercentage),
 			CashDividend:    nullFloat64Ptr(d.CashDividend),
 			SubmittedDate:   nullString(d.ModifiedDate),
+			NoticeHeadline:  nullString(d.NoticeHeadline),
+			NoticeBody:      nullString(d.NoticeBody),
+			NoticeUrl:       nullString(d.NoticeURL),
 		}
 		if err := w.queries.UpsertCorporateAction(ctx, params); err != nil {
 			return fmt.Errorf("upsert dividend: %w", err)

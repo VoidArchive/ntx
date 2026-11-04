@@ -1,0 +1,5 @@
+# Build scripts pnpm would otherwise prompt about; pnpm 12 fails a non-interactive install without this.
+allowBuilds:
+  core-js: false
+  esbuild: false
+  workerd: false

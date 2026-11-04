@@ -30,6 +30,9 @@ type CorporateAction struct {
 	RightPercentage sql.NullFloat64 `json:"right_percentage"`
 	CashDividend    sql.NullFloat64 `json:"cash_dividend"`
 	SubmittedDate   sql.NullString  `json:"submitted_date"`
+	NoticeHeadline  sql.NullString  `json:"notice_headline"`
+	NoticeBody      sql.NullString  `json:"notice_body"`
+	NoticeUrl       sql.NullString  `json:"notice_url"`
 }
 
 type Fundamental struct {
@@ -57,6 +60,17 @@ type Ownership struct {
 	PromoterShares  sql.NullInt64   `json:"promoter_shares"`
 	PromoterPercent sql.NullFloat64 `json:"promoter_percent"`
 	UpdatedAt       time.Time       `json:"updated_at"`
+}
+
+type OwnershipHistory struct {
+	CompanyID       int64           `json:"company_id"`
+	AsOf            string          `json:"as_of"`
+	ListedShares    sql.NullInt64   `json:"listed_shares"`
+	PublicShares    sql.NullInt64   `json:"public_shares"`
+	PublicPercent   sql.NullFloat64 `json:"public_percent"`
+	PromoterShares  sql.NullInt64   `json:"promoter_shares"`
+	PromoterPercent sql.NullFloat64 `json:"promoter_percent"`
+	CreatedAt       time.Time       `json:"created_at"`
 }
 
 type Price struct {
