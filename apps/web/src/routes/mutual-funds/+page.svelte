@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FundCard } from '#lib/components/mutual-funds/index.js';
+	import { FundCard, fundProvenance } from '#lib/components/mutual-funds/index.js';
 	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
 	import List from '@lucide/svelte/icons/list';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
@@ -27,8 +27,8 @@
 		return value.toLocaleString('en-NP');
 	}
 
-	// Report date from first fund
-	let reportDate = $derived(data.funds[0]?.report_date_nepali ?? 'N/A');
+	// Every fund in the snapshot shares one report date, so the first fund speaks for all
+	let provenance = $derived(data.funds[0] ? fundProvenance(data.funds[0]) : '');
 </script>
 
 <svelte:head>
@@ -44,8 +44,9 @@
 			<div>
 				<h1 class="font-serif text-3xl tracking-tight">Mutual Funds</h1>
 				<p class="mt-1 text-sm text-muted-foreground">
-					Open-End Mutual Fund NAV and Portfolio Analysis · Data as of {reportDate}
+					Open-End Mutual Fund NAV and Portfolio Analysis
 				</p>
+				<p class="mt-1 text-sm text-muted-foreground">{provenance}</p>
 			</div>
 
 			<!-- View Toggle -->
