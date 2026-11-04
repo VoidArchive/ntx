@@ -1,0 +1,67 @@
+# Task runner for ntx. `mise tasks` lists everything; `mise run <task>` runs one.
+
+[tasks.dev]
+description = "Run API and web dev servers with hot reload"
+depends = ["dev-api", "dev-web"]
+
+[tasks.dev-api]
+description = "Go API with hot reload (air)"
+dir = "{{config_root}}/apps/api"
+run = "air"
+
+[tasks.dev-web]
+description = "SvelteKit dev server"
+dir = "{{config_root}}/apps/web"
+run = "pnpm dev --host"
+
+[tasks.test]
+description = "Go tests"
+dir = "{{config_root}}/apps/api"
+run = "go test ./..."
+
+[tasks.lint]
+description = "Go lint"
+dir = "{{config_root}}/apps/api"
+run = "golangci-lint run"
+
+[tasks.fmt]
+description = "Go lint with autofix"
+dir = "{{config_root}}/apps/api"
+run = "golangci-lint run --fix"
+
+[tasks.proto]
+description = "Lint protos and regenerate Go + TS code"
+dir = "{{config_root}}/proto"
+run = ["buf lint", "buf generate"]
+
+[tasks.sqlc]
+description = "Regenerate SQLC queries"
+dir = "{{config_root}}/apps/api"
+run = "sqlc generate"
+
+[tasks.tools]
+description = "Install Go dev tools"
+run = [
+  "go install github.com/air-verse/air@latest",
+  "go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest",
+  "go install github.com/pressly/goose/v3/cmd/goose@latest",
+  "go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest",
+  "go install github.com/bufbuild/buf/cmd/buf@latest",
+]
+
+[tasks.migrate-create]
+description = "Create a migration: mise run migrate-create <name>"
+usage = 'arg "<name>" help="Migration name, e.g. add_companies"'
+run = "goose -dir apps/api/internal/database/migrations create $usage_name sql"
+
+[tasks.migrate-up]
+description = "Apply migrations to the local database"
+run = "goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db up"
+
+[tasks.migrate-down]
+description = "Roll back the last migration"
+run = "goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db down"
+
+[tasks.migrate-status]
+description = "Show migration status"
+run = "goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db status"

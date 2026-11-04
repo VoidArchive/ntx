@@ -22,16 +22,16 @@ A focused, information-dense stock snapshot for Nepal Stock Exchange.
 
 ```bash
 # Run backend (hot reload)
-make dev
+mise run dev
 
 # Run frontend
-make dev-web
+mise run dev-web
 
 # After proto changes
-make proto
+mise run proto
 
 # After SQL query changes
-make sqlc
+mise run sqlc
 ```
 
 ## Project Structure

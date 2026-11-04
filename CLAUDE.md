@@ -30,14 +30,14 @@ Keep the context fresh
 
 ```bash
 # 1. Database
-make migrate-create NAME=add_companies
+mise run migrate-create add_companies
 # Write migration SQL
 # Write SQLC query
-make sqlc
+mise run sqlc
 
 # 2. Proto
 # Add GetCompany RPC to proto/ntx/v1/company.proto
-make proto
+mise run proto
 
 # 3. Backend
 # Implement handler in cmd/ntxd/
@@ -50,24 +50,24 @@ make proto
 
 ```bash
 # Backend + Frontend dev (hot reload)
-make dev
+mise run dev
 
 # Regenerate after proto changes
-make proto
+mise run proto
 
 # Regenerate after SQL query changes  
-make sqlc
+mise run sqlc
 
 # Database migrations
-make migrate-create NAME=name
-make migrate
-make migrate-down
+mise run migrate-create name
+mise run migrate-up
+mise run migrate-down
 
 # Test
-make test
+mise run test
 
 # Lint
-make lint
+mise run lint
 ```
 
 ## Stack
