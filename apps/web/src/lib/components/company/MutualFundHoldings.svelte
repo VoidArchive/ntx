@@ -27,37 +27,39 @@
 		</div>
 
 		<!-- Horizontal Bar Chart -->
-		<div class="space-y-3">
-			{#each holdings as holding (holding.fundSymbol)}
-				{@const barWidth = (holding.value / maxValue) * 100}
-				<a href="/mutual-funds/{holding.fundSymbol}" class="group flex items-center gap-3">
-					<!-- Fund Symbol -->
-					<span
-						class="w-16 shrink-0 text-sm font-medium transition-colors group-hover:text-primary"
-					>
-						{holding.fundSymbol}
-					</span>
+		<div class="overflow-x-auto">
+			<div class="min-w-[36rem] space-y-3">
+				{#each holdings as holding (holding.fundSymbol)}
+					{@const barWidth = (holding.value / maxValue) * 100}
+					<a href="/mutual-funds/{holding.fundSymbol}" class="group flex items-center gap-3">
+						<!-- Fund Symbol -->
+						<span
+							class="w-16 shrink-0 text-sm font-medium transition-colors group-hover:text-primary"
+						>
+							{holding.fundSymbol}
+						</span>
 
-					<!-- Bar -->
-					<div class="relative h-6 flex-1">
-						<div
-							class="absolute inset-y-0 left-0 rounded bg-orange-400 transition-all group-hover:bg-orange-300"
-							style="width: {barWidth}%"
-						></div>
-					</div>
+						<!-- Bar -->
+						<div class="relative h-6 flex-1">
+							<div
+								class="absolute inset-y-0 left-0 rounded bg-orange-400 transition-all group-hover:bg-orange-300"
+								style="width: {barWidth}%"
+							></div>
+						</div>
 
-					<!-- Value -->
-					<span class="w-20 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
-						{fmtValue(holding.value)}
-					</span>
-					<span class="w-28 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-						{holding.units !== undefined ? `${holding.units.toLocaleString('en-NP')} units` : ''}
-					</span>
-					<span class="w-24 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-						{holding.percentOfFund.toFixed(2)}% of fund
-					</span>
-				</a>
-			{/each}
+						<!-- Value -->
+						<span class="w-20 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
+							{fmtValue(holding.value)}
+						</span>
+						<span class="w-28 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+							{holding.units !== undefined ? `${holding.units.toLocaleString('en-NP')} units` : ''}
+						</span>
+						<span class="w-24 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+							{holding.percentOfFund.toFixed(2)}% of fund
+						</span>
+					</a>
+				{/each}
+			</div>
 		</div>
 	</div>
 {/if}

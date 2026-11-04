@@ -1,76 +1,68 @@
 <script lang="ts">
-	import type { Company, Price, Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
-	import type { SectorStats } from '#lib/gen/ntx/v1/company_pb.js';
+	import type { Company } from '#lib/gen/ntx/v1/common_pb.js';
+	import type { GetCompanyStoryResponse } from '#lib/gen/ntx/v1/story_pb.js';
 	import * as Dialog from '#lib/components/ui/dialog/index.js';
 	import { Button } from '#lib/components/ui/button/index.js';
 	import Sparkles from '@lucide/svelte/icons/sparkles';
 	import Copy from '@lucide/svelte/icons/copy';
 	import Check from '@lucide/svelte/icons/check';
-	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
+	import { sectorNames } from '#lib/utils.js';
 
 	interface Props {
-		company?: Company;
-		price?: Price;
-		fundamentals?: Fundamental;
-		sectorStats?: SectorStats;
+		company: Company;
+		story?: GetCompanyStoryResponse;
 	}
 
-	let { company, price, fundamentals, sectorStats }: Props = $props();
+	let { company, story }: Props = $props();
 
 	let dialogOpen = $state(false);
 	let copied = $state(false);
 
-	const sectorNames: Record<number, string> = {
-		[Sector.COMMERCIAL_BANK]: 'Commercial Banking',
-		[Sector.DEVELOPMENT_BANK]: 'Development Banking',
-		[Sector.FINANCE]: 'Finance',
-		[Sector.MICROFINANCE]: 'Microfinance',
-		[Sector.LIFE_INSURANCE]: 'Life Insurance',
-		[Sector.NON_LIFE_INSURANCE]: 'Non-Life Insurance',
-		[Sector.HYDROPOWER]: 'Hydropower',
-		[Sector.MANUFACTURING]: 'Manufacturing',
-		[Sector.HOTEL]: 'Hotels & Tourism',
-		[Sector.TRADING]: 'Trading',
-		[Sector.INVESTMENT]: 'Investment',
-		[Sector.MUTUAL_FUND]: 'Mutual Fund',
-		[Sector.OTHERS]: 'Others'
-	};
-
-	function fmt(value: number | bigint | undefined): string {
+	function fmt(value: number | undefined): string {
 		if (value === undefined) return '—';
-		return Number(value).toLocaleString('en-NP', { maximumFractionDigits: 2 });
+		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
 	}
 
-	let currentPrice = $derived(price?.ltp ?? price?.close);
-
+	// The claims go in verbatim so the assistant starts from what the filings say.
 	let prompt = $derived.by(() => {
-		if (!company || !price) return '';
-
-		const sector = sectorNames[company.sector ?? Sector.OTHERS];
-		const today = price.businessDate ?? new Date().toISOString().split('T')[0];
+		const quote = story?.quote;
+		const claims = (story?.claims ?? []).map((c) => `- ${c.text}`).join('\n');
+		const strips = (story?.strips ?? [])
+			.map(
+				(s) =>
+					`- ${s.ratio.toUpperCase()}: ${fmt(s.value)} (sector median ${fmt(s.sector?.median)})`
+			)
+			.join('\n');
+		const checks = (story?.checks ?? [])
+			.map((c) => `- ${c.name}: ${c.verdict} (${c.rule})`)
+			.join('\n');
 
 		return `Act as a Senior Financial Analyst specializing in the Nepalese Stock Market (NEPSE).
 Your goal is to perform a deep-dive investment analysis of: ${company.name} (${company.symbol}).
 
-## 1. Provided Data Snapshot (As of ${today})
-- **Price**: Rs. ${fmt(currentPrice)}
-- **Sector**: ${sector}
-- **Sector Avg P/E**: ${fmt(sectorStats?.avgPeRatio ?? 0)}
-- **Fundamentals**:
-  - EPS: ${fmt(fundamentals?.eps)}
-  - P/E Ratio: ${fmt(fundamentals?.peRatio)}
-  - Book Value: ${fmt(fundamentals?.bookValue)}
-  - Paid-up Capital: ${fmt(fundamentals?.paidUpCapital)}
+## 1. Provided Data Snapshot (As of ${quote?.businessDate ?? 'no recorded close'})
+- **Price**: Rs. ${fmt(quote?.close)}
+- **Sector**: ${sectorNames[company.sector] ?? 'Others'}
+- **Newest filing**: ${story?.lastFiling || 'none'}
+
+What the filings say:
+${claims || '- Not enough filings to say anything yet.'}
+
+Ratios against the sector:
+${strips || '- None recorded.'}
+
+Published checks:
+${checks || '- None.'}
 
 ## 2. Research Tasks (MANDATORY WEB SEARCH)
 Please SEARCH THE WEB (using browsing capabilities) for the following real-time information:
 1.  **Recent News**: Look for the latest news on "sharesansar", "merolagani", or "bizmandu" regarding ${company.symbol} in the last 6 months.
-2.  **Regulatory Impacts**: Are there any recent NRB directives, BFI regulations, or insurance board policies affecting the ${sector} sector?
+2.  **Regulatory Impacts**: Are there any recent NRB directives, BFI regulations, or insurance board policies affecting this sector?
 3.  **Corporate Actions**: Check for recent AGM announcements, dividend declarations, or right share issues.
 
 ## 3. Analysis Requirements
 Combine the provided data with your web research to answer:
-- **Valuation**: Is ${company.symbol} undervalued compared to its peers in the ${sector} sector? (Compare P/E and P/B).
+- **Valuation**: Is ${company.symbol} undervalued compared to its sector peers? (Compare P/E and P/B).
 - **Growth Outlook**: Based on the latest quarterly reports you find, is the company growing its core business?
 - **Risk Assessment**: What are the specific regulatory or macro risks for this company right now?
 
@@ -91,7 +83,7 @@ Please be objective, critical, and data-driven.`;
 	}
 </script>
 
-<Button variant="outline" size="sm" onclick={() => (dialogOpen = true)} class="w-full">
+<Button variant="outline" size="sm" onclick={() => (dialogOpen = true)}>
 	<Sparkles class="size-4" />
 	AI Research
 </Button>

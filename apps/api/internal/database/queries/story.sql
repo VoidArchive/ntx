@@ -70,3 +70,20 @@ SELECT * FROM corporate_actions
 WHERE company_id = ?
 ORDER BY fiscal_year DESC, submitted_date DESC
 LIMIT 1;
+
+-- name: ListSectorPeers :many
+SELECT c.symbol, c.name, CAST(p.close_price AS REAL) AS close, f.eps, f.book_value
+FROM companies c
+JOIN fundamentals f ON f.id = (
+  SELECT f2.id FROM fundamentals f2
+  WHERE f2.company_id = c.id AND f2.quarter != ''
+  ORDER BY f2.fiscal_year DESC,
+    CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
+  LIMIT 1
+)
+JOIN prices p ON p.id = (
+  SELECT p2.id FROM prices p2
+  WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
+  ORDER BY p2.business_date DESC LIMIT 1
+)
+WHERE c.sector = ?;

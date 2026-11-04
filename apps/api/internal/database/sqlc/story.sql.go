@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getLatestCorporateActionByCompany = `-- name: GetLatestCorporateActionByCompany :one
@@ -146,6 +147,61 @@ func (q *Queries) ListSectorPE(ctx context.Context, sector string) ([]float64, e
 			return nil, err
 		}
 		items = append(items, pe)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listSectorPeers = `-- name: ListSectorPeers :many
+SELECT c.symbol, c.name, CAST(p.close_price AS REAL) AS close, f.eps, f.book_value
+FROM companies c
+JOIN fundamentals f ON f.id = (
+  SELECT f2.id FROM fundamentals f2
+  WHERE f2.company_id = c.id AND f2.quarter != ''
+  ORDER BY f2.fiscal_year DESC,
+    CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
+  LIMIT 1
+)
+JOIN prices p ON p.id = (
+  SELECT p2.id FROM prices p2
+  WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
+  ORDER BY p2.business_date DESC LIMIT 1
+)
+WHERE c.sector = ?
+`
+
+type ListSectorPeersRow struct {
+	Symbol    string          `json:"symbol"`
+	Name      string          `json:"name"`
+	Close     float64         `json:"close"`
+	Eps       sql.NullFloat64 `json:"eps"`
+	BookValue sql.NullFloat64 `json:"book_value"`
+}
+
+func (q *Queries) ListSectorPeers(ctx context.Context, sector string) ([]ListSectorPeersRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSectorPeers, sector)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListSectorPeersRow
+	for rows.Next() {
+		var i ListSectorPeersRow
+		if err := rows.Scan(
+			&i.Symbol,
+			&i.Name,
+			&i.Close,
+			&i.Eps,
+			&i.BookValue,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

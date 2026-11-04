@@ -3,6 +3,7 @@ package story
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 	"testing"
 
@@ -162,5 +163,28 @@ func seed(t *testing.T, q *sqlc.Queries) {
 		if err := q.UpsertPrice(ctx, p); err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestGetCompanyStoryPeersAndFooter(t *testing.T) {
+	q := database.OpenTestDB(t)
+	seed(t, q)
+	res, err := NewService(q).GetCompanyStory(
+		context.Background(),
+		connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NABIL"}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := res.Msg
+	// NABIL: 552 / 33.89 EPS, 552 / 233.90 book value. The loss-maker has no PE, so it sorts last.
+	ps := m.GetPeers()
+	if len(ps) != 2 || ps[0].GetSymbol() != "NABIL" || ps[1].GetSymbol() != "LOSS" ||
+		fmt.Sprintf("%.2f %.2f", ps[0].GetPe(), ps[0].GetPb()) != "16.29 2.36" ||
+		ps[1].Pe != nil || fmt.Sprintf("%.2f", ps[1].GetPb()) != "1.33" {
+		t.Errorf("peers = %v", ps)
+	}
+	if m.GetSyncedAt() == "" || m.GetFiledAt() == "" || !m.GetFiledAtSeen() {
+		t.Errorf("footer: synced %q, filed %q seen %v", m.GetSyncedAt(), m.GetFiledAt(), m.GetFiledAtSeen())
 	}
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Company } from '#lib/gen/ntx/v1/common_pb.js';
 	import type { GetCompanyStoryResponse } from '#lib/gen/ntx/v1/story_pb.js';
+	import { sectorNames } from '#lib/utils.js';
 
 	interface Props {
 		company: Company;
@@ -32,6 +33,7 @@
 	<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
 		<h1 class="font-serif text-3xl font-medium tracking-tight">{company.symbol}</h1>
 		<span class="text-lg text-muted-foreground">{company.name}</span>
+		<span class="text-sm text-muted-foreground">{sectorNames[company.sector] ?? 'Others'}</span>
 	</div>
 
 	<div class="mt-4 flex flex-col gap-6 lg:flex-row">
