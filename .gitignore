@@ -40,3 +40,6 @@ tmp/
 scripts/images/
 scripts/.venv/
 scripts/uv.lock
+
+# Impeccable decision sketches (local runtime state)
+.impeccable/mocks/
