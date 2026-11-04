@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+service MarketService {
+  rpc GetMarketDay(GetMarketDayRequest) returns (GetMarketDayResponse);
+}
+
+// MarketDay is one trading session's summary (GLOSSARY: Market day).
+message MarketDay {
+  string business_date = 1;
+  // Bikram Sambat form of business_date, e.g. "Kartik 18, 2083".
+  string business_date_bs = 2;
+  double index_close = 3;
+  double index_change = 4;
+  double index_change_percent = 5;
+  double turnover = 6;
+  int64 traded_shares = 7;
+  int64 transactions = 8;
+  int32 scrips_traded = 9;
+  double market_cap = 10;
+  int32 advances = 11;
+  int32 declines = 12;
+  int32 unchanged = 13;
+}
+
+message GetMarketDayRequest {}
+
+// market_day is unset until the worker has recorded a session.
+message GetMarketDayResponse { MarketDay market_day = 1; }

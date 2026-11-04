@@ -9,6 +9,9 @@ import (
 )
 
 type Querier interface {
+	// Compares each company's close with its own previous priced day, because
+	// backfilled rows carry no change fields and illiquid stocks skip sessions.
+	CountBreadth(ctx context.Context, businessDate string) (CountBreadthRow, error)
 	CountCompanies(ctx context.Context) (int64, error)
 	CountCompaniesBySearch(ctx context.Context, arg CountCompaniesBySearchParams) (int64, error)
 	CountCompaniesBySector(ctx context.Context, sector string) (int64, error)
@@ -16,6 +19,7 @@ type Querier interface {
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
+	GetLatestMarketDay(ctx context.Context) (MarketDay, error)
 	GetLatestOwnershipHistory(ctx context.Context, companyID int64) (OwnershipHistory, error)
 	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
 	GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error)
@@ -34,6 +38,7 @@ type Querier interface {
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error
 	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
+	UpsertMarketDay(ctx context.Context, arg UpsertMarketDayParams) error
 	UpsertOwnership(ctx context.Context, arg UpsertOwnershipParams) error
 	UpsertOwnershipHistory(ctx context.Context, arg UpsertOwnershipHistoryParams) error
 	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
