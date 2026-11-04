@@ -48,6 +48,7 @@ type Querier interface {
 	// sector, from its latest quarterly row and its latest close. Divisions by
 	// zero are filtered so every value is a number.
 	ListSectorPE(ctx context.Context, sector string) ([]float64, error)
+	ListSectorPeers(ctx context.Context, sector string) ([]ListSectorPeersRow, error)
 	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
 	ListSectorYield(ctx context.Context, sector string) ([]float64, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)

@@ -8,7 +8,7 @@ import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1
  * Describes the file ntx/v1/story.proto.
  */
 export const file_ntx_v1_story = /*@__PURE__*/
-  fileDesc("ChJudHgvdjEvc3RvcnkucHJvdG8SBm50eC52MSJNChZHZXRDb21wYW55U3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRIjCgVmdW5kcxgKIAEoCzIULm50eC52MS5GdW5kSG9sZGluZ3MibgoMRnVuZEhvbGRpbmdzEg0KBWNvdW50GAEgASgFEhMKC3RvdGFsX3ZhbHVlGAIgASgBEhQKDGxhcmdlc3RfbmFtZRgDIAEoCRIVCg1sYXJnZXN0X3ZhbHVlGAQgASgBEg0KBWFzX29mGAUgASgJIo8DChdHZXRDb21wYW55U3RvcnlSZXNwb25zZRIdCgZjbGFpbXMYASADKAsyDS5udHgudjEuQ2xhaW0SHQoGc3RyaXBzGAIgAygLMg0ubnR4LnYxLlN0cmlwEhMKC2xhc3RfZmlsaW5nGAMgASgJEhwKBXF1b3RlGAQgASgLMg0ubnR4LnYxLlF1b3RlEiEKCHF1YXJ0ZXJzGBQgAygLMg8ubnR4LnYxLlF1YXJ0ZXISIQoGZXZlbnRzGBUgAygLMhEubnR4LnYxLkV2ZW50TWFyaxIjCgloeWRyb19lcHMYFiABKAsyEC5udHgudjEuSHlkcm9FcHMSKAoMZmlzY2FsX3llYXJzGAogAygLMhIubnR4LnYxLkZpc2NhbFllYXISHgoGZ3Jvd3RoGAsgAygLMg4ubnR4LnYxLkdyb3d0aBIvCglvd25lcnNoaXAYDCADKAsyHC5udHgudjEuT3duZXJzaGlwT2JzZXJ2YXRpb24SHQoGY2hlY2tzGB4gAygLMg0ubnR4LnYxLkNoZWNrIjQKBUNoZWNrEgwKBG5hbWUYASABKAkSDAoEcnVsZRgCIAEoCRIPCgd2ZXJkaWN0GAMgASgJIs4CCgpGaXNjYWxZZWFyEgwKBHllYXIYASABKAkSEAoDZXBzGAIgASgBSACIAQESEwoGcHJvZml0GAMgASgBSAGIAQESFwoKYm9va192YWx1ZRgEIAEoAUgCiAEBEh8KEnNoYXJlc19vdXRzdGFuZGluZxgFIAEoAUgDiAEBEhIKBWJvbnVzGAYgASgBSASIAQESEQoEY2FzaBgHIAEoAUgFiAEBEhMKBnJpZ2h0cxgIIAEoAUgGiAEBEg4KBnBheW91dBgJIAEoCRITCgZyZXR1cm4YCiABKAFIB4gBARIOCgZzb3VyY2UYCyABKAlCBgoEX2Vwc0IJCgdfcHJvZml0Qg0KC19ib29rX3ZhbHVlQhUKE19zaGFyZXNfb3V0c3RhbmRpbmdCCAoGX2JvbnVzQgcKBV9jYXNoQgkKB19yaWdodHNCCQoHX3JldHVybiJsCgZHcm93dGgSDgoGbWV0cmljGAEgASgJEhAKA29uZRgCIAEoAUgAiAEBEhIKBXRocmVlGAMgASgBSAGIAQESEQoEZml2ZRgEIAEoAUgCiAEBQgYKBF9vbmVCCAoGX3RocmVlQgcKBV9maXZlImkKFE93bmVyc2hpcE9ic2VydmF0aW9uEg0KBWFzX29mGAEgASgJEhUKCHByb21vdGVyGAIgASgBSACIAQESEwoGcHVibGljGAMgASgBSAGIAQFCCwoJX3Byb21vdGVyQgkKB19wdWJsaWMicAoFQ2xhaW0SDAoEa2luZBgBIAEoCRIMCgR0ZXh0GAIgASgJEg0KBXZhbHVlGAMgASgBEgwKBHVuaXQYBCABKAkSDgoGcGVyaW9kGAUgASgJEg4KBnNvdXJjZRgGIAEoCRIOCgZhbmNob3IYByABKAkibwoFU3RyaXASDQoFcmF0aW8YASABKAkSEgoFdmFsdWUYAiABKAFIAIgBARIdCgZzZWN0b3IYAyABKAsyDS5udHgudjEuUmFuZ2USGgoDb3duGAQgASgLMg0ubnR4LnYxLlJhbmdlQggKBl92YWx1ZSJBCgVSYW5nZRILCgNsb3cYASABKAESDgoGbWVkaWFuGAIgASgBEgwKBGhpZ2gYAyABKAESDQoFY291bnQYBCABKAUilwEKBVF1b3RlEg0KBWNsb3NlGAEgASgBEhMKBmNoYW5nZRgCIAEoAUgAiAEBEhsKDmNoYW5nZV9wZXJjZW50GAMgASgBSAGIAQESFQoNYnVzaW5lc3NfZGF0ZRgEIAEoCRIYChBidXNpbmVzc19kYXRlX2JzGAUgASgJQgkKB19jaGFuZ2VCEQoPX2NoYW5nZV9wZXJjZW50ItUBCgdRdWFydGVyEg4KBnBlcmlvZBgBIAEoCRITCgtmaXNjYWxfeWVhchgCIAEoCRIOCgZwcm9maXQYAyABKAESEAoDZXBzGAQgASgBSACIAQESGwoOYW5udWFsaXplZF9lcHMYBSABKAFIAYgBARINCgVsYWJlbBgGIAEoCRIUCgxwdWJsaXNoZWRfYXQYByABKAkSEgoKc291cmNlX3VybBgIIAEoCRISCgppc19tb25zb29uGAkgASgIQgYKBF9lcHNCEQoPX2FubnVhbGl6ZWRfZXBzIjYKCUV2ZW50TWFyaxIMCgRkYXRlGAEgASgJEgwKBGtpbmQYAiABKAkSDQoFbGFiZWwYAyABKAkiXAoISHlkcm9FcHMSDwoHcXVhcnRlchgBIAEoARISCgphbm51YWxpemVkGAIgASgBEhEKCWZ1bGxfeWVhchgDIAEoARIYChBmdWxsX3llYXJfcGVyaW9kGAQgASgJMmIKDFN0b3J5U2VydmljZRJSCg9HZXRDb21wYW55U3RvcnkSHi5udHgudjEuR2V0Q29tcGFueVN0b3J5UmVxdWVzdBofLm50eC52MS5HZXRDb21wYW55U3RvcnlSZXNwb25zZUIwWi5naXRodWIuY29tL3ZvaWRhcmNoaXZlL250eC9nZW4vZ28vbnR4L3YxO250eHYxYgZwcm90bzM");
+  fileDesc("ChJudHgvdjEvc3RvcnkucHJvdG8SBm50eC52MSJNChZHZXRDb21wYW55U3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRIjCgVmdW5kcxgKIAEoCzIULm50eC52MS5GdW5kSG9sZGluZ3MibgoMRnVuZEhvbGRpbmdzEg0KBWNvdW50GAEgASgFEhMKC3RvdGFsX3ZhbHVlGAIgASgBEhQKDGxhcmdlc3RfbmFtZRgDIAEoCRIVCg1sYXJnZXN0X3ZhbHVlGAQgASgBEg0KBWFzX29mGAUgASgJIugDChdHZXRDb21wYW55U3RvcnlSZXNwb25zZRIdCgZjbGFpbXMYASADKAsyDS5udHgudjEuQ2xhaW0SHQoGc3RyaXBzGAIgAygLMg0ubnR4LnYxLlN0cmlwEhMKC2xhc3RfZmlsaW5nGAMgASgJEhwKBXF1b3RlGAQgASgLMg0ubnR4LnYxLlF1b3RlEiEKCHF1YXJ0ZXJzGBQgAygLMg8ubnR4LnYxLlF1YXJ0ZXISIQoGZXZlbnRzGBUgAygLMhEubnR4LnYxLkV2ZW50TWFyaxIjCgloeWRyb19lcHMYFiABKAsyEC5udHgudjEuSHlkcm9FcHMSKAoMZmlzY2FsX3llYXJzGAogAygLMhIubnR4LnYxLkZpc2NhbFllYXISHgoGZ3Jvd3RoGAsgAygLMg4ubnR4LnYxLkdyb3d0aBIvCglvd25lcnNoaXAYDCADKAsyHC5udHgudjEuT3duZXJzaGlwT2JzZXJ2YXRpb24SHQoGY2hlY2tzGB4gAygLMg0ubnR4LnYxLkNoZWNrEhsKBXBlZXJzGCggAygLMgwubnR4LnYxLlBlZXISEQoJc3luY2VkX2F0GCkgASgJEhAKCGZpbGVkX2F0GCogASgJEhUKDWZpbGVkX2F0X3NlZW4YKyABKAgiVAoEUGVlchIOCgZzeW1ib2wYASABKAkSDAoEbmFtZRgCIAEoCRIPCgJwZRgDIAEoAUgAiAEBEg8KAnBiGAQgASgBSAGIAQFCBQoDX3BlQgUKA19wYiI0CgVDaGVjaxIMCgRuYW1lGAEgASgJEgwKBHJ1bGUYAiABKAkSDwoHdmVyZGljdBgDIAEoCSLOAgoKRmlzY2FsWWVhchIMCgR5ZWFyGAEgASgJEhAKA2VwcxgCIAEoAUgAiAEBEhMKBnByb2ZpdBgDIAEoAUgBiAEBEhcKCmJvb2tfdmFsdWUYBCABKAFIAogBARIfChJzaGFyZXNfb3V0c3RhbmRpbmcYBSABKAFIA4gBARISCgVib251cxgGIAEoAUgEiAEBEhEKBGNhc2gYByABKAFIBYgBARITCgZyaWdodHMYCCABKAFIBogBARIOCgZwYXlvdXQYCSABKAkSEwoGcmV0dXJuGAogASgBSAeIAQESDgoGc291cmNlGAsgASgJQgYKBF9lcHNCCQoHX3Byb2ZpdEINCgtfYm9va192YWx1ZUIVChNfc2hhcmVzX291dHN0YW5kaW5nQggKBl9ib251c0IHCgVfY2FzaEIJCgdfcmlnaHRzQgkKB19yZXR1cm4ibAoGR3Jvd3RoEg4KBm1ldHJpYxgBIAEoCRIQCgNvbmUYAiABKAFIAIgBARISCgV0aHJlZRgDIAEoAUgBiAEBEhEKBGZpdmUYBCABKAFIAogBAUIGCgRfb25lQggKBl90aHJlZUIHCgVfZml2ZSJpChRPd25lcnNoaXBPYnNlcnZhdGlvbhINCgVhc19vZhgBIAEoCRIVCghwcm9tb3RlchgCIAEoAUgAiAEBEhMKBnB1YmxpYxgDIAEoAUgBiAEBQgsKCV9wcm9tb3RlckIJCgdfcHVibGljInAKBUNsYWltEgwKBGtpbmQYASABKAkSDAoEdGV4dBgCIAEoCRINCgV2YWx1ZRgDIAEoARIMCgR1bml0GAQgASgJEg4KBnBlcmlvZBgFIAEoCRIOCgZzb3VyY2UYBiABKAkSDgoGYW5jaG9yGAcgASgJIm8KBVN0cmlwEg0KBXJhdGlvGAEgASgJEhIKBXZhbHVlGAIgASgBSACIAQESHQoGc2VjdG9yGAMgASgLMg0ubnR4LnYxLlJhbmdlEhoKA293bhgEIAEoCzINLm50eC52MS5SYW5nZUIICgZfdmFsdWUiQQoFUmFuZ2USCwoDbG93GAEgASgBEg4KBm1lZGlhbhgCIAEoARIMCgRoaWdoGAMgASgBEg0KBWNvdW50GAQgASgFIpcBCgVRdW90ZRINCgVjbG9zZRgBIAEoARITCgZjaGFuZ2UYAiABKAFIAIgBARIbCg5jaGFuZ2VfcGVyY2VudBgDIAEoAUgBiAEBEhUKDWJ1c2luZXNzX2RhdGUYBCABKAkSGAoQYnVzaW5lc3NfZGF0ZV9icxgFIAEoCUIJCgdfY2hhbmdlQhEKD19jaGFuZ2VfcGVyY2VudCLVAQoHUXVhcnRlchIOCgZwZXJpb2QYASABKAkSEwoLZmlzY2FsX3llYXIYAiABKAkSDgoGcHJvZml0GAMgASgBEhAKA2VwcxgEIAEoAUgAiAEBEhsKDmFubnVhbGl6ZWRfZXBzGAUgASgBSAGIAQESDQoFbGFiZWwYBiABKAkSFAoMcHVibGlzaGVkX2F0GAcgASgJEhIKCnNvdXJjZV91cmwYCCABKAkSEgoKaXNfbW9uc29vbhgJIAEoCEIGCgRfZXBzQhEKD19hbm51YWxpemVkX2VwcyI2CglFdmVudE1hcmsSDAoEZGF0ZRgBIAEoCRIMCgRraW5kGAIgASgJEg0KBWxhYmVsGAMgASgJIlwKCEh5ZHJvRXBzEg8KB3F1YXJ0ZXIYASABKAESEgoKYW5udWFsaXplZBgCIAEoARIRCglmdWxsX3llYXIYAyABKAESGAoQZnVsbF95ZWFyX3BlcmlvZBgEIAEoCTJiCgxTdG9yeVNlcnZpY2USUgoPR2V0Q29tcGFueVN0b3J5Eh4ubnR4LnYxLkdldENvbXBhbnlTdG9yeVJlcXVlc3QaHy5udHgudjEuR2V0Q29tcGFueVN0b3J5UmVzcG9uc2VCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z");
 
 /**
  * Describes the message ntx.v1.GetCompanyStoryRequest.
@@ -32,81 +32,88 @@ export const GetCompanyStoryResponseSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_story, 2);
 
 /**
+ * Describes the message ntx.v1.Peer.
+ * Use `create(PeerSchema)` to create a new message.
+ */
+export const PeerSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 3);
+
+/**
  * Describes the message ntx.v1.Check.
  * Use `create(CheckSchema)` to create a new message.
  */
 export const CheckSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 3);
+  messageDesc(file_ntx_v1_story, 4);
 
 /**
  * Describes the message ntx.v1.FiscalYear.
  * Use `create(FiscalYearSchema)` to create a new message.
  */
 export const FiscalYearSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 4);
+  messageDesc(file_ntx_v1_story, 5);
 
 /**
  * Describes the message ntx.v1.Growth.
  * Use `create(GrowthSchema)` to create a new message.
  */
 export const GrowthSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 5);
+  messageDesc(file_ntx_v1_story, 6);
 
 /**
  * Describes the message ntx.v1.OwnershipObservation.
  * Use `create(OwnershipObservationSchema)` to create a new message.
  */
 export const OwnershipObservationSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 6);
+  messageDesc(file_ntx_v1_story, 7);
 
 /**
  * Describes the message ntx.v1.Claim.
  * Use `create(ClaimSchema)` to create a new message.
  */
 export const ClaimSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 7);
+  messageDesc(file_ntx_v1_story, 8);
 
 /**
  * Describes the message ntx.v1.Strip.
  * Use `create(StripSchema)` to create a new message.
  */
 export const StripSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 8);
+  messageDesc(file_ntx_v1_story, 9);
 
 /**
  * Describes the message ntx.v1.Range.
  * Use `create(RangeSchema)` to create a new message.
  */
 export const RangeSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 9);
+  messageDesc(file_ntx_v1_story, 10);
 
 /**
  * Describes the message ntx.v1.Quote.
  * Use `create(QuoteSchema)` to create a new message.
  */
 export const QuoteSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 10);
+  messageDesc(file_ntx_v1_story, 11);
 
 /**
  * Describes the message ntx.v1.Quarter.
  * Use `create(QuarterSchema)` to create a new message.
  */
 export const QuarterSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 11);
+  messageDesc(file_ntx_v1_story, 12);
 
 /**
  * Describes the message ntx.v1.EventMark.
  * Use `create(EventMarkSchema)` to create a new message.
  */
 export const EventMarkSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 12);
+  messageDesc(file_ntx_v1_story, 13);
 
 /**
  * Describes the message ntx.v1.HydroEps.
  * Use `create(HydroEpsSchema)` to create a new message.
  */
 export const HydroEpsSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 13);
+  messageDesc(file_ntx_v1_story, 14);
 
 /**
  * StoryService returns what a company's filings say, computed in the API (ADR 0001).

@@ -170,7 +170,13 @@ type GetCompanyStoryResponse struct {
 	// Oldest first.
 	Ownership []*OwnershipObservation `protobuf:"bytes,12,rep,name=ownership,proto3" json:"ownership,omitempty"`
 	// The eight published rules, in a fixed order (GLOSSARY: Check).
-	Checks        []*Check `protobuf:"bytes,30,rep,name=checks,proto3" json:"checks,omitempty"`
+	Checks []*Check `protobuf:"bytes,30,rep,name=checks,proto3" json:"checks,omitempty"`
+	// Same-sector companies from their latest quarterly row and close, by PE; no PE sorts last.
+	Peers []*Peer `protobuf:"bytes,40,rep,name=peers,proto3" json:"peers,omitempty"`
+	// Data footer.
+	SyncedAt      string `protobuf:"bytes,41,opt,name=synced_at,json=syncedAt,proto3" json:"synced_at,omitempty"`             // when NTX stored the newest price row, UTC, "2026-11-04 09:28"
+	FiledAt       string `protobuf:"bytes,42,opt,name=filed_at,json=filedAt,proto3" json:"filed_at,omitempty"`                // newest filing's published date, else the day NTX first stored it
+	FiledAtSeen   bool   `protobuf:"varint,43,opt,name=filed_at_seen,json=filedAtSeen,proto3" json:"filed_at_seen,omitempty"` // filed_at is NTX's first-seen day, not the exchange's
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -282,6 +288,102 @@ func (x *GetCompanyStoryResponse) GetChecks() []*Check {
 	return nil
 }
 
+func (x *GetCompanyStoryResponse) GetPeers() []*Peer {
+	if x != nil {
+		return x.Peers
+	}
+	return nil
+}
+
+func (x *GetCompanyStoryResponse) GetSyncedAt() string {
+	if x != nil {
+		return x.SyncedAt
+	}
+	return ""
+}
+
+func (x *GetCompanyStoryResponse) GetFiledAt() string {
+	if x != nil {
+		return x.FiledAt
+	}
+	return ""
+}
+
+func (x *GetCompanyStoryResponse) GetFiledAtSeen() bool {
+	if x != nil {
+		return x.FiledAtSeen
+	}
+	return false
+}
+
+type Peer struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Pe            *float64               `protobuf:"fixed64,3,opt,name=pe,proto3,oneof" json:"pe,omitempty"` // unset when EPS is not positive
+	Pb            *float64               `protobuf:"fixed64,4,opt,name=pb,proto3,oneof" json:"pb,omitempty"` // unset without book value
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Peer) Reset() {
+	*x = Peer{}
+	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Peer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Peer) ProtoMessage() {}
+
+func (x *Peer) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Peer.ProtoReflect.Descriptor instead.
+func (*Peer) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Peer) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *Peer) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Peer) GetPe() float64 {
+	if x != nil && x.Pe != nil {
+		return *x.Pe
+	}
+	return 0
+}
+
+func (x *Peer) GetPb() float64 {
+	if x != nil && x.Pb != nil {
+		return *x.Pb
+	}
+	return 0
+}
+
 // One published rule and its verdict; a verdict is not a recommendation.
 type Check struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -294,7 +396,7 @@ type Check struct {
 
 func (x *Check) Reset() {
 	*x = Check{}
-	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	mi := &file_ntx_v1_story_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +408,7 @@ func (x *Check) String() string {
 func (*Check) ProtoMessage() {}
 
 func (x *Check) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	mi := &file_ntx_v1_story_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -319,7 +421,7 @@ func (x *Check) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Check.ProtoReflect.Descriptor instead.
 func (*Check) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{3}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Check) GetName() string {
@@ -363,7 +465,7 @@ type FiscalYear struct {
 
 func (x *FiscalYear) Reset() {
 	*x = FiscalYear{}
-	mi := &file_ntx_v1_story_proto_msgTypes[4]
+	mi := &file_ntx_v1_story_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -375,7 +477,7 @@ func (x *FiscalYear) String() string {
 func (*FiscalYear) ProtoMessage() {}
 
 func (x *FiscalYear) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[4]
+	mi := &file_ntx_v1_story_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -388,7 +490,7 @@ func (x *FiscalYear) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FiscalYear.ProtoReflect.Descriptor instead.
 func (*FiscalYear) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{4}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *FiscalYear) GetYear() string {
@@ -481,7 +583,7 @@ type Growth struct {
 
 func (x *Growth) Reset() {
 	*x = Growth{}
-	mi := &file_ntx_v1_story_proto_msgTypes[5]
+	mi := &file_ntx_v1_story_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +595,7 @@ func (x *Growth) String() string {
 func (*Growth) ProtoMessage() {}
 
 func (x *Growth) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[5]
+	mi := &file_ntx_v1_story_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +608,7 @@ func (x *Growth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Growth.ProtoReflect.Descriptor instead.
 func (*Growth) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{5}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Growth) GetMetric() string {
@@ -548,7 +650,7 @@ type OwnershipObservation struct {
 
 func (x *OwnershipObservation) Reset() {
 	*x = OwnershipObservation{}
-	mi := &file_ntx_v1_story_proto_msgTypes[6]
+	mi := &file_ntx_v1_story_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -560,7 +662,7 @@ func (x *OwnershipObservation) String() string {
 func (*OwnershipObservation) ProtoMessage() {}
 
 func (x *OwnershipObservation) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[6]
+	mi := &file_ntx_v1_story_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -573,7 +675,7 @@ func (x *OwnershipObservation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OwnershipObservation.ProtoReflect.Descriptor instead.
 func (*OwnershipObservation) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{6}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *OwnershipObservation) GetAsOf() string {
@@ -613,7 +715,7 @@ type Claim struct {
 
 func (x *Claim) Reset() {
 	*x = Claim{}
-	mi := &file_ntx_v1_story_proto_msgTypes[7]
+	mi := &file_ntx_v1_story_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -625,7 +727,7 @@ func (x *Claim) String() string {
 func (*Claim) ProtoMessage() {}
 
 func (x *Claim) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[7]
+	mi := &file_ntx_v1_story_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +740,7 @@ func (x *Claim) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Claim.ProtoReflect.Descriptor instead.
 func (*Claim) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{7}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Claim) GetKind() string {
@@ -703,7 +805,7 @@ type Strip struct {
 
 func (x *Strip) Reset() {
 	*x = Strip{}
-	mi := &file_ntx_v1_story_proto_msgTypes[8]
+	mi := &file_ntx_v1_story_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -715,7 +817,7 @@ func (x *Strip) String() string {
 func (*Strip) ProtoMessage() {}
 
 func (x *Strip) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[8]
+	mi := &file_ntx_v1_story_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -728,7 +830,7 @@ func (x *Strip) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Strip.ProtoReflect.Descriptor instead.
 func (*Strip) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{8}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Strip) GetRatio() string {
@@ -771,7 +873,7 @@ type Range struct {
 
 func (x *Range) Reset() {
 	*x = Range{}
-	mi := &file_ntx_v1_story_proto_msgTypes[9]
+	mi := &file_ntx_v1_story_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -783,7 +885,7 @@ func (x *Range) String() string {
 func (*Range) ProtoMessage() {}
 
 func (x *Range) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[9]
+	mi := &file_ntx_v1_story_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -796,7 +898,7 @@ func (x *Range) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Range.ProtoReflect.Descriptor instead.
 func (*Range) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{9}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Range) GetLow() float64 {
@@ -841,7 +943,7 @@ type Quote struct {
 
 func (x *Quote) Reset() {
 	*x = Quote{}
-	mi := &file_ntx_v1_story_proto_msgTypes[10]
+	mi := &file_ntx_v1_story_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -853,7 +955,7 @@ func (x *Quote) String() string {
 func (*Quote) ProtoMessage() {}
 
 func (x *Quote) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[10]
+	mi := &file_ntx_v1_story_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -866,7 +968,7 @@ func (x *Quote) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Quote.ProtoReflect.Descriptor instead.
 func (*Quote) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{10}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Quote) GetClose() float64 {
@@ -922,7 +1024,7 @@ type Quarter struct {
 
 func (x *Quarter) Reset() {
 	*x = Quarter{}
-	mi := &file_ntx_v1_story_proto_msgTypes[11]
+	mi := &file_ntx_v1_story_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -934,7 +1036,7 @@ func (x *Quarter) String() string {
 func (*Quarter) ProtoMessage() {}
 
 func (x *Quarter) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[11]
+	mi := &file_ntx_v1_story_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -947,7 +1049,7 @@ func (x *Quarter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Quarter.ProtoReflect.Descriptor instead.
 func (*Quarter) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{11}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Quarter) GetPeriod() string {
@@ -1025,7 +1127,7 @@ type EventMark struct {
 
 func (x *EventMark) Reset() {
 	*x = EventMark{}
-	mi := &file_ntx_v1_story_proto_msgTypes[12]
+	mi := &file_ntx_v1_story_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1037,7 +1139,7 @@ func (x *EventMark) String() string {
 func (*EventMark) ProtoMessage() {}
 
 func (x *EventMark) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[12]
+	mi := &file_ntx_v1_story_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1050,7 +1152,7 @@ func (x *EventMark) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventMark.ProtoReflect.Descriptor instead.
 func (*EventMark) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{12}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *EventMark) GetDate() string {
@@ -1087,7 +1189,7 @@ type HydroEps struct {
 
 func (x *HydroEps) Reset() {
 	*x = HydroEps{}
-	mi := &file_ntx_v1_story_proto_msgTypes[13]
+	mi := &file_ntx_v1_story_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1099,7 +1201,7 @@ func (x *HydroEps) String() string {
 func (*HydroEps) ProtoMessage() {}
 
 func (x *HydroEps) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[13]
+	mi := &file_ntx_v1_story_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1112,7 +1214,7 @@ func (x *HydroEps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HydroEps.ProtoReflect.Descriptor instead.
 func (*HydroEps) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{13}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *HydroEps) GetQuarter() float64 {
@@ -1158,7 +1260,7 @@ const file_ntx_v1_story_proto_rawDesc = "" +
 	"totalValue\x12!\n" +
 	"\flargest_name\x18\x03 \x01(\tR\vlargestName\x12#\n" +
 	"\rlargest_value\x18\x04 \x01(\x01R\flargestValue\x12\x13\n" +
-	"\x05as_of\x18\x05 \x01(\tR\x04asOf\"\xf6\x03\n" +
+	"\x05as_of\x18\x05 \x01(\tR\x04asOf\"\xf6\x04\n" +
 	"\x17GetCompanyStoryResponse\x12%\n" +
 	"\x06claims\x18\x01 \x03(\v2\r.ntx.v1.ClaimR\x06claims\x12%\n" +
 	"\x06strips\x18\x02 \x03(\v2\r.ntx.v1.StripR\x06strips\x12\x1f\n" +
@@ -1172,7 +1274,18 @@ const file_ntx_v1_story_proto_rawDesc = "" +
 	" \x03(\v2\x12.ntx.v1.FiscalYearR\vfiscalYears\x12&\n" +
 	"\x06growth\x18\v \x03(\v2\x0e.ntx.v1.GrowthR\x06growth\x12:\n" +
 	"\townership\x18\f \x03(\v2\x1c.ntx.v1.OwnershipObservationR\townership\x12%\n" +
-	"\x06checks\x18\x1e \x03(\v2\r.ntx.v1.CheckR\x06checks\"I\n" +
+	"\x06checks\x18\x1e \x03(\v2\r.ntx.v1.CheckR\x06checks\x12\"\n" +
+	"\x05peers\x18( \x03(\v2\f.ntx.v1.PeerR\x05peers\x12\x1b\n" +
+	"\tsynced_at\x18) \x01(\tR\bsyncedAt\x12\x19\n" +
+	"\bfiled_at\x18* \x01(\tR\afiledAt\x12\"\n" +
+	"\rfiled_at_seen\x18+ \x01(\bR\vfiledAtSeen\"j\n" +
+	"\x04Peer\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x13\n" +
+	"\x02pe\x18\x03 \x01(\x01H\x00R\x02pe\x88\x01\x01\x12\x13\n" +
+	"\x02pb\x18\x04 \x01(\x01H\x01R\x02pb\x88\x01\x01B\x05\n" +
+	"\x03_peB\x05\n" +
+	"\x03_pb\"I\n" +
 	"\x05Check\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04rule\x18\x02 \x01(\tR\x04rule\x12\x18\n" +
@@ -1282,44 +1395,46 @@ func file_ntx_v1_story_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_story_proto_rawDescData
 }
 
-var file_ntx_v1_story_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_ntx_v1_story_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_ntx_v1_story_proto_goTypes = []any{
 	(*GetCompanyStoryRequest)(nil),  // 0: ntx.v1.GetCompanyStoryRequest
 	(*FundHoldings)(nil),            // 1: ntx.v1.FundHoldings
 	(*GetCompanyStoryResponse)(nil), // 2: ntx.v1.GetCompanyStoryResponse
-	(*Check)(nil),                   // 3: ntx.v1.Check
-	(*FiscalYear)(nil),              // 4: ntx.v1.FiscalYear
-	(*Growth)(nil),                  // 5: ntx.v1.Growth
-	(*OwnershipObservation)(nil),    // 6: ntx.v1.OwnershipObservation
-	(*Claim)(nil),                   // 7: ntx.v1.Claim
-	(*Strip)(nil),                   // 8: ntx.v1.Strip
-	(*Range)(nil),                   // 9: ntx.v1.Range
-	(*Quote)(nil),                   // 10: ntx.v1.Quote
-	(*Quarter)(nil),                 // 11: ntx.v1.Quarter
-	(*EventMark)(nil),               // 12: ntx.v1.EventMark
-	(*HydroEps)(nil),                // 13: ntx.v1.HydroEps
+	(*Peer)(nil),                    // 3: ntx.v1.Peer
+	(*Check)(nil),                   // 4: ntx.v1.Check
+	(*FiscalYear)(nil),              // 5: ntx.v1.FiscalYear
+	(*Growth)(nil),                  // 6: ntx.v1.Growth
+	(*OwnershipObservation)(nil),    // 7: ntx.v1.OwnershipObservation
+	(*Claim)(nil),                   // 8: ntx.v1.Claim
+	(*Strip)(nil),                   // 9: ntx.v1.Strip
+	(*Range)(nil),                   // 10: ntx.v1.Range
+	(*Quote)(nil),                   // 11: ntx.v1.Quote
+	(*Quarter)(nil),                 // 12: ntx.v1.Quarter
+	(*EventMark)(nil),               // 13: ntx.v1.EventMark
+	(*HydroEps)(nil),                // 14: ntx.v1.HydroEps
 }
 var file_ntx_v1_story_proto_depIdxs = []int32{
 	1,  // 0: ntx.v1.GetCompanyStoryRequest.funds:type_name -> ntx.v1.FundHoldings
-	7,  // 1: ntx.v1.GetCompanyStoryResponse.claims:type_name -> ntx.v1.Claim
-	8,  // 2: ntx.v1.GetCompanyStoryResponse.strips:type_name -> ntx.v1.Strip
-	10, // 3: ntx.v1.GetCompanyStoryResponse.quote:type_name -> ntx.v1.Quote
-	11, // 4: ntx.v1.GetCompanyStoryResponse.quarters:type_name -> ntx.v1.Quarter
-	12, // 5: ntx.v1.GetCompanyStoryResponse.events:type_name -> ntx.v1.EventMark
-	13, // 6: ntx.v1.GetCompanyStoryResponse.hydro_eps:type_name -> ntx.v1.HydroEps
-	4,  // 7: ntx.v1.GetCompanyStoryResponse.fiscal_years:type_name -> ntx.v1.FiscalYear
-	5,  // 8: ntx.v1.GetCompanyStoryResponse.growth:type_name -> ntx.v1.Growth
-	6,  // 9: ntx.v1.GetCompanyStoryResponse.ownership:type_name -> ntx.v1.OwnershipObservation
-	3,  // 10: ntx.v1.GetCompanyStoryResponse.checks:type_name -> ntx.v1.Check
-	9,  // 11: ntx.v1.Strip.sector:type_name -> ntx.v1.Range
-	9,  // 12: ntx.v1.Strip.own:type_name -> ntx.v1.Range
-	0,  // 13: ntx.v1.StoryService.GetCompanyStory:input_type -> ntx.v1.GetCompanyStoryRequest
-	2,  // 14: ntx.v1.StoryService.GetCompanyStory:output_type -> ntx.v1.GetCompanyStoryResponse
-	14, // [14:15] is the sub-list for method output_type
-	13, // [13:14] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	8,  // 1: ntx.v1.GetCompanyStoryResponse.claims:type_name -> ntx.v1.Claim
+	9,  // 2: ntx.v1.GetCompanyStoryResponse.strips:type_name -> ntx.v1.Strip
+	11, // 3: ntx.v1.GetCompanyStoryResponse.quote:type_name -> ntx.v1.Quote
+	12, // 4: ntx.v1.GetCompanyStoryResponse.quarters:type_name -> ntx.v1.Quarter
+	13, // 5: ntx.v1.GetCompanyStoryResponse.events:type_name -> ntx.v1.EventMark
+	14, // 6: ntx.v1.GetCompanyStoryResponse.hydro_eps:type_name -> ntx.v1.HydroEps
+	5,  // 7: ntx.v1.GetCompanyStoryResponse.fiscal_years:type_name -> ntx.v1.FiscalYear
+	6,  // 8: ntx.v1.GetCompanyStoryResponse.growth:type_name -> ntx.v1.Growth
+	7,  // 9: ntx.v1.GetCompanyStoryResponse.ownership:type_name -> ntx.v1.OwnershipObservation
+	4,  // 10: ntx.v1.GetCompanyStoryResponse.checks:type_name -> ntx.v1.Check
+	3,  // 11: ntx.v1.GetCompanyStoryResponse.peers:type_name -> ntx.v1.Peer
+	10, // 12: ntx.v1.Strip.sector:type_name -> ntx.v1.Range
+	10, // 13: ntx.v1.Strip.own:type_name -> ntx.v1.Range
+	0,  // 14: ntx.v1.StoryService.GetCompanyStory:input_type -> ntx.v1.GetCompanyStoryRequest
+	2,  // 15: ntx.v1.StoryService.GetCompanyStory:output_type -> ntx.v1.GetCompanyStoryResponse
+	15, // [15:16] is the sub-list for method output_type
+	14, // [14:15] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_story_proto_init() }
@@ -1327,19 +1442,20 @@ func file_ntx_v1_story_proto_init() {
 	if File_ntx_v1_story_proto != nil {
 		return
 	}
-	file_ntx_v1_story_proto_msgTypes[4].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[3].OneofWrappers = []any{}
 	file_ntx_v1_story_proto_msgTypes[5].OneofWrappers = []any{}
 	file_ntx_v1_story_proto_msgTypes[6].OneofWrappers = []any{}
-	file_ntx_v1_story_proto_msgTypes[8].OneofWrappers = []any{}
-	file_ntx_v1_story_proto_msgTypes[10].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[7].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[9].OneofWrappers = []any{}
 	file_ntx_v1_story_proto_msgTypes[11].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_story_proto_rawDesc), len(file_ntx_v1_story_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

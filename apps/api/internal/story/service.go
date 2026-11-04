@@ -1,12 +1,16 @@
 package story
 
 import (
+	"cmp"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
+	"slices"
+	"time"
 
 	"connectrpc.com/connect"
+	"google.golang.org/protobuf/proto"
 
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
@@ -48,7 +52,58 @@ func (s *Service) GetCompanyStory(
 	}
 	res := toProto(Build(in))
 	addQuarters(res, in)
+	addFooter(res, in)
+	rows, err := s.queries.ListSectorPeers(ctx, in.Company.Sector)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("sector peers: %w", err))
+	}
+	res.Peers = peers(rows)
 	return connect.NewResponse(res), nil
+}
+
+// peers ratios the latest close against the latest quarterly row, as the strips do.
+func peers(rows []sqlc.ListSectorPeersRow) []*ntxv1.Peer {
+	out := make([]*ntxv1.Peer, 0, len(rows))
+	for _, r := range rows {
+		p := &ntxv1.Peer{Symbol: r.Symbol, Name: r.Name}
+		if r.Eps.Float64 > 0 {
+			p.Pe = proto.Float64(r.Close / r.Eps.Float64)
+		}
+		if r.BookValue.Float64 > 0 {
+			p.Pb = proto.Float64(r.Close / r.BookValue.Float64)
+		}
+		out = append(out, p)
+	}
+	slices.SortStableFunc(out, func(a, b *ntxv1.Peer) int {
+		if a.Pe == nil || b.Pe == nil {
+			return cmp.Compare(boolInt(a.Pe == nil), boolInt(b.Pe == nil))
+		}
+		return cmp.Compare(*a.Pe, *b.Pe)
+	})
+	return out
+}
+
+func boolInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+// addFooter dates the data: the newest stored price, and the newest filing by the
+// exchange's date when any row has one, else by when NTX first stored it.
+func addFooter(res *ntxv1.GetCompanyStoryResponse, in Input) {
+	if len(in.Prices) > 0 {
+		res.SyncedAt = in.Prices[0].CreatedAt.UTC().Format("2006-01-02 15:04")
+	}
+	seen := ""
+	for _, f := range in.Fundamentals {
+		res.FiledAt = max(res.FiledAt, f.PublishedAt.String)
+		seen = max(seen, f.CreatedAt.UTC().Format(time.DateOnly))
+	}
+	if res.FiledAt == "" && len(in.Fundamentals) > 0 {
+		res.FiledAt, res.FiledAtSeen = seen, true
+	}
 }
 
 func (s *Service) load(ctx context.Context, symbol string) (Input, error) {

@@ -29,7 +29,7 @@
 				>
 					<span class="mb-1 min-h-[3.75em] text-[10px] leading-tight text-chart-4">{q.label}</span>
 					<span class="text-[11px] tabular-nums {q.profit < 0 ? 'text-negative' : ''}">
-						{crore(q.profit)}
+						{q.profit < 0 ? '▼ ' : ''}{crore(q.profit)}
 					</span>
 					<div class="flex h-40 w-full items-end justify-center">
 						<div

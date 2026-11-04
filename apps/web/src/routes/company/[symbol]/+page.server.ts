@@ -93,41 +93,11 @@ export const load = async ({ params, platform }) => {
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');
 	const { company, price, story } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
+		const [companyRes, fundamentalsRes, priceHistoryRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
-			price.getPrice({ symbol: params.symbol }),
 			price.getPriceHistory({ symbol: params.symbol, days: 365 })
 		]);
-
-		// Fetch sector stats (non-blocking - we can still show page without it)
-		let sectorStats = undefined;
-		if (companyRes.company?.sector) {
-			try {
-				const sectorRes = await company.getSectorStats({ sector: companyRes.company.sector });
-				sectorStats = sectorRes.stats;
-			} catch {
-				// Sector stats are optional, continue without them
-			}
-		}
-
-		// Fetch ownership data (non-blocking)
-		let ownership = undefined;
-		try {
-			const ownershipRes = await company.getOwnership({ symbol: params.symbol });
-			ownership = ownershipRes.ownership;
-		} catch {
-			// Ownership data is optional, continue without it
-		}
-
-		// Fetch corporate actions (non-blocking)
-		let corporateActions = undefined;
-		try {
-			const actionsRes = await company.getCorporateActions({ symbol: params.symbol });
-			corporateActions = actionsRes.actions;
-		} catch {
-			// Corporate actions are optional, continue without them
-		}
 
 		// Fetch mutual fund holdings for this company
 		let fundHoldings: FundHolding[] = [];
@@ -157,13 +127,8 @@ export const load = async ({ params, platform }) => {
 		return {
 			company: companyRes.company,
 			story: storyRes,
-			fundamentals: fundamentalsRes.latest,
 			fundamentalsHistory: fundamentalsRes.history,
-			price: priceRes.price,
 			priceHistory: priceHistoryRes.prices,
-			sectorStats,
-			ownership,
-			corporateActions,
 			fundHoldings
 		};
 	} catch (err) {

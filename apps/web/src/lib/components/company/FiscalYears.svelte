@@ -32,6 +32,12 @@
 		return `${value > 0 ? '+' : ''}${num(value, 1)}%`;
 	}
 
+	// Colour is never the only carrier: the return also gets a glyph.
+	function arrow(value: number | undefined): string {
+		if (value === undefined || value === 0) return '';
+		return value > 0 ? '▲ ' : '▼ ';
+	}
+
 	// A missing payout figure reads as the year's status, never as zero.
 	function part(row: FiscalYear, value: number | undefined): string {
 		if (value !== undefined) return `${num(value, 1)}%`;
@@ -45,7 +51,7 @@
 		{#if years.length === 0}
 			<p class="text-sm text-muted-foreground">No full-year filings or notices recorded.</p>
 		{:else}
-			<table class="w-full text-sm tabular-nums">
+			<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 				<thead class="text-xs text-muted-foreground">
 					<tr class="border-b border-border">
 						<th class="py-2 text-left font-normal">FY</th>
@@ -81,7 +87,7 @@
 									? ''
 									: row.return >= 0
 										? 'text-positive'
-										: 'text-negative'}">{pct(row.return)}</td
+										: 'text-negative'}">{arrow(row.return)}{pct(row.return)}</td
 							>
 						</tr>
 					{/each}
@@ -95,9 +101,9 @@
 		{/if}
 	</div>
 
-	<div class="min-w-0 lg:col-span-4">
+	<div class="min-w-0 overflow-x-auto lg:col-span-4">
 		<h3 class="mb-4 font-serif text-base font-medium">Compounded growth, per year</h3>
-		<table class="w-full text-sm tabular-nums">
+		<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 			<thead class="text-xs text-muted-foreground">
 				<tr class="border-b border-border">
 					<th class="py-2 text-left font-normal"></th>

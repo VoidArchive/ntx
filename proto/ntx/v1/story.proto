@@ -43,6 +43,19 @@ message GetCompanyStoryResponse {
   repeated OwnershipObservation ownership = 12;
   // The eight published rules, in a fixed order (GLOSSARY: Check).
   repeated Check checks = 30;
+  // Same-sector companies from their latest quarterly row and close, by PE; no PE sorts last.
+  repeated Peer peers = 40;
+  // Data footer.
+  string synced_at = 41;   // when NTX stored the newest price row, UTC, "2026-11-04 09:28"
+  string filed_at = 42;    // newest filing's published date, else the day NTX first stored it
+  bool filed_at_seen = 43; // filed_at is NTX's first-seen day, not the exchange's
+}
+
+message Peer {
+  string symbol = 1;
+  string name = 2;
+  optional double pe = 3; // unset when EPS is not positive
+  optional double pb = 4; // unset without book value
 }
 
 // One published rule and its verdict; a verdict is not a recommendation.

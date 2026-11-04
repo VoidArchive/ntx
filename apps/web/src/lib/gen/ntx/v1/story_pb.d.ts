@@ -149,6 +149,36 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
    * @generated from field: repeated ntx.v1.Check checks = 30;
    */
   checks: Check[];
+
+  /**
+   * Same-sector companies from their latest quarterly row and close, by PE; no PE sorts last.
+   *
+   * @generated from field: repeated ntx.v1.Peer peers = 40;
+   */
+  peers: Peer[];
+
+  /**
+   * Data footer.
+   *
+   * when NTX stored the newest price row, UTC, "2026-11-04 09:28"
+   *
+   * @generated from field: string synced_at = 41;
+   */
+  syncedAt: string;
+
+  /**
+   * newest filing's published date, else the day NTX first stored it
+   *
+   * @generated from field: string filed_at = 42;
+   */
+  filedAt: string;
+
+  /**
+   * filed_at is NTX's first-seen day, not the exchange's
+   *
+   * @generated from field: bool filed_at_seen = 43;
+   */
+  filedAtSeen: boolean;
 };
 
 /**
@@ -156,6 +186,41 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
  * Use `create(GetCompanyStoryResponseSchema)` to create a new message.
  */
 export declare const GetCompanyStoryResponseSchema: GenMessage<GetCompanyStoryResponse>;
+
+/**
+ * @generated from message ntx.v1.Peer
+ */
+export declare type Peer = Message<"ntx.v1.Peer"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * unset when EPS is not positive
+   *
+   * @generated from field: optional double pe = 3;
+   */
+  pe?: number;
+
+  /**
+   * unset without book value
+   *
+   * @generated from field: optional double pb = 4;
+   */
+  pb?: number;
+};
+
+/**
+ * Describes the message ntx.v1.Peer.
+ * Use `create(PeerSchema)` to create a new message.
+ */
+export declare const PeerSchema: GenMessage<Peer>;
 
 /**
  * One published rule and its verdict; a verdict is not a recommendation.
