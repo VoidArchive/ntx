@@ -12,6 +12,7 @@ type Ownership struct {
 	PublicPercent   float64
 	PromoterShares  int64
 	PromoterPercent float64
+	AsOf            string // NEPSE business date the figures belong to
 }
 
 func (c *Client) SecurityDetail(ctx context.Context, companyID int32) (*Ownership, error) {
@@ -27,5 +28,6 @@ func (c *Client) SecurityDetail(ctx context.Context, companyID int32) (*Ownershi
 		PublicPercent:   detail.PublicPercent,
 		PromoterShares:  detail.PromoterShares,
 		PromoterPercent: detail.PromoterPercent,
+		AsOf:            detail.BusinessDate,
 	}, nil
 }

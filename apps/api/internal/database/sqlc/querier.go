@@ -16,6 +16,7 @@ type Querier interface {
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
+	GetLatestOwnershipHistory(ctx context.Context, companyID int64) (OwnershipHistory, error)
 	GetLatestPrice(ctx context.Context, companyID int64) (Price, error)
 	GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error)
 	GetOwnership(ctx context.Context, companyID int64) (Ownership, error)
@@ -27,12 +28,14 @@ type Querier interface {
 	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
+	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error
 	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
 	UpsertOwnership(ctx context.Context, arg UpsertOwnershipParams) error
+	UpsertOwnershipHistory(ctx context.Context, arg UpsertOwnershipHistoryParams) error
 	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
 }
 

@@ -10,6 +10,29 @@ import (
 	"database/sql"
 )
 
+const getLatestOwnershipHistory = `-- name: GetLatestOwnershipHistory :one
+SELECT company_id, as_of, listed_shares, public_shares, public_percent, promoter_shares, promoter_percent, created_at FROM ownership_history
+WHERE company_id = ?
+ORDER BY as_of DESC
+LIMIT 1
+`
+
+func (q *Queries) GetLatestOwnershipHistory(ctx context.Context, companyID int64) (OwnershipHistory, error) {
+	row := q.db.QueryRowContext(ctx, getLatestOwnershipHistory, companyID)
+	var i OwnershipHistory
+	err := row.Scan(
+		&i.CompanyID,
+		&i.AsOf,
+		&i.ListedShares,
+		&i.PublicShares,
+		&i.PublicPercent,
+		&i.PromoterShares,
+		&i.PromoterPercent,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getOwnership = `-- name: GetOwnership :one
 SELECT company_id, listed_shares, public_shares, public_percent, promoter_shares, promoter_percent, updated_at FROM ownership WHERE company_id = ?
 `
@@ -50,6 +73,44 @@ func (q *Queries) GetOwnershipBySymbol(ctx context.Context, symbol string) (Owne
 	return i, err
 }
 
+const listOwnershipHistory = `-- name: ListOwnershipHistory :many
+SELECT company_id, as_of, listed_shares, public_shares, public_percent, promoter_shares, promoter_percent, created_at FROM ownership_history
+WHERE company_id = ?
+ORDER BY as_of
+`
+
+func (q *Queries) ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error) {
+	rows, err := q.db.QueryContext(ctx, listOwnershipHistory, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []OwnershipHistory
+	for rows.Next() {
+		var i OwnershipHistory
+		if err := rows.Scan(
+			&i.CompanyID,
+			&i.AsOf,
+			&i.ListedShares,
+			&i.PublicShares,
+			&i.PublicPercent,
+			&i.PromoterShares,
+			&i.PromoterPercent,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertOwnership = `-- name: UpsertOwnership :exec
 INSERT INTO ownership (company_id, listed_shares, public_shares, public_percent, promoter_shares, promoter_percent, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -74,6 +135,40 @@ type UpsertOwnershipParams struct {
 func (q *Queries) UpsertOwnership(ctx context.Context, arg UpsertOwnershipParams) error {
 	_, err := q.db.ExecContext(ctx, upsertOwnership,
 		arg.CompanyID,
+		arg.ListedShares,
+		arg.PublicShares,
+		arg.PublicPercent,
+		arg.PromoterShares,
+		arg.PromoterPercent,
+	)
+	return err
+}
+
+const upsertOwnershipHistory = `-- name: UpsertOwnershipHistory :exec
+INSERT INTO ownership_history (company_id, as_of, listed_shares, public_shares, public_percent, promoter_shares, promoter_percent)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(company_id, as_of) DO UPDATE SET
+  listed_shares = excluded.listed_shares,
+  public_shares = excluded.public_shares,
+  public_percent = excluded.public_percent,
+  promoter_shares = excluded.promoter_shares,
+  promoter_percent = excluded.promoter_percent
+`
+
+type UpsertOwnershipHistoryParams struct {
+	CompanyID       int64           `json:"company_id"`
+	AsOf            string          `json:"as_of"`
+	ListedShares    sql.NullInt64   `json:"listed_shares"`
+	PublicShares    sql.NullInt64   `json:"public_shares"`
+	PublicPercent   sql.NullFloat64 `json:"public_percent"`
+	PromoterShares  sql.NullInt64   `json:"promoter_shares"`
+	PromoterPercent sql.NullFloat64 `json:"promoter_percent"`
+}
+
+func (q *Queries) UpsertOwnershipHistory(ctx context.Context, arg UpsertOwnershipHistoryParams) error {
+	_, err := q.db.ExecContext(ctx, upsertOwnershipHistory,
+		arg.CompanyID,
+		arg.AsOf,
 		arg.ListedShares,
 		arg.PublicShares,
 		arg.PublicPercent,
