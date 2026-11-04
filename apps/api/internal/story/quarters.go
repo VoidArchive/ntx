@@ -106,7 +106,7 @@ func ordinal(n int) string {
 func Events(rows []sqlc.Fundamental, actions []sqlc.CorporateAction) []EventMark {
 	var out []EventMark
 	for _, r := range rows {
-		d, ok := day(r.PublishedAt.String)
+		d, ok := calendarDay(r.PublishedAt.String)
 		if !ok {
 			continue
 		}
@@ -117,7 +117,7 @@ func Events(rows []sqlc.Fundamental, actions []sqlc.CorporateAction) []EventMark
 		out = append(out, EventMark{Date: d, Kind: "result", Label: q.String()})
 	}
 	for _, a := range actions {
-		d, ok := day(a.SubmittedDate.String)
+		d, ok := calendarDay(a.SubmittedDate.String)
 		if !ok {
 			continue
 		}
@@ -147,8 +147,8 @@ func noticeLabel(a sqlc.CorporateAction) string {
 	return strings.Join(parts, ", ")
 }
 
-// day keeps the calendar day of a NEPSE timestamp ("2026-02-10" or "2026-02-10T12:30:00").
-func day(s string) (string, bool) {
+// calendarDay keeps the calendar day of a NEPSE timestamp ("2026-02-10" or "2026-02-10T12:30:00").
+func calendarDay(s string) (string, bool) {
 	if len(s) < len(time.DateOnly) {
 		return "", false
 	}

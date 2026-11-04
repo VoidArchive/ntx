@@ -29,11 +29,13 @@ const ownQuarters = 12
 // Input is everything Build needs for one company.
 type Input struct {
 	Company      sqlc.Company
-	Fundamentals []sqlc.Fundamental     // any order
-	Prices       []sqlc.Price           // newest first; the first two give the quote
-	CashDividend *float64               // latest fiscal year's cash dividend, % of par
-	Actions      []sqlc.CorporateAction // any order; dated ones become price-chart marks
+	Fundamentals []sqlc.Fundamental // any order
+	Prices       []sqlc.Price       // newest first; the first two give the quote
+	CashDividend *float64           // latest fiscal year's cash dividend, % of par
 	Sector       Sector
+	Actions      []sqlc.CorporateAction  // notices, newest submitted first
+	Ownership    []sqlc.OwnershipHistory // oldest first
+	Funds        *Funds                  // nil when the web matched none
 }
 
 // Sector holds one value per company in the sector, from each company's latest
@@ -44,15 +46,18 @@ type Sector struct {
 
 // Story is the ordered output for one company.
 type Story struct {
-	Claims     []Claim
-	Strips     []Strip
-	LastFiling string // period of the newest filing, "" when there is none
-	Quote      *Quote
+	Claims      []Claim
+	Strips      []Strip
+	LastFiling  string // period of the newest filing, "" when there is none
+	Quote       *Quote
+	FiscalYears []FiscalYear // newest first
+	Growth      []Growth
+	Ownership   []Observation // oldest first
 }
 
 // Claim is one sentence computed from the rows (GLOSSARY: Claim).
 type Claim struct {
-	Kind   string // earnings | valuation | record
+	Kind   string // earnings | valuation | payout | ownership | funds | record
 	Text   string
 	Value  float64
 	Unit   string // "Rs", "%", "x", ""
@@ -106,7 +111,19 @@ type filing struct {
 }
 
 // Build computes the story. A claim whose inputs are missing is omitted.
+// Claims run earnings, valuation, payout, ownership, funds.
 func Build(in Input) Story {
+	s := opening(in)
+	s.FiscalYears = fiscalYears(in)
+	s.Growth = growth(s.FiscalYears)
+	s.Claims = append(s.Claims, payout(s.FiscalYears, in.Actions)...)
+	s.Ownership = observations(in.Ownership)
+	s.Claims = append(s.Claims, ownership(s.Ownership)...)
+	s.Claims = append(s.Claims, funds(in.Funds)...)
+	return s
+}
+
+func opening(in Input) Story {
 	quarters, annual := parse(in.Fundamentals)
 	s := Story{Quote: quote(in.Prices)}
 	s.LastFiling = lastFiling(quarters, annual)

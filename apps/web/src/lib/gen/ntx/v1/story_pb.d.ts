@@ -18,6 +18,13 @@ export declare type GetCompanyStoryRequest = Message<"ntx.v1.GetCompanyStoryRequ
    * @generated from field: string symbol = 1;
    */
   symbol: string;
+
+  /**
+   * Matched by the web from its fund NAV file; the engine does not read files.
+   *
+   * @generated from field: ntx.v1.FundHoldings funds = 10;
+   */
+  funds?: FundHoldings;
 };
 
 /**
@@ -25,6 +32,50 @@ export declare type GetCompanyStoryRequest = Message<"ntx.v1.GetCompanyStoryRequ
  * Use `create(GetCompanyStoryRequestSchema)` to create a new message.
  */
 export declare const GetCompanyStoryRequestSchema: GenMessage<GetCompanyStoryRequest>;
+
+/**
+ * Open-ended mutual funds holding this company, as the web matched them.
+ *
+ * @generated from message ntx.v1.FundHoldings
+ */
+export declare type FundHoldings = Message<"ntx.v1.FundHoldings"> & {
+  /**
+   * @generated from field: int32 count = 1;
+   */
+  count: number;
+
+  /**
+   * Rs
+   *
+   * @generated from field: double total_value = 2;
+   */
+  totalValue: number;
+
+  /**
+   * @generated from field: string largest_name = 3;
+   */
+  largestName: string;
+
+  /**
+   * Rs
+   *
+   * @generated from field: double largest_value = 4;
+   */
+  largestValue: number;
+
+  /**
+   * NAV report month, e.g. "2083 Ashwin"
+   *
+   * @generated from field: string as_of = 5;
+   */
+  asOf: string;
+};
+
+/**
+ * Describes the message ntx.v1.FundHoldings.
+ * Use `create(FundHoldingsSchema)` to create a new message.
+ */
+export declare const FundHoldingsSchema: GenMessage<FundHoldings>;
 
 /**
  * @generated from message ntx.v1.GetCompanyStoryResponse
@@ -72,6 +123,25 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
    * @generated from field: ntx.v1.HydroEps hydro_eps = 22;
    */
   hydroEps?: HydroEps;
+
+  /**
+   * Newest first; one row per fiscal year with a full-year filing or a notice.
+   *
+   * @generated from field: repeated ntx.v1.FiscalYear fiscal_years = 10;
+   */
+  fiscalYears: FiscalYear[];
+
+  /**
+   * @generated from field: repeated ntx.v1.Growth growth = 11;
+   */
+  growth: Growth[];
+
+  /**
+   * Oldest first.
+   *
+   * @generated from field: repeated ntx.v1.OwnershipObservation ownership = 12;
+   */
+  ownership: OwnershipObservation[];
 };
 
 /**
@@ -79,6 +149,155 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
  * Use `create(GetCompanyStoryResponseSchema)` to create a new message.
  */
 export declare const GetCompanyStoryResponseSchema: GenMessage<GetCompanyStoryResponse>;
+
+/**
+ * One fiscal year's results and payout (GLOSSARY: Payout, Bonus-adjusted return).
+ *
+ * @generated from message ntx.v1.FiscalYear
+ */
+export declare type FiscalYear = Message<"ntx.v1.FiscalYear"> & {
+  /**
+   * "2082/83"
+   *
+   * @generated from field: string year = 1;
+   */
+  year: string;
+
+  /**
+   * @generated from field: optional double eps = 2;
+   */
+  eps?: number;
+
+  /**
+   * Rs
+   *
+   * @generated from field: optional double profit = 3;
+   */
+  profit?: number;
+
+  /**
+   * @generated from field: optional double book_value = 4;
+   */
+  bookValue?: number;
+
+  /**
+   * @generated from field: optional double shares_outstanding = 5;
+   */
+  sharesOutstanding?: number;
+
+  /**
+   * % of par
+   *
+   * @generated from field: optional double bonus = 6;
+   */
+  bonus?: number;
+
+  /**
+   * % of par
+   *
+   * @generated from field: optional double cash = 7;
+   */
+  cash?: number;
+
+  /**
+   * % of par; shown, excluded from the return
+   *
+   * @generated from field: optional double rights = 8;
+   */
+  rights?: number;
+
+  /**
+   * paid | none | not recorded
+   *
+   * @generated from field: string payout = 9;
+   */
+  payout: string;
+
+  /**
+   * bonus-adjusted, %; rights excluded
+   *
+   * @generated from field: optional double return = 10;
+   */
+  return?: number;
+
+  /**
+   * notice URL, empty when not recorded
+   *
+   * @generated from field: string source = 11;
+   */
+  source: string;
+};
+
+/**
+ * Describes the message ntx.v1.FiscalYear.
+ * Use `create(FiscalYearSchema)` to create a new message.
+ */
+export declare const FiscalYearSchema: GenMessage<FiscalYear>;
+
+/**
+ * Compounded annual growth, in %, over 1, 3 and 5 fiscal years; unset when a year is missing.
+ *
+ * @generated from message ntx.v1.Growth
+ */
+export declare type Growth = Message<"ntx.v1.Growth"> & {
+  /**
+   * profit | eps | book_value | price
+   *
+   * @generated from field: string metric = 1;
+   */
+  metric: string;
+
+  /**
+   * @generated from field: optional double one = 2;
+   */
+  one?: number;
+
+  /**
+   * @generated from field: optional double three = 3;
+   */
+  three?: number;
+
+  /**
+   * @generated from field: optional double five = 4;
+   */
+  five?: number;
+};
+
+/**
+ * Describes the message ntx.v1.Growth.
+ * Use `create(GrowthSchema)` to create a new message.
+ */
+export declare const GrowthSchema: GenMessage<Growth>;
+
+/**
+ * @generated from message ntx.v1.OwnershipObservation
+ */
+export declare type OwnershipObservation = Message<"ntx.v1.OwnershipObservation"> & {
+  /**
+   * @generated from field: string as_of = 1;
+   */
+  asOf: string;
+
+  /**
+   * %
+   *
+   * @generated from field: optional double promoter = 2;
+   */
+  promoter?: number;
+
+  /**
+   * %
+   *
+   * @generated from field: optional double public = 3;
+   */
+  public?: number;
+};
+
+/**
+ * Describes the message ntx.v1.OwnershipObservation.
+ * Use `create(OwnershipObservationSchema)` to create a new message.
+ */
+export declare const OwnershipObservationSchema: GenMessage<OwnershipObservation>;
 
 /**
  * One sentence computed from a company's rows (GLOSSARY: Claim).

@@ -3,6 +3,7 @@ package story
 import (
 	"context"
 	"errors"
+	"slices"
 	"testing"
 
 	"connectrpc.com/connect"
@@ -46,9 +47,65 @@ func TestGetCompanyStory(t *testing.T) {
 		t.Errorf("last filing = %q", m.GetLastFiling())
 	}
 
-	_, err = NewService(q).GetCompanyStory(ctx, connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NOPE"}))
+	if m.GetFiscalYears()[0].GetPayout() != "not recorded" {
+		t.Errorf("no notices stored: %v", m.GetFiscalYears()[0])
+	}
+}
+
+func TestGetCompanyStoryUnknownSymbol(t *testing.T) {
+	q := database.OpenTestDB(t)
+	seed(t, q)
+	_, err := NewService(
+		q,
+	).GetCompanyStory(context.Background(), connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NOPE"}))
 	if ce := new(connect.Error); !errors.As(err, &ce) || ce.Code() != connect.CodeNotFound {
 		t.Errorf("unknown symbol: %v", err)
+	}
+}
+
+func TestGetCompanyStoryPayoutOwnershipFunds(t *testing.T) {
+	ctx := context.Background()
+	q := database.OpenTestDB(t)
+	seed(t, q)
+	n := nabilNotices[0]
+	if err := q.UpsertCorporateAction(ctx, sqlc.UpsertCorporateActionParams{
+		CompanyID: n.CompanyID, FiscalYear: n.FiscalYear, BonusPercentage: n.BonusPercentage,
+		RightPercentage: n.RightPercentage, CashDividend: n.CashDividend, NoticeUrl: n.NoticeUrl,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	o := observation("2026-11-01", 51, 49)
+	if err := q.UpsertOwnershipHistory(ctx, sqlc.UpsertOwnershipHistoryParams{
+		CompanyID: o.CompanyID, AsOf: o.AsOf, PromoterPercent: o.PromoterPercent, PublicPercent: o.PublicPercent,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := NewService(q).GetCompanyStory(ctx, connect.NewRequest(&ntxv1.GetCompanyStoryRequest{
+		Symbol: "NABIL",
+		Funds: &ntxv1.FundHoldings{
+			Count:        1,
+			TotalValue:   319592955,
+			LargestName:  "NIBL Sahabhagita Fund",
+			LargestValue: 319592955,
+		},
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := res.Msg
+	var kinds []string
+	for _, c := range m.GetClaims() {
+		kinds = append(kinds, c.GetKind())
+	}
+	if !slices.Contains(kinds, "payout") || !slices.Contains(kinds, "ownership") || !slices.Contains(kinds, "funds") {
+		t.Errorf("claim kinds = %q", kinds)
+	}
+	if fy := m.GetFiscalYears()[0]; fy.GetYear() != "2082/83" || fy.GetPayout() != "paid" || fy.GetCash() != 12.5 {
+		t.Errorf("newest fiscal year = %v", fy)
+	}
+	if len(m.GetGrowth()) != 4 || len(m.GetOwnership()) != 1 {
+		t.Errorf("growth %v, ownership %v", m.GetGrowth(), m.GetOwnership())
 	}
 }
 

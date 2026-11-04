@@ -8,7 +8,7 @@ import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1
  * Describes the file ntx/v1/story.proto.
  */
 export const file_ntx_v1_story = /*@__PURE__*/
-  fileDesc("ChJudHgvdjEvc3RvcnkucHJvdG8SBm50eC52MSIoChZHZXRDb21wYW55U3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCSL1AQoXR2V0Q29tcGFueVN0b3J5UmVzcG9uc2USHQoGY2xhaW1zGAEgAygLMg0ubnR4LnYxLkNsYWltEh0KBnN0cmlwcxgCIAMoCzINLm50eC52MS5TdHJpcBITCgtsYXN0X2ZpbGluZxgDIAEoCRIcCgVxdW90ZRgEIAEoCzINLm50eC52MS5RdW90ZRIhCghxdWFydGVycxgUIAMoCzIPLm50eC52MS5RdWFydGVyEiEKBmV2ZW50cxgVIAMoCzIRLm50eC52MS5FdmVudE1hcmsSIwoJaHlkcm9fZXBzGBYgASgLMhAubnR4LnYxLkh5ZHJvRXBzInAKBUNsYWltEgwKBGtpbmQYASABKAkSDAoEdGV4dBgCIAEoCRINCgV2YWx1ZRgDIAEoARIMCgR1bml0GAQgASgJEg4KBnBlcmlvZBgFIAEoCRIOCgZzb3VyY2UYBiABKAkSDgoGYW5jaG9yGAcgASgJIm8KBVN0cmlwEg0KBXJhdGlvGAEgASgJEhIKBXZhbHVlGAIgASgBSACIAQESHQoGc2VjdG9yGAMgASgLMg0ubnR4LnYxLlJhbmdlEhoKA293bhgEIAEoCzINLm50eC52MS5SYW5nZUIICgZfdmFsdWUiQQoFUmFuZ2USCwoDbG93GAEgASgBEg4KBm1lZGlhbhgCIAEoARIMCgRoaWdoGAMgASgBEg0KBWNvdW50GAQgASgFIpcBCgVRdW90ZRINCgVjbG9zZRgBIAEoARITCgZjaGFuZ2UYAiABKAFIAIgBARIbCg5jaGFuZ2VfcGVyY2VudBgDIAEoAUgBiAEBEhUKDWJ1c2luZXNzX2RhdGUYBCABKAkSGAoQYnVzaW5lc3NfZGF0ZV9icxgFIAEoCUIJCgdfY2hhbmdlQhEKD19jaGFuZ2VfcGVyY2VudCLVAQoHUXVhcnRlchIOCgZwZXJpb2QYASABKAkSEwoLZmlzY2FsX3llYXIYAiABKAkSDgoGcHJvZml0GAMgASgBEhAKA2VwcxgEIAEoAUgAiAEBEhsKDmFubnVhbGl6ZWRfZXBzGAUgASgBSAGIAQESDQoFbGFiZWwYBiABKAkSFAoMcHVibGlzaGVkX2F0GAcgASgJEhIKCnNvdXJjZV91cmwYCCABKAkSEgoKaXNfbW9uc29vbhgJIAEoCEIGCgRfZXBzQhEKD19hbm51YWxpemVkX2VwcyI2CglFdmVudE1hcmsSDAoEZGF0ZRgBIAEoCRIMCgRraW5kGAIgASgJEg0KBWxhYmVsGAMgASgJIlwKCEh5ZHJvRXBzEg8KB3F1YXJ0ZXIYASABKAESEgoKYW5udWFsaXplZBgCIAEoARIRCglmdWxsX3llYXIYAyABKAESGAoQZnVsbF95ZWFyX3BlcmlvZBgEIAEoCTJiCgxTdG9yeVNlcnZpY2USUgoPR2V0Q29tcGFueVN0b3J5Eh4ubnR4LnYxLkdldENvbXBhbnlTdG9yeVJlcXVlc3QaHy5udHgudjEuR2V0Q29tcGFueVN0b3J5UmVzcG9uc2VCMFouZ2l0aHViLmNvbS92b2lkYXJjaGl2ZS9udHgvZ2VuL2dvL250eC92MTtudHh2MWIGcHJvdG8z");
+  fileDesc("ChJudHgvdjEvc3RvcnkucHJvdG8SBm50eC52MSJNChZHZXRDb21wYW55U3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRIjCgVmdW5kcxgKIAEoCzIULm50eC52MS5GdW5kSG9sZGluZ3MibgoMRnVuZEhvbGRpbmdzEg0KBWNvdW50GAEgASgFEhMKC3RvdGFsX3ZhbHVlGAIgASgBEhQKDGxhcmdlc3RfbmFtZRgDIAEoCRIVCg1sYXJnZXN0X3ZhbHVlGAQgASgBEg0KBWFzX29mGAUgASgJIvACChdHZXRDb21wYW55U3RvcnlSZXNwb25zZRIdCgZjbGFpbXMYASADKAsyDS5udHgudjEuQ2xhaW0SHQoGc3RyaXBzGAIgAygLMg0ubnR4LnYxLlN0cmlwEhMKC2xhc3RfZmlsaW5nGAMgASgJEhwKBXF1b3RlGAQgASgLMg0ubnR4LnYxLlF1b3RlEiEKCHF1YXJ0ZXJzGBQgAygLMg8ubnR4LnYxLlF1YXJ0ZXISIQoGZXZlbnRzGBUgAygLMhEubnR4LnYxLkV2ZW50TWFyaxIjCgloeWRyb19lcHMYFiABKAsyEC5udHgudjEuSHlkcm9FcHMSKAoMZmlzY2FsX3llYXJzGAogAygLMhIubnR4LnYxLkZpc2NhbFllYXISHgoGZ3Jvd3RoGAsgAygLMg4ubnR4LnYxLkdyb3d0aBIvCglvd25lcnNoaXAYDCADKAsyHC5udHgudjEuT3duZXJzaGlwT2JzZXJ2YXRpb24izgIKCkZpc2NhbFllYXISDAoEeWVhchgBIAEoCRIQCgNlcHMYAiABKAFIAIgBARITCgZwcm9maXQYAyABKAFIAYgBARIXCgpib29rX3ZhbHVlGAQgASgBSAKIAQESHwoSc2hhcmVzX291dHN0YW5kaW5nGAUgASgBSAOIAQESEgoFYm9udXMYBiABKAFIBIgBARIRCgRjYXNoGAcgASgBSAWIAQESEwoGcmlnaHRzGAggASgBSAaIAQESDgoGcGF5b3V0GAkgASgJEhMKBnJldHVybhgKIAEoAUgHiAEBEg4KBnNvdXJjZRgLIAEoCUIGCgRfZXBzQgkKB19wcm9maXRCDQoLX2Jvb2tfdmFsdWVCFQoTX3NoYXJlc19vdXRzdGFuZGluZ0IICgZfYm9udXNCBwoFX2Nhc2hCCQoHX3JpZ2h0c0IJCgdfcmV0dXJuImwKBkdyb3d0aBIOCgZtZXRyaWMYASABKAkSEAoDb25lGAIgASgBSACIAQESEgoFdGhyZWUYAyABKAFIAYgBARIRCgRmaXZlGAQgASgBSAKIAQFCBgoEX29uZUIICgZfdGhyZWVCBwoFX2ZpdmUiaQoUT3duZXJzaGlwT2JzZXJ2YXRpb24SDQoFYXNfb2YYASABKAkSFQoIcHJvbW90ZXIYAiABKAFIAIgBARITCgZwdWJsaWMYAyABKAFIAYgBAUILCglfcHJvbW90ZXJCCQoHX3B1YmxpYyJwCgVDbGFpbRIMCgRraW5kGAEgASgJEgwKBHRleHQYAiABKAkSDQoFdmFsdWUYAyABKAESDAoEdW5pdBgEIAEoCRIOCgZwZXJpb2QYBSABKAkSDgoGc291cmNlGAYgASgJEg4KBmFuY2hvchgHIAEoCSJvCgVTdHJpcBINCgVyYXRpbxgBIAEoCRISCgV2YWx1ZRgCIAEoAUgAiAEBEh0KBnNlY3RvchgDIAEoCzINLm50eC52MS5SYW5nZRIaCgNvd24YBCABKAsyDS5udHgudjEuUmFuZ2VCCAoGX3ZhbHVlIkEKBVJhbmdlEgsKA2xvdxgBIAEoARIOCgZtZWRpYW4YAiABKAESDAoEaGlnaBgDIAEoARINCgVjb3VudBgEIAEoBSKXAQoFUXVvdGUSDQoFY2xvc2UYASABKAESEwoGY2hhbmdlGAIgASgBSACIAQESGwoOY2hhbmdlX3BlcmNlbnQYAyABKAFIAYgBARIVCg1idXNpbmVzc19kYXRlGAQgASgJEhgKEGJ1c2luZXNzX2RhdGVfYnMYBSABKAlCCQoHX2NoYW5nZUIRCg9fY2hhbmdlX3BlcmNlbnQi1QEKB1F1YXJ0ZXISDgoGcGVyaW9kGAEgASgJEhMKC2Zpc2NhbF95ZWFyGAIgASgJEg4KBnByb2ZpdBgDIAEoARIQCgNlcHMYBCABKAFIAIgBARIbCg5hbm51YWxpemVkX2VwcxgFIAEoAUgBiAEBEg0KBWxhYmVsGAYgASgJEhQKDHB1Ymxpc2hlZF9hdBgHIAEoCRISCgpzb3VyY2VfdXJsGAggASgJEhIKCmlzX21vbnNvb24YCSABKAhCBgoEX2Vwc0IRCg9fYW5udWFsaXplZF9lcHMiNgoJRXZlbnRNYXJrEgwKBGRhdGUYASABKAkSDAoEa2luZBgCIAEoCRINCgVsYWJlbBgDIAEoCSJcCghIeWRyb0VwcxIPCgdxdWFydGVyGAEgASgBEhIKCmFubnVhbGl6ZWQYAiABKAESEQoJZnVsbF95ZWFyGAMgASgBEhgKEGZ1bGxfeWVhcl9wZXJpb2QYBCABKAkyYgoMU3RvcnlTZXJ2aWNlElIKD0dldENvbXBhbnlTdG9yeRIeLm50eC52MS5HZXRDb21wYW55U3RvcnlSZXF1ZXN0Gh8ubnR4LnYxLkdldENvbXBhbnlTdG9yeVJlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw");
 
 /**
  * Describes the message ntx.v1.GetCompanyStoryRequest.
@@ -18,60 +18,88 @@ export const GetCompanyStoryRequestSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_story, 0);
 
 /**
+ * Describes the message ntx.v1.FundHoldings.
+ * Use `create(FundHoldingsSchema)` to create a new message.
+ */
+export const FundHoldingsSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 1);
+
+/**
  * Describes the message ntx.v1.GetCompanyStoryResponse.
  * Use `create(GetCompanyStoryResponseSchema)` to create a new message.
  */
 export const GetCompanyStoryResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 1);
+  messageDesc(file_ntx_v1_story, 2);
+
+/**
+ * Describes the message ntx.v1.FiscalYear.
+ * Use `create(FiscalYearSchema)` to create a new message.
+ */
+export const FiscalYearSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 3);
+
+/**
+ * Describes the message ntx.v1.Growth.
+ * Use `create(GrowthSchema)` to create a new message.
+ */
+export const GrowthSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 4);
+
+/**
+ * Describes the message ntx.v1.OwnershipObservation.
+ * Use `create(OwnershipObservationSchema)` to create a new message.
+ */
+export const OwnershipObservationSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 5);
 
 /**
  * Describes the message ntx.v1.Claim.
  * Use `create(ClaimSchema)` to create a new message.
  */
 export const ClaimSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 2);
+  messageDesc(file_ntx_v1_story, 6);
 
 /**
  * Describes the message ntx.v1.Strip.
  * Use `create(StripSchema)` to create a new message.
  */
 export const StripSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 3);
+  messageDesc(file_ntx_v1_story, 7);
 
 /**
  * Describes the message ntx.v1.Range.
  * Use `create(RangeSchema)` to create a new message.
  */
 export const RangeSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 4);
+  messageDesc(file_ntx_v1_story, 8);
 
 /**
  * Describes the message ntx.v1.Quote.
  * Use `create(QuoteSchema)` to create a new message.
  */
 export const QuoteSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 5);
+  messageDesc(file_ntx_v1_story, 9);
 
 /**
  * Describes the message ntx.v1.Quarter.
  * Use `create(QuarterSchema)` to create a new message.
  */
 export const QuarterSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 6);
+  messageDesc(file_ntx_v1_story, 10);
 
 /**
  * Describes the message ntx.v1.EventMark.
  * Use `create(EventMarkSchema)` to create a new message.
  */
 export const EventMarkSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 7);
+  messageDesc(file_ntx_v1_story, 11);
 
 /**
  * Describes the message ntx.v1.HydroEps.
  * Use `create(HydroEpsSchema)` to create a new message.
  */
 export const HydroEpsSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 8);
+  messageDesc(file_ntx_v1_story, 12);
 
 /**
  * StoryService returns what a company's filings say, computed in the API (ADR 0001).

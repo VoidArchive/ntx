@@ -22,8 +22,10 @@ const (
 )
 
 type GetCompanyStoryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Symbol string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	// Matched by the web from its fund NAV file; the engine does not read files.
+	Funds         *FundHoldings `protobuf:"bytes,10,opt,name=funds,proto3" json:"funds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -65,6 +67,90 @@ func (x *GetCompanyStoryRequest) GetSymbol() string {
 	return ""
 }
 
+func (x *GetCompanyStoryRequest) GetFunds() *FundHoldings {
+	if x != nil {
+		return x.Funds
+	}
+	return nil
+}
+
+// Open-ended mutual funds holding this company, as the web matched them.
+type FundHoldings struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Count         int32                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	TotalValue    float64                `protobuf:"fixed64,2,opt,name=total_value,json=totalValue,proto3" json:"total_value,omitempty"` // Rs
+	LargestName   string                 `protobuf:"bytes,3,opt,name=largest_name,json=largestName,proto3" json:"largest_name,omitempty"`
+	LargestValue  float64                `protobuf:"fixed64,4,opt,name=largest_value,json=largestValue,proto3" json:"largest_value,omitempty"` // Rs
+	AsOf          string                 `protobuf:"bytes,5,opt,name=as_of,json=asOf,proto3" json:"as_of,omitempty"`                           // NAV report month, e.g. "2083 Ashwin"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FundHoldings) Reset() {
+	*x = FundHoldings{}
+	mi := &file_ntx_v1_story_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FundHoldings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FundHoldings) ProtoMessage() {}
+
+func (x *FundHoldings) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_story_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FundHoldings.ProtoReflect.Descriptor instead.
+func (*FundHoldings) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *FundHoldings) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
+func (x *FundHoldings) GetTotalValue() float64 {
+	if x != nil {
+		return x.TotalValue
+	}
+	return 0
+}
+
+func (x *FundHoldings) GetLargestName() string {
+	if x != nil {
+		return x.LargestName
+	}
+	return ""
+}
+
+func (x *FundHoldings) GetLargestValue() float64 {
+	if x != nil {
+		return x.LargestValue
+	}
+	return 0
+}
+
+func (x *FundHoldings) GetAsOf() string {
+	if x != nil {
+		return x.AsOf
+	}
+	return ""
+}
+
 type GetCompanyStoryResponse struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Claims []*Claim               `protobuf:"bytes,1,rep,name=claims,proto3" json:"claims,omitempty"`
@@ -77,14 +163,19 @@ type GetCompanyStoryResponse struct {
 	// Result publication and notice dates for the price chart, oldest first.
 	Events []*EventMark `protobuf:"bytes,21,rep,name=events,proto3" json:"events,omitempty"`
 	// Set for hydro companies only.
-	HydroEps      *HydroEps `protobuf:"bytes,22,opt,name=hydro_eps,json=hydroEps,proto3" json:"hydro_eps,omitempty"`
+	HydroEps *HydroEps `protobuf:"bytes,22,opt,name=hydro_eps,json=hydroEps,proto3" json:"hydro_eps,omitempty"`
+	// Newest first; one row per fiscal year with a full-year filing or a notice.
+	FiscalYears []*FiscalYear `protobuf:"bytes,10,rep,name=fiscal_years,json=fiscalYears,proto3" json:"fiscal_years,omitempty"`
+	Growth      []*Growth     `protobuf:"bytes,11,rep,name=growth,proto3" json:"growth,omitempty"`
+	// Oldest first.
+	Ownership     []*OwnershipObservation `protobuf:"bytes,12,rep,name=ownership,proto3" json:"ownership,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetCompanyStoryResponse) Reset() {
 	*x = GetCompanyStoryResponse{}
-	mi := &file_ntx_v1_story_proto_msgTypes[1]
+	mi := &file_ntx_v1_story_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -96,7 +187,7 @@ func (x *GetCompanyStoryResponse) String() string {
 func (*GetCompanyStoryResponse) ProtoMessage() {}
 
 func (x *GetCompanyStoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[1]
+	mi := &file_ntx_v1_story_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -109,7 +200,7 @@ func (x *GetCompanyStoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCompanyStoryResponse.ProtoReflect.Descriptor instead.
 func (*GetCompanyStoryResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{1}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetCompanyStoryResponse) GetClaims() []*Claim {
@@ -161,6 +252,281 @@ func (x *GetCompanyStoryResponse) GetHydroEps() *HydroEps {
 	return nil
 }
 
+func (x *GetCompanyStoryResponse) GetFiscalYears() []*FiscalYear {
+	if x != nil {
+		return x.FiscalYears
+	}
+	return nil
+}
+
+func (x *GetCompanyStoryResponse) GetGrowth() []*Growth {
+	if x != nil {
+		return x.Growth
+	}
+	return nil
+}
+
+func (x *GetCompanyStoryResponse) GetOwnership() []*OwnershipObservation {
+	if x != nil {
+		return x.Ownership
+	}
+	return nil
+}
+
+// One fiscal year's results and payout (GLOSSARY: Payout, Bonus-adjusted return).
+type FiscalYear struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Year              string                 `protobuf:"bytes,1,opt,name=year,proto3" json:"year,omitempty"` // "2082/83"
+	Eps               *float64               `protobuf:"fixed64,2,opt,name=eps,proto3,oneof" json:"eps,omitempty"`
+	Profit            *float64               `protobuf:"fixed64,3,opt,name=profit,proto3,oneof" json:"profit,omitempty"` // Rs
+	BookValue         *float64               `protobuf:"fixed64,4,opt,name=book_value,json=bookValue,proto3,oneof" json:"book_value,omitempty"`
+	SharesOutstanding *float64               `protobuf:"fixed64,5,opt,name=shares_outstanding,json=sharesOutstanding,proto3,oneof" json:"shares_outstanding,omitempty"`
+	Bonus             *float64               `protobuf:"fixed64,6,opt,name=bonus,proto3,oneof" json:"bonus,omitempty"`    // % of par
+	Cash              *float64               `protobuf:"fixed64,7,opt,name=cash,proto3,oneof" json:"cash,omitempty"`      // % of par
+	Rights            *float64               `protobuf:"fixed64,8,opt,name=rights,proto3,oneof" json:"rights,omitempty"`  // % of par; shown, excluded from the return
+	Payout            string                 `protobuf:"bytes,9,opt,name=payout,proto3" json:"payout,omitempty"`          // paid | none | not recorded
+	Return            *float64               `protobuf:"fixed64,10,opt,name=return,proto3,oneof" json:"return,omitempty"` // bonus-adjusted, %; rights excluded
+	Source            string                 `protobuf:"bytes,11,opt,name=source,proto3" json:"source,omitempty"`         // notice URL, empty when not recorded
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *FiscalYear) Reset() {
+	*x = FiscalYear{}
+	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FiscalYear) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FiscalYear) ProtoMessage() {}
+
+func (x *FiscalYear) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FiscalYear.ProtoReflect.Descriptor instead.
+func (*FiscalYear) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *FiscalYear) GetYear() string {
+	if x != nil {
+		return x.Year
+	}
+	return ""
+}
+
+func (x *FiscalYear) GetEps() float64 {
+	if x != nil && x.Eps != nil {
+		return *x.Eps
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetProfit() float64 {
+	if x != nil && x.Profit != nil {
+		return *x.Profit
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetBookValue() float64 {
+	if x != nil && x.BookValue != nil {
+		return *x.BookValue
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetSharesOutstanding() float64 {
+	if x != nil && x.SharesOutstanding != nil {
+		return *x.SharesOutstanding
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetBonus() float64 {
+	if x != nil && x.Bonus != nil {
+		return *x.Bonus
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetCash() float64 {
+	if x != nil && x.Cash != nil {
+		return *x.Cash
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetRights() float64 {
+	if x != nil && x.Rights != nil {
+		return *x.Rights
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetPayout() string {
+	if x != nil {
+		return x.Payout
+	}
+	return ""
+}
+
+func (x *FiscalYear) GetReturn() float64 {
+	if x != nil && x.Return != nil {
+		return *x.Return
+	}
+	return 0
+}
+
+func (x *FiscalYear) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+// Compounded annual growth, in %, over 1, 3 and 5 fiscal years; unset when a year is missing.
+type Growth struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Metric        string                 `protobuf:"bytes,1,opt,name=metric,proto3" json:"metric,omitempty"` // profit | eps | book_value | price
+	One           *float64               `protobuf:"fixed64,2,opt,name=one,proto3,oneof" json:"one,omitempty"`
+	Three         *float64               `protobuf:"fixed64,3,opt,name=three,proto3,oneof" json:"three,omitempty"`
+	Five          *float64               `protobuf:"fixed64,4,opt,name=five,proto3,oneof" json:"five,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Growth) Reset() {
+	*x = Growth{}
+	mi := &file_ntx_v1_story_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Growth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Growth) ProtoMessage() {}
+
+func (x *Growth) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_story_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Growth.ProtoReflect.Descriptor instead.
+func (*Growth) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Growth) GetMetric() string {
+	if x != nil {
+		return x.Metric
+	}
+	return ""
+}
+
+func (x *Growth) GetOne() float64 {
+	if x != nil && x.One != nil {
+		return *x.One
+	}
+	return 0
+}
+
+func (x *Growth) GetThree() float64 {
+	if x != nil && x.Three != nil {
+		return *x.Three
+	}
+	return 0
+}
+
+func (x *Growth) GetFive() float64 {
+	if x != nil && x.Five != nil {
+		return *x.Five
+	}
+	return 0
+}
+
+type OwnershipObservation struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AsOf          string                 `protobuf:"bytes,1,opt,name=as_of,json=asOf,proto3" json:"as_of,omitempty"`
+	Promoter      *float64               `protobuf:"fixed64,2,opt,name=promoter,proto3,oneof" json:"promoter,omitempty"` // %
+	Public        *float64               `protobuf:"fixed64,3,opt,name=public,proto3,oneof" json:"public,omitempty"`     // %
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OwnershipObservation) Reset() {
+	*x = OwnershipObservation{}
+	mi := &file_ntx_v1_story_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OwnershipObservation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OwnershipObservation) ProtoMessage() {}
+
+func (x *OwnershipObservation) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_story_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OwnershipObservation.ProtoReflect.Descriptor instead.
+func (*OwnershipObservation) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *OwnershipObservation) GetAsOf() string {
+	if x != nil {
+		return x.AsOf
+	}
+	return ""
+}
+
+func (x *OwnershipObservation) GetPromoter() float64 {
+	if x != nil && x.Promoter != nil {
+		return *x.Promoter
+	}
+	return 0
+}
+
+func (x *OwnershipObservation) GetPublic() float64 {
+	if x != nil && x.Public != nil {
+		return *x.Public
+	}
+	return 0
+}
+
 // One sentence computed from a company's rows (GLOSSARY: Claim).
 type Claim struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -177,7 +543,7 @@ type Claim struct {
 
 func (x *Claim) Reset() {
 	*x = Claim{}
-	mi := &file_ntx_v1_story_proto_msgTypes[2]
+	mi := &file_ntx_v1_story_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -189,7 +555,7 @@ func (x *Claim) String() string {
 func (*Claim) ProtoMessage() {}
 
 func (x *Claim) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[2]
+	mi := &file_ntx_v1_story_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -202,7 +568,7 @@ func (x *Claim) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Claim.ProtoReflect.Descriptor instead.
 func (*Claim) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{2}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Claim) GetKind() string {
@@ -267,7 +633,7 @@ type Strip struct {
 
 func (x *Strip) Reset() {
 	*x = Strip{}
-	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	mi := &file_ntx_v1_story_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -279,7 +645,7 @@ func (x *Strip) String() string {
 func (*Strip) ProtoMessage() {}
 
 func (x *Strip) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[3]
+	mi := &file_ntx_v1_story_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +658,7 @@ func (x *Strip) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Strip.ProtoReflect.Descriptor instead.
 func (*Strip) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{3}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Strip) GetRatio() string {
@@ -335,7 +701,7 @@ type Range struct {
 
 func (x *Range) Reset() {
 	*x = Range{}
-	mi := &file_ntx_v1_story_proto_msgTypes[4]
+	mi := &file_ntx_v1_story_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +713,7 @@ func (x *Range) String() string {
 func (*Range) ProtoMessage() {}
 
 func (x *Range) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[4]
+	mi := &file_ntx_v1_story_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +726,7 @@ func (x *Range) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Range.ProtoReflect.Descriptor instead.
 func (*Range) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{4}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Range) GetLow() float64 {
@@ -405,7 +771,7 @@ type Quote struct {
 
 func (x *Quote) Reset() {
 	*x = Quote{}
-	mi := &file_ntx_v1_story_proto_msgTypes[5]
+	mi := &file_ntx_v1_story_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -417,7 +783,7 @@ func (x *Quote) String() string {
 func (*Quote) ProtoMessage() {}
 
 func (x *Quote) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[5]
+	mi := &file_ntx_v1_story_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -430,7 +796,7 @@ func (x *Quote) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Quote.ProtoReflect.Descriptor instead.
 func (*Quote) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{5}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Quote) GetClose() float64 {
@@ -486,7 +852,7 @@ type Quarter struct {
 
 func (x *Quarter) Reset() {
 	*x = Quarter{}
-	mi := &file_ntx_v1_story_proto_msgTypes[6]
+	mi := &file_ntx_v1_story_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -498,7 +864,7 @@ func (x *Quarter) String() string {
 func (*Quarter) ProtoMessage() {}
 
 func (x *Quarter) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[6]
+	mi := &file_ntx_v1_story_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +877,7 @@ func (x *Quarter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Quarter.ProtoReflect.Descriptor instead.
 func (*Quarter) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{6}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Quarter) GetPeriod() string {
@@ -589,7 +955,7 @@ type EventMark struct {
 
 func (x *EventMark) Reset() {
 	*x = EventMark{}
-	mi := &file_ntx_v1_story_proto_msgTypes[7]
+	mi := &file_ntx_v1_story_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -601,7 +967,7 @@ func (x *EventMark) String() string {
 func (*EventMark) ProtoMessage() {}
 
 func (x *EventMark) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[7]
+	mi := &file_ntx_v1_story_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -614,7 +980,7 @@ func (x *EventMark) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventMark.ProtoReflect.Descriptor instead.
 func (*EventMark) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{7}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *EventMark) GetDate() string {
@@ -651,7 +1017,7 @@ type HydroEps struct {
 
 func (x *HydroEps) Reset() {
 	*x = HydroEps{}
-	mi := &file_ntx_v1_story_proto_msgTypes[8]
+	mi := &file_ntx_v1_story_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -663,7 +1029,7 @@ func (x *HydroEps) String() string {
 func (*HydroEps) ProtoMessage() {}
 
 func (x *HydroEps) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_story_proto_msgTypes[8]
+	mi := &file_ntx_v1_story_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -676,7 +1042,7 @@ func (x *HydroEps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HydroEps.ProtoReflect.Descriptor instead.
 func (*HydroEps) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_story_proto_rawDescGZIP(), []int{8}
+	return file_ntx_v1_story_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *HydroEps) GetQuarter() float64 {
@@ -711,9 +1077,18 @@ var File_ntx_v1_story_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_story_proto_rawDesc = "" +
 	"\n" +
-	"\x12ntx/v1/story.proto\x12\x06ntx.v1\"0\n" +
+	"\x12ntx/v1/story.proto\x12\x06ntx.v1\"\\\n" +
 	"\x16GetCompanyStoryRequest\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"\xb4\x02\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12*\n" +
+	"\x05funds\x18\n" +
+	" \x01(\v2\x14.ntx.v1.FundHoldingsR\x05funds\"\xa2\x01\n" +
+	"\fFundHoldings\x12\x14\n" +
+	"\x05count\x18\x01 \x01(\x05R\x05count\x12\x1f\n" +
+	"\vtotal_value\x18\x02 \x01(\x01R\n" +
+	"totalValue\x12!\n" +
+	"\flargest_name\x18\x03 \x01(\tR\vlargestName\x12#\n" +
+	"\rlargest_value\x18\x04 \x01(\x01R\flargestValue\x12\x13\n" +
+	"\x05as_of\x18\x05 \x01(\tR\x04asOf\"\xcf\x03\n" +
 	"\x17GetCompanyStoryResponse\x12%\n" +
 	"\x06claims\x18\x01 \x03(\v2\r.ntx.v1.ClaimR\x06claims\x12%\n" +
 	"\x06strips\x18\x02 \x03(\v2\r.ntx.v1.StripR\x06strips\x12\x1f\n" +
@@ -722,7 +1097,48 @@ const file_ntx_v1_story_proto_rawDesc = "" +
 	"\x05quote\x18\x04 \x01(\v2\r.ntx.v1.QuoteR\x05quote\x12+\n" +
 	"\bquarters\x18\x14 \x03(\v2\x0f.ntx.v1.QuarterR\bquarters\x12)\n" +
 	"\x06events\x18\x15 \x03(\v2\x11.ntx.v1.EventMarkR\x06events\x12-\n" +
-	"\thydro_eps\x18\x16 \x01(\v2\x10.ntx.v1.HydroEpsR\bhydroEps\"\xa1\x01\n" +
+	"\thydro_eps\x18\x16 \x01(\v2\x10.ntx.v1.HydroEpsR\bhydroEps\x125\n" +
+	"\ffiscal_years\x18\n" +
+	" \x03(\v2\x12.ntx.v1.FiscalYearR\vfiscalYears\x12&\n" +
+	"\x06growth\x18\v \x03(\v2\x0e.ntx.v1.GrowthR\x06growth\x12:\n" +
+	"\townership\x18\f \x03(\v2\x1c.ntx.v1.OwnershipObservationR\townership\"\xac\x03\n" +
+	"\n" +
+	"FiscalYear\x12\x12\n" +
+	"\x04year\x18\x01 \x01(\tR\x04year\x12\x15\n" +
+	"\x03eps\x18\x02 \x01(\x01H\x00R\x03eps\x88\x01\x01\x12\x1b\n" +
+	"\x06profit\x18\x03 \x01(\x01H\x01R\x06profit\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"book_value\x18\x04 \x01(\x01H\x02R\tbookValue\x88\x01\x01\x122\n" +
+	"\x12shares_outstanding\x18\x05 \x01(\x01H\x03R\x11sharesOutstanding\x88\x01\x01\x12\x19\n" +
+	"\x05bonus\x18\x06 \x01(\x01H\x04R\x05bonus\x88\x01\x01\x12\x17\n" +
+	"\x04cash\x18\a \x01(\x01H\x05R\x04cash\x88\x01\x01\x12\x1b\n" +
+	"\x06rights\x18\b \x01(\x01H\x06R\x06rights\x88\x01\x01\x12\x16\n" +
+	"\x06payout\x18\t \x01(\tR\x06payout\x12\x1b\n" +
+	"\x06return\x18\n" +
+	" \x01(\x01H\aR\x06return\x88\x01\x01\x12\x16\n" +
+	"\x06source\x18\v \x01(\tR\x06sourceB\x06\n" +
+	"\x04_epsB\t\n" +
+	"\a_profitB\r\n" +
+	"\v_book_valueB\x15\n" +
+	"\x13_shares_outstandingB\b\n" +
+	"\x06_bonusB\a\n" +
+	"\x05_cashB\t\n" +
+	"\a_rightsB\t\n" +
+	"\a_return\"\x86\x01\n" +
+	"\x06Growth\x12\x16\n" +
+	"\x06metric\x18\x01 \x01(\tR\x06metric\x12\x15\n" +
+	"\x03one\x18\x02 \x01(\x01H\x00R\x03one\x88\x01\x01\x12\x19\n" +
+	"\x05three\x18\x03 \x01(\x01H\x01R\x05three\x88\x01\x01\x12\x17\n" +
+	"\x04five\x18\x04 \x01(\x01H\x02R\x04five\x88\x01\x01B\x06\n" +
+	"\x04_oneB\b\n" +
+	"\x06_threeB\a\n" +
+	"\x05_five\"\x81\x01\n" +
+	"\x14OwnershipObservation\x12\x13\n" +
+	"\x05as_of\x18\x01 \x01(\tR\x04asOf\x12\x1f\n" +
+	"\bpromoter\x18\x02 \x01(\x01H\x00R\bpromoter\x88\x01\x01\x12\x1b\n" +
+	"\x06public\x18\x03 \x01(\x01H\x01R\x06public\x88\x01\x01B\v\n" +
+	"\t_promoterB\t\n" +
+	"\a_public\"\xa1\x01\n" +
 	"\x05Claim\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x12\n" +
 	"\x04text\x18\x02 \x01(\tR\x04text\x12\x14\n" +
@@ -791,34 +1207,42 @@ func file_ntx_v1_story_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_story_proto_rawDescData
 }
 
-var file_ntx_v1_story_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_ntx_v1_story_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_ntx_v1_story_proto_goTypes = []any{
 	(*GetCompanyStoryRequest)(nil),  // 0: ntx.v1.GetCompanyStoryRequest
-	(*GetCompanyStoryResponse)(nil), // 1: ntx.v1.GetCompanyStoryResponse
-	(*Claim)(nil),                   // 2: ntx.v1.Claim
-	(*Strip)(nil),                   // 3: ntx.v1.Strip
-	(*Range)(nil),                   // 4: ntx.v1.Range
-	(*Quote)(nil),                   // 5: ntx.v1.Quote
-	(*Quarter)(nil),                 // 6: ntx.v1.Quarter
-	(*EventMark)(nil),               // 7: ntx.v1.EventMark
-	(*HydroEps)(nil),                // 8: ntx.v1.HydroEps
+	(*FundHoldings)(nil),            // 1: ntx.v1.FundHoldings
+	(*GetCompanyStoryResponse)(nil), // 2: ntx.v1.GetCompanyStoryResponse
+	(*FiscalYear)(nil),              // 3: ntx.v1.FiscalYear
+	(*Growth)(nil),                  // 4: ntx.v1.Growth
+	(*OwnershipObservation)(nil),    // 5: ntx.v1.OwnershipObservation
+	(*Claim)(nil),                   // 6: ntx.v1.Claim
+	(*Strip)(nil),                   // 7: ntx.v1.Strip
+	(*Range)(nil),                   // 8: ntx.v1.Range
+	(*Quote)(nil),                   // 9: ntx.v1.Quote
+	(*Quarter)(nil),                 // 10: ntx.v1.Quarter
+	(*EventMark)(nil),               // 11: ntx.v1.EventMark
+	(*HydroEps)(nil),                // 12: ntx.v1.HydroEps
 }
 var file_ntx_v1_story_proto_depIdxs = []int32{
-	2, // 0: ntx.v1.GetCompanyStoryResponse.claims:type_name -> ntx.v1.Claim
-	3, // 1: ntx.v1.GetCompanyStoryResponse.strips:type_name -> ntx.v1.Strip
-	5, // 2: ntx.v1.GetCompanyStoryResponse.quote:type_name -> ntx.v1.Quote
-	6, // 3: ntx.v1.GetCompanyStoryResponse.quarters:type_name -> ntx.v1.Quarter
-	7, // 4: ntx.v1.GetCompanyStoryResponse.events:type_name -> ntx.v1.EventMark
-	8, // 5: ntx.v1.GetCompanyStoryResponse.hydro_eps:type_name -> ntx.v1.HydroEps
-	4, // 6: ntx.v1.Strip.sector:type_name -> ntx.v1.Range
-	4, // 7: ntx.v1.Strip.own:type_name -> ntx.v1.Range
-	0, // 8: ntx.v1.StoryService.GetCompanyStory:input_type -> ntx.v1.GetCompanyStoryRequest
-	1, // 9: ntx.v1.StoryService.GetCompanyStory:output_type -> ntx.v1.GetCompanyStoryResponse
-	9, // [9:10] is the sub-list for method output_type
-	8, // [8:9] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	1,  // 0: ntx.v1.GetCompanyStoryRequest.funds:type_name -> ntx.v1.FundHoldings
+	6,  // 1: ntx.v1.GetCompanyStoryResponse.claims:type_name -> ntx.v1.Claim
+	7,  // 2: ntx.v1.GetCompanyStoryResponse.strips:type_name -> ntx.v1.Strip
+	9,  // 3: ntx.v1.GetCompanyStoryResponse.quote:type_name -> ntx.v1.Quote
+	10, // 4: ntx.v1.GetCompanyStoryResponse.quarters:type_name -> ntx.v1.Quarter
+	11, // 5: ntx.v1.GetCompanyStoryResponse.events:type_name -> ntx.v1.EventMark
+	12, // 6: ntx.v1.GetCompanyStoryResponse.hydro_eps:type_name -> ntx.v1.HydroEps
+	3,  // 7: ntx.v1.GetCompanyStoryResponse.fiscal_years:type_name -> ntx.v1.FiscalYear
+	4,  // 8: ntx.v1.GetCompanyStoryResponse.growth:type_name -> ntx.v1.Growth
+	5,  // 9: ntx.v1.GetCompanyStoryResponse.ownership:type_name -> ntx.v1.OwnershipObservation
+	8,  // 10: ntx.v1.Strip.sector:type_name -> ntx.v1.Range
+	8,  // 11: ntx.v1.Strip.own:type_name -> ntx.v1.Range
+	0,  // 12: ntx.v1.StoryService.GetCompanyStory:input_type -> ntx.v1.GetCompanyStoryRequest
+	2,  // 13: ntx.v1.StoryService.GetCompanyStory:output_type -> ntx.v1.GetCompanyStoryResponse
+	13, // [13:14] is the sub-list for method output_type
+	12, // [12:13] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_story_proto_init() }
@@ -827,15 +1251,18 @@ func file_ntx_v1_story_proto_init() {
 		return
 	}
 	file_ntx_v1_story_proto_msgTypes[3].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[4].OneofWrappers = []any{}
 	file_ntx_v1_story_proto_msgTypes[5].OneofWrappers = []any{}
-	file_ntx_v1_story_proto_msgTypes[6].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[7].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[9].OneofWrappers = []any{}
+	file_ntx_v1_story_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_story_proto_rawDesc), len(file_ntx_v1_story_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

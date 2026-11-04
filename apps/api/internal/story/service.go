@@ -37,6 +37,15 @@ func (s *Service) GetCompanyStory(
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	if f := req.Msg.GetFunds(); f.GetCount() > 0 {
+		in.Funds = &Funds{
+			Count:        int(f.GetCount()),
+			Total:        f.GetTotalValue(),
+			LargestName:  f.GetLargestName(),
+			LargestValue: f.GetLargestValue(),
+			AsOf:         f.GetAsOf(),
+		}
+	}
 	res := toProto(Build(in))
 	addQuarters(res, in)
 	return connect.NewResponse(res), nil
@@ -53,7 +62,8 @@ func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
 	}
 	if in.Prices, err = s.queries.ListPricesByCompany(
 		ctx,
-		sqlc.ListPricesByCompanyParams{CompanyID: c.ID, Limit: 2},
+		// Every close, for the fiscal-year boundaries; about 250 rows a year.
+		sqlc.ListPricesByCompanyParams{CompanyID: c.ID, Limit: 10_000},
 	); err != nil {
 		return Input{}, fmt.Errorf("prices: %w", err)
 	}
@@ -67,6 +77,9 @@ func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
 	if err == nil {
 		// A recorded action without cash is a zero cash dividend, as in ListSectorYield.
 		in.CashDividend = &ca.CashDividend.Float64
+	}
+	if in.Ownership, err = s.queries.ListOwnershipHistory(ctx, c.ID); err != nil {
+		return Input{}, fmt.Errorf("ownership history: %w", err)
 	}
 	for _, d := range []struct {
 		dst  *[]float64
@@ -111,6 +124,30 @@ func toProto(st Story) *ntxv1.GetCompanyStoryResponse {
 			BusinessDate:   q.Date,
 			BusinessDateBs: q.DateBS,
 		}
+	}
+	for _, fy := range st.FiscalYears {
+		res.FiscalYears = append(res.FiscalYears, &ntxv1.FiscalYear{
+			Year:              fy.Year.String(),
+			Eps:               fy.EPS,
+			Profit:            fy.Profit,
+			BookValue:         fy.BookValue,
+			SharesOutstanding: fy.Shares,
+			Bonus:             fy.Bonus,
+			Cash:              fy.Cash,
+			Rights:            fy.Rights,
+			Payout:            fy.Payout,
+			Return:            fy.Return,
+			Source:            fy.Source,
+		})
+	}
+	for _, g := range st.Growth {
+		res.Growth = append(res.Growth, &ntxv1.Growth{Metric: g.Metric, One: g.One, Three: g.Three, Five: g.Five})
+	}
+	for _, o := range st.Ownership {
+		res.Ownership = append(
+			res.Ownership,
+			&ntxv1.OwnershipObservation{AsOf: o.AsOf, Promoter: o.Promoter, Public: o.Public},
+		)
 	}
 	return res
 }
