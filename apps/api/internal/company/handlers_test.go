@@ -92,7 +92,11 @@ func TestFundamentalPeriod(t *testing.T) {
 		{"", "unknown", "First Quarter", ""},
 	}
 	for _, tc := range tests {
-		f := sqlc.Fundamental{FiscalYear: tc.gregorian, Quarter: tc.quarter, FiscalYearNp: sql.NullString{String: tc.np, Valid: tc.np != ""}}
+		f := sqlc.Fundamental{
+			FiscalYear:   tc.gregorian,
+			Quarter:      tc.quarter,
+			FiscalYearNp: sql.NullString{String: tc.np, Valid: tc.np != ""},
+		}
 		if got := fundamentalToProto(f).GetPeriod(); got != tc.want {
 			t.Fatalf("period(%q, %q, %q) = %q, want %q", tc.np, tc.gregorian, tc.quarter, got, tc.want)
 		}
