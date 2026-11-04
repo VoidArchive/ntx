@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 	"github.com/voidarchive/ntx/internal/nepse"
@@ -83,6 +84,15 @@ func (w *Worker) SyncFundamentals(ctx context.Context) error {
 }
 
 func (w *Worker) SyncPrices(ctx context.Context, businessDate string) error {
+	status, err := w.nepse.MarketStatus(ctx)
+	if err != nil {
+		return fmt.Errorf("market status: %w", err)
+	}
+	if !tradedOn(status.AsOf, businessDate) {
+		slog.Info("prices sync skipped: market did not trade", "date", businessDate, "asOf", status.AsOf)
+		return nil
+	}
+
 	// Build symbol -> company ID map
 	companies, err := w.queries.ListCompanies(ctx, sqlc.ListCompaniesParams{
 		Limit:  1000,
