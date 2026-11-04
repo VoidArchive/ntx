@@ -9,6 +9,8 @@
 		CorporateActionsTable,
 		AIResearchButton,
 		MutualFundHoldings,
+		FiscalYears,
+		OwnershipHistory,
 		type ViewMode
 	} from '#lib/components/company/index.js';
 	import {
@@ -16,7 +18,6 @@
 		VolumeChart,
 		EarningsChart,
 		DividendChart,
-		OwnershipPieChart,
 		RatingsRadar,
 		SectorPeers
 	} from '#lib/components/charts/index.js';
@@ -56,6 +57,11 @@
 			<!-- Opening: what the filings say, then where the ratios sit -->
 			<StoryOpening {company} {story} />
 			<ValuationStrips strips={story?.strips ?? []} />
+
+			<!-- One row per fiscal year, newest first, with compounded growth beside it -->
+			<div class="mt-12 border-t border-border pt-8">
+				<FiscalYears years={story?.fiscalYears ?? []} growth={story?.growth ?? []} />
+			</div>
 
 			<!-- Main Content Grid -->
 			<div class="mt-8 grid gap-8 lg:grid-cols-3">
@@ -116,7 +122,7 @@
 						<EarningsChart fundamentals={filteredFundamentals} />
 					</div>
 					<div class="min-w-0 lg:col-span-4">
-						<OwnershipPieChart {ownership} />
+						<OwnershipHistory observations={story?.ownership ?? []} />
 					</div>
 				</div>
 			</div>
@@ -136,7 +142,7 @@
 
 			<!-- Mutual Fund Holdings -->
 			{#if fundHoldings.length > 0}
-				<div class="mt-12 border-t border-border pt-8">
+				<div id="funds" class="mt-12 border-t border-border pt-8">
 					<MutualFundHoldings holdings={fundHoldings} />
 				</div>
 			{/if}

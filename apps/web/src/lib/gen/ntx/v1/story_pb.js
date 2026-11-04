@@ -8,7 +8,7 @@ import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1
  * Describes the file ntx/v1/story.proto.
  */
 export const file_ntx_v1_story = /*@__PURE__*/
-  fileDesc("ChJudHgvdjEvc3RvcnkucHJvdG8SBm50eC52MSIoChZHZXRDb21wYW55U3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCSKKAQoXR2V0Q29tcGFueVN0b3J5UmVzcG9uc2USHQoGY2xhaW1zGAEgAygLMg0ubnR4LnYxLkNsYWltEh0KBnN0cmlwcxgCIAMoCzINLm50eC52MS5TdHJpcBITCgtsYXN0X2ZpbGluZxgDIAEoCRIcCgVxdW90ZRgEIAEoCzINLm50eC52MS5RdW90ZSJwCgVDbGFpbRIMCgRraW5kGAEgASgJEgwKBHRleHQYAiABKAkSDQoFdmFsdWUYAyABKAESDAoEdW5pdBgEIAEoCRIOCgZwZXJpb2QYBSABKAkSDgoGc291cmNlGAYgASgJEg4KBmFuY2hvchgHIAEoCSJvCgVTdHJpcBINCgVyYXRpbxgBIAEoCRISCgV2YWx1ZRgCIAEoAUgAiAEBEh0KBnNlY3RvchgDIAEoCzINLm50eC52MS5SYW5nZRIaCgNvd24YBCABKAsyDS5udHgudjEuUmFuZ2VCCAoGX3ZhbHVlIkEKBVJhbmdlEgsKA2xvdxgBIAEoARIOCgZtZWRpYW4YAiABKAESDAoEaGlnaBgDIAEoARINCgVjb3VudBgEIAEoBSKXAQoFUXVvdGUSDQoFY2xvc2UYASABKAESEwoGY2hhbmdlGAIgASgBSACIAQESGwoOY2hhbmdlX3BlcmNlbnQYAyABKAFIAYgBARIVCg1idXNpbmVzc19kYXRlGAQgASgJEhgKEGJ1c2luZXNzX2RhdGVfYnMYBSABKAlCCQoHX2NoYW5nZUIRCg9fY2hhbmdlX3BlcmNlbnQyYgoMU3RvcnlTZXJ2aWNlElIKD0dldENvbXBhbnlTdG9yeRIeLm50eC52MS5HZXRDb21wYW55U3RvcnlSZXF1ZXN0Gh8ubnR4LnYxLkdldENvbXBhbnlTdG9yeVJlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw");
+  fileDesc("ChJudHgvdjEvc3RvcnkucHJvdG8SBm50eC52MSJNChZHZXRDb21wYW55U3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRIjCgVmdW5kcxgKIAEoCzIULm50eC52MS5GdW5kSG9sZGluZ3MibgoMRnVuZEhvbGRpbmdzEg0KBWNvdW50GAEgASgFEhMKC3RvdGFsX3ZhbHVlGAIgASgBEhQKDGxhcmdlc3RfbmFtZRgDIAEoCRIVCg1sYXJnZXN0X3ZhbHVlGAQgASgBEg0KBWFzX29mGAUgASgJIoUCChdHZXRDb21wYW55U3RvcnlSZXNwb25zZRIdCgZjbGFpbXMYASADKAsyDS5udHgudjEuQ2xhaW0SHQoGc3RyaXBzGAIgAygLMg0ubnR4LnYxLlN0cmlwEhMKC2xhc3RfZmlsaW5nGAMgASgJEhwKBXF1b3RlGAQgASgLMg0ubnR4LnYxLlF1b3RlEigKDGZpc2NhbF95ZWFycxgKIAMoCzISLm50eC52MS5GaXNjYWxZZWFyEh4KBmdyb3d0aBgLIAMoCzIOLm50eC52MS5Hcm93dGgSLwoJb3duZXJzaGlwGAwgAygLMhwubnR4LnYxLk93bmVyc2hpcE9ic2VydmF0aW9uIs4CCgpGaXNjYWxZZWFyEgwKBHllYXIYASABKAkSEAoDZXBzGAIgASgBSACIAQESEwoGcHJvZml0GAMgASgBSAGIAQESFwoKYm9va192YWx1ZRgEIAEoAUgCiAEBEh8KEnNoYXJlc19vdXRzdGFuZGluZxgFIAEoAUgDiAEBEhIKBWJvbnVzGAYgASgBSASIAQESEQoEY2FzaBgHIAEoAUgFiAEBEhMKBnJpZ2h0cxgIIAEoAUgGiAEBEg4KBnBheW91dBgJIAEoCRITCgZyZXR1cm4YCiABKAFIB4gBARIOCgZzb3VyY2UYCyABKAlCBgoEX2Vwc0IJCgdfcHJvZml0Qg0KC19ib29rX3ZhbHVlQhUKE19zaGFyZXNfb3V0c3RhbmRpbmdCCAoGX2JvbnVzQgcKBV9jYXNoQgkKB19yaWdodHNCCQoHX3JldHVybiJsCgZHcm93dGgSDgoGbWV0cmljGAEgASgJEhAKA29uZRgCIAEoAUgAiAEBEhIKBXRocmVlGAMgASgBSAGIAQESEQoEZml2ZRgEIAEoAUgCiAEBQgYKBF9vbmVCCAoGX3RocmVlQgcKBV9maXZlImkKFE93bmVyc2hpcE9ic2VydmF0aW9uEg0KBWFzX29mGAEgASgJEhUKCHByb21vdGVyGAIgASgBSACIAQESEwoGcHVibGljGAMgASgBSAGIAQFCCwoJX3Byb21vdGVyQgkKB19wdWJsaWMicAoFQ2xhaW0SDAoEa2luZBgBIAEoCRIMCgR0ZXh0GAIgASgJEg0KBXZhbHVlGAMgASgBEgwKBHVuaXQYBCABKAkSDgoGcGVyaW9kGAUgASgJEg4KBnNvdXJjZRgGIAEoCRIOCgZhbmNob3IYByABKAkibwoFU3RyaXASDQoFcmF0aW8YASABKAkSEgoFdmFsdWUYAiABKAFIAIgBARIdCgZzZWN0b3IYAyABKAsyDS5udHgudjEuUmFuZ2USGgoDb3duGAQgASgLMg0ubnR4LnYxLlJhbmdlQggKBl92YWx1ZSJBCgVSYW5nZRILCgNsb3cYASABKAESDgoGbWVkaWFuGAIgASgBEgwKBGhpZ2gYAyABKAESDQoFY291bnQYBCABKAUilwEKBVF1b3RlEg0KBWNsb3NlGAEgASgBEhMKBmNoYW5nZRgCIAEoAUgAiAEBEhsKDmNoYW5nZV9wZXJjZW50GAMgASgBSAGIAQESFQoNYnVzaW5lc3NfZGF0ZRgEIAEoCRIYChBidXNpbmVzc19kYXRlX2JzGAUgASgJQgkKB19jaGFuZ2VCEQoPX2NoYW5nZV9wZXJjZW50MmIKDFN0b3J5U2VydmljZRJSCg9HZXRDb21wYW55U3RvcnkSHi5udHgudjEuR2V0Q29tcGFueVN0b3J5UmVxdWVzdBofLm50eC52MS5HZXRDb21wYW55U3RvcnlSZXNwb25zZUIwWi5naXRodWIuY29tL3ZvaWRhcmNoaXZlL250eC9nZW4vZ28vbnR4L3YxO250eHYxYgZwcm90bzM");
 
 /**
  * Describes the message ntx.v1.GetCompanyStoryRequest.
@@ -18,39 +18,67 @@ export const GetCompanyStoryRequestSchema = /*@__PURE__*/
   messageDesc(file_ntx_v1_story, 0);
 
 /**
+ * Describes the message ntx.v1.FundHoldings.
+ * Use `create(FundHoldingsSchema)` to create a new message.
+ */
+export const FundHoldingsSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 1);
+
+/**
  * Describes the message ntx.v1.GetCompanyStoryResponse.
  * Use `create(GetCompanyStoryResponseSchema)` to create a new message.
  */
 export const GetCompanyStoryResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 1);
+  messageDesc(file_ntx_v1_story, 2);
+
+/**
+ * Describes the message ntx.v1.FiscalYear.
+ * Use `create(FiscalYearSchema)` to create a new message.
+ */
+export const FiscalYearSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 3);
+
+/**
+ * Describes the message ntx.v1.Growth.
+ * Use `create(GrowthSchema)` to create a new message.
+ */
+export const GrowthSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 4);
+
+/**
+ * Describes the message ntx.v1.OwnershipObservation.
+ * Use `create(OwnershipObservationSchema)` to create a new message.
+ */
+export const OwnershipObservationSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_story, 5);
 
 /**
  * Describes the message ntx.v1.Claim.
  * Use `create(ClaimSchema)` to create a new message.
  */
 export const ClaimSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 2);
+  messageDesc(file_ntx_v1_story, 6);
 
 /**
  * Describes the message ntx.v1.Strip.
  * Use `create(StripSchema)` to create a new message.
  */
 export const StripSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 3);
+  messageDesc(file_ntx_v1_story, 7);
 
 /**
  * Describes the message ntx.v1.Range.
  * Use `create(RangeSchema)` to create a new message.
  */
 export const RangeSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 4);
+  messageDesc(file_ntx_v1_story, 8);
 
 /**
  * Describes the message ntx.v1.Quote.
  * Use `create(QuoteSchema)` to create a new message.
  */
 export const QuoteSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_story, 5);
+  messageDesc(file_ntx_v1_story, 9);
 
 /**
  * StoryService returns what a company's filings say, computed in the API (ADR 0001).

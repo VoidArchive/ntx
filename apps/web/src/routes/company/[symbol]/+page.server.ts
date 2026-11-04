@@ -93,12 +93,11 @@ export const load = async ({ params, platform }) => {
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');
 	const { company, price, story } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes, storyRes] = await Promise.all([
+		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
 			price.getPrice({ symbol: params.symbol }),
-			price.getPriceHistory({ symbol: params.symbol, days: 365 }),
-			story.getCompanyStory({ symbol: params.symbol })
+			price.getPriceHistory({ symbol: params.symbol, days: 365 })
 		]);
 
 		// Fetch sector stats (non-blocking - we can still show page without it)
@@ -140,6 +139,20 @@ export const load = async ({ params, platform }) => {
 				// Fund holdings are optional
 			}
 		}
+
+		// The story engine formats the fund sentence; it only gets the summary.
+		const largest = fundHoldings[0];
+		const storyRes = await story.getCompanyStory({
+			symbol: params.symbol,
+			funds: largest && {
+				count: fundHoldings.length,
+				totalValue: fundHoldings.reduce((sum, h) => sum + h.value, 0),
+				largestName: largest.fundName,
+				largestValue: largest.value,
+				asOf:
+					(navData as Fund[]).find((f) => f.symbol === largest.fundSymbol)?.report_date_nepali ?? ''
+			}
+		});
 
 		return {
 			company: companyRes.company,

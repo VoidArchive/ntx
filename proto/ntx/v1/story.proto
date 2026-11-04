@@ -9,7 +9,20 @@ service StoryService {
   rpc GetCompanyStory(GetCompanyStoryRequest) returns (GetCompanyStoryResponse);
 }
 
-message GetCompanyStoryRequest { string symbol = 1; }
+message GetCompanyStoryRequest {
+  string symbol = 1;
+  // Matched by the web from its fund NAV file; the engine does not read files.
+  FundHoldings funds = 10;
+}
+
+// Open-ended mutual funds holding this company, as the web matched them.
+message FundHoldings {
+  int32 count = 1;
+  double total_value = 2; // Rs
+  string largest_name = 3;
+  double largest_value = 4; // Rs
+  string as_of = 5; // NAV report month, e.g. "2083 Ashwin"
+}
 
 message GetCompanyStoryResponse {
   repeated Claim claims = 1;
@@ -17,6 +30,40 @@ message GetCompanyStoryResponse {
   // Period of the newest filing, e.g. "Q1 2083/84"; empty when there is none.
   string last_filing = 3;
   Quote quote = 4;
+  // Newest first; one row per fiscal year with a full-year filing or a notice.
+  repeated FiscalYear fiscal_years = 10;
+  repeated Growth growth = 11;
+  // Oldest first.
+  repeated OwnershipObservation ownership = 12;
+}
+
+// One fiscal year's results and payout (GLOSSARY: Payout, Bonus-adjusted return).
+message FiscalYear {
+  string year = 1; // "2082/83"
+  optional double eps = 2;
+  optional double profit = 3; // Rs
+  optional double book_value = 4;
+  optional double shares_outstanding = 5;
+  optional double bonus = 6;  // % of par
+  optional double cash = 7;   // % of par
+  optional double rights = 8; // % of par; shown, excluded from the return
+  string payout = 9;          // paid | none | not recorded
+  optional double return = 10; // bonus-adjusted, %; rights excluded
+  string source = 11;         // notice URL, empty when not recorded
+}
+
+// Compounded annual growth, in %, over 1, 3 and 5 fiscal years; unset when a year is missing.
+message Growth {
+  string metric = 1; // profit | eps | book_value | price
+  optional double one = 2;
+  optional double three = 3;
+  optional double five = 4;
+}
+
+message OwnershipObservation {
+  string as_of = 1;
+  optional double promoter = 2; // %
+  optional double public = 3;   // %
 }
 
 // One sentence computed from a company's rows (GLOSSARY: Claim).

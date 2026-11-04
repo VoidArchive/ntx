@@ -50,6 +50,12 @@
 					<span class="w-20 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
 						{fmtValue(holding.value)}
 					</span>
+					<span class="w-28 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+						{holding.units !== undefined ? `${holding.units.toLocaleString('en-NP')} units` : ''}
+					</span>
+					<span class="w-24 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+						{holding.percentOfFund.toFixed(2)}% of fund
+					</span>
 				</a>
 			{/each}
 		</div>

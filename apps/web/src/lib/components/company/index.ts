@@ -7,3 +7,5 @@ export { default as FinancialsTable, type ViewMode } from './FinancialsTable.sve
 export { default as CorporateActionsTable } from './CorporateActionsTable.svelte';
 export { default as AIResearchButton } from './AIResearchButton.svelte';
 export { default as MutualFundHoldings } from './MutualFundHoldings.svelte';
+export { default as FiscalYears } from './FiscalYears.svelte';
+export { default as OwnershipHistory } from './OwnershipHistory.svelte';
