@@ -47,6 +47,9 @@ type Fundamental struct {
 	ProfitAmount  sql.NullFloat64 `json:"profit_amount"`
 	CreatedAt     time.Time       `json:"created_at"`
 	UpdatedAt     time.Time       `json:"updated_at"`
+	PublishedAt   sql.NullString  `json:"published_at"`
+	SourceUrl     sql.NullString  `json:"source_url"`
+	FiscalYearNp  sql.NullString  `json:"fiscal_year_np"`
 }
 
 type MarketDay struct {
