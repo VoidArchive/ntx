@@ -63,6 +63,8 @@ type Claim struct {
 
 **Ratios.** Sector medians, not means. The PE median excludes companies with non-positive earnings and the strip states "of N profitable"; PB, EPS and yield medians include everyone. The company's own three-year range for PE and PB is low, median and high over its stored quarterly rows (about 12 points).
 
+**No payout vs not recorded.** A fiscal year counts as "no payout" only if the company has a notice in a later fiscal year or a fundamentals row for that year; otherwise it is "not recorded" and dividend checks fall to "needs more history". Silence in the feed is never a fact.
+
 **Bonus-adjusted return** per fiscal year: `(close_end × (1 + bonus%) + cash per share) / close_start − 1`, closes at fiscal-year boundaries; rights shown in the row but excluded from the return, with a footnote.
 
 Claims computed, all from existing columns:
@@ -90,7 +92,7 @@ Templates are Go string formatting, one per claim kind. A claim with any missing
 **RPCs** (proto `ntx/v1/story.proto`):
 
 - `GetCompanyStory(symbol) → {claims, checks, strips}` where `strips` holds, for PE, PB, EPS and dividend yield: sector min/median/max, this company, own 3-year low/median/high.
-- `GetSectorOverview() → {sectors[], filed_recently[], upcoming[]}`. Per sector: name, count, median PE, median PB, share of companies profitable in the latest quarter, aggregate profit change YoY, day change. `filed_recently`: companies with a fundamentals row whose `published_date` (or `created_at` when null) is within 30 days, each with its earnings claim. `upcoming`: book-close and AGM dates are **not** in the current schema (`corporate_actions.submitted_date` is the filing date). The worker gains a `company_events(company_id, kind, event_date, source_url)` table filled from go-nepse announcements where it exposes them; if go-nepse has no such feed, `upcoming` is omitted from the home page and noted as a gap, not faked.
+- `GetSectorOverview() → {sectors[], filed_recently[], upcoming[]}`. Per sector: name, count, median PE, median PB, share of companies profitable in the latest quarter, aggregate profit change YoY, day change. `filed_recently`: companies with a fundamentals row whose `published_date` is within 30 days, each with its earnings claim; rows without `published_date` fall back to `created_at` and are labelled "seen by NTX on", never "published". `upcoming`: book-close and AGM dates are **not** in the current schema (`corporate_actions.submitted_date` is the filing date). The worker gains a `company_events(company_id, kind, event_date, source_url)` table filled from go-nepse announcements where it exposes them; if go-nepse has no such feed, `upcoming` is omitted from the home page and noted as a gap, not faked.
 
 **Removed in the same cycle:** `auth.proto`, `portfolio.proto`, `internal/auth`, `internal/portfolio`, the auth interceptor, the `users`, `portfolios`, `transactions` tables (migration drops them), routes `/login`, `/register`, `/portfolio`, the `authStore`, and their components.
 
@@ -98,7 +100,7 @@ Templates are Go string formatting, one per claim kind. A claim with any missing
 
 One scroll, no tabs. Every section renders for every company; a section with no data collapses to one line stating what is missing and since when.
 
-1. **Opening.** Symbol, name, sector. The paragraph: four to six claims (earnings, valuation, payout, ownership, funds) joined in order; each number is a link to its `Anchor`. Price, day change and business date on one small line *below* the paragraph. Checks beside the paragraph as Holds / Watch lists with rule text on hover or tap.
+1. **Opening.** Symbol, name, sector. If zero claims can be made, the opening reads "Not enough filings to say anything yet. Last filing: {period}." followed by the price line. Otherwise the paragraph: four to six claims (earnings, valuation, payout, ownership, funds) joined in order; each number is a link to its `Anchor`. Price, day change and business date on one small line *below* the paragraph. Checks beside the paragraph as Holds / Watch lists with rule text on hover or tap.
 2. **Valuation strips.** PE, PB, EPS, dividend yield: two horizontal strips each (sector distribution with this company marked; own three-year range with today marked). Numbers at ends and median.
 3. **Price and volume.** Existing chart; book-close dates, result publications and bonus ex-dates marked on the time axis. Range selector as today.
 4. **Fiscal-year strip.** One row per fiscal year, newest first: EPS, net profit, book value, bonus %, cash %, rights %, shares outstanding, total return including bonus shares. Beside it, compounded growth for profit, EPS, book value and bonus-adjusted price over 1, 3, 5 years.
@@ -109,7 +111,7 @@ One scroll, no tabs. Every section renders for every company; a section with no 
 
 ### 4. Home page `/`
 
-1. **Market line.** From `market_days`: business date, index close and change, advances/declines/unchanged, turnover. The Bikram Sambat date needs a conversion; see open question on fiscal-year boundaries.
+1. **Market line.** From `market_days`: business date in both calendars, index close and change, advances/declines/unchanged, turnover. Bikram Sambat dates come from a hand-checked Go table of Shrawan 1 Gregorian dates for 2075–2090 (with its source), used both for fiscal-year boundaries and for printing today's BS date by day count; no conversion library.
 2. **Sectors.** Twelve rows from `GetSectorOverview`, sorted by count; a row links to its companies on the shared strips.
 3. **Filed recently.** Each company's one-line earnings claim.
 4. **Upcoming.** Book closes and AGMs with ex-date and a T+2 note.
