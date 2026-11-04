@@ -59,6 +59,10 @@ message Fundamental {
   optional double book_value = 7;
   optional double paid_up_capital = 8;
   optional double profit_amount = 9;
+  optional string published_at = 10; // YYYY-MM-DD the exchange received the filing
+  optional string source_url = 11;
+  optional string fiscal_year_np = 12; // Bikram Sambat span as NEPSE gives it, e.g. 2080-2081
+  string period = 13; // canonical display period, e.g. "Q1 2083/84" or "FY 2083/84"; empty when unreadable
 }
 
 message Price {

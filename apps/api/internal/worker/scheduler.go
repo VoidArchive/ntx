@@ -8,58 +8,80 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// Nepal has no daylight saving, so a fixed zone avoids depending on tzdata.
+var nepalTime = time.FixedZone("NPT", 5*3600+45*60)
+
 type Scheduler struct {
 	c      *cron.Cron
 	worker *Worker
 }
 
 func NewScheduler(worker *Worker) (*Scheduler, error) {
-	loc, err := time.LoadLocation("Asia/Kathmandu")
-	if err != nil {
-		return nil, err
-	}
-
 	c := cron.New(
-		cron.WithLocation(loc),
+		cron.WithLocation(nepalTime),
 		cron.WithSeconds(),
 	)
 	return &Scheduler{c: c, worker: worker}, nil
 }
 
-func (s *Scheduler) Start(ctx context.Context) error {
-	spec := "0 5 15 * * 0-4"
+// step is one unit of a scheduled job with its own time budget.
+type step struct {
+	name    string
+	timeout time.Duration
+	run     func(context.Context) error
+}
 
-	_, err := s.c.AddFunc(spec, func() {
-		jobCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
-		defer cancel()
-
+// runSteps runs every step even when an earlier one fails or times out:
+// each has its own deadline so a slow step cannot starve the ones after it.
+func runSteps(ctx context.Context, steps []step) {
+	for _, s := range steps {
+		stepCtx, cancel := context.WithTimeout(ctx, s.timeout)
 		start := time.Now()
-		slog.Info("companies sync started", slog.Time("start", start))
-		if err := s.worker.SyncCompanies(jobCtx); err != nil {
-			slog.Error("companies sync failed", slog.Any("err", err))
-			return
+		slog.Info("sync step started", "step", s.name, "timeout", s.timeout)
+		err := s.run(stepCtx)
+		cancel()
+		if err != nil {
+			slog.Error("sync step failed", "step", s.name, "took", time.Since(start), "err", err)
+			continue
 		}
-		slog.Info("companies sync finished", slog.Duration("took", time.Since(start)))
+		slog.Info("sync step finished", "step", s.name, "took", time.Since(start))
+	}
+}
 
-		// Sync fundamentals after companies
-		start = time.Now()
-		slog.Info("fundamentals sync started", slog.Time("start", start))
-		if err := s.worker.SyncFundamentals(jobCtx); err != nil {
-			slog.Error("fundamentals sync failed", slog.Any("err", err))
-			return
-		}
-		slog.Info("fundamentals sync finished", slog.Duration("took", time.Since(start)))
+func (s *Scheduler) Start(ctx context.Context) error {
+	w := s.worker
 
-		// Sync prices
-		start = time.Now()
-		loc, _ := time.LoadLocation("Asia/Kathmandu")
-		businessDate := time.Now().In(loc).Format("2006-01-02")
-		slog.Info("prices sync started", slog.Time("start", start), slog.String("date", businessDate))
-		if err := s.worker.SyncPrices(jobCtx, businessDate); err != nil {
-			slog.Error("prices sync failed", slog.Any("err", err))
-			return
-		}
-		slog.Info("prices sync finished", slog.Duration("took", time.Since(start)))
+	// NEPSE moved to a Mon-Fri week in April 2026; holidays are caught by SyncPrices via the market status.
+	// Ownership and dividends change slowly, so they refresh before the 11:00 open.
+	_, err := s.c.AddFunc("0 0 10 * * 1-5", func() {
+		runSteps(ctx, []step{
+			{"ownership", 30 * time.Minute, func(ctx context.Context) error {
+				return w.EachCompany(ctx, 1, "ownership", w.SyncOwnership)
+			}},
+			{"dividends", 30 * time.Minute, func(ctx context.Context) error {
+				return w.EachCompany(ctx, 1, "dividends", w.SyncDividends)
+			}},
+		})
+	})
+	if err != nil {
+		return err
+	}
+
+	// Prices go first: they are the one thing that must land every trading day.
+	_, err = s.c.AddFunc("0 5 15 * * 1-5", func() {
+		businessDate := time.Now().In(nepalTime).Format("2006-01-02")
+		runSteps(ctx, []step{
+			{"prices", 5 * time.Minute, func(ctx context.Context) error {
+				return w.SyncPrices(ctx, businessDate)
+			}},
+			{"market day", 2 * time.Minute, func(ctx context.Context) error {
+				return w.SyncMarketDay(ctx, businessDate)
+			}},
+			{"companies", 5 * time.Minute, w.SyncCompanies},
+			{"fundamentals", 30 * time.Minute, func(ctx context.Context) error {
+				return w.EachCompany(ctx, 1, "fundamentals", w.SyncFundamentals)
+			}},
+		})
 	})
 	if err != nil {
 		return err

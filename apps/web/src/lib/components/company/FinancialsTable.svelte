@@ -1,141 +1,85 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
-
-	export type ViewMode = 'quarterly' | 'annually';
 
 	interface Props {
 		fundamentals?: Fundamental[];
-		viewMode?: ViewMode;
-		onViewModeChange?: (mode: ViewMode) => void;
 		class?: string;
 	}
 
-	let {
-		fundamentals = [],
-		viewMode = 'quarterly',
-		onViewModeChange,
-		class: className = ''
-	}: Props = $props();
-
-	function setViewMode(mode: ViewMode) {
-		onViewModeChange?.(mode);
-	}
+	let { fundamentals = [], class: className = '' }: Props = $props();
 
 	function fmt(value: number | undefined): string {
 		if (value === undefined || value === 0) return '—';
 		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
 	}
 
-	function fmtLarge(value: number | undefined): string {
-		if (value === undefined || value === 0) return '—';
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(1)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(1)} L`;
-		return fmt(value);
-	}
+	const yearFirst = (period: string) => period.split(' ').reverse().join(' ');
 
-	function formatQuarter(quarter: string | undefined): string {
-		if (!quarter) return '';
-		const q = quarter.toLowerCase();
-		if (q.includes('first') || q === '1' || q === 'q1') return 'Q1';
-		if (q.includes('second') || q === '2' || q === 'q2') return 'Q2';
-		if (q.includes('third') || q === '3' || q === 'q3') return 'Q3';
-		if (q.includes('fourth') || q === '4' || q === 'q4') return 'Q4';
-		return quarter;
-	}
-
-	function quarterToNumber(quarter: string | undefined): number {
-		if (!quarter) return 5;
-		const q = quarter.toLowerCase();
-		if (q.includes('fourth') || q === '4' || q === 'q4') return 4;
-		if (q.includes('third') || q === '3' || q === 'q3') return 3;
-		if (q.includes('second') || q === '2' || q === 'q2') return 2;
-		if (q.includes('first') || q === '1' || q === 'q1') return 1;
-		return 0;
-	}
-
-	function isQuarterly(f: Fundamental): boolean {
-		return !!f.quarter;
-	}
-
-	let filteredFundamentals = $derived(
-		[...fundamentals]
-			.filter((f) => (viewMode === 'quarterly' ? isQuarterly(f) : !isQuarterly(f)))
-			.sort((a, b) => {
-				const yearCompare = b.fiscalYear.localeCompare(a.fiscalYear);
-				if (yearCompare !== 0) return yearCompare;
-				return quarterToNumber(b.quarter) - quarterToNumber(a.quarter);
-			})
-			.slice(0, 5)
+	// Rows as filed: profit is year-to-date and EPS annualized, unlike the bars above.
+	let rows = $derived(
+		fundamentals
+			.filter((f) => !!f.quarter)
+			// "Q1 2083/84" sorts as "2083/84 Q1": year first, then quarter.
+			.sort((a, b) => yearFirst(b.period).localeCompare(yearFirst(a.period)))
+			.slice(0, 8)
 	);
-
-	let hasQuarterly = $derived(fundamentals.some(isQuarterly));
-	let hasAnnual = $derived(fundamentals.some((f) => !isQuarterly(f)));
 </script>
 
 <div class={className}>
-	<div class="mb-4 flex items-center justify-between">
-		<h3 class="font-serif text-base font-medium">Financial History</h3>
+	<h4 class="mb-2 text-xs font-medium text-muted-foreground">
+		Rows as filed: year-to-date profit, annualized EPS
+	</h4>
 
-		{#if hasQuarterly || hasAnnual}
-			<div class="flex rounded-md border border-border text-xs">
-				<button
-					class="px-3 py-1 transition-colors {viewMode === 'quarterly'
-						? 'bg-foreground text-background'
-						: 'hover:bg-muted'}"
-					onclick={() => setViewMode('quarterly')}
-					disabled={!hasQuarterly}
-				>
-					Quarterly
-				</button>
-				<button
-					class="px-3 py-1 transition-colors {viewMode === 'annually'
-						? 'bg-foreground text-background'
-						: 'hover:bg-muted'}"
-					onclick={() => setViewMode('annually')}
-					disabled={!hasAnnual}
-				>
-					Annually
-				</button>
-			</div>
-		{/if}
-	</div>
-
-	{#if filteredFundamentals.length > 0}
+	{#if rows.length > 0}
 		<div class="overflow-x-auto">
-			<table class="w-full text-sm">
+			<table class="w-full text-sm whitespace-nowrap [&_td+td]:pl-4 [&_th+th]:pl-4">
 				<thead>
 					<tr class="border-b border-border text-left text-xs text-muted-foreground">
-						<th class="pb-2 font-medium">
-							{viewMode === 'quarterly' ? 'Period' : 'Fiscal Year'}
-						</th>
+						<th class="pb-2 font-medium"> Period </th>
 						<th class="pb-2 text-right font-medium">EPS</th>
 						<th class="pb-2 text-right font-medium">P/E</th>
 						<th class="pb-2 text-right font-medium">Book Value</th>
 						<th class="pb-2 text-right font-medium">Net Profit</th>
+						<th class="pb-2 text-right font-medium">Published</th>
+						<th class="pb-2 text-right font-medium">Source</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredFundamentals as f (f.id)}
+					{#each rows as f (f.id)}
 						<tr class="border-b border-dotted border-border last:border-0">
 							<td class="py-2.5 font-medium">
-								{#if viewMode === 'quarterly'}
-									{formatQuarter(f.quarter)} {f.fiscalYear}
-								{:else}
-									{f.fiscalYear}
-								{/if}
+								{f.period}
 							</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.eps)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.peRatio)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.bookValue)}</td>
-							<td class="py-2.5 text-right tabular-nums">{fmtLarge(f.profitAmount)}</td>
+							<td class="py-2.5 text-right tabular-nums"
+								>{f.profitAmount ? formatLarge(f.profitAmount, 1) : '—'}</td
+							>
+							<td
+								class="py-2.5 text-right tabular-nums {f.publishedAt
+									? ''
+									: 'text-muted-foreground'}"
+							>
+								{f.publishedAt ?? 'not recorded'}
+							</td>
+							<td class="py-2.5 text-right">
+								{#if f.sourceUrl}
+									<a
+										href={f.sourceUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="underline underline-offset-2 hover:text-foreground">filing</a
+									>
+								{:else}
+									<span class="text-muted-foreground">not recorded</span>
+								{/if}
+							</td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
 		</div>
-	{:else}
-		<p class="text-sm text-muted-foreground">
-			No {viewMode === 'quarterly' ? 'quarterly' : 'annual'} data available
-		</p>
 	{/if}
 </div>

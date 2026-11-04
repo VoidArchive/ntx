@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Holdings } from '#lib/types/fund.js';
 	import { SECTOR_LABELS, SECTOR_COLORS } from '#lib/types/fund.js';
 
@@ -114,13 +115,6 @@
 		});
 	});
 
-	function fmtLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(1)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(1)} L`;
-		return value.toLocaleString('en-NP');
-	}
-
 	// Tooltip
 	let tooltipX = $state(0);
 	let tooltipY = $state(0);
@@ -197,7 +191,7 @@
 						style="left: {tooltipX}px; top: {tooltipY}px; transform: translate(-50%, -100%);"
 					>
 						<p class="font-semibold" style="color: {sector.color}">{sector.label}</p>
-						<p class="mt-1 tabular-nums">{fmtLarge(sector.value)}</p>
+						<p class="mt-1 tabular-nums">{formatLarge(sector.value, 1)}</p>
 						<p class="text-muted-foreground tabular-nums">{sector.percent.toFixed(1)}%</p>
 					</div>
 				{/if}

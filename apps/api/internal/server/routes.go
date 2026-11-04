@@ -3,51 +3,24 @@ package server
 import (
 	"net/http"
 
-	"connectrpc.com/connect"
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
-	"github.com/voidarchive/ntx/internal/auth"
 	"github.com/voidarchive/ntx/internal/company"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
-	"github.com/voidarchive/ntx/internal/portfolio"
+	"github.com/voidarchive/ntx/internal/market"
 	"github.com/voidarchive/ntx/internal/price"
+	"github.com/voidarchive/ntx/internal/sector"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
+// registerRoutes is the only place services are mounted; NTX has no accounts (ADR 0003).
 func registerRoutes(mux *http.ServeMux, queries *sqlc.Queries) {
-	// Create auth service (needed for both login and middleware)
-	authService := auth.NewAuthService(queries)
-	authInterceptor := auth.NewAuthInterceptor(authService)
+	mux.Handle(ntxv1connect.NewCompanyServiceHandler(company.NewCompanyService(queries)))
+	mux.Handle(ntxv1connect.NewPriceServiceHandler(price.NewPriceService(queries)))
+	mux.Handle(ntxv1connect.NewStoryServiceHandler(story.NewService(queries)))
+	mux.Handle(ntxv1connect.NewMarketServiceHandler(market.NewMarketService(queries)))
+	mux.Handle(ntxv1connect.NewSectorServiceHandler(sector.NewService(queries)))
 
-	// Create interceptors slice
-	interceptors := connect.WithInterceptors(authInterceptor)
-
-	// Public services (no auth required, but interceptor skips these)
-	companyPath, companyHandler := ntxv1connect.NewCompanyServiceHandler(
-		company.NewCompanyService(queries),
-		interceptors,
-	)
-	mux.Handle(companyPath, companyHandler)
-
-	pricePath, priceHandler := ntxv1connect.NewPriceServiceHandler(
-		price.NewPriceService(queries),
-		interceptors,
-	)
-	mux.Handle(pricePath, priceHandler)
-
-	// Auth service (login is public)
-	authPath, authHandler := ntxv1connect.NewAuthServiceHandler(
-		authService,
-		interceptors,
-	)
-	mux.Handle(authPath, authHandler)
-
-	// Protected services
-	portfolioPath, portfolioHandler := ntxv1connect.NewPortfolioServiceHandler(
-		portfolio.NewPortfolioService(queries),
-		interceptors,
-	)
-	mux.Handle(portfolioPath, portfolioHandler)
-
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 }

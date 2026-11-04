@@ -65,3 +65,14 @@ run = "goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/n
 [tasks.migrate-status]
 description = "Show migration status"
 run = "goose -dir apps/api/internal/database/migrations sqlite3 ~/.local/share/ntx/market.db status"
+
+[tasks.data-check]
+description = "Row counts and date ranges per table in the local database"
+run = '''
+sqlite3 -header -column ~/.local/share/ntx/market.db "
+select 'companies' t, count(*) rows, min(updated_at) first, max(updated_at) last from companies union all
+select 'prices', count(*), min(business_date), max(business_date) from prices union all
+select 'fundamentals', count(*), min(fiscal_year), max(fiscal_year) from fundamentals union all
+select 'corporate_actions', count(*), min(fiscal_year), max(fiscal_year) from corporate_actions union all
+select 'ownership', count(*), min(updated_at), max(updated_at) from ownership;"
+'''

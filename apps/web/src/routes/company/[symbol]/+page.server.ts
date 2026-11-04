@@ -91,43 +91,13 @@ export const load = async ({ params, platform }) => {
 	const apiUrl = import.meta.env.DEV
 		? 'http://localhost:8080'
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');
-	const { company, price } = createApiClient(apiUrl);
+	const { company, price, story } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceRes, priceHistoryRes] = await Promise.all([
+		const [companyRes, fundamentalsRes, priceHistoryRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
-			price.getPrice({ symbol: params.symbol }),
 			price.getPriceHistory({ symbol: params.symbol, days: 365 })
 		]);
-
-		// Fetch sector stats (non-blocking - we can still show page without it)
-		let sectorStats = undefined;
-		if (companyRes.company?.sector) {
-			try {
-				const sectorRes = await company.getSectorStats({ sector: companyRes.company.sector });
-				sectorStats = sectorRes.stats;
-			} catch {
-				// Sector stats are optional, continue without them
-			}
-		}
-
-		// Fetch ownership data (non-blocking)
-		let ownership = undefined;
-		try {
-			const ownershipRes = await company.getOwnership({ symbol: params.symbol });
-			ownership = ownershipRes.ownership;
-		} catch {
-			// Ownership data is optional, continue without it
-		}
-
-		// Fetch corporate actions (non-blocking)
-		let corporateActions = undefined;
-		try {
-			const actionsRes = await company.getCorporateActions({ symbol: params.symbol });
-			corporateActions = actionsRes.actions;
-		} catch {
-			// Corporate actions are optional, continue without them
-		}
 
 		// Fetch mutual fund holdings for this company
 		let fundHoldings: FundHolding[] = [];
@@ -140,16 +110,27 @@ export const load = async ({ params, platform }) => {
 			}
 		}
 
+		// The story engine formats the fund sentence; it only gets the summary.
+		const largest = fundHoldings[0];
+		const storyRes = await story.getCompanyStory({
+			symbol: params.symbol,
+			funds: largest && {
+				count: fundHoldings.length,
+				totalValue: fundHoldings.reduce((sum, h) => sum + h.value, 0),
+				largestName: largest.fundName,
+				largestValue: largest.value,
+				asOf:
+					(navData as Fund[]).find((f) => f.symbol === largest.fundSymbol)?.report_date_nepali ?? ''
+			}
+		});
+
 		return {
 			company: companyRes.company,
-			fundamentals: fundamentalsRes.latest,
+			story: storyRes,
 			fundamentalsHistory: fundamentalsRes.history,
-			price: priceRes.price,
 			priceHistory: priceHistoryRes.prices,
-			sectorStats,
-			ownership,
-			corporateActions,
-			fundHoldings
+			fundHoldings,
+			navMonths: [...new Set((navData as Fund[]).map((f) => f.report_date_nepali))].join(', ')
 		};
 	} catch (err) {
 		if (err instanceof ConnectError && err.code === Code.NotFound) {
