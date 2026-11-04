@@ -149,6 +149,9 @@ func toProto(st Story) *ntxv1.GetCompanyStoryResponse {
 			&ntxv1.OwnershipObservation{AsOf: o.AsOf, Promoter: o.Promoter, Public: o.Public},
 		)
 	}
+	for _, c := range st.Checks {
+		res.Checks = append(res.Checks, &ntxv1.Check{Name: c.Name, Rule: c.Rule, Verdict: c.Verdict})
+	}
 	return res
 }
 

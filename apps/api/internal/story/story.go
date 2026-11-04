@@ -53,6 +53,7 @@ type Story struct {
 	FiscalYears []FiscalYear // newest first
 	Growth      []Growth
 	Ownership   []Observation // oldest first
+	Checks      []Check
 }
 
 // Claim is one sentence computed from the rows (GLOSSARY: Claim).
@@ -120,6 +121,7 @@ func Build(in Input) Story {
 	s.Ownership = observations(in.Ownership)
 	s.Claims = append(s.Claims, ownership(s.Ownership)...)
 	s.Claims = append(s.Claims, funds(in.Funds)...)
+	s.Checks = Checks(s, in)
 	return s
 }
 

@@ -41,6 +41,15 @@ message GetCompanyStoryResponse {
   repeated Growth growth = 11;
   // Oldest first.
   repeated OwnershipObservation ownership = 12;
+  // The eight published rules, in a fixed order (GLOSSARY: Check).
+  repeated Check checks = 30;
+}
+
+// One published rule and its verdict; a verdict is not a recommendation.
+message Check {
+  string name = 1;
+  string rule = 2;    // the sentence, threshold included
+  string verdict = 3; // holds | watch | needs more history
 }
 
 // One fiscal year's results and payout (GLOSSARY: Payout, Bonus-adjusted return).

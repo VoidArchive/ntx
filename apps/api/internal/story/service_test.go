@@ -52,6 +52,23 @@ func TestGetCompanyStory(t *testing.T) {
 	}
 }
 
+func TestGetCompanyStoryChecks(t *testing.T) {
+	q := database.OpenTestDB(t)
+	seed(t, q)
+	res, err := NewService(q).GetCompanyStory(
+		context.Background(),
+		connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NABIL"}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// No notices are stored, so the dividend rule cannot be judged.
+	if cs := res.Msg.GetChecks(); len(cs) != 8 || cs[1].GetName() != "Quarterly profit" ||
+		cs[1].GetVerdict() != Holds || cs[4].GetVerdict() != NeedsHistory {
+		t.Errorf("checks = %v", cs)
+	}
+}
+
 func TestGetCompanyStoryUnknownSymbol(t *testing.T) {
 	q := database.OpenTestDB(t)
 	seed(t, q)
