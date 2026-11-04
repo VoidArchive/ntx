@@ -73,7 +73,7 @@ func runBackfillCmd() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	if err := runBackfill(ctx, queries, client, opts); err != nil {
+	if err := runBackfill(ctx, worker.New(client, queries), opts); err != nil {
 		slog.Error("backfill failed", "error", err)
 		os.Exit(1)
 	}
