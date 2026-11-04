@@ -27,14 +27,21 @@ type Querier interface {
 	GetOwnership(ctx context.Context, companyID int64) (Ownership, error)
 	GetOwnershipBySymbol(ctx context.Context, symbol string) (Ownership, error)
 	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
+	// Stored profit is year-to-date, so a quarter's YTD is comparable with the same quarter's YTD a year earlier.
+	GetSectorProfitYoY(ctx context.Context, sector string) (GetSectorProfitYoYRow, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
 	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
+	// Change columns are NULL on backfilled rows, so the change comes from consecutive closes.
+	ListDayChanges(ctx context.Context) ([]ListDayChangesRow, error)
+	// The first backfill set every created_at to one day, so every unpublished row reads "seen" on that day.
+	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
+	ListSectorCounts(ctx context.Context) ([]ListSectorCountsRow, error)
 	ListSectorEPS(ctx context.Context, sector string) ([]float64, error)
 	ListSectorPB(ctx context.Context, sector string) ([]float64, error)
 	// Sector distributions for the story strips: one value per company in the
