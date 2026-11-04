@@ -45,15 +45,31 @@
 		value: string;
 	}
 
+	function optional(label: string, value: number | undefined): StatRow[] {
+		if (value === undefined) return [];
+		return [{ label, value: fmtLarge(value) }];
+	}
+
+	// Balance sheet totals are only present in reports that publish them
 	let stats = $derived.by((): StatRow[] => [
 		{ label: 'Net Assets', value: fmtLarge(fund.net_assets) },
-		{ label: 'Total Assets', value: fmtLarge(fund.total_assets) },
-		{ label: 'Total Liabilities', value: fmtLarge(fund.total_liabilities) },
+		...optional('Total Assets', fund.total_assets),
+		...optional('Total Liabilities', fund.total_liabilities),
 		{ label: 'Total Units', value: fmtLarge(fund.total_units) },
 		{ label: 'NAV/Unit', value: `Rs. ${fund.nav_per_unit.toFixed(2)}` },
-		{ label: 'Holdings', value: fmtNumber(holdingsCount) },
-		{ label: 'Sectors', value: fmtNumber(sectorsCount) }
+		{ label: 'Holdings', value: holdingsLabel },
+		...(fund.holdings_disclosure === 'full'
+			? [{ label: 'Sectors', value: fmtNumber(sectorsCount) }]
+			: [])
 	]);
+
+	let holdingsLabel = $derived(
+		fund.holdings_disclosure === 'full'
+			? fmtNumber(holdingsCount)
+			: fund.holdings_disclosure === 'top10'
+				? 'Top 10 only'
+				: 'Not published'
+	);
 </script>
 
 <div class="text-sm">

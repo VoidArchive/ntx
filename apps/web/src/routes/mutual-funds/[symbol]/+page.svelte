@@ -44,6 +44,17 @@
 		<div class="mt-8 text-center text-xs text-muted-foreground">
 			<p>Data as of {fund.report_date_english} ({fund.report_date_nepali})</p>
 			<p class="mt-1">Managed by {fund.fund_manager}</p>
+			{#if fund.holdings_disclosure === 'top10'}
+				<p class="mt-1">
+					Only the 10 largest holdings are published; the rest of the share portfolio is shown as
+					"Other listed shares".
+				</p>
+			{:else if fund.holdings_disclosure === 'none'}
+				<p class="mt-1">This fund does not publish itemised holdings.</p>
+			{/if}
+			<p class="mt-1">
+				Allocation figures are gross of liabilities, so they can exceed net assets.
+			</p>
 		</div>
 	</div>
 </div>

@@ -80,7 +80,15 @@
 
 	<!-- Stats Row -->
 	<div class="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-		<span>{holdingsCount} holdings</span>
+		<span>
+			{#if fund.holdings_disclosure === 'full'}
+				{holdingsCount} holdings
+			{:else if fund.holdings_disclosure === 'top10'}
+				Top 10 holdings
+			{:else}
+				Holdings not published
+			{/if}
+		</span>
 		<span class="text-border">|</span>
 		<span>{fund.report_date_nepali}</span>
 	</div>

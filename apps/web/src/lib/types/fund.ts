@@ -32,8 +32,10 @@ export interface Fund {
 	nav_per_unit: number;
 	total_units: number;
 	net_assets: number;
-	total_assets: number;
-	total_liabilities: number;
+	// Funds publish all holdings, only their 10 largest, or none; the rest is one "Other listed shares" row
+	holdings_disclosure: 'full' | 'top10' | 'none';
+	total_assets?: number;
+	total_liabilities?: number;
 	holdings: Holdings;
 }
 
