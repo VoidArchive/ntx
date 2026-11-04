@@ -51,6 +51,27 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
    * @generated from field: ntx.v1.Quote quote = 4;
    */
   quote?: Quote;
+
+  /**
+   * Quarters with a quarter-only profit, oldest first.
+   *
+   * @generated from field: repeated ntx.v1.Quarter quarters = 20;
+   */
+  quarters: Quarter[];
+
+  /**
+   * Result publication and notice dates for the price chart, oldest first.
+   *
+   * @generated from field: repeated ntx.v1.EventMark events = 21;
+   */
+  events: EventMark[];
+
+  /**
+   * Set for hydro companies only.
+   *
+   * @generated from field: ntx.v1.HydroEps hydro_eps = 22;
+   */
+  hydroEps?: HydroEps;
 };
 
 /**
@@ -228,6 +249,151 @@ export declare type Quote = Message<"ntx.v1.Quote"> & {
  * Use `create(QuoteSchema)` to create a new message.
  */
 export declare const QuoteSchema: GenMessage<Quote>;
+
+/**
+ * One quarter's own result; stored profit is year-to-date, this is the difference.
+ *
+ * @generated from message ntx.v1.Quarter
+ */
+export declare type Quarter = Message<"ntx.v1.Quarter"> & {
+  /**
+   * "Q1 2083/84"
+   *
+   * @generated from field: string period = 1;
+   */
+  period: string;
+
+  /**
+   * "2083/84"
+   *
+   * @generated from field: string fiscal_year = 2;
+   */
+  fiscalYear: string;
+
+  /**
+   * quarter-only, Rs
+   *
+   * @generated from field: double profit = 3;
+   */
+  profit: number;
+
+  /**
+   * quarter-only; unset without paid-up capital
+   *
+   * @generated from field: optional double eps = 4;
+   */
+  eps?: number;
+
+  /**
+   * as filed
+   *
+   * @generated from field: optional double annualized_eps = 5;
+   */
+  annualizedEps?: number;
+
+  /**
+   * "Best Q1 in five years", "3rd rise in a row", or ""
+   *
+   * @generated from field: string label = 6;
+   */
+  label: string;
+
+  /**
+   * empty when not recorded
+   *
+   * @generated from field: string published_at = 7;
+   */
+  publishedAt: string;
+
+  /**
+   * empty when not recorded
+   *
+   * @generated from field: string source_url = 8;
+   */
+  sourceUrl: string;
+
+  /**
+   * hydro Q1: annualized EPS overstates the year
+   *
+   * @generated from field: bool is_monsoon = 9;
+   */
+  isMonsoon: boolean;
+};
+
+/**
+ * Describes the message ntx.v1.Quarter.
+ * Use `create(QuarterSchema)` to create a new message.
+ */
+export declare const QuarterSchema: GenMessage<Quarter>;
+
+/**
+ * A dated result or notice on the price chart's time axis.
+ *
+ * @generated from message ntx.v1.EventMark
+ */
+export declare type EventMark = Message<"ntx.v1.EventMark"> & {
+  /**
+   * "2026-02-10"
+   *
+   * @generated from field: string date = 1;
+   */
+  date: string;
+
+  /**
+   * result | notice
+   *
+   * @generated from field: string kind = 2;
+   */
+  kind: string;
+
+  /**
+   * "Q2", "FY", "10% cash, 5% bonus"
+   *
+   * @generated from field: string label = 3;
+   */
+  label: string;
+};
+
+/**
+ * Describes the message ntx.v1.EventMark.
+ * Use `create(EventMarkSchema)` to create a new message.
+ */
+export declare const EventMarkSchema: GenMessage<EventMark>;
+
+/**
+ * A hydro company's latest EPS for the quarter, annualized, and for the last full year.
+ *
+ * @generated from message ntx.v1.HydroEps
+ */
+export declare type HydroEps = Message<"ntx.v1.HydroEps"> & {
+  /**
+   * @generated from field: double quarter = 1;
+   */
+  quarter: number;
+
+  /**
+   * @generated from field: double annualized = 2;
+   */
+  annualized: number;
+
+  /**
+   * @generated from field: double full_year = 3;
+   */
+  fullYear: number;
+
+  /**
+   * "FY 2081/82"
+   *
+   * @generated from field: string full_year_period = 4;
+   */
+  fullYearPeriod: string;
+};
+
+/**
+ * Describes the message ntx.v1.HydroEps.
+ * Use `create(HydroEpsSchema)` to create a new message.
+ */
+export declare const HydroEpsSchema: GenMessage<HydroEps>;
 
 /**
  * StoryService returns what a company's filings say, computed in the API (ADR 0001).

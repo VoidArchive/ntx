@@ -102,7 +102,7 @@
 
 	{#if filteredFundamentals.length > 0}
 		<div class="overflow-x-auto">
-			<table class="w-full text-sm">
+			<table class="w-full text-sm whitespace-nowrap [&_td+td]:pl-4 [&_th+th]:pl-4">
 				<thead>
 					<tr class="border-b border-border text-left text-xs text-muted-foreground">
 						<th class="pb-2 font-medium">
