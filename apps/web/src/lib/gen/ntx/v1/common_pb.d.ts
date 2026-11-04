@@ -114,6 +114,25 @@ export declare type Fundamental = Message<"ntx.v1.Fundamental"> & {
    * @generated from field: optional double profit_amount = 9;
    */
   profitAmount?: number;
+
+  /**
+   * YYYY-MM-DD the exchange received the filing
+   *
+   * @generated from field: optional string published_at = 10;
+   */
+  publishedAt?: string;
+
+  /**
+   * @generated from field: optional string source_url = 11;
+   */
+  sourceUrl?: string;
+
+  /**
+   * Bikram Sambat span as NEPSE gives it, e.g. 2080-2081
+   *
+   * @generated from field: optional string fiscal_year_np = 12;
+   */
+  fiscalYearNp?: string;
 };
 
 /**

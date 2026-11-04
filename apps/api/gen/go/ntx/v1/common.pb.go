@@ -326,6 +326,9 @@ type Fundamental struct {
 	BookValue     *float64               `protobuf:"fixed64,7,opt,name=book_value,json=bookValue,proto3,oneof" json:"book_value,omitempty"`
 	PaidUpCapital *float64               `protobuf:"fixed64,8,opt,name=paid_up_capital,json=paidUpCapital,proto3,oneof" json:"paid_up_capital,omitempty"`
 	ProfitAmount  *float64               `protobuf:"fixed64,9,opt,name=profit_amount,json=profitAmount,proto3,oneof" json:"profit_amount,omitempty"`
+	PublishedAt   *string                `protobuf:"bytes,10,opt,name=published_at,json=publishedAt,proto3,oneof" json:"published_at,omitempty"` // YYYY-MM-DD the exchange received the filing
+	SourceUrl     *string                `protobuf:"bytes,11,opt,name=source_url,json=sourceUrl,proto3,oneof" json:"source_url,omitempty"`
+	FiscalYearNp  *string                `protobuf:"bytes,12,opt,name=fiscal_year_np,json=fiscalYearNp,proto3,oneof" json:"fiscal_year_np,omitempty"` // Bikram Sambat span as NEPSE gives it, e.g. 2080-2081
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -421,6 +424,27 @@ func (x *Fundamental) GetProfitAmount() float64 {
 		return *x.ProfitAmount
 	}
 	return 0
+}
+
+func (x *Fundamental) GetPublishedAt() string {
+	if x != nil && x.PublishedAt != nil {
+		return *x.PublishedAt
+	}
+	return ""
+}
+
+func (x *Fundamental) GetSourceUrl() string {
+	if x != nil && x.SourceUrl != nil {
+		return *x.SourceUrl
+	}
+	return ""
+}
+
+func (x *Fundamental) GetFiscalYearNp() string {
+	if x != nil && x.FiscalYearNp != nil {
+		return *x.FiscalYearNp
+	}
+	return ""
 }
 
 type Price struct {
@@ -773,7 +797,7 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"\x06_emailB\n" +
 	"\n" +
 	"\b_websiteB\x10\n" +
-	"\x0e_listed_shares\"\x84\x03\n" +
+	"\x0e_listed_shares\"\xae\x04\n" +
 	"\vFundamental\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +
@@ -786,14 +810,22 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"\n" +
 	"book_value\x18\a \x01(\x01H\x03R\tbookValue\x88\x01\x01\x12+\n" +
 	"\x0fpaid_up_capital\x18\b \x01(\x01H\x04R\rpaidUpCapital\x88\x01\x01\x12(\n" +
-	"\rprofit_amount\x18\t \x01(\x01H\x05R\fprofitAmount\x88\x01\x01B\n" +
+	"\rprofit_amount\x18\t \x01(\x01H\x05R\fprofitAmount\x88\x01\x01\x12&\n" +
+	"\fpublished_at\x18\n" +
+	" \x01(\tH\x06R\vpublishedAt\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"source_url\x18\v \x01(\tH\aR\tsourceUrl\x88\x01\x01\x12)\n" +
+	"\x0efiscal_year_np\x18\f \x01(\tH\bR\ffiscalYearNp\x88\x01\x01B\n" +
 	"\n" +
 	"\b_quarterB\x06\n" +
 	"\x04_epsB\v\n" +
 	"\t_pe_ratioB\r\n" +
 	"\v_book_valueB\x12\n" +
 	"\x10_paid_up_capitalB\x10\n" +
-	"\x0e_profit_amount\"\xa6\x04\n" +
+	"\x0e_profit_amountB\x0f\n" +
+	"\r_published_atB\r\n" +
+	"\v_source_urlB\x11\n" +
+	"\x0f_fiscal_year_np\"\xa6\x04\n" +
 	"\x05Price\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +

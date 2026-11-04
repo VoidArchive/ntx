@@ -155,6 +155,9 @@ func fundamentalToProto(f sqlc.Fundamental) *ntxv1.Fundamental {
 		BookValue:     nullFloat64(f.BookValue),
 		PaidUpCapital: nullFloat64(f.PaidUpCapital),
 		ProfitAmount:  nullFloat64(f.ProfitAmount),
+		PublishedAt:   nullString(f.PublishedAt),
+		SourceUrl:     nullString(f.SourceUrl),
+		FiscalYearNp:  nullString(f.FiscalYearNp),
 	}
 }
 
