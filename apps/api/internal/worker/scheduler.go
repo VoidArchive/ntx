@@ -41,14 +41,10 @@ func (s *Scheduler) Start(ctx context.Context) error {
 		}
 		slog.Info("companies sync finished", slog.Duration("took", time.Since(start)))
 
-		// Sync fundamentals after companies
-		start = time.Now()
-		slog.Info("fundamentals sync started", slog.Time("start", start))
-		if err := s.worker.SyncFundamentals(jobCtx); err != nil {
+		if err := s.worker.EachCompany(jobCtx, 1, "fundamentals", s.worker.SyncFundamentals); err != nil {
 			slog.Error("fundamentals sync failed", slog.Any("err", err))
 			return
 		}
-		slog.Info("fundamentals sync finished", slog.Duration("took", time.Since(start)))
 
 		// Sync prices
 		start = time.Now()
