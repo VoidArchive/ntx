@@ -35,6 +35,8 @@
 		return value.toLocaleString();
 	}
 
+	let marketDay = $derived(data.marketDay);
+
 	// Largest Market Cap
 	let largestMarketCap = $derived.by(() => {
 		if (!data.companies) return [];
@@ -106,6 +108,38 @@
 <div class="min-h-screen">
 	<!-- Main Content -->
 	<main class="mx-auto max-w-7xl px-4 py-8">
+		{#if marketDay}
+			<p
+				class="mb-6 flex flex-wrap gap-x-4 gap-y-1 border-b border-border pb-3 text-sm text-muted-foreground"
+			>
+				<span class="text-foreground">{marketDay.businessDateBs} · {marketDay.businessDate}</span>
+				<span>
+					NEPSE <span class="text-foreground tabular-nums">{marketDay.indexClose.toFixed(2)}</span>
+					<span
+						class="tabular-nums {marketDay.indexChange > 0
+							? 'text-positive'
+							: marketDay.indexChange < 0
+								? 'text-negative'
+								: ''}"
+					>
+						{marketDay.indexChange > 0 ? '▲' : marketDay.indexChange < 0 ? '▼' : '■'}
+						{Math.abs(marketDay.indexChange).toFixed(2)} ({Math.abs(
+							marketDay.indexChangePercent
+						).toFixed(2)}%)
+					</span>
+				</span>
+				<span class="tabular-nums">
+					<span class="text-positive">{marketDay.advances} up</span> ·
+					<span class="text-negative">{marketDay.declines} down</span> ·
+					{marketDay.unchanged} unchanged
+				</span>
+				<span
+					>Turnover <span class="text-foreground tabular-nums"
+						>Rs {formatLarge(marketDay.turnover)}</span
+					></span
+				>
+			</p>
+		{/if}
 		<div class="grid gap-8 lg:grid-cols-[1fr_300px]">
 			<!-- Market Movers: First on mobile, second on desktop -->
 			<aside class="space-y-6 overflow-hidden lg:order-2">

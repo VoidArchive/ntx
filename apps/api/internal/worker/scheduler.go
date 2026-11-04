@@ -74,6 +74,9 @@ func (s *Scheduler) Start(ctx context.Context) error {
 			{"prices", 5 * time.Minute, func(ctx context.Context) error {
 				return w.SyncPrices(ctx, businessDate)
 			}},
+			{"market day", 2 * time.Minute, func(ctx context.Context) error {
+				return w.SyncMarketDay(ctx, businessDate)
+			}},
 			{"companies", 5 * time.Minute, w.SyncCompanies},
 			{"fundamentals", 30 * time.Minute, func(ctx context.Context) error {
 				return w.EachCompany(ctx, 1, "fundamentals", w.SyncFundamentals)

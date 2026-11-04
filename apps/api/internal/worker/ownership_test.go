@@ -2,7 +2,6 @@ package worker
 
 import (
 	"context"
-	"path/filepath"
 	"testing"
 
 	"github.com/voidarchive/ntx/internal/database"
@@ -12,15 +11,7 @@ import (
 
 func newTestWorker(t *testing.T) (*Worker, *sqlc.Queries) {
 	t.Helper()
-	db, err := database.OpenDB(filepath.Join(t.TempDir(), "market.db"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { _ = db.Close() })
-	if err := database.AutoMigrate(db); err != nil {
-		t.Fatal(err)
-	}
-	queries := sqlc.New(db)
+	queries := database.OpenTestDB(t)
 	return New(nil, queries), queries
 }
 

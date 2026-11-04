@@ -52,6 +52,22 @@ type Fundamental struct {
 	FiscalYearNp  sql.NullString  `json:"fiscal_year_np"`
 }
 
+type MarketDay struct {
+	BusinessDate       string    `json:"business_date"`
+	IndexClose         float64   `json:"index_close"`
+	IndexChange        float64   `json:"index_change"`
+	IndexChangePercent float64   `json:"index_change_percent"`
+	Turnover           float64   `json:"turnover"`
+	TradedShares       int64     `json:"traded_shares"`
+	Transactions       int64     `json:"transactions"`
+	ScripsTraded       int64     `json:"scrips_traded"`
+	MarketCap          float64   `json:"market_cap"`
+	Advances           int64     `json:"advances"`
+	Declines           int64     `json:"declines"`
+	Unchanged          int64     `json:"unchanged"`
+	CreatedAt          time.Time `json:"created_at"`
+}
+
 type Ownership struct {
 	CompanyID       int64           `json:"company_id"`
 	ListedShares    sql.NullInt64   `json:"listed_shares"`
