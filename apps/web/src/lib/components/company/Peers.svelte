@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Peer, Range } from '#lib/gen/ntx/v1/story_pb.js';
+	import { at } from '#lib/utils.js';
 
 	interface Props {
 		peers: Peer[];
@@ -16,12 +17,6 @@
 		return value === undefined
 			? '—'
 			: `${value.toLocaleString('en-NP', { maximumFractionDigits: 2 })}x`;
-	}
-
-	// Clamped like the valuation strips, so outliers sit at the ends.
-	function at(r: Range, value: number): number {
-		if (r.high === r.low) return 50;
-		return Math.min(100, Math.max(0, ((value - r.low) / (r.high - r.low)) * 100));
 	}
 </script>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import { Chart, Svg, Group, Rect, Text } from 'layerchart';
 	import { Treemap } from 'layerchart/svg';
 	import { hierarchy, type HierarchyRectangularNode } from 'd3-hierarchy';
@@ -55,13 +56,6 @@
 
 	function getPrice(companyId: bigint): Price | undefined {
 		return prices?.find((p) => p.companyId === companyId);
-	}
-
-	function formatLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(1)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(1)} L`;
-		return value.toLocaleString();
 	}
 
 	// Build flat data for Chart
@@ -211,7 +205,7 @@
 											y={(node.y0 + node.y1) / 2 + 8}
 											textAnchor="middle"
 											verticalAnchor="middle"
-											value={formatLarge(node.data.value ?? 0)}
+											value={formatLarge(node.data.value ?? 0, 1)}
 											class="pointer-events-none fill-white/80 text-[9px] drop-shadow-sm"
 										/>
 									{/if}
@@ -233,7 +227,7 @@
 				<p class="mt-0.5 max-w-[200px] truncate text-muted-foreground">{hoveredNode.name}</p>
 				<div class="mt-1 flex items-center justify-between gap-4">
 					<span class="text-muted-foreground">{hoveredNode.sector}</span>
-					<span class="font-medium tabular-nums">{formatLarge(hoveredNode.marketCap)}</span>
+					<span class="font-medium tabular-nums">{formatLarge(hoveredNode.marketCap, 1)}</span>
 				</div>
 			</div>
 		{/if}

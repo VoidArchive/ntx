@@ -10,6 +10,7 @@ package story
 import (
 	"cmp"
 	"fmt"
+	"math"
 	"slices"
 	"time"
 
@@ -340,7 +341,7 @@ func yearOnYear(cur filing, same map[fiscal.Year]float64, claim claimFn) []Claim
 	if change < 0 {
 		dir = "Down"
 	}
-	text := fmt.Sprintf("%s %.1f%% on %s.", dir, abs(change), period{cur.year - 1, cur.quarter})
+	text := fmt.Sprintf("%s %.1f%% on %s.", dir, math.Abs(change), period{cur.year - 1, cur.quarter})
 	return []Claim{claim("earnings", text, change, "%")}
 }
 
@@ -422,11 +423,11 @@ func strips(in Input, q *Quote, quarters []filing) []Strip {
 	pe, pb, eps, yield := current(in, q, quarters)
 	ownPE, ownPB, ownEPS := ownRanges(quarters[max(0, len(quarters)-ownQuarters):])
 	return []Strip{
-		{Ratio: "pe", Value: pe, Sector: rangeOf(positive(in.Sector.PE)), Own: rangeOf(ownPE)},
-		{Ratio: "pb", Value: pb, Sector: rangeOf(in.Sector.PB), Own: rangeOf(ownPB)},
-		{Ratio: "eps", Value: eps, Sector: rangeOf(in.Sector.EPS), Own: rangeOf(ownEPS)},
+		{Ratio: "pe", Value: pe, Sector: Median(Profitable(in.Sector.PE)), Own: Median(ownPE)},
+		{Ratio: "pb", Value: pb, Sector: Median(in.Sector.PB), Own: Median(ownPB)},
+		{Ratio: "eps", Value: eps, Sector: Median(in.Sector.EPS), Own: Median(ownEPS)},
 		// shortcut: no own yield range, it needs a price per fiscal year; add with the fiscal-year rows (#25).
-		{Ratio: "yield", Value: yield, Sector: rangeOf(in.Sector.Yield)},
+		{Ratio: "yield", Value: yield, Sector: Median(in.Sector.Yield)},
 	}
 }
 
@@ -527,7 +528,8 @@ func valuation(cur filing, q *Quote, strips []Strip) []Claim {
 	return out
 }
 
-func rangeOf(values []float64) Range {
+// Median gives the low, median and high of values; the sector overview shares it.
+func Median(values []float64) Range {
 	if len(values) == 0 {
 		return Range{}
 	}
@@ -540,7 +542,8 @@ func rangeOf(values []float64) Range {
 	return Range{Low: v[0], Median: median, High: v[n-1], Count: n}
 }
 
-func positive(values []float64) []float64 {
+// Profitable keeps positive values: PE medians exclude loss-makers.
+func Profitable(values []float64) []float64 {
 	var out []float64
 	for _, v := range values {
 		if v > 0 {
@@ -550,9 +553,7 @@ func positive(values []float64) []float64 {
 	return out
 }
 
-func crore(rs float64) string { return fmt.Sprintf("%.2f", abs(rs)/1e7) }
-
-func abs(v float64) float64 { return max(v, -v) }
+func crore(rs float64) string { return fmt.Sprintf("%.2f", math.Abs(rs)/1e7) }
 
 func ptr(v float64) *float64 { return &v }
 

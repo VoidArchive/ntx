@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
 	import MarketCapTreemap from '#lib/components/charts/MarketCapTreemap.svelte';
 	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
@@ -10,13 +11,6 @@
 
 	function getPrice(companyId: bigint): Price | undefined {
 		return data.prices?.find((p) => p.companyId === companyId);
-	}
-
-	function formatLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(2)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(2)} L`;
-		return value.toLocaleString();
 	}
 
 	function formatCurrency(value: number) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Fund } from '#lib/types/fund.js';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 	import Wallet from '@lucide/svelte/icons/wallet';
@@ -8,13 +9,6 @@
 	}
 
 	let { fund }: Props = $props();
-
-	function fmtLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(2)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(2)} L`;
-		return value.toLocaleString('en-NP');
-	}
 
 	// Count total holdings across all sectors
 	let holdingsCount = $derived.by(() => {
@@ -57,7 +51,7 @@
 			class="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-background/50 px-2.5 py-1"
 		>
 			<Wallet class="size-3 text-muted-foreground" />
-			<span class="text-xs font-medium tabular-nums">{fmtLarge(fund.net_assets)}</span>
+			<span class="text-xs font-medium tabular-nums">{formatLarge(fund.net_assets)}</span>
 		</div>
 	</div>
 

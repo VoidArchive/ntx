@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import type { Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
@@ -11,13 +12,6 @@
 	function fmt(value: number | undefined): string {
 		if (value === undefined || value === 0) return '—';
 		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
-	}
-
-	function fmtLarge(value: number | undefined): string {
-		if (value === undefined || value === 0) return '—';
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(1)} Cr`;
-		if (value >= 100_000) return `${(value / 100_000).toFixed(1)} L`;
-		return fmt(value);
 	}
 
 	const yearFirst = (period: string) => period.split(' ').reverse().join(' ');
@@ -60,7 +54,9 @@
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.eps)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.peRatio)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.bookValue)}</td>
-							<td class="py-2.5 text-right tabular-nums">{fmtLarge(f.profitAmount)}</td>
+							<td class="py-2.5 text-right tabular-nums"
+								>{f.profitAmount ? formatLarge(f.profitAmount, 1) : '—'}</td
+							>
 							<td
 								class="py-2.5 text-right tabular-nums {f.publishedAt
 									? ''

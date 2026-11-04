@@ -47,6 +47,7 @@ type Querier interface {
 	// Sector distributions for the story strips: one value per company in the
 	// sector, from its latest quarterly row and its latest close. Divisions by
 	// zero are filtered so every value is a number.
+	// shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
 	ListSectorPE(ctx context.Context, sector string) ([]float64, error)
 	ListSectorPeers(ctx context.Context, sector string) ([]ListSectorPeersRow, error)
 	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.

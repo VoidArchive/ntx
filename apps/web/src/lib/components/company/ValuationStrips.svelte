@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Range, Strip } from '#lib/gen/ntx/v1/story_pb.js';
+	import { at } from '#lib/utils.js';
 
 	interface Props {
 		strips: Strip[];
@@ -21,12 +22,6 @@
 		if (ratio === 'eps') return `Rs ${n}`;
 		if (ratio === 'yield') return `${n}%`;
 		return `${n}x`;
-	}
-
-	// Position on the bar as a percentage, clamped so outliers sit at the ends.
-	function at(range: Range, value: number): number {
-		if (range.high === range.low) return 50;
-		return Math.min(100, Math.max(0, ((value - range.low) / (range.high - range.low)) * 100));
 	}
 </script>
 

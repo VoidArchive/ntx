@@ -1,6 +1,7 @@
 -- Sector distributions for the story strips: one value per company in the
 -- sector, from its latest quarterly row and its latest close. Divisions by
 -- zero are filtered so every value is a number.
+-- shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
 
 -- name: ListSectorPE :many
 SELECT CAST(p.close_price / f.eps AS REAL) AS pe

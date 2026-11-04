@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatLarge } from '#lib/utils.js';
 	import { FundCard, fundProvenance } from '#lib/components/mutual-funds/index.js';
 	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
 	import List from '@lucide/svelte/icons/list';
@@ -20,12 +21,6 @@
 
 	// Best performer
 	let bestFund = $derived([...data.funds].sort((a, b) => b.nav_per_unit - a.nav_per_unit)[0]);
-
-	function fmtLarge(value: number): string {
-		if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
-		if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(2)} Cr`;
-		return value.toLocaleString('en-NP');
-	}
 
 	// Every fund in the snapshot shares one report date, so the first fund speaks for all
 	let provenance = $derived(data.funds[0] ? fundProvenance(data.funds[0]) : '');
@@ -81,7 +76,7 @@
 					<Wallet class="size-4" />
 					<span class="text-sm">Total AUM</span>
 				</div>
-				<p class="mt-2 font-serif text-2xl tabular-nums">{fmtLarge(totalAUM)}</p>
+				<p class="mt-2 font-serif text-2xl tabular-nums">{formatLarge(totalAUM)}</p>
 				<p class="text-xs text-muted-foreground">{data.funds.length} funds</p>
 			</div>
 
@@ -162,7 +157,7 @@
 										{/if}
 									</td>
 									<td class="px-4 py-3 text-right text-muted-foreground tabular-nums">
-										{fmtLarge(fund.net_assets)}
+										{formatLarge(fund.net_assets)}
 									</td>
 									<td
 										class="hidden px-4 py-3 text-right text-muted-foreground tabular-nums sm:table-cell"
