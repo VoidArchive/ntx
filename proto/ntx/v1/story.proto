@@ -17,6 +17,12 @@ message GetCompanyStoryResponse {
   // Period of the newest filing, e.g. "Q1 2083/84"; empty when there is none.
   string last_filing = 3;
   Quote quote = 4;
+  // Quarters with a quarter-only profit, oldest first.
+  repeated Quarter quarters = 20;
+  // Result publication and notice dates for the price chart, oldest first.
+  repeated EventMark events = 21;
+  // Set for hydro companies only.
+  HydroEps hydro_eps = 22;
 }
 
 // One sentence computed from a company's rows (GLOSSARY: Claim).
@@ -52,4 +58,32 @@ message Quote {
   optional double change_percent = 3;
   string business_date = 4;    // "2026-11-03"
   string business_date_bs = 5; // "Kartik 17, 2083"
+}
+
+// One quarter's own result; stored profit is year-to-date, this is the difference.
+message Quarter {
+  string period = 1;      // "Q1 2083/84"
+  string fiscal_year = 2; // "2083/84"
+  double profit = 3;      // quarter-only, Rs
+  optional double eps = 4;            // quarter-only; unset without paid-up capital
+  optional double annualized_eps = 5; // as filed
+  string label = 6;        // "Best Q1 in five years", "3rd rise in a row", or ""
+  string published_at = 7; // empty when not recorded
+  string source_url = 8;   // empty when not recorded
+  bool is_monsoon = 9;     // hydro Q1: annualized EPS overstates the year
+}
+
+// A dated result or notice on the price chart's time axis.
+message EventMark {
+  string date = 1;  // "2026-02-10"
+  string kind = 2;  // result | notice
+  string label = 3; // "Q2", "FY", "10% cash, 5% bonus"
+}
+
+// A hydro company's latest EPS for the quarter, annualized, and for the last full year.
+message HydroEps {
+  double quarter = 1;
+  double annualized = 2;
+  double full_year = 3;
+  string full_year_period = 4; // "FY 2081/82"
 }

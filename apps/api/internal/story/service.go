@@ -37,7 +37,9 @@ func (s *Service) GetCompanyStory(
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return connect.NewResponse(toProto(Build(in))), nil
+	res := toProto(Build(in))
+	addQuarters(res, in)
+	return connect.NewResponse(res), nil
 }
 
 func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
@@ -54,6 +56,9 @@ func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
 		sqlc.ListPricesByCompanyParams{CompanyID: c.ID, Limit: 2},
 	); err != nil {
 		return Input{}, fmt.Errorf("prices: %w", err)
+	}
+	if in.Actions, err = s.queries.ListCorporateActionsByCompany(ctx, c.ID); err != nil {
+		return Input{}, fmt.Errorf("corporate actions: %w", err)
 	}
 	ca, err := s.queries.GetLatestCorporateActionByCompany(ctx, c.ID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {

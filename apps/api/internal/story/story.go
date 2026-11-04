@@ -29,9 +29,10 @@ const ownQuarters = 12
 // Input is everything Build needs for one company.
 type Input struct {
 	Company      sqlc.Company
-	Fundamentals []sqlc.Fundamental // any order
-	Prices       []sqlc.Price       // newest first; the first two give the quote
-	CashDividend *float64           // latest fiscal year's cash dividend, % of par
+	Fundamentals []sqlc.Fundamental     // any order
+	Prices       []sqlc.Price           // newest first; the first two give the quote
+	CashDividend *float64               // latest fiscal year's cash dividend, % of par
+	Actions      []sqlc.CorporateAction // any order; dated ones become price-chart marks
 	Sector       Sector
 }
 
@@ -292,16 +293,22 @@ type claimFn func(kind, text string, value float64, unit string) Claim
 
 // records compares the latest quarter-only profit with the same quarter of earlier years.
 func records(cur filing, quarters []filing, claim claimFn) []Claim {
-	same := map[fiscal.Year]float64{}
-	for _, f := range quarters {
-		if f.quarter == cur.quarter && f.profit != nil {
-			same[f.year] = *f.profit
-		}
-	}
+	same := sameQuarter(cur.quarter, quarters)
 	out := yearOnYear(cur, same, claim)
 	out = append(out, best(cur, same, claim)...)
 	out = append(out, streak(cur, same, claim)...)
 	return append(out, firstLoss(cur, quarters, claim)...)
+}
+
+// sameQuarter is each year's quarter-only profit for one quarter.
+func sameQuarter(q fiscal.Quarter, quarters []filing) map[fiscal.Year]float64 {
+	same := map[fiscal.Year]float64{}
+	for _, f := range quarters {
+		if f.quarter == q && f.profit != nil {
+			same[f.year] = *f.profit
+		}
+	}
+	return same
 }
 
 func yearOnYear(cur filing, same map[fiscal.Year]float64, claim claimFn) []Claim {

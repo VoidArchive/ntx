@@ -39,6 +39,9 @@ func TestGetCompanyStory(t *testing.T) {
 	if qt := m.GetQuote(); qt.GetChange() != 1 || qt.GetBusinessDateBs() != "Kartik 17, 2083" {
 		t.Errorf("quote = %v", qt)
 	}
+	if qs := m.GetQuarters(); len(qs) != 17 || qs[16].GetLabel() != "Best Q1 in five years" || m.GetHydroEps() != nil {
+		t.Errorf("quarters = %d, latest %v, hydro %v", len(qs), qs[len(qs)-1], m.GetHydroEps())
+	}
 	if m.GetLastFiling() != "Q1 2083/84" {
 		t.Errorf("last filing = %q", m.GetLastFiling())
 	}

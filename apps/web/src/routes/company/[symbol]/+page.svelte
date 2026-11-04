@@ -66,7 +66,7 @@
 						<TimeRangeSelector selected={chartDays} onSelect={handleDaysChange} />
 					</div>
 					<div class="h-[350px] overflow-hidden">
-						<PriceChart prices={priceHistory} days={chartDays} />
+						<PriceChart prices={priceHistory} events={story?.events ?? []} days={chartDays} />
 					</div>
 					<div class="mt-2">
 						<h3 class="mb-1 text-xs font-medium text-muted-foreground">Volume</h3>
@@ -112,8 +112,18 @@
 			<div class="mt-12 border-t border-border pt-8">
 				<div class="grid gap-8 lg:grid-cols-12">
 					<div id="quarterly" class="min-w-0 lg:col-span-8">
-						<h3 class="mb-4 font-serif text-base font-medium">Earnings</h3>
-						<EarningsChart fundamentals={filteredFundamentals} />
+						<div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+							<h3 class="font-serif text-base font-medium">Quarterly results</h3>
+							{#if story?.hydroEps}
+								{@const h = story.hydroEps}
+								<p class="text-xs text-muted-foreground tabular-nums">
+									EPS Rs {h.quarter.toFixed(2)} quarter · Rs {h.annualized.toFixed(2)} annualized · Rs
+									{h.fullYear.toFixed(2)}
+									{h.fullYearPeriod}
+								</p>
+							{/if}
+						</div>
+						<EarningsChart quarters={story?.quarters ?? []} />
 					</div>
 					<div class="min-w-0 lg:col-span-4">
 						<OwnershipPieChart {ownership} />
