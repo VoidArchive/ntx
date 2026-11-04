@@ -144,7 +144,7 @@ func parse(rows []sqlc.Fundamental) ([]filing, map[fiscal.Year]sqlc.Fundamental)
 	var quarters []filing
 	annual := map[fiscal.Year]sqlc.Fundamental{}
 	for _, r := range rows {
-		y, err := fiscal.ParseYear(r.FiscalYear)
+		y, err := fiscal.ParseFilingYear(r.FiscalYearNp.String, r.FiscalYear)
 		if err != nil {
 			continue
 		}

@@ -166,6 +166,28 @@ func TestParseYear(t *testing.T) {
 	}
 }
 
+func TestParseFilingYear(t *testing.T) {
+	tests := []struct {
+		np, gregorian, want string
+	}{
+		{"2080-2081", "2025-2026", "2080/81"}, // Nepali name wins
+		{"", "2025-2026", "2082/83"},          // missing Nepali name falls back
+		{"n/a", "2024-2025", "2081/82"},       // unreadable Nepali name falls back
+	}
+	for _, tc := range tests {
+		got, err := ParseFilingYear(tc.np, tc.gregorian)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got.String() != tc.want {
+			t.Fatalf("ParseFilingYear(%q, %q) = %s, want %s", tc.np, tc.gregorian, got, tc.want)
+		}
+	}
+	if _, err := ParseFilingYear("", ""); err == nil {
+		t.Fatal("want error when neither name parses")
+	}
+}
+
 func TestParseQuarter(t *testing.T) {
 	tests := []struct {
 		in   string

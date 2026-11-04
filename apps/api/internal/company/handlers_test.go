@@ -81,3 +81,20 @@ func deref(s *string) string {
 	}
 	return *s
 }
+
+func TestFundamentalPeriod(t *testing.T) {
+	tests := []struct {
+		np, gregorian, quarter, want string
+	}{
+		{"2083-2084", "2026-2027", "First Quarter", "Q1 2083/84"},
+		{"", "2026-2027", "Fourth Quarter", "Q4 2083/84"},
+		{"", "2025-2026", "", "FY 2082/83"},
+		{"", "unknown", "First Quarter", ""},
+	}
+	for _, tc := range tests {
+		f := sqlc.Fundamental{FiscalYear: tc.gregorian, Quarter: tc.quarter, FiscalYearNp: sql.NullString{String: tc.np, Valid: tc.np != ""}}
+		if got := fundamentalToProto(f).GetPeriod(); got != tc.want {
+			t.Fatalf("period(%q, %q, %q) = %q, want %q", tc.np, tc.gregorian, tc.quarter, got, tc.want)
+		}
+	}
+}

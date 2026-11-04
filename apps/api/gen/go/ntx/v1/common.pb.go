@@ -329,6 +329,7 @@ type Fundamental struct {
 	PublishedAt   *string                `protobuf:"bytes,10,opt,name=published_at,json=publishedAt,proto3,oneof" json:"published_at,omitempty"` // YYYY-MM-DD the exchange received the filing
 	SourceUrl     *string                `protobuf:"bytes,11,opt,name=source_url,json=sourceUrl,proto3,oneof" json:"source_url,omitempty"`
 	FiscalYearNp  *string                `protobuf:"bytes,12,opt,name=fiscal_year_np,json=fiscalYearNp,proto3,oneof" json:"fiscal_year_np,omitempty"` // Bikram Sambat span as NEPSE gives it, e.g. 2080-2081
+	Period        string                 `protobuf:"bytes,13,opt,name=period,proto3" json:"period,omitempty"`                                         // canonical display period, e.g. "Q1 2083/84" or "FY 2083/84"; empty when unreadable
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -443,6 +444,13 @@ func (x *Fundamental) GetSourceUrl() string {
 func (x *Fundamental) GetFiscalYearNp() string {
 	if x != nil && x.FiscalYearNp != nil {
 		return *x.FiscalYearNp
+	}
+	return ""
+}
+
+func (x *Fundamental) GetPeriod() string {
+	if x != nil {
+		return x.Period
 	}
 	return ""
 }
@@ -797,7 +805,7 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	"\x06_emailB\n" +
 	"\n" +
 	"\b_websiteB\x10\n" +
-	"\x0e_listed_shares\"\xae\x04\n" +
+	"\x0e_listed_shares\"\xc6\x04\n" +
 	"\vFundamental\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +
@@ -815,7 +823,8 @@ const file_ntx_v1_common_proto_rawDesc = "" +
 	" \x01(\tH\x06R\vpublishedAt\x88\x01\x01\x12\"\n" +
 	"\n" +
 	"source_url\x18\v \x01(\tH\aR\tsourceUrl\x88\x01\x01\x12)\n" +
-	"\x0efiscal_year_np\x18\f \x01(\tH\bR\ffiscalYearNp\x88\x01\x01B\n" +
+	"\x0efiscal_year_np\x18\f \x01(\tH\bR\ffiscalYearNp\x88\x01\x01\x12\x16\n" +
+	"\x06period\x18\r \x01(\tR\x06periodB\n" +
 	"\n" +
 	"\b_quarterB\x06\n" +
 	"\x04_epsB\v\n" +

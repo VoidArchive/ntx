@@ -133,6 +133,13 @@ export declare type Fundamental = Message<"ntx.v1.Fundamental"> & {
    * @generated from field: optional string fiscal_year_np = 12;
    */
   fiscalYearNp?: string;
+
+  /**
+   * canonical display period, e.g. "Q1 2083/84" or "FY 2083/84"; empty when unreadable
+   *
+   * @generated from field: string period = 13;
+   */
+  period: string;
 };
 
 /**
