@@ -3,7 +3,7 @@ plugins:
   - remote: buf.build/protocolbuffers/go
     out: ../apps/api/gen/go
     opt: paths=source_relative
-  - remote: buf.build/connectrpc/go
+  - remote: buf.build/connectrpc/go:v1.18.1
     out: ../apps/api/gen/go
     opt: paths=source_relative
   - remote: buf.build/bufbuild/es:v2.2.3
