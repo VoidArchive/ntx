@@ -1,5 +1,6 @@
 import { createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-web';
+import { API_URL } from '$app/env/private';
 import { CompanyService } from '#lib/gen/ntx/v1/company_pb.js';
 import { MarketService } from '#lib/gen/ntx/v1/market_pb.js';
 import { PriceService } from '#lib/gen/ntx/v1/price_pb.js';
@@ -20,3 +21,10 @@ export function createApiClient(baseUrl: string) {
 		sector: createClient(SectorService, transport)
 	};
 }
+
+export const apiBaseUrl = () => {
+	if (API_URL) return API_URL;
+	if (import.meta.env.DEV) return 'http://localhost:8080';
+	// Never fall back to localhost in production: that is how every page 500ed on 2026-11-04.
+	throw new Error('API_URL is not set');
+};

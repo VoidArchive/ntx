@@ -1,4 +1,4 @@
-import { createApiClient } from '#lib/api/client.js';
+import { apiBaseUrl, createApiClient } from '#lib/api/client.js';
 import navData from '#lib/data/nav.json';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
@@ -86,11 +86,8 @@ function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
 	return Array.from(resultsMap.values()).sort((a, b) => b.value - a.value);
 }
 
-export const load = async ({ params, platform }) => {
-	// In dev mode, always use localhost. In prod, use platform env.
-	const apiUrl = import.meta.env.DEV
-		? 'http://localhost:8080'
-		: (platform?.env?.API_URL ?? 'http://localhost:8080');
+export const load = async ({ params }) => {
+	const apiUrl = apiBaseUrl();
 	const { company, price, story } = createApiClient(apiUrl);
 	try {
 		const [companyRes, fundamentalsRes, priceHistoryRes] = await Promise.all([
