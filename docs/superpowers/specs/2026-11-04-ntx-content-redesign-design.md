@@ -1,6 +1,6 @@
 # NTX redesign: content first
 
-Date: 2026-11-04. Status: approved in conversation, awaiting written review.
+Date: 2026-11-04. Status: approved; published as spec issue #20 (ready-for-agent). Tickets will be sub-issues of #20.
 
 ## Why
 
