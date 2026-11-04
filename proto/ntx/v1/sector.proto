@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+import "ntx/v1/common.proto";
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+// SectorService feeds the home page: sectors first, then who filed recently.
+service SectorService {
+  rpc GetSectorOverview(GetSectorOverviewRequest) returns (GetSectorOverviewResponse);
+}
+
+message GetSectorOverviewRequest {}
+
+message GetSectorOverviewResponse {
+  // Sorted by company count, largest first.
+  repeated SectorSummary sectors = 1;
+  // Newest first, within the last 30 days.
+  repeated RecentFiling filed_recently = 2;
+  // Day change from consecutive closes, best five and worst five on the latest business date.
+  repeated Mover gainers = 3;
+  repeated Mover losers = 4;
+}
+
+message Mover {
+  string symbol = 1;
+  string name = 2;
+  double close = 3;
+  double change_percent = 4;
+}
+
+// Medians are over each company's latest quarterly row and latest close.
+message SectorSummary {
+  string name = 1; // the database's sector string, e.g. "Hydro Power"
+  Sector sector = 2; // enum for linking to the filtered company list
+  int32 company_count = 3;
+  optional double median_pe = 4; // loss-makers excluded
+  int32 pe_count = 5; // profitable companies the PE median is over
+  optional double median_pb = 6;
+  optional double profitable_share = 7; // 0..1, of companies with a latest quarter
+  int32 quarter_count = 8; // companies with a latest quarter
+  optional double profit_change_yoy = 9; // percent, summed YTD profit vs the same quarter a year earlier
+  optional double day_change = 10; // median percent change on the latest business date
+}
+
+message RecentFiling {
+  string symbol = 1;
+  string name = 2;
+  string date = 3; // YYYY-MM-DD
+  // False when the row has no published date and date is when NTX first saw it.
+  bool published = 4;
+  string claim = 5; // the company's first earnings claim, empty when none
+}

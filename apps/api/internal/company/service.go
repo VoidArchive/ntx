@@ -37,7 +37,7 @@ func listCompaniesRowsToProto(rows []sqlc.ListCompaniesRow) []*ntxv1.Company {
 			Email:          nullString(r.Email),
 			Website:        nullString(r.Website),
 			InstrumentType: instrumentFromDB(r.InstrumentType),
-			Sector:         sectorFromDB(r.Sector),
+			Sector:         SectorFromDB(r.Sector),
 			ListedShares:   nullInt64Ptr(r.ListedShares),
 		}
 	}
@@ -53,7 +53,7 @@ func companyToProto(c sqlc.Company) *ntxv1.Company {
 		Email:          nullString(c.Email),
 		Website:        nullString(c.Website),
 		InstrumentType: instrumentFromDB(c.InstrumentType),
-		Sector:         sectorFromDB(c.Sector),
+		Sector:         SectorFromDB(c.Sector),
 	}
 }
 
@@ -77,18 +77,19 @@ func statusFromDB(s string) ntxv1.CompanyStatus {
 	return ntxv1.CompanyStatus_COMPANY_STATUS_UNSPECIFIED
 }
 
+// sectorMap values are the database's sector strings, which NEPSE spells differently from the enum.
 var sectorMap = map[ntxv1.Sector]string{
 	ntxv1.Sector_SECTOR_COMMERCIAL_BANK:    "Commercial Banks",
 	ntxv1.Sector_SECTOR_DEVELOPMENT_BANK:   "Development Banks",
 	ntxv1.Sector_SECTOR_FINANCE:            "Finance",
-	ntxv1.Sector_SECTOR_HOTEL:              "Hotel",
-	ntxv1.Sector_SECTOR_HYDROPOWER:         "Hydropower",
+	ntxv1.Sector_SECTOR_HOTEL:              "Hotels And Tourism",
+	ntxv1.Sector_SECTOR_HYDROPOWER:         "Hydro Power",
 	ntxv1.Sector_SECTOR_INVESTMENT:         "Investment",
 	ntxv1.Sector_SECTOR_LIFE_INSURANCE:     "Life Insurance",
-	ntxv1.Sector_SECTOR_MANUFACTURING:      "Manufacturing",
+	ntxv1.Sector_SECTOR_MANUFACTURING:      "Manufacturing And Processing",
 	ntxv1.Sector_SECTOR_MICROFINANCE:       "Microfinance",
 	ntxv1.Sector_SECTOR_NON_LIFE_INSURANCE: "Non Life Insurance",
-	ntxv1.Sector_SECTOR_TRADING:            "Trading",
+	ntxv1.Sector_SECTOR_TRADING:            "Tradings",
 	ntxv1.Sector_SECTOR_MUTUAL_FUND:        "Mutual Funds",
 	ntxv1.Sector_SECTOR_OTHERS:             "Others",
 }
@@ -105,15 +106,10 @@ func init() {
 	for k, v := range sectorMap {
 		sectorDBMap[v] = k
 	}
-
-	// Add aliases for data mismatches
-	sectorDBMap["Hydro Power"] = ntxv1.Sector_SECTOR_HYDROPOWER
-	sectorDBMap["Hotels And Tourism"] = ntxv1.Sector_SECTOR_HOTEL
-	sectorDBMap["Manufacturing And Processing"] = ntxv1.Sector_SECTOR_MANUFACTURING
-	sectorDBMap["Tradings"] = ntxv1.Sector_SECTOR_TRADING
 }
 
-func sectorFromDB(s string) ntxv1.Sector {
+// SectorFromDB maps a database sector string to the enum, UNSPECIFIED when unknown.
+func SectorFromDB(s string) ntxv1.Sector {
 	if sector, ok := sectorDBMap[s]; ok {
 		return sector
 	}
