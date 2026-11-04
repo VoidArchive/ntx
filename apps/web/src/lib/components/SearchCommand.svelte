@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
+	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 	import Search from '@lucide/svelte/icons/search';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';

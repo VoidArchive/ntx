@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { Company, Price, Fundamental } from '$lib/gen/ntx/v1/common_pb';
-	import type { SectorStats } from '$lib/gen/ntx/v1/company_pb';
-	import * as Dialog from '$lib/components/ui/dialog';
-	import { Button } from '$lib/components/ui/button';
+	import type { Company, Price, Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
+	import type { SectorStats } from '#lib/gen/ntx/v1/company_pb.js';
+	import * as Dialog from '#lib/components/ui/dialog/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
 	import Sparkles from '@lucide/svelte/icons/sparkles';
 	import Copy from '@lucide/svelte/icons/copy';
 	import Check from '@lucide/svelte/icons/check';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		company?: Company;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CorporateAction } from '$lib/gen/ntx/v1/common_pb';
+	import type { CorporateAction } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		actions?: CorporateAction[];

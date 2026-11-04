@@ -1,5 +1,5 @@
 // Auth store for managing authentication state
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 const TOKEN_KEY = 'ntx_auth_token';
 const USER_ID_KEY = 'ntx_user_id';

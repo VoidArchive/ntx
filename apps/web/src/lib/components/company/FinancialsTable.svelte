@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Fundamental } from '$lib/gen/ntx/v1/common_pb';
+	import type { Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
 
 	export type ViewMode = 'quarterly' | 'annually';
 

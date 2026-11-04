@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Ownership } from '$lib/gen/ntx/v1/common_pb';
+	import type { Ownership } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		ownership?: Ownership;

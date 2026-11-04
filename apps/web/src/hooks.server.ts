@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/ingest')) {
@@ -12,7 +12,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				host: 'us.i.posthog.com'
 			},
 			body: event.request.body,
-			// @ts-ignore
+			// @ts-expect-error duplex is required by undici but missing from the RequestInit type
 			duplex: 'half'
 		});
 	}

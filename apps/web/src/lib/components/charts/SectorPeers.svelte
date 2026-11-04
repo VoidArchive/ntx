@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
+	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		company: Company;
@@ -91,14 +91,14 @@
 	<div class={className}>
 		<h3 class="mb-4 font-serif text-lg font-medium">Sector Peers</h3>
 		<p class="mb-6 text-sm text-muted-foreground">
-			{sectorNames[company.sector ?? Sector.OTHERS]} · {sectorPeers.length + 1} companies ·
-			Rank #{currentRank} by market cap
+			{sectorNames[company.sector ?? Sector.OTHERS]} · {sectorPeers.length + 1} companies · Rank #{currentRank}
+			by market cap
 		</p>
 
 		<!-- Peer Table -->
 		<div class="overflow-x-auto">
 			<table class="w-full text-left text-sm">
-				<thead class="bg-muted/50 text-xs uppercase text-muted-foreground">
+				<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
 					<tr>
 						<th class="w-10 px-3 py-2.5 font-medium">#</th>
 						<th class="px-3 py-2.5 font-medium">Symbol</th>
@@ -111,7 +111,7 @@
 					{#each topPeers as peer, i (peer.company.id)}
 						{@const actualRank = i + 1 >= currentRank ? i + 2 : i + 1}
 						<tr class="transition-colors hover:bg-muted/50">
-							<td class="w-10 px-3 py-2.5 font-medium tabular-nums text-muted-foreground">
+							<td class="w-10 px-3 py-2.5 font-medium text-muted-foreground tabular-nums">
 								{actualRank}
 							</td>
 							<td class="px-3 py-2.5">

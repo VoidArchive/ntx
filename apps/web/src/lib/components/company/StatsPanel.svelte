@@ -1,5 +1,10 @@
 <script lang="ts">
-	import type { Price, Fundamental, Ownership, CorporateAction } from '$lib/gen/ntx/v1/common_pb';
+	import type {
+		Price,
+		Fundamental,
+		Ownership,
+		CorporateAction
+	} from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		price?: Price;

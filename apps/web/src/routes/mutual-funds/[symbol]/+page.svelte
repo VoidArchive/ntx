@@ -4,7 +4,7 @@
 		FundStats,
 		PortfolioDonut,
 		HoldingsTable
-	} from '$lib/components/mutual-funds';
+	} from '#lib/components/mutual-funds/index.js';
 
 	let { data } = $props();
 

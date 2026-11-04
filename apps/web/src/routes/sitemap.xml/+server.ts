@@ -1,4 +1,4 @@
-import { createApiClient } from '$lib/api/client';
+import { createApiClient } from '#lib/api/client.js';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url, platform }) => {
@@ -8,23 +8,22 @@ export const GET: RequestHandler = async ({ url, platform }) => {
 		: (platform?.env?.API_URL ?? 'http://localhost:8080');
 
 	// Static pages
-	const pages = [
-		'',
-		'/company',
-		'/market-cap',
-		'/mutual-funds'
-	];
+	const pages = ['', '/company', '/market-cap', '/mutual-funds'];
 
 	// Fetch dynamic data
 	const { company } = createApiClient(apiUrl);
 	const { companies } = await company.listCompanies({ limit: 500 });
-	
-	const companyUrls = companies.map(c => `
+
+	const companyUrls = companies
+		.map(
+			(c) => `
 		<url>
 			<loc>${baseUrl}/company/${c.symbol}</loc>
 			<changefreq>daily</changefreq>
 			<priority>0.7</priority>
-		</url>`).join('');
+		</url>`
+		)
+		.join('');
 
 	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

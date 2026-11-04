@@ -4,7 +4,7 @@
  * Generates narrative insights about a company's earnings trends.
  */
 
-import type { Fundamental } from '$lib/gen/ntx/v1/common_pb';
+import type { Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
 import type { EarningsStory } from './types';
 
 interface EarningsContext {

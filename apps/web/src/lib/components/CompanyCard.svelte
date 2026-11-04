@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
+	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 
 	interface Props {
@@ -69,7 +69,7 @@
 
 	<!-- Middle: Price (Placeholder or Real) -->
 	<div class="mt-6 flex items-baseline gap-3">
-		{#if currentPrice}
+		{#if price && currentPrice}
 			<span class="text-3xl font-medium text-foreground tabular-nums">
 				{formatPrice(currentPrice)}
 			</span>

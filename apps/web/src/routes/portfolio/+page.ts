@@ -1,10 +1,10 @@
 import type { PageLoad } from './$types';
-import { createApiClient } from '$lib/api/client';
+import { createApiClient } from '#lib/api/client.js';
 
 export const load: PageLoad = async ({ parent }) => {
 	const { apiUrl } = await parent();
 	const api = createApiClient(apiUrl);
-	
+
 	// Fetch companies for the stock symbol autocomplete
 	try {
 		const response = await api.company.listCompanies({ limit: 500 });

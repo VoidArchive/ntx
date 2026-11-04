@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Company } from '$lib/gen/ntx/v1/common_pb';
-	import { Sector, CompanyStatus } from '$lib/gen/ntx/v1/common_pb';
+	import type { Company } from '#lib/gen/ntx/v1/common_pb.js';
+	import { Sector, CompanyStatus } from '#lib/gen/ntx/v1/common_pb.js';
 	import ExternalLink from '@lucide/svelte/icons/external-link';
 
 	interface Props {

@@ -9,7 +9,7 @@
 		AIResearchButton,
 		MutualFundHoldings,
 		type ViewMode
-	} from '$lib/components/company';
+	} from '#lib/components/company/index.js';
 	import {
 		PriceChart,
 		VolumeChart,
@@ -18,7 +18,7 @@
 		OwnershipPieChart,
 		RatingsRadar,
 		SectorPeers
-	} from '$lib/components/charts';
+	} from '#lib/components/charts/index.js';
 
 	let { data } = $props();
 
@@ -140,11 +140,7 @@
 
 			<!-- Sector Peers -->
 			<div class="mt-12 border-t border-border pt-8">
-				<SectorPeers
-					{company}
-					allCompanies={data.companies ?? []}
-					allPrices={data.prices ?? []}
-				/>
+				<SectorPeers {company} allCompanies={data.companies ?? []} allPrices={data.prices ?? []} />
 			</div>
 		</div>
 	</div>

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { createApiClient } from '$lib/api/client';
-	import { authStore } from '$lib/stores/auth.svelte';
+	import { createApiClient } from '#lib/api/client.js';
+	import { authStore } from '#lib/stores/auth.svelte.js';
 	import Lock from '@lucide/svelte/icons/lock';
 	import Mail from '@lucide/svelte/icons/mail';
-	import Loader2 from '@lucide/svelte/icons/loader-2';
+	import Loader2 from '@lucide/svelte/icons/loader-circle';
 
 	let { data } = $props();
 	const API_URL = data.apiUrl;
@@ -54,7 +54,9 @@
 			</div>
 
 			{#if error}
-				<div class="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+				<div
+					class="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+				>
 					{error}
 				</div>
 			{/if}
@@ -63,14 +65,14 @@
 				<div>
 					<label for="email" class="mb-2 block text-sm font-medium">Email</label>
 					<div class="relative">
-						<Mail class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+						<Mail class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 						<input
 							id="email"
 							type="email"
 							bind:value={email}
 							required
 							autocomplete="email"
-							class="w-full rounded-lg border border-border bg-background py-2.5 pl-10 pr-4 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background py-2.5 pr-4 pl-10 text-sm transition-colors focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 							placeholder="you@example.com"
 						/>
 					</div>
@@ -79,14 +81,14 @@
 				<div>
 					<label for="password" class="mb-2 block text-sm font-medium">Password</label>
 					<div class="relative">
-						<Lock class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+						<Lock class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 						<input
 							id="password"
 							type="password"
 							bind:value={password}
 							required
 							autocomplete="current-password"
-							class="w-full rounded-lg border border-border bg-background py-2.5 pl-10 pr-4 text-sm transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background py-2.5 pr-4 pl-10 text-sm transition-colors focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 							placeholder="••••••••"
 						/>
 					</div>

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { AreaChart } from 'layerchart';
 	import { scaleTime, scaleLinear } from 'd3-scale';
-	import type { Price } from '$lib/gen/ntx/v1/common_pb';
-	import { ChartContainer, type ChartConfig } from '$lib/components/ui/chart';
+	import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import { ChartContainer, type ChartConfig } from '#lib/components/ui/chart/index.js';
 
 	interface Props {
 		prices: Price[];
@@ -75,7 +75,8 @@
 			series={[
 				{
 					key: 'price',
-					value: (d) => d.price,
+					label: 'Price',
+					value: (d: (typeof chartData)[number]) => d.price,
 					color:
 						priceDirection === 'up'
 							? 'var(--positive)'
@@ -84,7 +85,6 @@
 								: 'var(--chart-1)'
 				}
 			]}
-			tooltip={{ title: 'Price' }}
 			props={{
 				area: {
 					line: {

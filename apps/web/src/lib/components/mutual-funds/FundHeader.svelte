@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Fund } from '$lib/types/fund';
+	import type { Fund } from '#lib/types/fund.js';
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
-	import Building2 from '@lucide/svelte/icons/building-2';
+	import Building2 from '@lucide/svelte/icons/building';
 	import Calendar from '@lucide/svelte/icons/calendar';
 
 	interface Props {

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import CompanyCard from '$lib/components/CompanyCard.svelte';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
-	import type { Price } from '$lib/gen/ntx/v1/common_pb';
-	import PieChart from '@lucide/svelte/icons/pie-chart';
+	import CompanyCard from '#lib/components/CompanyCard.svelte';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
+	import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import PieChart from '@lucide/svelte/icons/chart-pie';
 
 	let { data } = $props();
 
@@ -133,7 +133,7 @@
 									<span class="font-serif">{item.company.symbol}</span>
 									<p class="truncate text-xs text-muted-foreground">{item.company.name}</p>
 								</div>
-								<span class="shrink-0 font-medium tabular-nums text-foreground">
+								<span class="shrink-0 font-medium text-foreground tabular-nums">
 									{formatLarge(item.marketCap)}
 								</span>
 							</a>

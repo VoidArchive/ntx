@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { FundCard } from '$lib/components/mutual-funds';
+	import { FundCard } from '#lib/components/mutual-funds/index.js';
 	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
 	import List from '@lucide/svelte/icons/list';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
 	import Wallet from '@lucide/svelte/icons/wallet';
-	import type { Fund } from '$lib/types/fund';
+	import type { Fund } from '#lib/types/fund.js';
 
 	let { data } = $props();
 
@@ -125,7 +125,7 @@
 			<div class="overflow-hidden rounded-xl border border-border bg-card/50 backdrop-blur-sm">
 				<div class="overflow-x-auto">
 					<table class="w-full text-left text-sm">
-						<thead class="bg-muted/50 text-xs uppercase text-muted-foreground">
+						<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
 							<tr>
 								<th class="px-4 py-3 font-medium">Fund</th>
 								<th class="px-4 py-3 text-right font-medium">NAV</th>
@@ -141,7 +141,9 @@
 											<div class="font-medium group-hover:text-primary group-hover:underline">
 												{fund.symbol}
 											</div>
-											<div class="max-w-[200px] truncate text-xs text-muted-foreground sm:max-w-none">
+											<div
+												class="max-w-[200px] truncate text-xs text-muted-foreground sm:max-w-none"
+											>
 												{fund.fund_name}
 											</div>
 										</a>
@@ -158,11 +160,11 @@
 											</span>
 										{/if}
 									</td>
-									<td class="px-4 py-3 text-right tabular-nums text-muted-foreground">
+									<td class="px-4 py-3 text-right text-muted-foreground tabular-nums">
 										{fmtLarge(fund.net_assets)}
 									</td>
 									<td
-										class="hidden px-4 py-3 text-right tabular-nums text-muted-foreground sm:table-cell"
+										class="hidden px-4 py-3 text-right text-muted-foreground tabular-nums sm:table-cell"
 									>
 										{fund.report_date_nepali}
 									</td>

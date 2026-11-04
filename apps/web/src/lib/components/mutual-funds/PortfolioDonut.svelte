@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Holdings } from '$lib/types/fund';
-	import { SECTOR_LABELS, SECTOR_COLORS } from '$lib/types/fund';
+	import type { Holdings } from '#lib/types/fund.js';
+	import { SECTOR_LABELS, SECTOR_COLORS } from '#lib/types/fund.js';
 
 	interface Props {
 		holdings: Holdings;

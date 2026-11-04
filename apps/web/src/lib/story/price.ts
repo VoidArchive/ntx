@@ -4,7 +4,7 @@
  * Generates narrative insights about a stock's price position, trend, and volume.
  */
 
-import type { Price } from '$lib/gen/ntx/v1/common_pb';
+import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
 import type { PriceStory } from './types';
 
 interface PriceContext {

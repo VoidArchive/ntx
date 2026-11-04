@@ -1,29 +1,29 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { createApiClient } from '$lib/api/client';
-	import { authStore } from '$lib/stores/auth.svelte';
+	import { createApiClient } from '#lib/api/client.js';
+	import { authStore } from '#lib/stores/auth.svelte.js';
 	import Plus from '@lucide/svelte/icons/plus';
 	import TrendingUp from '@lucide/svelte/icons/trending-up';
 	import TrendingDown from '@lucide/svelte/icons/trending-down';
 	import Briefcase from '@lucide/svelte/icons/briefcase';
-	import Loader2 from '@lucide/svelte/icons/loader-2';
+	import Loader2 from '@lucide/svelte/icons/loader-circle';
 	import LogOut from '@lucide/svelte/icons/log-out';
 	import Search from '@lucide/svelte/icons/search';
-	import Trash2 from '@lucide/svelte/icons/trash-2';
+	import Trash2 from '@lucide/svelte/icons/trash';
 	import ArrowUp from '@lucide/svelte/icons/arrow-up';
 	import ArrowDown from '@lucide/svelte/icons/arrow-down';
-	import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
-	import CheckCircle from '@lucide/svelte/icons/check-circle';
+	import AlertTriangle from '@lucide/svelte/icons/triangle-alert';
+	import CheckCircle from '@lucide/svelte/icons/circle-check';
 	import Info from '@lucide/svelte/icons/info';
 	import Banknote from '@lucide/svelte/icons/banknote';
-	import { SectorChart } from '$lib/components/charts';
-	import type { Portfolio, PortfolioSummary, Transaction, HealthTip } from '$lib/gen/ntx/v1/portfolio_pb';
-	import type { Company } from '$lib/gen/ntx/v1/common_pb';
+	import { SectorChart } from '#lib/components/charts/index.js';
+	import type { Portfolio, PortfolioSummary, Transaction } from '#lib/gen/ntx/v1/portfolio_pb.js';
+	import type { Company } from '#lib/gen/ntx/v1/common_pb.js';
+	import { SvelteMap } from 'svelte/reactivity';
 
-	
 	let { data } = $props();
 	const API_URL = data.apiUrl;
-	
+
 	// Companies from page load
 	let companies = $derived<Company[]>(data.companies ?? []);
 
@@ -42,17 +42,26 @@
 
 	// Analysis Data
 	const SECTOR_COLORS = [
-		'#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#eab308', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e'
+		'#f97316',
+		'#3b82f6',
+		'#10b981',
+		'#ef4444',
+		'#8b5cf6',
+		'#eab308',
+		'#ec4899',
+		'#6366f1',
+		'#14b8a6',
+		'#f43f5e'
 	];
 
 	let sectorData = $derived(() => {
 		if (!selectedPortfolio) return [];
-		const sectorMap = new Map<string, number>();
-		selectedPortfolio.holdings.forEach(h => {
+		const sectorMap = new SvelteMap<string, number>();
+		selectedPortfolio.holdings.forEach((h) => {
 			const sector = h.sector || 'Others';
 			sectorMap.set(sector, (sectorMap.get(sector) || 0) + h.totalValue);
 		});
-		
+
 		return Array.from(sectorMap.entries())
 			.map(([label, value], i) => ({
 				label,
@@ -65,7 +74,7 @@
 	let dailyMovers = $derived(() => {
 		if (!selectedPortfolio) return [];
 		return [...selectedPortfolio.holdings]
-			.filter(h => h.dayChangePercent !== 0)
+			.filter((h) => h.dayChangePercent !== 0)
 			.sort((a, b) => Math.abs(b.dayChangePercent) - Math.abs(a.dayChangePercent))
 			.slice(0, 4);
 	});
@@ -78,19 +87,18 @@
 	let txPrice = $state(0);
 	let txDate = $state(new Date().toISOString().split('T')[0]);
 	let showSymbolDropdown = $state(false);
-	
+
 	// Filtered companies for autocomplete
 	let filteredCompanies = $derived(() => {
 		if (!txSymbolSearch.trim()) return companies.slice(0, 10);
 		const search = txSymbolSearch.toLowerCase();
 		return companies
-			.filter(c => 
-				c.symbol.toLowerCase().includes(search) || 
-				c.name.toLowerCase().includes(search)
+			.filter(
+				(c) => c.symbol.toLowerCase().includes(search) || c.name.toLowerCase().includes(search)
 			)
 			.slice(0, 10);
 	});
-	
+
 	function selectCompany(company: Company) {
 		txSymbol = company.symbol;
 		txSymbolSearch = company.symbol;
@@ -189,7 +197,7 @@
 	function formatPercent(value: number): string {
 		return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
 	}
-	
+
 	async function showTransactionsFor(symbol: string) {
 		if (!selectedPortfolio) return;
 		transactionsForSymbol = symbol;
@@ -208,7 +216,7 @@
 			isLoadingTransactions = false;
 		}
 	}
-	
+
 	async function deleteTransaction(txId: bigint) {
 		if (!confirm('Are you sure you want to delete this transaction?')) return;
 		try {
@@ -254,15 +262,21 @@
 				<Loader2 class="size-8 animate-spin text-primary" />
 			</div>
 		{:else if error}
-			<div class="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-destructive">
+			<div
+				class="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-destructive"
+			>
 				{error}
 			</div>
 		{:else if portfolios.length === 0}
 			<!-- Empty state -->
-			<div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/30 py-20">
+			<div
+				class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/30 py-20"
+			>
 				<Briefcase class="mb-4 size-12 text-muted-foreground/50" />
 				<h2 class="text-lg font-medium">No portfolios yet</h2>
-				<p class="mb-6 text-sm text-muted-foreground">Create your first portfolio to start tracking</p>
+				<p class="mb-6 text-sm text-muted-foreground">
+					Create your first portfolio to start tracking
+				</p>
 				<button
 					onclick={() => (showCreateModal = true)}
 					class="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
@@ -277,7 +291,8 @@
 				{#each portfolios as portfolio (portfolio.id)}
 					<button
 						onclick={() => loadPortfolioSummary(portfolio.id)}
-						class="shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors {selectedPortfolio?.portfolioId === portfolio.id
+						class="shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors {selectedPortfolio?.portfolioId ===
+						portfolio.id
 							? 'bg-primary text-primary-foreground'
 							: 'bg-muted text-muted-foreground hover:bg-muted/80'}"
 					>
@@ -302,15 +317,24 @@
 				<div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 					<div class="rounded-xl border border-border bg-card/50 p-5 backdrop-blur-sm">
 						<p class="text-xs text-muted-foreground">Total Invested</p>
-						<p class="mt-1 text-2xl font-medium tabular-nums">{formatCurrency(selectedPortfolio.totalInvested)}</p>
+						<p class="mt-1 text-2xl font-medium tabular-nums">
+							{formatCurrency(selectedPortfolio.totalInvested)}
+						</p>
 					</div>
 					<div class="rounded-xl border border-border bg-card/50 p-5 backdrop-blur-sm">
 						<p class="text-xs text-muted-foreground">Current Value</p>
-						<p class="mt-1 text-2xl font-medium tabular-nums">{formatCurrency(selectedPortfolio.totalCurrentValue)}</p>
+						<p class="mt-1 text-2xl font-medium tabular-nums">
+							{formatCurrency(selectedPortfolio.totalCurrentValue)}
+						</p>
 					</div>
 					<div class="rounded-xl border border-border bg-card/50 p-5 backdrop-blur-sm">
 						<p class="text-xs text-muted-foreground">Total P/L</p>
-						<p class="mt-1 flex items-center gap-2 text-2xl font-medium tabular-nums {selectedPortfolio.totalProfitLoss >= 0 ? 'text-green-500' : 'text-red-500'}">
+						<p
+							class="mt-1 flex items-center gap-2 text-2xl font-medium tabular-nums {selectedPortfolio.totalProfitLoss >=
+							0
+								? 'text-green-500'
+								: 'text-red-500'}"
+						>
 							{#if selectedPortfolio.totalProfitLoss >= 0}
 								<TrendingUp class="size-5" />
 							{:else}
@@ -321,7 +345,12 @@
 					</div>
 					<div class="rounded-xl border border-border bg-card/50 p-5 backdrop-blur-sm">
 						<p class="text-xs text-muted-foreground">P/L %</p>
-						<p class="mt-1 text-2xl font-medium tabular-nums {selectedPortfolio.totalProfitLossPercent >= 0 ? 'text-green-500' : 'text-red-500'}">
+						<p
+							class="mt-1 text-2xl font-medium tabular-nums {selectedPortfolio.totalProfitLossPercent >=
+							0
+								? 'text-green-500'
+								: 'text-red-500'}"
+						>
 							{formatPercent(selectedPortfolio.totalProfitLossPercent)}
 						</p>
 					</div>
@@ -329,7 +358,7 @@
 						<p class="text-xs text-muted-foreground">Est. Annual Yield</p>
 						<div class="mt-1 flex items-center gap-2">
 							<Banknote class="size-5 text-emerald-500" />
-							<p class="text-2xl font-medium tabular-nums text-emerald-500">
+							<p class="text-2xl font-medium text-emerald-500 tabular-nums">
 								{formatCurrency(selectedPortfolio.projectedDividend ?? 0)}
 							</p>
 						</div>
@@ -343,15 +372,27 @@
 						<h3 class="mb-4 font-serif text-lg font-medium">Daily Movers</h3>
 						<div class="grid gap-3 sm:grid-cols-2">
 							{#each dailyMovers() as mover (mover.stockSymbol)}
-								<div class="flex items-center justify-between rounded-lg border border-border/50 bg-background/50 p-3">
+								<div
+									class="flex items-center justify-between rounded-lg border border-border/50 bg-background/50 p-3"
+								>
 									<div>
-										<a href="/company/{mover.stockSymbol}" class="font-medium hover:text-primary hover:underline">
+										<a
+											href="/company/{mover.stockSymbol}"
+											class="font-medium hover:text-primary hover:underline"
+										>
 											{mover.stockSymbol}
 										</a>
-										<p class="text-xs text-muted-foreground">{formatCurrency(mover.currentPrice)}</p>
+										<p class="text-xs text-muted-foreground">
+											{formatCurrency(mover.currentPrice)}
+										</p>
 									</div>
 									<div class="text-right">
-										<p class="flex items-center justify-end gap-1 font-medium tabular-nums {mover.dayChangePercent >= 0 ? 'text-green-500' : 'text-red-500'}">
+										<p
+											class="flex items-center justify-end gap-1 font-medium tabular-nums {mover.dayChangePercent >=
+											0
+												? 'text-green-500'
+												: 'text-red-500'}"
+										>
 											{#if mover.dayChangePercent >= 0}
 												<ArrowUp class="size-3" />
 											{:else}
@@ -390,21 +431,31 @@
 				<div class="mb-8 rounded-xl border border-border bg-card/50 p-6 backdrop-blur-sm">
 					<h3 class="mb-4 font-serif text-lg font-medium">Portfolio Health</h3>
 					{#if !selectedPortfolio.healthTips || selectedPortfolio.healthTips.length === 0}
-						<div class="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/10 p-4 text-green-600">
+						<div
+							class="flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/10 p-4 text-green-600"
+						>
 							<CheckCircle class="size-5 shrink-0" />
-							<p class="text-sm font-medium">Your portfolio looks healthy! No immediate risks detected.</p>
+							<p class="text-sm font-medium">
+								Your portfolio looks healthy! No immediate risks detected.
+							</p>
 						</div>
 					{:else}
 						<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-							{#each selectedPortfolio.healthTips as tip}
-								<div class="flex items-start gap-3 rounded-lg border p-3 {tip.type === 'WARNING' ? 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400'}">
+							{#each selectedPortfolio.healthTips as tip (tip.symbol + tip.message)}
+								<div
+									class="flex items-start gap-3 rounded-lg border p-3 {tip.type === 'WARNING'
+										? 'border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400'
+										: 'border-blue-500/20 bg-blue-500/10 text-blue-700 dark:text-blue-400'}"
+								>
 									{#if tip.type === 'WARNING'}
-										<AlertTriangle class="size-5 shrink-0 mt-0.5" />
+										<AlertTriangle class="mt-0.5 size-5 shrink-0" />
 									{:else}
-										<Info class="size-5 shrink-0 mt-0.5" />
+										<Info class="mt-0.5 size-5 shrink-0" />
 									{/if}
 									<div>
-										<a href="/company/{tip.symbol}" class="font-medium text-sm hover:underline">{tip.symbol}</a>
+										<a href="/company/{tip.symbol}" class="text-sm font-medium hover:underline"
+											>{tip.symbol}</a
+										>
 										<p class="text-xs opacity-90">{tip.message}</p>
 									</div>
 								</div>
@@ -449,18 +500,37 @@
 									{#each selectedPortfolio.holdings as holding (holding.stockSymbol)}
 										<tr class="border-b border-border/50 transition-colors hover:bg-muted/50">
 											<td class="px-4 py-3">
-												<a href="/company/{holding.stockSymbol}" class="font-medium hover:text-primary hover:underline">
+												<a
+													href="/company/{holding.stockSymbol}"
+													class="font-medium hover:text-primary hover:underline"
+												>
 													{holding.stockSymbol}
 												</a>
 											</td>
-											<td class="px-4 py-3 text-right tabular-nums">{holding.quantity.toLocaleString()}</td>
-											<td class="px-4 py-3 text-right tabular-nums">{holding.avgBuyPrice.toFixed(2)}</td>
-											<td class="px-4 py-3 text-right tabular-nums">{holding.currentPrice.toFixed(2)}</td>
-											<td class="px-4 py-3 text-right tabular-nums">{formatCurrency(holding.totalValue)}</td>
-											<td class="px-4 py-3 text-right tabular-nums {holding.profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}">
+											<td class="px-4 py-3 text-right tabular-nums"
+												>{holding.quantity.toLocaleString()}</td
+											>
+											<td class="px-4 py-3 text-right tabular-nums"
+												>{holding.avgBuyPrice.toFixed(2)}</td
+											>
+											<td class="px-4 py-3 text-right tabular-nums"
+												>{holding.currentPrice.toFixed(2)}</td
+											>
+											<td class="px-4 py-3 text-right tabular-nums"
+												>{formatCurrency(holding.totalValue)}</td
+											>
+											<td
+												class="px-4 py-3 text-right tabular-nums {holding.profitLoss >= 0
+													? 'text-green-500'
+													: 'text-red-500'}"
+											>
 												{formatCurrency(holding.profitLoss)}
 											</td>
-											<td class="px-4 py-3 text-right tabular-nums {holding.profitLossPercent >= 0 ? 'text-green-500' : 'text-red-500'}">
+											<td
+												class="px-4 py-3 text-right tabular-nums {holding.profitLossPercent >= 0
+													? 'text-green-500'
+													: 'text-red-500'}"
+											>
 												{formatPercent(holding.profitLossPercent)}
 											</td>
 											<td class="px-4 py-3 text-right">
@@ -492,7 +562,7 @@
 				type="text"
 				bind:value={newPortfolioName}
 				placeholder="Portfolio name"
-				class="mb-4 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+				class="mb-4 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 			/>
 			<div class="flex justify-end gap-2">
 				<button
@@ -517,25 +587,36 @@
 	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
 		<div class="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
 			<h2 class="mb-4 font-serif text-xl font-medium">Add Transaction</h2>
-			<form onsubmit={(e) => { e.preventDefault(); addTransaction(); }} class="space-y-4">
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					addTransaction();
+				}}
+				class="space-y-4"
+			>
 				<div class="relative">
 					<label class="mb-1 block text-sm font-medium">Symbol</label>
 					<div class="relative">
-						<Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+						<Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 						<input
 							type="text"
 							bind:value={txSymbolSearch}
-							onfocus={() => showSymbolDropdown = true}
-							oninput={() => { showSymbolDropdown = true; txSymbol = ''; }}
+							onfocus={() => (showSymbolDropdown = true)}
+							oninput={() => {
+								showSymbolDropdown = true;
+								txSymbol = '';
+							}}
 							placeholder="Search companies..."
-							class="w-full rounded-lg border border-border bg-background py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background py-2.5 pr-4 pl-10 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						/>
 					</div>
 					{#if txSymbol}
 						<div class="mt-1 text-xs text-green-600">✓ Selected: {txSymbol}</div>
 					{/if}
 					{#if showSymbolDropdown && !txSymbol}
-						<div class="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-card shadow-lg">
+						<div
+							class="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-card shadow-lg"
+						>
 							{#each filteredCompanies() as company (company.symbol)}
 								<button
 									type="button"
@@ -556,7 +637,7 @@
 						<label class="mb-1 block text-sm font-medium">Type</label>
 						<select
 							bind:value={txType}
-							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						>
 							<option value="BUY">Buy</option>
 							<option value="SELL">Sell</option>
@@ -567,7 +648,7 @@
 						<input
 							type="date"
 							bind:value={txDate}
-							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						/>
 					</div>
 				</div>
@@ -579,7 +660,7 @@
 							bind:value={txQuantity}
 							min="1"
 							placeholder="100"
-							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						/>
 					</div>
 					<div>
@@ -590,11 +671,11 @@
 							min="0.01"
 							step="0.01"
 							placeholder="1000.00"
-							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+							class="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						/>
 					</div>
 				</div>
-					<div class="flex justify-end gap-2 pt-2">
+				<div class="flex justify-end gap-2 pt-2">
 					<button
 						type="button"
 						onclick={() => (showAddTransactionModal = false)}
@@ -621,19 +702,17 @@
 			<div class="mb-4 flex items-center justify-between">
 				<h2 class="font-serif text-xl font-medium">Transactions for {transactionsForSymbol}</h2>
 				<button
-					onclick={() => showTransactionsModal = false}
-					class="text-muted-foreground hover:text-foreground"
-				>✕</button>
+					onclick={() => (showTransactionsModal = false)}
+					class="text-muted-foreground hover:text-foreground">✕</button
+				>
 			</div>
-			
+
 			{#if isLoadingTransactions}
 				<div class="flex items-center justify-center py-8">
 					<Loader2 class="size-6 animate-spin text-primary" />
 				</div>
 			{:else if transactions.length === 0}
-				<div class="py-8 text-center text-sm text-muted-foreground">
-					No transactions found
-				</div>
+				<div class="py-8 text-center text-sm text-muted-foreground">No transactions found</div>
 			{:else}
 				<div class="max-h-80 overflow-auto">
 					<table class="w-full text-sm">
@@ -652,13 +731,19 @@
 								<tr class="border-b border-border/50 hover:bg-muted/50">
 									<td class="px-3 py-2 tabular-nums">{tx.transactionDate}</td>
 									<td class="px-3 py-2">
-										<span class="rounded px-2 py-0.5 text-xs font-medium {tx.transactionType === 1 ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}">
+										<span
+											class="rounded px-2 py-0.5 text-xs font-medium {tx.transactionType === 1
+												? 'bg-green-500/10 text-green-600'
+												: 'bg-red-500/10 text-red-600'}"
+										>
 											{tx.transactionType === 1 ? 'BUY' : 'SELL'}
 										</span>
 									</td>
 									<td class="px-3 py-2 text-right tabular-nums">{tx.quantity.toLocaleString()}</td>
 									<td class="px-3 py-2 text-right tabular-nums">{tx.unitPrice.toFixed(2)}</td>
-									<td class="px-3 py-2 text-right tabular-nums">{formatCurrency(Number(tx.quantity) * tx.unitPrice)}</td>
+									<td class="px-3 py-2 text-right tabular-nums"
+										>{formatCurrency(Number(tx.quantity) * tx.unitPrice)}</td
+									>
 									<td class="px-3 py-2 text-right">
 										<button
 											onclick={() => deleteTransaction(tx.id)}
@@ -674,10 +759,10 @@
 					</table>
 				</div>
 			{/if}
-			
+
 			<div class="mt-4 flex justify-end">
 				<button
-					onclick={() => showTransactionsModal = false}
+					onclick={() => (showTransactionsModal = false)}
 					class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
 				>
 					Close
@@ -686,4 +771,3 @@
 		</div>
 	</div>
 {/if}
-

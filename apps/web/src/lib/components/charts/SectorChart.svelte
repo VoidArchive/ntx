@@ -47,16 +47,46 @@
 
 		const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
-		const outerStart = { x: center + radius * Math.cos(startRad), y: center + radius * Math.sin(startRad) };
-		const outerEnd = { x: center + radius * Math.cos(endRad), y: center + radius * Math.sin(endRad) };
-		const innerStart = { x: center + innerRadius * Math.cos(startRad), y: center + innerRadius * Math.sin(startRad) };
-		const innerEnd = { x: center + innerRadius * Math.cos(endRad), y: center + innerRadius * Math.sin(endRad) };
+		const outerStart = {
+			x: center + radius * Math.cos(startRad),
+			y: center + radius * Math.sin(startRad)
+		};
+		const outerEnd = {
+			x: center + radius * Math.cos(endRad),
+			y: center + radius * Math.sin(endRad)
+		};
+		const innerStart = {
+			x: center + innerRadius * Math.cos(startRad),
+			y: center + innerRadius * Math.sin(startRad)
+		};
+		const innerEnd = {
+			x: center + innerRadius * Math.cos(endRad),
+			y: center + innerRadius * Math.sin(endRad)
+		};
 
 		return [
-			'M', outerStart.x, outerStart.y,
-			'A', radius, radius, 0, largeArc, 1, outerEnd.x, outerEnd.y,
-			'L', innerEnd.x, innerEnd.y,
-			'A', innerRadius, innerRadius, 0, largeArc, 0, innerStart.x, innerStart.y,
+			'M',
+			outerStart.x,
+			outerStart.y,
+			'A',
+			radius,
+			radius,
+			0,
+			largeArc,
+			1,
+			outerEnd.x,
+			outerEnd.y,
+			'L',
+			innerEnd.x,
+			innerEnd.y,
+			'A',
+			innerRadius,
+			innerRadius,
+			0,
+			largeArc,
+			0,
+			innerStart.x,
+			innerStart.y,
 			'Z'
 		].join(' ');
 	}
@@ -87,7 +117,7 @@
 				onmouseleave={() => (hoveredIndex = null)}
 			>
 				<g>
-					{#each slices() as slice, i}
+					{#each slices() as slice, i (slice.label)}
 						<path
 							d={slice.path}
 							fill={slice.color}
@@ -102,7 +132,13 @@
 				</g>
 
 				<!-- Center Text -->
-				<text x={center} y={center} text-anchor="middle" dominant-baseline="middle" class="fill-foreground text-xs font-medium">
+				<text
+					x={center}
+					y={center}
+					text-anchor="middle"
+					dominant-baseline="middle"
+					class="fill-foreground text-xs font-medium"
+				>
 					{data.length} Sectors
 				</text>
 			</svg>
@@ -112,19 +148,23 @@
 					class="pointer-events-none absolute z-10 rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-lg"
 					style="left: {tooltipX}px; top: {tooltipY}px; transform: translate(-50%, -100%);"
 				>
-					<p class="font-semibold" style="color: {slices()[hoveredIndex].color}">{slices()[hoveredIndex].label}</p>
+					<p class="font-semibold" style="color: {slices()[hoveredIndex].color}">
+						{slices()[hoveredIndex].label}
+					</p>
 					<p class="mt-1 tabular-nums">{slices()[hoveredIndex].percent.toFixed(1)}%</p>
-					<p class="text-muted-foreground tabular-nums">Rs. {slices()[hoveredIndex].value.toLocaleString()}</p>
+					<p class="text-muted-foreground tabular-nums">
+						Rs. {slices()[hoveredIndex].value.toLocaleString()}
+					</p>
 				</div>
 			{/if}
 		</div>
 
 		<!-- Legend -->
 		<div class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-xs">
-			{#each slices() as slice}
+			{#each slices() as slice (slice.label)}
 				<div class="flex items-center gap-2">
 					<div class="h-2.5 w-2.5 rounded-sm" style="background: {slice.color};"></div>
-					<span class="truncate max-w-[100px]" title={slice.label}>{slice.label}</span>
+					<span class="max-w-[100px] truncate" title={slice.label}>{slice.label}</span>
 					<span class="ml-auto font-medium tabular-nums">{slice.percent.toFixed(1)}%</span>
 				</div>
 			{/each}

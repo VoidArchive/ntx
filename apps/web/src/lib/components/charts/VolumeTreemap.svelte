@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Chart, Svg, Treemap, Group, Rect, Text } from 'layerchart';
+	import { Chart, Svg, Group, Rect, Text } from 'layerchart';
+	import { Treemap } from 'layerchart/svg';
 	import { hierarchy, type HierarchyRectangularNode } from 'd3-hierarchy';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
+	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		companies: Company[];
@@ -252,7 +253,9 @@
 		</div>
 	</div>
 {:else}
-	<div class="flex h-[400px] items-center justify-center rounded-xl border border-border bg-muted/30">
+	<div
+		class="flex h-[400px] items-center justify-center rounded-xl border border-border bg-muted/30"
+	>
 		<p class="text-sm text-muted-foreground">No volume data available</p>
 	</div>
 {/if}

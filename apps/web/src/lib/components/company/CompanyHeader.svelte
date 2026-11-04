@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
+	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		company: Company;

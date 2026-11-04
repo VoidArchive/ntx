@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Price } from '$lib/gen/ntx/v1/common_pb';
+	import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
 
 	interface Props {
 		prices: Price[];
@@ -48,29 +48,26 @@
 		return value.toString();
 	}
 
-	// Y-axis ticks (just 2 labels: max and 0)
-	const yTicks = $derived.by(() => {
-		const max = maxVolume * 1.1;
-		return [
-			{ value: max, y: yScale(max), label: formatVolume(max) },
-			{ value: 0, y: yScale(0), label: '0' }
-		];
-	});
-
 	let hoveredIndex = $state<number | null>(null);
 </script>
 
 {#if chartData.length > 0}
 	<div class="relative flex {className}">
 		<!-- Y-axis labels (HTML, not stretched) -->
-		<div class="flex h-[100px] w-[40px] shrink-0 flex-col justify-between pr-2 text-right text-[10px] text-muted-foreground tabular-nums">
+		<div
+			class="flex h-[100px] w-[40px] shrink-0 flex-col justify-between pr-2 text-right text-[10px] text-muted-foreground tabular-nums"
+		>
 			<span>{formatVolume(maxVolume)}</span>
 			<span>0</span>
 		</div>
 
 		<!-- Chart bars -->
 		<div class="relative flex-1">
-			<svg viewBox="0 0 {chartWidth} {chartHeight}" class="h-[100px] w-full" preserveAspectRatio="none">
+			<svg
+				viewBox="0 0 {chartWidth} {chartHeight}"
+				class="h-[100px] w-full"
+				preserveAspectRatio="none"
+			>
 				{#each chartData as d, i (d.date)}
 					{@const barW = chartWidth / chartData.length}
 					{@const x = i * barW}
@@ -98,7 +95,9 @@
 					class="pointer-events-none absolute top-0 -translate-x-1/2 animate-in fade-in-0 zoom-in-95"
 					style="left: {pctLeft}%;"
 				>
-					<div class="whitespace-nowrap rounded border border-border bg-popover px-2 py-1 text-xs shadow-md">
+					<div
+						class="rounded border border-border bg-popover px-2 py-1 text-xs whitespace-nowrap shadow-md"
+					>
 						<span class="font-medium tabular-nums">{formatVolume(d.volume)}</span>
 					</div>
 				</div>

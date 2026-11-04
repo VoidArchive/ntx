@@ -4,8 +4,8 @@
  * Generates narrative insights about a company's valuation relative to sector.
  */
 
-import { Sector, type Fundamental } from '$lib/gen/ntx/v1/common_pb';
-import type { SectorStats } from '$lib/gen/ntx/v1/company_pb';
+import { Sector, type Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
+import type { SectorStats } from '#lib/gen/ntx/v1/company_pb.js';
 import type { ValuationStory } from './types';
 
 interface ValuationContext {

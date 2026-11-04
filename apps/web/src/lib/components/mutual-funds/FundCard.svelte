@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Fund } from '$lib/types/fund';
+	import type { Fund } from '#lib/types/fund.js';
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
 	import Wallet from '@lucide/svelte/icons/wallet';
 

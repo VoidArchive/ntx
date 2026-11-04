@@ -1,13 +1,12 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.png';
-	import Github from '@lucide/svelte/icons/github';
-	import AlertCircle from '@lucide/svelte/icons/alert-circle';
-	import { browser } from '$app/environment';
+	import favicon from '#lib/assets/favicon.png';
+	import AlertCircle from '@lucide/svelte/icons/circle-alert';
+	import { browser } from '$app/env';
 	import { beforeNavigate, afterNavigate, onNavigate } from '$app/navigation';
 	import posthog from 'posthog-js';
 	import { ModeWatcher } from 'mode-watcher';
-	import Navbar from '$lib/components/Navbar.svelte';
+	import Navbar from '#lib/components/Navbar.svelte';
 	import type { LayoutData } from './$types';
 	import type { Snippet } from 'svelte';
 
@@ -22,11 +21,21 @@
 			capture_pageleave: false
 		});
 
-		beforeNavigate(() => posthog.capture('$pageleave'));
-		afterNavigate(() => posthog.capture('$pageview'));
+		beforeNavigate(({ shallow, type }) => {
+			if (shallow && type === 'goto') return;
+
+			return posthog.capture('$pageleave');
+		});
+
+		afterNavigate(({ shallow, type }) => {
+			if (shallow && type === 'goto') return;
+
+			return posthog.capture('$pageview');
+		});
 	}
 
 	onNavigate((navigation) => {
+		if (navigation.shallow && navigation.type === 'goto') return;
 		if (!document.startViewTransition) return;
 
 		return new Promise((resolve) => {
@@ -81,7 +90,11 @@
 				<div
 					class="flex size-8 items-center justify-center rounded-full bg-muted/50 transition-colors group-hover:bg-primary/10"
 				>
-					<Github class="size-4" />
+					<svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+						><path
+							d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"
+						/></svg
+					>
 				</div>
 				<span>View on GitHub</span>
 			</a>

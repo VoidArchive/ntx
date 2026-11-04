@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Fundamental, Price } from '$lib/gen/ntx/v1/common_pb';
+	import type { Fundamental, Price } from '#lib/gen/ntx/v1/common_pb.js';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Props {

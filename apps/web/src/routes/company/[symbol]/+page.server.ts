@@ -1,8 +1,8 @@
-import { createApiClient } from '$lib/api/client';
-import navData from '$lib/data/nav_2026_01.json';
+import { createApiClient } from '#lib/api/client.js';
+import navData from '#lib/data/nav_2026_01.json';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { error } from '@sveltejs/kit';
-import type { Fund, Holding } from '$lib/types/fund';
+import type { Fund, Holding } from '#lib/types/fund.js';
 
 export interface FundHolding {
 	fundSymbol: string;
@@ -86,7 +86,7 @@ function findCompanyInFunds(funds: Fund[], companyName: string): FundHolding[] {
 	return Array.from(resultsMap.values()).sort((a, b) => b.value - a.value);
 }
 
-export const load = async ({ params, platform, fetch }) => {
+export const load = async ({ params, platform }) => {
 	// In dev mode, always use localhost. In prod, use platform env.
 	const apiUrl = import.meta.env.DEV
 		? 'http://localhost:8080'
@@ -128,7 +128,6 @@ export const load = async ({ params, platform, fetch }) => {
 		} catch {
 			// Corporate actions are optional, continue without them
 		}
-
 
 		// Fetch mutual fund holdings for this company
 		let fundHoldings: FundHolding[] = [];

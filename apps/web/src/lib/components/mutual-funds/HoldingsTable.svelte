@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Holdings, Holding } from '$lib/types/fund';
-	import { SECTOR_LABELS, SECTOR_COLORS } from '$lib/types/fund';
+	import type { Holdings, Holding } from '#lib/types/fund.js';
+	import { SECTOR_LABELS, SECTOR_COLORS } from '#lib/types/fund.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Fund } from '$lib/types/fund';
+	import type { Fund } from '#lib/types/fund.js';
 
 	interface Props {
 		fund: Fund;

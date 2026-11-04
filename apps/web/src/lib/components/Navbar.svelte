@@ -1,8 +1,8 @@
 <script lang="ts">
 	import SearchCommand from './SearchCommand.svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import type { Company, Price } from '$lib/gen/ntx/v1/common_pb';
-	import { page } from '$app/stores';
+	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import { page } from '$app/state';
 
 	interface Props {
 		companies?: Company[];
@@ -11,7 +11,7 @@
 
 	let { companies = [], prices = [] }: Props = $props();
 
-	let isMutualFunds = $derived($page.url.pathname.startsWith('/mutual-funds'));
+	let isMutualFunds = $derived(page.url.pathname.startsWith('/mutual-funds'));
 </script>
 
 <nav class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">

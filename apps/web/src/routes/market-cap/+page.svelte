@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Price } from '$lib/gen/ntx/v1/common_pb';
-	import MarketCapTreemap from '$lib/components/charts/MarketCapTreemap.svelte';
+	import type { Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import MarketCapTreemap from '#lib/components/charts/MarketCapTreemap.svelte';
 	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
 	import List from '@lucide/svelte/icons/list';
 
@@ -100,7 +100,7 @@
 			<div class="overflow-hidden rounded-xl border border-border bg-card">
 				<div class="overflow-x-auto">
 					<table class="w-full text-left text-sm">
-						<thead class="bg-muted/50 text-xs uppercase text-muted-foreground">
+						<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
 							<tr>
 								<th class="w-12 px-4 py-3 font-medium">Rank</th>
 								<th class="px-4 py-3 font-medium">Company</th>
@@ -112,14 +112,11 @@
 						<tbody class="divide-y divide-border">
 							{#each rankings as item, i (item.company.id)}
 								<tr class="transition-colors hover:bg-muted/50">
-									<td class="w-12 px-4 py-3 font-medium tabular-nums text-muted-foreground">
+									<td class="w-12 px-4 py-3 font-medium text-muted-foreground tabular-nums">
 										{i + 1}
 									</td>
 									<td class="px-4 py-3">
-										<a
-											href="/company/{item.company.symbol}"
-											class="group flex items-center gap-3"
-										>
+										<a href="/company/{item.company.symbol}" class="group flex items-center gap-3">
 											<div>
 												<div class="font-medium transition-colors group-hover:text-primary">
 													{item.company.symbol}
@@ -135,7 +132,7 @@
 									<td class="px-4 py-3 text-right tabular-nums">
 										{formatCurrency(item.ltp)}
 									</td>
-									<td class="px-4 py-3 text-right tabular-nums text-muted-foreground">
+									<td class="px-4 py-3 text-right text-muted-foreground tabular-nums">
 										{formatLarge(item.shares)}
 									</td>
 									<td class="px-4 py-3 text-right font-medium tabular-nums">

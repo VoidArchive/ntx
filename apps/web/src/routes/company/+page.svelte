@@ -1,7 +1,7 @@
 <script lang="ts">
-	import CompanyCard from '$lib/components/CompanyCard.svelte';
+	import CompanyCard from '#lib/components/CompanyCard.svelte';
 	import type { LayoutData } from '../$types';
-	import { Sector } from '$lib/gen/ntx/v1/common_pb';
+	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 
 	let { data }: { data: LayoutData } = $props();
 
