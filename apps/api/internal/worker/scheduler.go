@@ -27,7 +27,8 @@ func NewScheduler(worker *Worker) (*Scheduler, error) {
 }
 
 func (s *Scheduler) Start(ctx context.Context) error {
-	spec := "0 5 15 * * 0-4"
+	// NEPSE moved to a Mon-Fri week in April 2026; holidays are caught by SyncPrices via the market status.
+	spec := "0 5 15 * * 1-5"
 
 	_, err := s.c.AddFunc(spec, func() {
 		jobCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)

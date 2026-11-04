@@ -95,7 +95,7 @@ Web requests never hit go-nepse directly. All reads come from the database.
 
 - **Proto changes need regeneration** - `mise run proto` after any .proto change
 - **SQLC queries need comments** - `-- name: GetCompany :one`
-- **Market hours** - NEPSE is 11:00-15:05 NPT, Sun-Thu
+- **Market hours** - NEPSE is 11:00-15:05 NPT, Mon-Fri (moved from Sun-Thu in April 2026); the price sync skips holidays via the market status
 
 ## Agent skills
 
