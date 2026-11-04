@@ -5,7 +5,7 @@ import { defineRailway, project, service, volume } from "railway/iac";
 export const partial = "fearless-adaptation";
 export default defineRailway(() => {
   const fearlessAdaptation = service("fearless-adaptation", {
-    build: { buildEnvironment: "V3", builder: "RAILPACK", dockerfilePath: "apps/api/Dockerfile" },
+    build: { buildEnvironment: "V3", builder: "DOCKERFILE", dockerfilePath: "apps/api/Dockerfile" },
     start: "/bin/ntx serve",
     healthcheck: "/health",
     healthcheckTimeout: 100,
