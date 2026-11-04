@@ -112,6 +112,8 @@
 						<th class="pb-2 text-right font-medium">P/E</th>
 						<th class="pb-2 text-right font-medium">Book Value</th>
 						<th class="pb-2 text-right font-medium">Net Profit</th>
+						<th class="pb-2 text-right font-medium">Published</th>
+						<th class="pb-2 text-right font-medium">Source</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -128,6 +130,25 @@
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.peRatio)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmt(f.bookValue)}</td>
 							<td class="py-2.5 text-right tabular-nums">{fmtLarge(f.profitAmount)}</td>
+							<td
+								class="py-2.5 text-right tabular-nums {f.publishedAt
+									? ''
+									: 'text-muted-foreground'}"
+							>
+								{f.publishedAt ?? 'not recorded'}
+							</td>
+							<td class="py-2.5 text-right">
+								{#if f.sourceUrl}
+									<a
+										href={f.sourceUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="underline underline-offset-2 hover:text-foreground">filing</a
+									>
+								{:else}
+									<span class="text-muted-foreground">not recorded</span>
+								{/if}
+							</td>
 						</tr>
 					{/each}
 				</tbody>

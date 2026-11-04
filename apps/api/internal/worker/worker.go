@@ -106,6 +106,9 @@ func (w *Worker) SyncFundamentals(ctx context.Context, c Company) error {
 			BookValue:     nullFloat64(f.BookValue),
 			PaidUpCapital: nullFloat64(f.PaidUpCapital),
 			ProfitAmount:  nullFloat64(f.ProfitAmount),
+			PublishedAt:   nullString(f.PublishedAt),
+			SourceUrl:     nullString(f.SourceURL),
+			FiscalYearNp:  nullString(f.FiscalYearNp),
 		}
 		if err := w.queries.UpsertFundamental(ctx, params); err != nil {
 			return fmt.Errorf("upsert fundamental: %w", err)

@@ -1,12 +1,15 @@
 -- name: UpsertFundamental :exec
-INSERT INTO fundamentals (company_id, fiscal_year, quarter, eps, pe_ratio, book_value, paid_up_capital, profit_amount, updated_at)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+INSERT INTO fundamentals (company_id, fiscal_year, quarter, eps, pe_ratio, book_value, paid_up_capital, profit_amount, published_at, source_url, fiscal_year_np, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 ON CONFLICT(company_id, fiscal_year, quarter) DO UPDATE SET
   eps = excluded.eps,
   pe_ratio = excluded.pe_ratio,
   book_value = excluded.book_value,
   paid_up_capital = excluded.paid_up_capital,
   profit_amount = excluded.profit_amount,
+  published_at = excluded.published_at,
+  source_url = excluded.source_url,
+  fiscal_year_np = excluded.fiscal_year_np,
   updated_at = CURRENT_TIMESTAMP;
 
 -- name: GetLatestFundamental :one
