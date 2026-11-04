@@ -11,7 +11,7 @@ import (
 )
 
 const getCorporateActionsBySymbol = `-- name: GetCorporateActionsBySymbol :many
-SELECT ca.id, ca.company_id, ca.fiscal_year, ca.bonus_percentage, ca.right_percentage, ca.cash_dividend, ca.submitted_date FROM corporate_actions ca
+SELECT ca.id, ca.company_id, ca.fiscal_year, ca.bonus_percentage, ca.right_percentage, ca.cash_dividend, ca.submitted_date, ca.notice_headline, ca.notice_body, ca.notice_url FROM corporate_actions ca
 JOIN companies c ON c.id = ca.company_id
 WHERE c.symbol = ?
 ORDER BY ca.submitted_date DESC
@@ -34,6 +34,9 @@ func (q *Queries) GetCorporateActionsBySymbol(ctx context.Context, symbol string
 			&i.RightPercentage,
 			&i.CashDividend,
 			&i.SubmittedDate,
+			&i.NoticeHeadline,
+			&i.NoticeBody,
+			&i.NoticeUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -49,7 +52,7 @@ func (q *Queries) GetCorporateActionsBySymbol(ctx context.Context, symbol string
 }
 
 const getLatestCorporateAction = `-- name: GetLatestCorporateAction :one
-SELECT ca.id, ca.company_id, ca.fiscal_year, ca.bonus_percentage, ca.right_percentage, ca.cash_dividend, ca.submitted_date FROM corporate_actions ca
+SELECT ca.id, ca.company_id, ca.fiscal_year, ca.bonus_percentage, ca.right_percentage, ca.cash_dividend, ca.submitted_date, ca.notice_headline, ca.notice_body, ca.notice_url FROM corporate_actions ca
 JOIN companies c ON c.id = ca.company_id
 WHERE c.symbol = ?
 ORDER BY ca.submitted_date DESC
@@ -67,12 +70,15 @@ func (q *Queries) GetLatestCorporateAction(ctx context.Context, symbol string) (
 		&i.RightPercentage,
 		&i.CashDividend,
 		&i.SubmittedDate,
+		&i.NoticeHeadline,
+		&i.NoticeBody,
+		&i.NoticeUrl,
 	)
 	return i, err
 }
 
 const listCorporateActionsByCompany = `-- name: ListCorporateActionsByCompany :many
-SELECT id, company_id, fiscal_year, bonus_percentage, right_percentage, cash_dividend, submitted_date FROM corporate_actions
+SELECT id, company_id, fiscal_year, bonus_percentage, right_percentage, cash_dividend, submitted_date, notice_headline, notice_body, notice_url FROM corporate_actions
 WHERE company_id = ?
 ORDER BY submitted_date DESC
 `
@@ -94,6 +100,9 @@ func (q *Queries) ListCorporateActionsByCompany(ctx context.Context, companyID i
 			&i.RightPercentage,
 			&i.CashDividend,
 			&i.SubmittedDate,
+			&i.NoticeHeadline,
+			&i.NoticeBody,
+			&i.NoticeUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -109,12 +118,15 @@ func (q *Queries) ListCorporateActionsByCompany(ctx context.Context, companyID i
 }
 
 const upsertCorporateAction = `-- name: UpsertCorporateAction :exec
-INSERT INTO corporate_actions (company_id, fiscal_year, bonus_percentage, right_percentage, cash_dividend, submitted_date)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO corporate_actions (company_id, fiscal_year, bonus_percentage, right_percentage, cash_dividend, submitted_date, notice_headline, notice_body, notice_url)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT(company_id, fiscal_year, submitted_date) DO UPDATE SET
   bonus_percentage = excluded.bonus_percentage,
   right_percentage = excluded.right_percentage,
-  cash_dividend = excluded.cash_dividend
+  cash_dividend = excluded.cash_dividend,
+  notice_headline = excluded.notice_headline,
+  notice_body = excluded.notice_body,
+  notice_url = excluded.notice_url
 `
 
 type UpsertCorporateActionParams struct {
@@ -124,6 +136,9 @@ type UpsertCorporateActionParams struct {
 	RightPercentage sql.NullFloat64 `json:"right_percentage"`
 	CashDividend    sql.NullFloat64 `json:"cash_dividend"`
 	SubmittedDate   sql.NullString  `json:"submitted_date"`
+	NoticeHeadline  sql.NullString  `json:"notice_headline"`
+	NoticeBody      sql.NullString  `json:"notice_body"`
+	NoticeUrl       sql.NullString  `json:"notice_url"`
 }
 
 func (q *Queries) UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error {
@@ -134,6 +149,9 @@ func (q *Queries) UpsertCorporateAction(ctx context.Context, arg UpsertCorporate
 		arg.RightPercentage,
 		arg.CashDividend,
 		arg.SubmittedDate,
+		arg.NoticeHeadline,
+		arg.NoticeBody,
+		arg.NoticeUrl,
 	)
 	return err
 }
