@@ -1,0 +1,7 @@
+{
+	"name": "ntx",
+	"private": true,
+	"devDependencies": {
+		"railway": "^3.16.0"
+	}
+}
