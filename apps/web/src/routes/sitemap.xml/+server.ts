@@ -1,11 +1,9 @@
-import { createApiClient } from '#lib/api/client.js';
+import { apiBaseUrl, createApiClient } from '#lib/api/client.js';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ url, platform }) => {
+export const GET: RequestHandler = async ({ url }) => {
 	const baseUrl = url.origin;
-	const apiUrl = import.meta.env.DEV
-		? 'http://localhost:8080'
-		: (platform?.env?.API_URL ?? 'http://localhost:8080');
+	const apiUrl = apiBaseUrl();
 
 	// Static pages
 	const pages = ['', '/company', '/market-cap', '/mutual-funds'];

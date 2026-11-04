@@ -1,10 +1,8 @@
-import { createApiClient } from '#lib/api/client.js';
+import { apiBaseUrl, createApiClient } from '#lib/api/client.js';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ platform }) => {
-	const apiUrl = import.meta.env.DEV
-		? 'http://localhost:8080'
-		: (platform?.env?.API_URL ?? 'http://localhost:8080');
+export const load: LayoutServerLoad = async () => {
+	const apiUrl = apiBaseUrl();
 	const { company, price } = createApiClient(apiUrl);
 
 	const [companyRes, priceRes] = await Promise.all([
