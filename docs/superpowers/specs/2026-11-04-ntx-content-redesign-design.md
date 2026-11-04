@@ -26,9 +26,14 @@ Sub-projects 2 and 3 get their own specs.
 
 ### 1. Data and provenance
 
-Additive migrations only.
+Additive migrations only. Vocabulary per `GLOSSARY.md`; decisions in `docs/adr/0001` to `0003`.
 
-- `fundamentals` gains `published_date TEXT` and `source_url TEXT`. The worker fills both for new rows. Existing rows stay null; the page prints "source not recorded" for them. `quarter` is unchanged in the table; the engine normalizes it to `Q1`..`Q4` and `FY` for annual rows.
+**Found 2026-11-04:** the worker never ran the ownership and dividend syncs, so `ownership` and `corporate_actions` are empty. Stored `eps` and `pe_ratio` are annualized and `profit_amount` is year-to-date. go-nepse exposes each report's submitted date, filing path and the Bikram Sambat fiscal-year name (`FYNameNepali`), which NTX currently drops. Bank metrics do not exist in go-nepse.
+
+- **First ticket:** schedule the existing ownership and dividend syncs as daily pre-market jobs. The ownership job writes `ownership_history` on change. The dividend job stores the notice headline, body and file path verbatim beside the corporate action (`notice_headline`, `notice_body`, `notice_url`). Book-close and AGM parsing is out of scope; "Upcoming" ships when a parser has a test corpus.
+- New table `market_days(business_date, index_close, index_change, turnover, traded_shares, transactions, scrips_traded, market_cap, advances, declines, unchanged)` filled daily from go-nepse's market summary and index endpoints; advances/declines/unchanged derived from the day's price rows.
+
+- `fundamentals` gains `published_date TEXT` (report submitted date), `source_url TEXT` (filing path) and `fiscal_year_bs TEXT` (`FYNameNepali`, e.g. `2083/84`). Backfilled by re-running the fundamentals sync, which upserts on the unique key. Rows the backfill cannot fill print "source not recorded". `quarter` is unchanged in the table; the engine normalizes it to `Q1`..`Q4` and `FY`.
 - New table `ownership_history(company_id, as_of, promoter_percent, public_percent, promoter_shares, public_shares, listed_shares)` with `UNIQUE(company_id, as_of)`. The worker inserts a row whenever the fetched ownership differs from the latest stored row. The existing `ownership` table keeps the latest values.
 - `corporate_actions` is unchanged. Shares outstanding per fiscal year is derived from `fundamentals.paid_up_capital / 100` (NEPSE par value Rs 100); bonus-adjusted price history is derived from `bonus_percentage` by fiscal year.
 - Mutual fund holdings stay in the static `apps/web/src/lib/data/nav.json`, matched by normalized company name as today. Known weakness, deferred.
@@ -54,6 +59,12 @@ type Claim struct {
 }
 ```
 
+**Year-to-date to quarter-only.** The exchange's quarterly `profit_amount` is cumulative from Shrawan 1 and `eps` is annualized. The engine derives quarter-only profit as this row's year-to-date minus the previous quarter's row in the same fiscal year (Q1 is itself), and quarter-only EPS as that over shares outstanding (`paid_up_capital / 100`, par Rs 100). Claims, record labels and streaks compare quarter-only figures. Year-to-date rows stay in the table untouched. Tested on NABIL's four quarters of 2082/83.
+
+**Ratios.** Sector medians, not means. The PE median excludes companies with non-positive earnings and the strip states "of N profitable"; PB, EPS and yield medians include everyone. The company's own three-year range for PE and PB is low, median and high over its stored quarterly rows (about 12 points).
+
+**Bonus-adjusted return** per fiscal year: `(close_end × (1 + bonus%) + cash per share) / close_start − 1`, closes at fiscal-year boundaries; rights shown in the row but excluded from the return, with a footnote.
+
 Claims computed, all from existing columns:
 
 - **Earnings.** Latest quarter profit and EPS; change on the same quarter of the previous fiscal year; record and streak labels: "best Q1 in five years", "third consecutive year-on-year increase", "first loss in N quarters". For `sector = Hydro Power`, EPS is always stated three ways: quarter, annualized, last full year, with the monsoon quarter (Q1, Shrawan–Ashwin) flagged.
@@ -70,7 +81,7 @@ Claims computed, all from existing columns:
   6. Cash payout is below 30% of last fiscal year's profit.
   7. Promoter holding unchanged over the last 4 observations.
   8. Book value per share grew over the last 3 fiscal years.
-  Rendered as two lists, Holds and Watch, each item carrying its sentence. Never a score, never a buy/sell word. Rule text is in the repo and shown on the page.
+  Rendered as two lists, Holds and Watch, each item carrying its sentence, plus one quiet line "N checks need more history" for rules whose inputs do not reach back far enough. Never a score, never a buy/sell word. Rule text is in the repo and shown on the page.
 
 Templates are Go string formatting, one per claim kind. A claim with any missing input is omitted; no placeholders.
 
@@ -98,7 +109,7 @@ One scroll, no tabs. Every section renders for every company; a section with no 
 
 ### 4. Home page `/`
 
-1. **Market line.** Date in both calendars (Bikram Sambat via a small pure-Go conversion table, no dependency), market state, advances/declines/unchanged, turnover.
+1. **Market line.** From `market_days`: business date, index close and change, advances/declines/unchanged, turnover. The Bikram Sambat date needs a conversion; see open question on fiscal-year boundaries.
 2. **Sectors.** Twelve rows from `GetSectorOverview`, sorted by count; a row links to its companies on the shared strips.
 3. **Filed recently.** Each company's one-line earnings claim.
 4. **Upcoming.** Book closes and AGMs with ex-date and a T+2 note.
