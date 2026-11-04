@@ -286,11 +286,7 @@ func (s *PortfolioService) GetPortfolioSummary(
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	// Fetch current prices for all holdings
-	priceMap, err := s.fetchCurrentPrices(ctx, holdingsData)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
+	priceMap := s.fetchCurrentPrices(ctx, holdingsData)
 
 	var holdings []*ntxv1.Holding
 	var totalInvested, totalCurrentValue float64
@@ -351,61 +347,8 @@ func (s *PortfolioService) GetPortfolioSummary(
 			continue
 		}
 
-		info := priceMap[h.StockSymbol]
-
-		// 1. Fundamentals Check
-		if info.CompanyID > 0 {
-			fund, err := s.queries.GetLatestFundamental(ctx, info.CompanyID)
-			if err == nil {
-				// EPS Check
-				if fund.Eps.Valid && fund.Eps.Float64 < 0 {
-					healthTips = append(healthTips, &ntxv1.HealthTip{
-						Symbol:  h.StockSymbol,
-						Message: fmt.Sprintf("Negative EPS (%.2f). Company is loss-making.", fund.Eps.Float64),
-						Type:    "WARNING",
-					})
-				}
-				// PE Check
-				if fund.PeRatio.Valid && fund.PeRatio.Float64 > 50 {
-					healthTips = append(healthTips, &ntxv1.HealthTip{
-						Symbol:  h.StockSymbol,
-						Message: fmt.Sprintf("High P/E Ratio (%.2f). Potentially overvalued.", fund.PeRatio.Float64),
-						Type:    "WARNING",
-					})
-				} else if fund.PeRatio.Valid && fund.PeRatio.Float64 < 15 && fund.PeRatio.Float64 > 0 {
-					healthTips = append(healthTips, &ntxv1.HealthTip{
-						Symbol:  h.StockSymbol,
-						Message: fmt.Sprintf("Low P/E Ratio (%.2f). Potentially undervalued.", fund.PeRatio.Float64),
-						Type:    "GOOD",
-					})
-				}
-			}
-		}
-
-		// 2. Dividend Projection
-		// Note: GetLatestCorporateAction takes symbol, not ID in our current query
-		ca, err := s.queries.GetLatestCorporateAction(ctx, h.StockSymbol)
-		if err == nil {
-			if ca.CashDividend.Valid && ca.CashDividend.Float64 > 0 {
-				// Assuming cash dividend is % of paid up value (usually 100 for Nepal)
-				// OR it is raw amount per share? In Nepal, it's usually Percent.
-				// If percent, we need PaidUpCapital per share (usually 100).
-				// Let's assume it's percent for now, so (Percent/100) * 100 * Qty = Percent * Qty.
-				// Actually, accurately, cash dividend is usually distributed as % of paid-up capital.
-				// Most stocks have 100 paid-up. So 20% dividend = Rs 20 per share.
-				// So Projected = (CashDividend / 100) * 100 * Qty = CashDividend * Qty.
-				// BUT checking the proto/db, calculate simplified:
-
-				// Let's assume CashDividend is the percentage value (e.g. 15.5 meaning 15.5%)
-				// Standard face value is 100.
-				dividendPerShare := ca.CashDividend.Float64
-				projectedIncome := dividendPerShare * qty
-				projectedDividendTotal += projectedIncome
-
-				// Add tip for high yield if > 20% (?)
-				// Keep it simple for now.
-			}
-		}
+		healthTips = append(healthTips, s.fundamentalTips(ctx, h.StockSymbol, priceMap[h.StockSymbol].CompanyID)...)
+		projectedDividendTotal += s.projectedDividend(ctx, h.StockSymbol, qty)
 	}
 
 	return connect.NewResponse(&ntxv1.GetPortfolioSummaryResponse{
@@ -423,6 +366,54 @@ func (s *PortfolioService) GetPortfolioSummary(
 	}), nil
 }
 
+// fundamentalTips flags loss-making or unusually priced stocks from the latest fundamentals.
+func (s *PortfolioService) fundamentalTips(ctx context.Context, symbol string, companyID int64) []*ntxv1.HealthTip {
+	if companyID <= 0 {
+		return nil
+	}
+	fund, err := s.queries.GetLatestFundamental(ctx, companyID)
+	if err != nil {
+		return nil
+	}
+
+	var tips []*ntxv1.HealthTip
+	if fund.Eps.Valid && fund.Eps.Float64 < 0 {
+		tips = append(tips, &ntxv1.HealthTip{
+			Symbol:  symbol,
+			Message: fmt.Sprintf("Negative EPS (%.2f). Company is loss-making.", fund.Eps.Float64),
+			Type:    "WARNING",
+		})
+	}
+	if fund.PeRatio.Valid && fund.PeRatio.Float64 > 50 {
+		tips = append(tips, &ntxv1.HealthTip{
+			Symbol:  symbol,
+			Message: fmt.Sprintf("High P/E Ratio (%.2f). Potentially overvalued.", fund.PeRatio.Float64),
+			Type:    "WARNING",
+		})
+	}
+	if fund.PeRatio.Valid && fund.PeRatio.Float64 < 15 && fund.PeRatio.Float64 > 0 {
+		tips = append(tips, &ntxv1.HealthTip{
+			Symbol:  symbol,
+			Message: fmt.Sprintf("Low P/E Ratio (%.2f). Potentially undervalued.", fund.PeRatio.Float64),
+			Type:    "GOOD",
+		})
+	}
+	return tips
+}
+
+// projectedDividend estimates cash income from the latest corporate action.
+// NEPSE cash dividends are a percent of a Rs 100 face value, so percent * qty is rupees.
+func (s *PortfolioService) projectedDividend(ctx context.Context, symbol string, qty float64) float64 {
+	ca, err := s.queries.GetLatestCorporateAction(ctx, symbol)
+	if err != nil {
+		return 0
+	}
+	if !ca.CashDividend.Valid || ca.CashDividend.Float64 <= 0 {
+		return 0
+	}
+	return ca.CashDividend.Float64 * qty
+}
+
 type stockInfo struct {
 	CompanyID     int64
 	Price         float64
@@ -432,7 +423,10 @@ type stockInfo struct {
 }
 
 // fetchCurrentPrices fetches current prices for the given holdings.
-func (s *PortfolioService) fetchCurrentPrices(ctx context.Context, holdings []sqlc.GetHoldingsByPortfolioRow) (map[string]stockInfo, error) {
+func (s *PortfolioService) fetchCurrentPrices(
+	ctx context.Context,
+	holdings []sqlc.GetHoldingsByPortfolioRow,
+) map[string]stockInfo {
 	info := make(map[string]stockInfo)
 
 	for _, h := range holdings {
@@ -474,5 +468,5 @@ func (s *PortfolioService) fetchCurrentPrices(ctx context.Context, holdings []sq
 		}
 	}
 
-	return info, nil
+	return info
 }

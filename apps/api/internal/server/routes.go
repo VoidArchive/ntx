@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
+
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/auth"
 	"github.com/voidarchive/ntx/internal/company"
