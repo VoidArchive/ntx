@@ -10,8 +10,8 @@ import (
 )
 
 // payoutStatus never treats a silent feed as a fact: a year without a notice is
-// "none" only when a later year has a notice, so the feed covers this company,
-// or the year's annual report is filed, so its payout was decided.
+// "none" only when a later year has a notice, or the year's annual report is
+// filed and the company has at least one notice.
 // shortcut: "a fundamentals row for that year" (spec) is read as the annual report;
 // a quarterly row predates the payout decision.
 func payoutStatus(
@@ -25,7 +25,8 @@ func payoutStatus(
 		}
 		return "none"
 	}
-	if _, ok := annual[y]; ok {
+	// An annual report counts only once a stored Notice (GLOSSARY.md) shows the feed reaches this company.
+	if _, ok := annual[y]; ok && len(notices) > 0 {
 		return "none"
 	}
 	for later := range notices {

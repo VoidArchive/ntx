@@ -56,7 +56,7 @@ func TestNabilPayout(t *testing.T) {
 	}
 }
 
-// A year counts as "no payout" only with a later notice or that year's annual report; silence is "not recorded".
+// A year counts as "no payout" only with a later notice, or its annual report once any notice exists; silence is "not recorded".
 func TestNoPayoutVersusNotRecorded(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -72,7 +72,13 @@ func TestNoPayoutVersusNotRecorded(t *testing.T) {
 			"2080/81",
 			"none",
 		},
-		{"silent year with its annual report", nil, "2081/82", "none"},
+		{
+			"silent year with its annual report",
+			[]sqlc.CorporateAction{notice("2019-2020", 0, 5, 0, "")},
+			"2081/82",
+			"none",
+		},
+		{"annual report but no notices at all", nil, "2081/82", "not recorded"},
 		{"silent year with no annual report and no later notice", nil, "2082/83", "not recorded"},
 	}
 	for _, tc := range tests {
