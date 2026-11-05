@@ -55,6 +55,7 @@ type Story struct {
 	Growth      []Growth
 	Ownership   []Observation // oldest first
 	Checks      []Check
+	Rating      Rating
 }
 
 // Claim is one sentence computed from the rows (GLOSSARY: Claim).
@@ -123,6 +124,7 @@ func Build(in Input) Story {
 	s.Claims = append(s.Claims, ownership(s.Ownership)...)
 	s.Claims = append(s.Claims, funds(in.Funds)...)
 	s.Checks = Checks(s, in)
+	s.Rating = rating(s.Checks)
 	return s
 }
 
@@ -257,7 +259,7 @@ func earnings(c sqlc.Company, quarters []filing, annual map[fiscal.Year]sqlc.Fun
 			Unit:   unit,
 			Period: cur.String(),
 			Source: cur.row.SourceUrl.String,
-			Anchor: "quarterly",
+			Anchor: "earnings",
 		}
 	}
 	var out []Claim

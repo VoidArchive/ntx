@@ -12,6 +12,130 @@ import type { Company, CorporateAction, Fundamental, Ownership, Sector } from ".
 export declare const file_ntx_v1_company: GenFile;
 
 /**
+ * @generated from message ntx.v1.ListScreenerRequest
+ */
+export declare type ListScreenerRequest = Message<"ntx.v1.ListScreenerRequest"> & {
+};
+
+/**
+ * Describes the message ntx.v1.ListScreenerRequest.
+ * Use `create(ListScreenerRequestSchema)` to create a new message.
+ */
+export declare const ListScreenerRequestSchema: GenMessage<ListScreenerRequest>;
+
+/**
+ * @generated from message ntx.v1.ListScreenerResponse
+ */
+export declare type ListScreenerResponse = Message<"ntx.v1.ListScreenerResponse"> & {
+  /**
+   * @generated from field: repeated ntx.v1.ScreenerRow rows = 1;
+   */
+  rows: ScreenerRow[];
+};
+
+/**
+ * Describes the message ntx.v1.ListScreenerResponse.
+ * Use `create(ListScreenerResponseSchema)` to create a new message.
+ */
+export declare const ListScreenerResponseSchema: GenMessage<ListScreenerResponse>;
+
+/**
+ * Ratios come from the latest quarterly row at the latest close, as the strips do.
+ *
+ * @generated from message ntx.v1.ScreenerRow
+ */
+export declare type ScreenerRow = Message<"ntx.v1.ScreenerRow"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: ntx.v1.Sector sector = 3;
+   */
+  sector: Sector;
+
+  /**
+   * @generated from field: optional double close = 4;
+   */
+  close?: number;
+
+  /**
+   * unset when EPS is not positive
+   *
+   * @generated from field: optional double pe = 5;
+   */
+  pe?: number;
+
+  /**
+   * unset without book value
+   *
+   * @generated from field: optional double pb = 6;
+   */
+  pb?: number;
+
+  /**
+   * annualized, as filed
+   *
+   * @generated from field: optional double eps = 7;
+   */
+  eps?: number;
+
+  /**
+   * %, cash dividend over close; unset without a notice
+   *
+   * @generated from field: optional double yield = 8;
+   */
+  yield?: number;
+
+  /**
+   * Rs, close times listed shares
+   *
+   * @generated from field: optional double market_cap = 9;
+   */
+  marketCap?: number;
+
+  /**
+   * Rs, latest session
+   *
+   * @generated from field: optional double turnover = 10;
+   */
+  turnover?: number;
+
+  /**
+   * "A".."D", "" when unrated or not yet computed
+   *
+   * @generated from field: string rating = 11;
+   */
+  rating: string;
+
+  /**
+   * the filing the ratios come from, "Q1 2083/84"; "" without one
+   *
+   * @generated from field: string period = 12;
+   */
+  period: string;
+
+  /**
+   * business date of the close, "2026-11-03"; "" without one
+   *
+   * @generated from field: string close_date = 13;
+   */
+  closeDate: string;
+};
+
+/**
+ * Describes the message ntx.v1.ScreenerRow.
+ * Use `create(ScreenerRowSchema)` to create a new message.
+ */
+export declare const ScreenerRowSchema: GenMessage<ScreenerRow>;
+
+/**
  * @generated from message ntx.v1.ListCompaniesRequest
  */
 export declare type ListCompaniesRequest = Message<"ntx.v1.ListCompaniesRequest"> & {
@@ -317,6 +441,16 @@ export declare const CompanyService: GenService<{
     methodKind: "unary";
     input: typeof GetCorporateActionsRequestSchema;
     output: typeof GetCorporateActionsResponseSchema;
+  },
+  /**
+   * Every listed company with its latest close, ratios and stored rating, for the screener.
+   *
+   * @generated from rpc ntx.v1.CompanyService.ListScreener
+   */
+  listScreener: {
+    methodKind: "unary";
+    input: typeof ListScreenerRequestSchema;
+    output: typeof ListScreenerResponseSchema;
   },
 }>;
 

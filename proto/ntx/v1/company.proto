@@ -14,6 +14,29 @@ service CompanyService {
   rpc GetOwnership(GetOwnershipRequest) returns (GetOwnershipResponse);
   rpc GetCorporateActions(GetCorporateActionsRequest)
       returns (GetCorporateActionsResponse);
+  // Every listed company with its latest close, ratios and stored rating, for the screener.
+  rpc ListScreener(ListScreenerRequest) returns (ListScreenerResponse);
+}
+
+message ListScreenerRequest {}
+
+message ListScreenerResponse { repeated ScreenerRow rows = 1; }
+
+// Ratios come from the latest quarterly row at the latest close, as the strips do.
+message ScreenerRow {
+  string symbol = 1;
+  string name = 2;
+  Sector sector = 3;
+  optional double close = 4;
+  optional double pe = 5;         // unset when EPS is not positive
+  optional double pb = 6;         // unset without book value
+  optional double eps = 7;        // annualized, as filed
+  optional double yield = 8;      // %, cash dividend over close; unset without a notice
+  optional double market_cap = 9; // Rs, close times listed shares
+  optional double turnover = 10;  // Rs, latest session
+  string rating = 11;             // "A".."D", "" when unrated or not yet computed
+  string period = 12;             // the filing the ratios come from, "Q1 2083/84"; "" without one
+  string close_date = 13;         // business date of the close, "2026-11-03"; "" without one
 }
 
 message ListCompaniesRequest {

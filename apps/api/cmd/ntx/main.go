@@ -45,6 +45,7 @@ type backfillOptions struct {
 	prices           bool
 	ownership        bool
 	corporateActions bool
+	ratings          bool
 }
 
 func runBackfillCmd() {
@@ -55,15 +56,18 @@ func runBackfillCmd() {
 	fs.BoolVar(&opts.prices, "prices", false, "sync price history")
 	fs.BoolVar(&opts.ownership, "ownership", false, "sync ownership data")
 	fs.BoolVar(&opts.corporateActions, "corporate-actions", false, "sync corporate actions")
+	fs.BoolVar(&opts.ratings, "ratings", false, "store every company's rating from the story engine")
 	_ = fs.Parse(os.Args[2:])
 
 	// If no flags specified, sync everything
-	if !opts.companies && !opts.fundamentals && !opts.prices && !opts.ownership && !opts.corporateActions {
+	if !opts.companies && !opts.fundamentals && !opts.prices && !opts.ownership && !opts.corporateActions &&
+		!opts.ratings {
 		opts.companies = true
 		opts.fundamentals = true
 		opts.prices = true
 		opts.ownership = true
 		opts.corporateActions = true
+		opts.ratings = true
 	}
 
 	db, queries, client := setup()
@@ -91,6 +95,22 @@ func runServer() {
 	}
 	go func() {
 		_ = sched.Start(context.Background())
+	}()
+	// A fresh deploy has no ratings until the post-close job runs; fill them now
+	// so the screener is not blank for a day. The job keeps them current after.
+	go func() {
+		ctx := context.Background()
+		n, err := queries.CountCompanyRatings(ctx)
+		if err != nil {
+			slog.Error("count ratings", "error", err)
+			return
+		}
+		if n > 0 {
+			return
+		}
+		if err := w.SyncRatings(ctx); err != nil {
+			slog.Error("initial ratings failed", "error", err)
+		}
 	}()
 
 	srv := server.NewServer(queries)

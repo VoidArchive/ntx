@@ -38,6 +38,46 @@ func Checks(s Story, in Input) []Check {
 	return out
 }
 
+// Rating is one letter for the checks (GLOSSARY: Rating). Holds are scaled to
+// eight so a company with unevaluated checks is rated on the ones it has.
+type Rating struct {
+	Letter           string // "" when fewer than minEvaluated checks evaluate
+	Holds, Evaluated int32
+}
+
+const minEvaluated = 4
+
+// ratingScale is the glossary's eight; the rule count may grow, the letter grid does not.
+const ratingScale = 8
+
+func rating(checks []Check) Rating {
+	var r Rating
+	for _, c := range checks {
+		if c.Verdict == NeedsHistory {
+			continue
+		}
+		r.Evaluated++
+		if c.Verdict == Holds {
+			r.Holds++
+		}
+	}
+	if r.Evaluated < minEvaluated {
+		return r
+	}
+	// holds/evaluated >= floor/8 in integers, so the share rounds down: A from 7 of 8, B from 5, C from 3.
+	for _, g := range []struct {
+		letter string
+		floor  int
+	}{{"A", 7}, {"B", 5}, {"C", 3}} {
+		if int(r.Holds)*ratingScale >= g.floor*int(r.Evaluated) {
+			r.Letter = g.letter
+			return r
+		}
+	}
+	r.Letter = "D"
+	return r
+}
+
 func verdictOf(ok bool) string {
 	if ok {
 		return Holds

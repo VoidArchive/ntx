@@ -51,6 +51,9 @@ const (
 	// CompanyServiceGetCorporateActionsProcedure is the fully-qualified name of the CompanyService's
 	// GetCorporateActions RPC.
 	CompanyServiceGetCorporateActionsProcedure = "/ntx.v1.CompanyService/GetCorporateActions"
+	// CompanyServiceListScreenerProcedure is the fully-qualified name of the CompanyService's
+	// ListScreener RPC.
+	CompanyServiceListScreenerProcedure = "/ntx.v1.CompanyService/ListScreener"
 )
 
 // CompanyServiceClient is a client for the ntx.v1.CompanyService service.
@@ -61,6 +64,8 @@ type CompanyServiceClient interface {
 	GetSectorStats(context.Context, *connect.Request[v1.GetSectorStatsRequest]) (*connect.Response[v1.GetSectorStatsResponse], error)
 	GetOwnership(context.Context, *connect.Request[v1.GetOwnershipRequest]) (*connect.Response[v1.GetOwnershipResponse], error)
 	GetCorporateActions(context.Context, *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error)
+	// Every listed company with its latest close, ratios and stored rating, for the screener.
+	ListScreener(context.Context, *connect.Request[v1.ListScreenerRequest]) (*connect.Response[v1.ListScreenerResponse], error)
 }
 
 // NewCompanyServiceClient constructs a client for the ntx.v1.CompanyService service. By default, it
@@ -110,6 +115,12 @@ func NewCompanyServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(companyServiceMethods.ByName("GetCorporateActions")),
 			connect.WithClientOptions(opts...),
 		),
+		listScreener: connect.NewClient[v1.ListScreenerRequest, v1.ListScreenerResponse](
+			httpClient,
+			baseURL+CompanyServiceListScreenerProcedure,
+			connect.WithSchema(companyServiceMethods.ByName("ListScreener")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -121,6 +132,7 @@ type companyServiceClient struct {
 	getSectorStats      *connect.Client[v1.GetSectorStatsRequest, v1.GetSectorStatsResponse]
 	getOwnership        *connect.Client[v1.GetOwnershipRequest, v1.GetOwnershipResponse]
 	getCorporateActions *connect.Client[v1.GetCorporateActionsRequest, v1.GetCorporateActionsResponse]
+	listScreener        *connect.Client[v1.ListScreenerRequest, v1.ListScreenerResponse]
 }
 
 // ListCompanies calls ntx.v1.CompanyService.ListCompanies.
@@ -153,6 +165,11 @@ func (c *companyServiceClient) GetCorporateActions(ctx context.Context, req *con
 	return c.getCorporateActions.CallUnary(ctx, req)
 }
 
+// ListScreener calls ntx.v1.CompanyService.ListScreener.
+func (c *companyServiceClient) ListScreener(ctx context.Context, req *connect.Request[v1.ListScreenerRequest]) (*connect.Response[v1.ListScreenerResponse], error) {
+	return c.listScreener.CallUnary(ctx, req)
+}
+
 // CompanyServiceHandler is an implementation of the ntx.v1.CompanyService service.
 type CompanyServiceHandler interface {
 	ListCompanies(context.Context, *connect.Request[v1.ListCompaniesRequest]) (*connect.Response[v1.ListCompaniesResponse], error)
@@ -161,6 +178,8 @@ type CompanyServiceHandler interface {
 	GetSectorStats(context.Context, *connect.Request[v1.GetSectorStatsRequest]) (*connect.Response[v1.GetSectorStatsResponse], error)
 	GetOwnership(context.Context, *connect.Request[v1.GetOwnershipRequest]) (*connect.Response[v1.GetOwnershipResponse], error)
 	GetCorporateActions(context.Context, *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error)
+	// Every listed company with its latest close, ratios and stored rating, for the screener.
+	ListScreener(context.Context, *connect.Request[v1.ListScreenerRequest]) (*connect.Response[v1.ListScreenerResponse], error)
 }
 
 // NewCompanyServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -206,6 +225,12 @@ func NewCompanyServiceHandler(svc CompanyServiceHandler, opts ...connect.Handler
 		connect.WithSchema(companyServiceMethods.ByName("GetCorporateActions")),
 		connect.WithHandlerOptions(opts...),
 	)
+	companyServiceListScreenerHandler := connect.NewUnaryHandler(
+		CompanyServiceListScreenerProcedure,
+		svc.ListScreener,
+		connect.WithSchema(companyServiceMethods.ByName("ListScreener")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.CompanyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CompanyServiceListCompaniesProcedure:
@@ -220,6 +245,8 @@ func NewCompanyServiceHandler(svc CompanyServiceHandler, opts ...connect.Handler
 			companyServiceGetOwnershipHandler.ServeHTTP(w, r)
 		case CompanyServiceGetCorporateActionsProcedure:
 			companyServiceGetCorporateActionsHandler.ServeHTTP(w, r)
+		case CompanyServiceListScreenerProcedure:
+			companyServiceListScreenerHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -251,4 +278,8 @@ func (UnimplementedCompanyServiceHandler) GetOwnership(context.Context, *connect
 
 func (UnimplementedCompanyServiceHandler) GetCorporateActions(context.Context, *connect.Request[v1.GetCorporateActionsRequest]) (*connect.Response[v1.GetCorporateActionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.GetCorporateActions is not implemented"))
+}
+
+func (UnimplementedCompanyServiceHandler) ListScreener(context.Context, *connect.Request[v1.ListScreenerRequest]) (*connect.Response[v1.ListScreenerResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.CompanyService.ListScreener is not implemented"))
 }

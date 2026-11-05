@@ -51,7 +51,7 @@ func TestNabilPayout(t *testing.T) {
 	}
 	first := got[0]
 	if first.Period != "FY 2082/83" || first.Source != "https://example.test/nabil-2082-83.pdf" ||
-		first.Anchor != "fiscal-years" || first.Value != 12.5 {
+		first.Anchor != "payout" || first.Value != 12.5 {
 		t.Errorf("payout claim = %+v", first)
 	}
 }

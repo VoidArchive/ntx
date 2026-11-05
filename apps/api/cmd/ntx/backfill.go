@@ -55,6 +55,12 @@ func runBackfill(ctx context.Context, w *worker.Worker, opts backfillOptions) er
 		}
 	}
 
+	if opts.ratings {
+		if err := w.SyncRatings(ctx); err != nil {
+			return fmt.Errorf("sync ratings: %w", err)
+		}
+	}
+
 	slog.Info("backfill complete", "duration", time.Since(start))
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"google.golang.org/protobuf/proto"
 
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/internal/database"
@@ -99,6 +100,62 @@ func TestFundamentalPeriod(t *testing.T) {
 		}
 		if got := fundamentalToProto(f).GetPeriod(); got != tc.want {
 			t.Fatalf("period(%q, %q, %q) = %q, want %q", tc.np, tc.gregorian, tc.quarter, got, tc.want)
+		}
+	}
+}
+
+func TestListScreener(t *testing.T) {
+	ctx := context.Background()
+	q := database.OpenTestDB(t)
+	must := func(err error) {
+		t.Helper()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, c := range []sqlc.UpsertCompanyParams{
+		{ID: 131, Name: "Nabil Bank Limited", Symbol: "NABIL", Status: "A", Sector: "Commercial Banks", InstrumentType: "Equity"},
+		{ID: 200, Name: "Unfiled Co", Symbol: "UNF", Status: "A", Sector: "Hotels And Tourism", InstrumentType: "Equity"},
+	} {
+		must(q.UpsertCompany(ctx, c))
+	}
+	must(q.UpsertPrice(ctx, sqlc.UpsertPriceParams{
+		CompanyID: 131, BusinessDate: "2026-11-03",
+		ClosePrice: sql.NullFloat64{Float64: 552, Valid: true},
+		Turnover:   sql.NullFloat64{Float64: 1e8, Valid: true},
+	}))
+	must(q.UpsertFundamental(ctx, sqlc.UpsertFundamentalParams{
+		CompanyID: 131, FiscalYear: "2026-2027", Quarter: "First Quarter",
+		Eps:       sql.NullFloat64{Float64: 34.5, Valid: true},
+		BookValue: sql.NullFloat64{Float64: 240, Valid: true},
+	}))
+	must(q.UpsertOwnership(ctx, sqlc.UpsertOwnershipParams{
+		CompanyID: 131, ListedShares: sql.NullInt64{Int64: 270_000_000, Valid: true},
+	}))
+	must(
+		q.UpsertCompanyRating(ctx, sqlc.UpsertCompanyRatingParams{CompanyID: 131, Letter: "B", Holds: 5, Evaluated: 7}),
+	)
+
+	res, err := NewCompanyService(q).ListScreener(ctx, connect.NewRequest(&ntxv1.ListScreenerRequest{}))
+	must(err)
+
+	// A filed company carries every ratio but yield (no notice); an unfiled one only its identity.
+	want := []*ntxv1.ScreenerRow{
+		{
+			Symbol: "NABIL", Name: "Nabil Bank Limited", Sector: ntxv1.Sector_SECTOR_COMMERCIAL_BANK, Rating: "B",
+			Close: proto.Float64(552), Pe: proto.Float64(16), Pb: proto.Float64(2.3), Eps: proto.Float64(34.5),
+			MarketCap: proto.Float64(552 * 270_000_000), Turnover: proto.Float64(1e8),
+			Period: "Q1 2083/84", CloseDate: "2026-11-03",
+		},
+		{Symbol: "UNF", Name: "Unfiled Co", Sector: ntxv1.Sector_SECTOR_HOTEL},
+	}
+	rows := res.Msg.GetRows()
+	if len(rows) != len(want) {
+		t.Fatalf("rows = %d, want %d", len(rows), len(want))
+	}
+	for i := range want {
+		if !proto.Equal(rows[i], want[i]) {
+			t.Errorf("row %d = %v, want %v", i, rows[i], want[i])
 		}
 	}
 }

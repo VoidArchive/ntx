@@ -2,37 +2,13 @@
 	import './layout.css';
 	import favicon from '#lib/assets/favicon.png';
 	import AlertCircle from '@lucide/svelte/icons/circle-alert';
-	import { browser } from '$app/env';
-	import { beforeNavigate, afterNavigate, onNavigate } from '$app/navigation';
-	import posthog from 'posthog-js';
+	import { onNavigate } from '$app/navigation';
 	import { ModeWatcher } from 'mode-watcher';
 	import Sidebar from '#lib/components/Sidebar.svelte';
 	import type { LayoutData } from './$types';
 	import type { Snippet } from 'svelte';
 
 	let { children, data }: { children: Snippet; data: LayoutData } = $props();
-
-	if (browser) {
-		posthog.init('phc_jeqQwskahiaP3wSMZH9WKRkS3Sj6373SAw4pJAWja9m', {
-			api_host: '/ingest',
-			ui_host: 'https://us.i.posthog.com',
-			person_profiles: 'identified_only',
-			capture_pageview: false,
-			capture_pageleave: false
-		});
-
-		beforeNavigate(({ shallow, type }) => {
-			if (shallow && type === 'goto') return;
-
-			return posthog.capture('$pageleave');
-		});
-
-		afterNavigate(({ shallow, type }) => {
-			if (shallow && type === 'goto') return;
-
-			return posthog.capture('$pageview');
-		});
-	}
 
 	onNavigate((navigation) => {
 		if (navigation.shallow && navigation.type === 'goto') return;

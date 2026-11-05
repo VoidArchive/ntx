@@ -12,6 +12,7 @@ type Querier interface {
 	// Compares each company's close with its own previous priced day, because
 	// backfilled rows carry no change fields and illiquid stocks skip sessions.
 	CountBreadth(ctx context.Context, businessDate string) (CountBreadthRow, error)
+	CountCompanyRatings(ctx context.Context) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
@@ -37,6 +38,11 @@ type Querier interface {
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
+	// One row per listed company with the inputs of the screener columns; ratios
+	// are divided in Go so a zero never reaches SQL. Every join is LEFT so a
+	// company without a filing, a close or a rating still lists.
+	// shortcut: the "latest quarterly row" subquery repeats story.sql and sector.sql; fold all three into one view when the quarter ordering next changes.
+	ListScreener(ctx context.Context) ([]ListScreenerRow, error)
 	ListSectorCounts(ctx context.Context) ([]ListSectorCountsRow, error)
 	ListSectorEPS(ctx context.Context, sector string) ([]float64, error)
 	ListSectorPB(ctx context.Context, sector string) ([]float64, error)
@@ -52,6 +58,7 @@ type Querier interface {
 	MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
+	UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRatingParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error
 	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
 	UpsertMarketDay(ctx context.Context, arg UpsertMarketDayParams) error

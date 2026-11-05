@@ -207,6 +207,8 @@ func toProto(st Story) *ntxv1.GetCompanyStoryResponse {
 	for _, c := range st.Checks {
 		res.Checks = append(res.Checks, &ntxv1.Check{Name: c.Name, Rule: c.Rule, Verdict: c.Verdict})
 	}
+	r := st.Rating
+	res.Rating = &ntxv1.Rating{Letter: r.Letter, Holds: r.Holds, Evaluated: r.Evaluated}
 	return res
 }
 
