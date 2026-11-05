@@ -9,8 +9,15 @@ is `under_construction`. Coordinates are the centre of the licence area's bounds
 The output is a draft: every row is reviewed by hand before it is committed
 (docs/superpowers/specs/2026-11-05-ntx-hydro-map-design.md, section 1).
 
-Usage: uv run draft_hydro_plants.py [--cache DIR] OUT.csv
+Usage: uv run --script draft_hydro_plants.py [--cache DIR] OUT.csv
+
+The cache defaults to scripts/data/doed, the committed snapshot of both tables
+(fetched 2026-11-05); delete a file there to refetch it.
 """
+
+# /// script
+# dependencies = ["requests>=2.32"]
+# ///
 
 import argparse
 import csv
@@ -247,7 +254,7 @@ def district_of(cell: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("out")
-    ap.add_argument("--cache", type=pathlib.Path)
+    ap.add_argument("--cache", type=pathlib.Path, default=pathlib.Path(__file__).parent / "data" / "doed")
     args = ap.parse_args()
 
     by_promoter = {p: sym for sym, ps in PROMOTERS.items() for p in ps}
