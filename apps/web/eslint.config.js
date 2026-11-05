@@ -52,6 +52,11 @@ export default defineConfig(
 					selector:
 						':not(SvelteElement[name.name="script"]) > SvelteText[value=/\\b(buy|sell|bullish|bearish|target|signal|score)\\b/i]',
 					message: 'Recommending word in user-facing copy (CODING_STANDARDS.md).'
+				},
+				{
+					selector:
+						'SvelteAttribute[key.name=/^(title|alt|placeholder|aria-label|aria-description)$/] > SvelteLiteral[value=/\\b(buy|sell|bullish|bearish|target|signal|score)\\b/i]',
+					message: 'Recommending word in user-facing copy (CODING_STANDARDS.md).'
 				}
 			]
 		},
