@@ -45,6 +45,7 @@ type backfillOptions struct {
 	prices           bool
 	ownership        bool
 	corporateActions bool
+	ratings          bool
 }
 
 func runBackfillCmd() {
@@ -55,15 +56,18 @@ func runBackfillCmd() {
 	fs.BoolVar(&opts.prices, "prices", false, "sync price history")
 	fs.BoolVar(&opts.ownership, "ownership", false, "sync ownership data")
 	fs.BoolVar(&opts.corporateActions, "corporate-actions", false, "sync corporate actions")
+	fs.BoolVar(&opts.ratings, "ratings", false, "store every company's rating from the story engine")
 	_ = fs.Parse(os.Args[2:])
 
 	// If no flags specified, sync everything
-	if !opts.companies && !opts.fundamentals && !opts.prices && !opts.ownership && !opts.corporateActions {
+	if !opts.companies && !opts.fundamentals && !opts.prices && !opts.ownership && !opts.corporateActions &&
+		!opts.ratings {
 		opts.companies = true
 		opts.fundamentals = true
 		opts.prices = true
 		opts.ownership = true
 		opts.corporateActions = true
+		opts.ratings = true
 	}
 
 	db, queries, client := setup()

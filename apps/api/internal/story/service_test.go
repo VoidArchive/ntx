@@ -188,3 +188,36 @@ func TestGetCompanyStoryPeersAndFooter(t *testing.T) {
 		t.Errorf("footer: synced %q, filed %q seen %v", m.GetSyncedAt(), m.GetFiledAt(), m.GetFiledAtSeen())
 	}
 }
+
+func TestSyncRatings(t *testing.T) {
+	ctx := context.Background()
+	q := database.OpenTestDB(t)
+	seed(t, q)
+	if err := SyncRatings(ctx, q); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := q.ListScreener(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var nabil sqlc.ListScreenerRow
+	for _, r := range rows {
+		if r.Symbol == "NABIL" {
+			nabil = r
+		}
+	}
+	// The same letter the company page computes live for this fixture.
+	want := Build(mustLoad(t, q, "NABIL")).Rating.Letter
+	if nabil.Rating.String != want || !nabil.Rating.Valid {
+		t.Errorf("stored rating = %q, want %q", nabil.Rating.String, want)
+	}
+}
+
+func mustLoad(t *testing.T, q *sqlc.Queries, symbol string) Input {
+	t.Helper()
+	in, err := NewService(q).load(context.Background(), symbol)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return in
+}

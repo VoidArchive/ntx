@@ -276,3 +276,58 @@ func safeInt32(v int64) int32 {
 	}
 	return int32(v) //nolint:gosec // bounds checked above
 }
+
+// ListScreener ratios each company's latest close against its latest quarterly
+// row, as the strips and peers do; the rating is the worker's stored letter.
+func (s *CompanyService) ListScreener(
+	ctx context.Context,
+	_ *connect.Request[ntxv1.ListScreenerRequest],
+) (*connect.Response[ntxv1.ListScreenerResponse], error) {
+	rows, err := s.queries.ListScreener(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res := &ntxv1.ListScreenerResponse{Rows: make([]*ntxv1.ScreenerRow, 0, len(rows))}
+	for _, r := range rows {
+		res.Rows = append(res.Rows, screenerRow(r))
+	}
+	return connect.NewResponse(res), nil
+}
+
+func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
+	row := &ntxv1.ScreenerRow{
+		Symbol: r.Symbol,
+		Name:   r.Name,
+		Sector: SectorFromDB(r.Sector),
+		Rating: r.Rating.String,
+	}
+	if r.Eps.Valid {
+		row.Eps = &r.Eps.Float64
+	}
+	if r.Turnover.Valid {
+		row.Turnover = &r.Turnover.Float64
+	}
+	if !r.ClosePrice.Valid {
+		return row
+	}
+	close := r.ClosePrice.Float64
+	row.Close = &close
+	if r.Eps.Float64 > 0 {
+		pe := close / r.Eps.Float64
+		row.Pe = &pe
+	}
+	if r.BookValue.Float64 > 0 {
+		pb := close / r.BookValue.Float64
+		row.Pb = &pb
+	}
+	// Cash dividend is a percentage of the Rs 100 par, as in ListSectorYield.
+	if r.CashDividend.Valid && close > 0 {
+		y := r.CashDividend.Float64 * 100 / close
+		row.Yield = &y
+	}
+	if r.ListedShares.Valid {
+		mc := close * float64(r.ListedShares.Int64)
+		row.MarketCap = &mc
+	}
+	return row
+}

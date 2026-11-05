@@ -81,6 +81,8 @@ func (s *Scheduler) Start(ctx context.Context) error {
 			{"fundamentals", 30 * time.Minute, func(ctx context.Context) error {
 				return w.EachCompany(ctx, 1, "fundamentals", w.SyncFundamentals)
 			}},
+			// Last, so the letters read the day's closes and any new filing.
+			{"ratings", 10 * time.Minute, w.SyncRatings},
 		})
 	})
 	if err != nil {
