@@ -10,6 +10,7 @@ import (
 
 // stateWords are the prose forms of the states; the enum names are for code.
 var stateWords = map[ntxv1.PlantState]string{
+	ntxv1.PlantState_PLANT_STATE_UNSPECIFIED:    "no readings",
 	ntxv1.PlantState_PLANT_STATE_NORMAL:         "normal",
 	ntxv1.PlantState_PLANT_STATE_HEAVY_RAIN:     "heavy rain",
 	ntxv1.PlantState_PLANT_STATE_HIGH_DISCHARGE: "high discharge",

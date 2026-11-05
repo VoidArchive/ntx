@@ -52,10 +52,12 @@ func TestMapOpening(t *testing.T) {
 	}
 	basins := []*ntxv1.Basin{
 		{Name: "Koshi"},
+		{Name: "Karnali", PlantCount: 1},
 		{Name: "Gandaki", State: ntxv1.PlantState_PLANT_STATE_HIGH_DISCHARGE, PlantCount: 2},
 		{Name: "Kankai", State: ntxv1.PlantState_PLANT_STATE_NORMAL, PlantCount: 2},
 	}
-	want := "4 plants of 3 listed companies on 3 rivers. Basins on 2026-11-05: Gandaki high discharge, Kankai normal."
+	want := "4 plants of 3 listed companies on 3 rivers. Basins on 2026-11-05: Karnali no readings, " +
+		"Gandaki high discharge, Kankai normal."
 	if got := MapOpening(plants, basins); got != want {
 		t.Errorf("got %q\nwant %q", got, want)
 	}

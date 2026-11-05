@@ -33,7 +33,9 @@ Production SQLite lives on the Railway volume `fearless-adaptation-volume`, moun
 railway ssh --service fearless-adaptation -- /bin/ntx backfill
 ```
 
-Flags: `-companies -fundamentals -prices -ownership -corporate-actions`; no flag runs all five. See `docs/backfill.md` for what each pulls.
+Flags: `-companies -fundamentals -prices -ownership -corporate-actions -ratings -weather`; no flag runs all of them. See `docs/backfill.md` for what each pulls. `-weather` makes two Open-Meteo calls per hydro plant (about 300 a day against a free limit of 10,000) and, on a plant's first run, stores ten years of discharge.
+
+The image copies `data/hydro_plants.csv` to `/app/data/`, where the binary reads it on start (`NTX_PLANTS_CSV` overrides the path; `mise run dev-api` sets it to the checkout's copy). A plant edit is a CSV edit plus an API deploy.
 
 ## Web (Cloudflare Workers)
 
