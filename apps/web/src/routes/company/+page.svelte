@@ -1,10 +1,10 @@
 <script lang="ts">
 	import CompanyCard from '#lib/components/CompanyCard.svelte';
-	import type { LayoutData } from '../$types';
+	import type { PageData } from './$types';
 	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 	import { page } from '$app/state';
 
-	let { data }: { data: LayoutData } = $props();
+	let { data }: { data: PageData } = $props();
 
 	// The home page's sector rows link here as ?sector=<enum value>.
 	let selectedSector = $state<number | null>(Number(page.url.searchParams.get('sector')) || null);

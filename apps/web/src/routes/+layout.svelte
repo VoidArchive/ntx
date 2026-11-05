@@ -75,7 +75,7 @@
 	</script>
 </svelte:head>
 <ModeWatcher />
-<Navbar companies={data.companies ?? []} prices={data.prices ?? []} />
+<Navbar companies={data.search} />
 {@render children()}
 
 <footer class="mt-20 border-t border-border/50 bg-background/50 py-12 backdrop-blur-sm">

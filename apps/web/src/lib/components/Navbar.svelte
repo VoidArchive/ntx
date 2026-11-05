@@ -1,15 +1,14 @@
 <script lang="ts">
 	import SearchCommand from './SearchCommand.svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
-	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
+	import type { SearchEntry } from './SearchCommand.svelte';
 	import { page } from '$app/state';
 
 	interface Props {
-		companies?: Company[];
-		prices?: Price[];
+		companies?: SearchEntry[];
 	}
 
-	let { companies = [], prices = [] }: Props = $props();
+	let { companies = [] }: Props = $props();
 
 	let isMutualFunds = $derived(page.url.pathname.startsWith('/mutual-funds'));
 </script>
@@ -36,7 +35,7 @@
 			<!-- Search + Theme -->
 			<div class="flex items-center gap-2">
 				{#if companies.length > 0}
-					<SearchCommand {companies} {prices} variant="compact" placeholder="Search stocks..." />
+					<SearchCommand {companies} variant="compact" placeholder="Search stocks..." />
 				{/if}
 				<ThemeToggle />
 			</div>
