@@ -16,6 +16,7 @@
 	const links = [
 		{ href: '/', label: 'Home' },
 		{ href: '/company', label: 'Companies' },
+		{ href: '/hydro', label: 'Hydro' },
 		{ href: '/mutual-funds', label: 'Mutual funds' }
 	];
 
@@ -26,12 +27,15 @@
 		{ id: 'payout', label: 'Payout' },
 		{ id: 'ownership', label: 'Ownership' },
 		{ id: 'funds', label: 'Funds' },
+		{ id: 'plants', label: 'Plants' }, // hydro companies only
 		{ id: 'price', label: 'Price and volume' }
 	];
 
 	let pathname = $derived(page.url.pathname);
 	let onCompanyPage = $derived(/^\/company\/[^/]+$/.test(pathname));
 	let activeSection = $state('');
+	// Sections the current page renders; a company without plants has no Plants link.
+	let present = $state<string[]>([]);
 	let menuOpen = $state(false);
 
 	function isCurrent(href: string): boolean {
@@ -53,10 +57,13 @@
 			},
 			{ rootMargin: '-10% 0px -60% 0px' }
 		);
+		const found: string[] = [];
 		for (const s of sections) {
 			const el = document.getElementById(s.id);
 			if (el) observer.observe(el);
+			if (el) found.push(s.id);
 		}
+		present = found;
 		return () => observer.disconnect();
 	});
 </script>
@@ -84,7 +91,7 @@
 	{#if onCompanyPage}
 		<p class="mt-6 mb-1 px-2 text-xs text-muted-foreground">On this page</p>
 		<ul class="space-y-0.5 border-l border-sidebar-border text-sm">
-			{#each sections as s (s.id)}
+			{#each sections.filter((s) => present.length === 0 || present.includes(s.id)) as s (s.id)}
 				<li>
 					<a
 						href="#{s.id}"

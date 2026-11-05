@@ -7,12 +7,13 @@ import { findCompanyInFunds, type FundHolding } from '#lib/fund-holdings.js';
 
 export const load = async ({ params }) => {
 	const apiUrl = apiBaseUrl();
-	const { company, price, story } = createApiClient(apiUrl);
+	const { company, price, story, hydro } = createApiClient(apiUrl);
 	try {
-		const [companyRes, fundamentalsRes, priceHistoryRes] = await Promise.all([
+		const [companyRes, fundamentalsRes, priceHistoryRes, plantsRes] = await Promise.all([
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
-			price.getPriceHistory({ symbol: params.symbol, days: 365 })
+			price.getPriceHistory({ symbol: params.symbol, days: 365 }),
+			hydro.getCompanyPlants({ symbol: params.symbol })
 		]);
 
 		// Fetch mutual fund holdings for this company
@@ -46,6 +47,8 @@ export const load = async ({ params }) => {
 			fundamentalsHistory: fundamentalsRes.history,
 			priceHistory: priceHistoryRes.prices,
 			fundHoldings,
+			plants: plantsRes.plants,
+			plantsOpening: plantsRes.opening,
 			navMonths: [...new Set((navData as Fund[]).map((f) => f.report_date_nepali))].join(', ')
 		};
 	} catch (err) {
