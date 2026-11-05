@@ -12,9 +12,6 @@ type Querier interface {
 	// Compares each company's close with its own previous priced day, because
 	// backfilled rows carry no change fields and illiquid stocks skip sessions.
 	CountBreadth(ctx context.Context, businessDate string) (CountBreadthRow, error)
-	CountCompanies(ctx context.Context) (int64, error)
-	CountCompaniesBySearch(ctx context.Context, arg CountCompaniesBySearchParams) (int64, error)
-	CountCompaniesBySector(ctx context.Context, sector string) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
@@ -26,7 +23,6 @@ type Querier interface {
 	GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error)
 	GetOwnership(ctx context.Context, companyID int64) (Ownership, error)
 	GetOwnershipBySymbol(ctx context.Context, symbol string) (Ownership, error)
-	GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error)
 	// Stored profit is year-to-date, so a quarter's YTD is comparable with the same quarter's YTD a year earlier.
 	GetSectorProfitYoY(ctx context.Context, sector string) (GetSectorProfitYoYRow, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
@@ -52,6 +48,8 @@ type Querier interface {
 	ListSectorPeers(ctx context.Context, sector string) ([]ListSectorPeersRow, error)
 	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
 	ListSectorYield(ctx context.Context, sector string) ([]float64, error)
+	// Companies that stop arriving in the NEPSE feed keep their row (and history) but leave every list.
+	MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error

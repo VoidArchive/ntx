@@ -1,67 +1,35 @@
+<script module lang="ts">
+	export interface SearchEntry {
+		symbol: string;
+		name: string;
+	}
+</script>
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { Company, Price } from '#lib/gen/ntx/v1/common_pb.js';
-	import { Sector } from '#lib/gen/ntx/v1/common_pb.js';
 	import Search from '@lucide/svelte/icons/search';
-	import TrendingUp from '@lucide/svelte/icons/trending-up';
-	import TrendingDown from '@lucide/svelte/icons/trending-down';
 	import X from '@lucide/svelte/icons/x';
 
 	interface Props {
-		companies?: Company[];
-		prices?: Price[];
+		companies?: SearchEntry[];
 		variant?: 'hero' | 'compact';
 		placeholder?: string;
 	}
 
-	let {
-		companies = [],
-		prices = [],
-		variant = 'compact',
-		placeholder = 'Search stocks...'
-	}: Props = $props();
+	let { companies = [], variant = 'compact', placeholder = 'Search stocks...' }: Props = $props();
 
 	let query = $state('');
 	let isOpen = $state(false);
 	let selectedIndex = $state(0);
 	let inputEl = $state<HTMLInputElement | null>(null);
 
-	const sectorLabels: Record<number, string> = {
-		[Sector.COMMERCIAL_BANK]: 'Bank',
-		[Sector.DEVELOPMENT_BANK]: 'Dev Bank',
-		[Sector.FINANCE]: 'Finance',
-		[Sector.MICROFINANCE]: 'MFI',
-		[Sector.LIFE_INSURANCE]: 'Life Ins.',
-		[Sector.NON_LIFE_INSURANCE]: 'Non-Life',
-		[Sector.HYDROPOWER]: 'Hydro',
-		[Sector.MANUFACTURING]: 'Mfg.',
-		[Sector.HOTEL]: 'Hotel',
-		[Sector.TRADING]: 'Trading',
-		[Sector.INVESTMENT]: 'Invest.',
-		[Sector.MUTUAL_FUND]: 'MF',
-		[Sector.OTHERS]: 'Other'
-	};
-
 	let results = $derived.by(() => {
 		if (!query.trim() || companies.length === 0) return [];
 		const q = query.toLowerCase();
 		return companies
 			.filter((c) => c.symbol.toLowerCase().includes(q) || c.name.toLowerCase().includes(q))
-			.slice(0, 8)
-			.map((c) => ({
-				company: c,
-				price: prices.find((p) => p.companyId === c.id)
-			}));
+			.slice(0, 8);
 	});
-
-	function getPrice(p: Price | undefined): number | undefined {
-		return p?.ltp ?? p?.close;
-	}
-
-	function formatPrice(value: number | undefined): string {
-		if (value === undefined) return '—';
-		return value.toLocaleString('en-NP', { maximumFractionDigits: 2 });
-	}
 
 	function handleSelect(symbol: string) {
 		goto(`/company/${symbol}`);
@@ -80,7 +48,7 @@
 			selectedIndex = (selectedIndex - 1 + results.length) % results.length;
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
-			handleSelect(results[selectedIndex].company.symbol);
+			handleSelect(results[selectedIndex].symbol);
 		} else if (e.key === 'Escape') {
 			isOpen = false;
 			inputEl?.blur();
@@ -177,38 +145,15 @@
 			class:min-w-[400px]={variant === 'compact'}
 		>
 			<div class="max-h-[400px] overflow-y-auto">
-				{#each results as result, i (result.company.id)}
-					{@const currentPrice = getPrice(result.price)}
-					{@const change = result.price?.changePercent}
+				{#each results as result, i (result.symbol)}
 					<button
-						onclick={() => handleSelect(result.company.symbol)}
-						class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors
+						onclick={() => handleSelect(result.symbol)}
+						class="flex w-full items-center px-4 py-3 text-left transition-colors
 							{selectedIndex === i ? 'bg-muted' : 'hover:bg-muted/50'}"
 					>
 						<div class="min-w-0 flex-1">
-							<div class="flex items-center gap-2">
-								<span class="font-serif text-lg font-medium">{result.company.symbol}</span>
-								<span class="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-									{sectorLabels[result.company.sector ?? Sector.OTHERS]}
-								</span>
-							</div>
-							<p class="truncate text-sm text-muted-foreground">{result.company.name}</p>
-						</div>
-						<div class="ml-4 text-right">
-							<div class="tabular-nums">Rs. {formatPrice(currentPrice)}</div>
-							{#if change !== undefined}
-								<div
-									class="flex items-center justify-end gap-1 text-sm tabular-nums
-										{change >= 0 ? 'text-positive' : 'text-negative'}"
-								>
-									{#if change >= 0}
-										<TrendingUp class="size-3" />
-									{:else}
-										<TrendingDown class="size-3" />
-									{/if}
-									{change > 0 ? '+' : ''}{change.toFixed(2)}%
-								</div>
-							{/if}
+							<span class="font-serif text-lg font-medium">{result.symbol}</span>
+							<p class="truncate text-sm text-muted-foreground">{result.name}</p>
 						</div>
 					</button>
 				{/each}

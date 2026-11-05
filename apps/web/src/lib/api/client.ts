@@ -22,6 +22,16 @@ export function createApiClient(baseUrl: string) {
 	};
 }
 
+// The market tables (home, market cap, most traded) rank every company by its latest price.
+export async function listCompaniesWithLatestPrices(apiUrl: string) {
+	const { company, price } = createApiClient(apiUrl);
+	const [companyRes, priceRes] = await Promise.all([
+		company.listCompanies({ limit: 500 }),
+		price.listLatestPrices({})
+	]);
+	return { companies: companyRes.companies, prices: priceRes.prices };
+}
+
 export const apiBaseUrl = () => {
 	if (API_URL) return API_URL;
 	if (import.meta.env.DEV) return 'http://localhost:8080';

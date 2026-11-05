@@ -45,7 +45,7 @@ JOIN fundamentals f ON f.id = (
     CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
   LIMIT 1
 )
-WHERE c.sector = ? AND f.eps IS NOT NULL
+WHERE c.status = 'A' AND c.sector = ? AND f.eps IS NOT NULL
 `
 
 func (q *Queries) ListSectorEPS(ctx context.Context, sector string) ([]float64, error) {
@@ -86,7 +86,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ? AND f.book_value != 0
+WHERE c.status = 'A' AND c.sector = ? AND f.book_value != 0
 `
 
 func (q *Queries) ListSectorPB(ctx context.Context, sector string) ([]float64, error) {
@@ -128,7 +128,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ? AND f.eps != 0
+WHERE c.status = 'A' AND c.sector = ? AND f.eps != 0
 `
 
 // Sector distributions for the story strips: one value per company in the
@@ -173,7 +173,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ?
+WHERE c.status = 'A' AND c.sector = ?
 `
 
 type ListSectorPeersRow struct {
@@ -227,7 +227,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ? AND p.close_price != 0
+WHERE c.status = 'A' AND c.sector = ? AND p.close_price != 0
 `
 
 // Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.

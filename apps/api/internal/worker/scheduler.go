@@ -89,13 +89,3 @@ func (s *Scheduler) Start(ctx context.Context) error {
 	s.c.Start()
 	return nil
 }
-
-func (s *Scheduler) Stop(ctx context.Context) error {
-	stopCtx := s.c.Stop()
-	select {
-	case <-stopCtx.Done():
-		return nil
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-}

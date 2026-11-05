@@ -17,7 +17,6 @@ import copy
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
-WEB_DIR = Path(__file__).parent.parent / "apps" / "web" / "src" / "lib" / "data"
 
 
 def h(name, units, value):
@@ -31,10 +30,10 @@ def load_nav():
 
 
 def save_nav(data):
-    for path in [DATA_DIR / "nav_2026_01.json", WEB_DIR / "nav_2026_01.json"]:
-        with open(path, "w") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"Written to {path}")
+    path = DATA_DIR / "nav_2026_01.json"
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print(f"Written to {path}")
 
 
 # ---------------------------------------------------------------------------

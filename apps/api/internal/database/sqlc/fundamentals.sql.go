@@ -55,7 +55,7 @@ SELECT
   AVG(f.book_value) as avg_book_value
 FROM companies c
 INNER JOIN fundamentals f ON f.company_id = c.id
-WHERE c.sector = ?
+WHERE c.status = 'A' AND c.sector = ?
   AND f.id IN (
     SELECT f2.id FROM fundamentals f2
     WHERE f2.company_id = c.id

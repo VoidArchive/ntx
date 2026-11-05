@@ -24,10 +24,6 @@ WHERE company_id = ?
 ORDER BY business_date DESC
 LIMIT 1;
 
--- name: GetPriceByDate :one
-SELECT * FROM prices
-WHERE company_id = ? AND business_date = ?;
-
 -- name: ListPricesByCompany :many
 SELECT * FROM prices
 WHERE company_id = ?

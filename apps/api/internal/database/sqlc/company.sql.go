@@ -8,48 +8,9 @@ package sqlc
 import (
 	"context"
 	"database/sql"
+	"strings"
 	"time"
 )
-
-const countCompanies = `-- name: CountCompanies :one
-SELECT COUNT(*) FROM companies
-`
-
-func (q *Queries) CountCompanies(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countCompanies)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
-const countCompaniesBySearch = `-- name: CountCompaniesBySearch :one
-SELECT COUNT(*) FROM companies
-WHERE symbol LIKE ? COLLATE NOCASE
-OR name LIKE ? COLLATE NOCASE
-`
-
-type CountCompaniesBySearchParams struct {
-	Symbol string `json:"symbol"`
-	Name   string `json:"name"`
-}
-
-func (q *Queries) CountCompaniesBySearch(ctx context.Context, arg CountCompaniesBySearchParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countCompaniesBySearch, arg.Symbol, arg.Name)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
-const countCompaniesBySector = `-- name: CountCompaniesBySector :one
-SELECT COUNT(*) FROM companies WHERE sector = ?
-`
-
-func (q *Queries) CountCompaniesBySector(ctx context.Context, sector string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countCompaniesBySector, sector)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
 
 const getCompany = `-- name: GetCompany :one
 SELECT id, name, symbol, status, email, website, sector, instrument_type, created_at, updated_at FROM companies WHERE symbol = ?
@@ -77,6 +38,7 @@ const listCompanies = `-- name: ListCompanies :many
 SELECT c.id, c.name, c.symbol, c.status, c.email, c.website, c.sector, c.instrument_type, c.created_at, c.updated_at, o.listed_shares
 FROM companies c
 LEFT JOIN ownership o ON c.id = o.company_id
+WHERE c.status = 'A'
 ORDER by c.symbol LIMIT ? OFFSET ?
 `
 
@@ -136,7 +98,7 @@ func (q *Queries) ListCompanies(ctx context.Context, arg ListCompaniesParams) ([
 
 const listCompaniesBySector = `-- name: ListCompaniesBySector :many
 SELECT id, name, symbol, status, email, website, sector, instrument_type, created_at, updated_at FROM companies
-WHERE sector = ? AND (symbol LIKE ? OR name LIKE ?)
+WHERE status = 'A' AND sector = ? AND (symbol LIKE ? OR name LIKE ?)
 ORDER BY symbol
 LIMIT ? OFFSET ?
 `
@@ -189,10 +151,31 @@ func (q *Queries) ListCompaniesBySector(ctx context.Context, arg ListCompaniesBy
 	return items, nil
 }
 
+const markCompaniesDelistedExcept = `-- name: MarkCompaniesDelistedExcept :exec
+UPDATE companies SET status = 'D', updated_at = CURRENT_TIMESTAMP
+WHERE status != 'D' AND id NOT IN (/*SLICE:ids*/?)
+`
+
+// Companies that stop arriving in the NEPSE feed keep their row (and history) but leave every list.
+func (q *Queries) MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error {
+	query := markCompaniesDelistedExcept
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	_, err := q.db.ExecContext(ctx, query, queryParams...)
+	return err
+}
+
 const searchCompanies = `-- name: SearchCompanies :many
 SELECT id, name, symbol, status, email, website, sector, instrument_type, created_at, updated_at FROM companies
-WHERE symbol LIKE ? COLLATE NOCASE
-OR name LIKE ? COLLATE NOCASE
+WHERE status = 'A' AND (symbol LIKE ? COLLATE NOCASE
+OR name LIKE ? COLLATE NOCASE)
 ORDER BY symbol
 LIMIT ? OFFSET ?
 `
@@ -246,8 +229,9 @@ func (q *Queries) SearchCompanies(ctx context.Context, arg SearchCompaniesParams
 const upsertCompany = `-- name: UpsertCompany :exec
 INSERT INTO companies (id, name, symbol, status, email, website, sector, instrument_type, updated_at)
 VALUES (?,?,?,?,?,?,?,?, CURRENT_TIMESTAMP)
-ON CONFLICT(symbol) DO UPDATE SET
+ON CONFLICT(id) DO UPDATE SET
   name = excluded.name,
+  symbol = excluded.symbol,
   status = excluded.status,
   email = excluded.email,
   website = excluded.website,

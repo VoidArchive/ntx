@@ -3,16 +3,12 @@ import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async () => {
 	const apiUrl = apiBaseUrl();
-	const { company, price } = createApiClient(apiUrl);
+	const { company } = createApiClient(apiUrl);
+	const { companies } = await company.listCompanies({ limit: 500 });
 
-	const [companyRes, priceRes] = await Promise.all([
-		company.listCompanies({ limit: 500 }),
-		price.listLatestPrices({})
-	]);
-
+	// Every page carries this, so the search gets symbol and name and nothing else.
 	return {
-		companies: companyRes.companies,
-		prices: priceRes.prices,
+		search: companies.map(({ symbol, name }) => ({ symbol, name })),
 		apiUrl
 	};
 };

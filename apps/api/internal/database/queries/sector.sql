@@ -1,6 +1,7 @@
 -- name: ListSectorCounts :many
 SELECT sector, COUNT(*) AS company_count
 FROM companies
+WHERE status = 'A'
 GROUP BY sector
 ORDER BY company_count DESC, sector;
 
@@ -20,7 +21,7 @@ JOIN fundamentals f ON f.id = (
 JOIN fundamentals prev ON prev.company_id = c.id
   AND prev.quarter = f.quarter
   AND prev.fiscal_year = (CAST(substr(f.fiscal_year, 1, 4) AS INTEGER) - 1) || '-' || substr(f.fiscal_year, 1, 4)
-WHERE c.sector = ? AND f.profit_amount IS NOT NULL AND prev.profit_amount IS NOT NULL;
+WHERE c.status = 'A' AND c.sector = ? AND f.profit_amount IS NOT NULL AND prev.profit_amount IS NOT NULL;
 
 -- Change columns are NULL on backfilled rows, so the change comes from consecutive closes.
 -- name: ListDayChanges :many

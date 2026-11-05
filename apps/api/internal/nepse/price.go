@@ -24,7 +24,6 @@ type Price struct {
 }
 
 // LiveMarket returns real-time price data for all securities.
-// This is more reliable than TodaysPrices which may return empty results.
 func (c *Client) LiveMarket(ctx context.Context) ([]Price, error) {
 	entries, err := c.api.LiveMarket(ctx)
 	if err != nil {
@@ -45,34 +44,6 @@ func (c *Client) LiveMarket(ctx context.Context) ([]Price, error) {
 			ChangePercent: e.PercentageChange,
 			Volume:        e.TotalTradeQuantity,
 			Turnover:      e.TotalTradeValue,
-		})
-	}
-	return result, nil
-}
-
-func (c *Client) TodaysPrices(ctx context.Context, businessDate string) ([]Price, error) {
-	prices, err := c.api.TodaysPrices(ctx, businessDate)
-	if err != nil {
-		return nil, fmt.Errorf("fetch today prices: %w", err)
-	}
-
-	result := make([]Price, 0, len(prices))
-	for _, p := range prices {
-		result = append(result, Price{
-			SecurityID:    p.SecurityID,
-			Symbol:        p.Symbol,
-			BusinessDate:  p.BusinessDate,
-			Open:          p.OpenPrice,
-			High:          p.HighPrice,
-			Low:           p.LowPrice,
-			Close:         p.ClosePrice,
-			LTP:           p.LastTradedPrice,
-			PreviousClose: p.PreviousClose,
-			Change:        p.DifferenceRs,
-			ChangePercent: p.PercentageChange,
-			Volume:        p.TotalTradedQuantity,
-			Turnover:      p.TotalTradedValue,
-			Trades:        p.TotalTrades,
 		})
 	}
 	return result, nil

@@ -13,7 +13,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"types": "wrangler types"
+		"types": "wrangler types",
+		"test": "vitest run"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.1",
@@ -50,6 +51,7 @@
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.72.1",
 		"vite": "^8.3.5",
+		"vitest": "^5.1.0",
 		"wrangler": "^4.156.2"
 	},
 	"dependencies": {

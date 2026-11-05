@@ -4,7 +4,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"os"
 	"path/filepath"
 	"time"
@@ -13,8 +12,6 @@ import (
 
 	_ "modernc.org/sqlite"
 )
-
-var ErrNoDBPath = errors.New("database path is empty")
 
 func OpenDB(dbPath string) (*sql.DB, error) {
 	dbPath = normalizeDBPath(dbPath)

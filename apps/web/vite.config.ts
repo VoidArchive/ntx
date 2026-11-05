@@ -2,7 +2,7 @@ import adapter from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
@@ -17,5 +17,8 @@ export default defineConfig({
 				relative: false /* Required for PostHog session replay to work correctly */
 			}
 		})
-	]
+	],
+	test: {
+		include: ['src/**/*.test.ts']
+	}
 });

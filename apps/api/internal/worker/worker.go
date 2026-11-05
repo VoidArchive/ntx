@@ -73,7 +73,16 @@ func (w *Worker) SyncCompanies(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("nepse companies: %w", err)
 	}
+	return w.storeCompanies(ctx, companies)
+}
 
+// storeCompanies upserts the fetched set by exchange id, so a ticker rename updates
+// the row instead of colliding with it, then delists every company that did not arrive.
+func (w *Worker) storeCompanies(ctx context.Context, companies []nepse.Company) error {
+	if len(companies) == 0 {
+		return errors.New("nepse returned no companies; refusing to delist everything")
+	}
+	ids := make([]int64, 0, len(companies))
 	for _, c := range companies {
 		params := sqlc.UpsertCompanyParams{
 			ID:             c.ID,
@@ -88,6 +97,10 @@ func (w *Worker) SyncCompanies(ctx context.Context) error {
 		if err := w.queries.UpsertCompany(ctx, params); err != nil {
 			return fmt.Errorf("upsert company %q: %w", c.Symbol, err)
 		}
+		ids = append(ids, c.ID)
+	}
+	if err := w.queries.MarkCompaniesDelistedExcept(ctx, ids); err != nil {
+		return fmt.Errorf("delist missing companies: %w", err)
 	}
 	return nil
 }
@@ -242,7 +255,6 @@ func (w *Worker) SyncPrices(ctx context.Context, businessDate string) error {
 		symbolToID[c.Symbol] = c.ID
 	}
 
-	// Use LiveMarket - TodaysPrices requires auth that go-nepse doesn't support
 	prices, err := w.nepse.LiveMarket(ctx)
 	if err != nil {
 		return fmt.Errorf("fetch prices: %w", err)

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FundHolding } from '../../../routes/company/[symbol]/+page.server';
+	import type { FundHolding } from '#lib/fund-holdings.js';
 
 	interface Props {
 		holdings: FundHolding[];
