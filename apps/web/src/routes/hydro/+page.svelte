@@ -206,7 +206,9 @@
 			</div>
 
 			<div class="mt-2 overflow-x-auto">
-				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+				<table
+					class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-2.5 [&_th+th]:pl-2.5"
+				>
 					<thead class="text-xs text-muted-foreground">
 						<tr class="border-b border-border">
 							<th class="{thClass} text-left"><span class="sr-only">Readings</span></th>
@@ -261,7 +263,7 @@
 										>{open.has(p.id) ? '▾' : '▸'}</button
 									>
 								</td>
-								<td class="max-w-56 truncate py-1.5 font-medium" title={p.plant}>
+								<td class="max-w-48 truncate py-1.5 font-medium" title={p.plant}>
 									{p.plant}{#if p.status !== 'operating'}
 										<span class="text-xs font-normal text-muted-foreground">
 											({STATUS_LABEL[p.status]})</span
@@ -274,7 +276,9 @@
 										title={p.companyName}>{p.symbol}</a
 									>
 								</td>
-								<td class="py-1.5 text-muted-foreground">{p.river}</td>
+								<td class="max-w-40 truncate py-1.5 text-muted-foreground" title={p.river}
+									>{p.river}</td
+								>
 								<td class="py-1.5">{p.basin}</td>
 								<td class="py-1.5 text-right">{num(p.mw, 2)}</td>
 								<td class="py-1.5 text-right">
@@ -292,9 +296,9 @@
 								<td class="py-1.5 text-right">{p.pe === undefined ? '—' : `${num(p.pe)}x`}</td>
 								<td class="py-1.5">{p.rating || '—'}</td>
 								<!-- Close, PE and rating name their own filing and close (ADR 0002). -->
-								<td class="py-1.5 text-xs text-muted-foreground"
-									>{p.period || 'not recorded'} · {p.closeDate || 'not recorded'}</td
-								>
+								<td class="py-1.5 text-xs leading-tight text-muted-foreground">
+									{p.period || 'not recorded'}<br />{p.closeDate || 'not recorded'}
+								</td>
 							</tr>
 							{#if readings}
 								<tr class="border-b border-border/50 bg-muted/20">

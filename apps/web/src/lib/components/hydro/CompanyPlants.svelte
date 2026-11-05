@@ -43,10 +43,10 @@
 						{/if}
 					</td>
 					<!-- Each row names its own sources (ADR 0002): the licence row for the plant, the models for the day. -->
-					<td class="py-1.5 text-xs text-muted-foreground">
-						<a href={p.sourceUrl} class="underline underline-offset-2">DoED</a>
+					<td class="py-1.5 text-xs leading-tight text-muted-foreground">
+						<a href={p.sourceUrl} class="underline underline-offset-2">DoED licence row</a>
 						{#if p.latest}
-							· {p.latest.rainSource || 'rain not recorded'} · {p.latest.dischargeSource ||
+							<br />{p.latest.rainSource || 'rain not recorded'}<br />{p.latest.dischargeSource ||
 								'discharge not recorded'}
 						{/if}
 					</td>
