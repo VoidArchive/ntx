@@ -27,11 +27,3 @@ func AutoMigrate(db *sql.DB) error {
 	}
 	return nil
 }
-
-func MigrateDown(db *sql.DB) error {
-	goose.SetBaseFS(migrations)
-	if err := goose.SetDialect("sqlite"); err != nil {
-		return err
-	}
-	return goose.Down(db, "migrations")
-}

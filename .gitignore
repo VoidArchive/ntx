@@ -26,6 +26,10 @@ profile.cov
 go.work
 go.work.sum
 
+# SQLite databases (local data lives under XDG or NTX_DB_PATH)
+*.db
+*.db-*
+
 # env file
 .env
 
