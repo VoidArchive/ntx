@@ -82,7 +82,7 @@ The named river a plant's intake is on, as the licence names it (Tamakoshi, Tris
 _Avoid_: stream, khola (as a separate concept)
 
 **Basin**:
-One of the major drainage basins of Nepal, from a fixed list. Every river belongs to exactly one basin. Colouring, basin state and the one-hydro-per-basin rule work at this level, never at the river level.
+One of nine drainage basins of Nepal: Koshi, Gandaki, Karnali, Mahakali, Bagmati, Kamala, West Rapti (including Tinau), Babai, Kankai (including Mechi). Every river belongs to exactly one basin; a river outside the list is an error in the plant table, not a tenth basin. Colouring, basin state and the one-hydro-per-basin rule work at this level, never at the river level.
 _Avoid_: watershed, catchment, region
 
 **Reading**:
@@ -90,5 +90,5 @@ One day's rain and river discharge at a plant's coordinates, carrying its date a
 _Avoid_: forecast, observation, data point
 
 **Plant state / Basin state**:
-A plant's state is Normal, Heavy rain, High discharge or Needs more history, from a published rule with a threshold applied to its readings. A basin's state is the worst state among its plants. Neither is an alert or a prediction.
+A plant's state is Normal, Heavy rain or High discharge, from two published rules: the day's rain on the DHM 24-hour scale (heavy from 50 mm), and the day's discharge against the plant's own record (high above its 95th percentile). Discharge is modelled, not gauged. A basin's state is the worst state among its plants. Neither is an alert or a prediction.
 _Avoid_: alert, warning, risk level, flood

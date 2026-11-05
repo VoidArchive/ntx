@@ -139,7 +139,9 @@ Added 2026-11-05 after sub-project 1 shipped. The pages read as an info dump and
 - **Rating**: computed in the API from the eight checks. A is 7 or 8 Holds of 8, B 5 or 6, C 3 or 4, D 0 to 2, scaled by the count of checks that could be evaluated; no rating when fewer than 4 evaluate. Shown once, beside the symbol, as a letter in the foreground colour with "n of m checks hold" on hover or tap. It summarises published checks and is not a recommendation; this amends the "no scores" constraint above and the glossary gains a Rating entry.
 - **Screener**: the companies list at `/company` becomes a dense sortable table (symbol, name, sector, close, PE, PB, EPS, dividend yield, market cap, rating), default sort market cap descending. Filters: sector, PE range, PB range, minimum rating, text; all filter and sort state in the URL. The worker stores each company's rating after the daily sync so the screener reads a stored value; the company page keeps computing live.
 
-## Sub-project 2: hydro map (summary, own spec later)
+## Sub-project 2: hydro map (summary; full spec in `2026-11-05-ntx-hydro-map-design.md`)
+
+Superseded 2026-11-05 by the sub-project 2 spec: v1 is holdings-free, the basin check and mini-map move to sub-project 3, and the hydro company page gets a Plants section instead.
 
 - Curated `data/hydro_plants.csv`: company symbol, plant, river, basin, district, MW, lat, lon, status, source URL. Built once with research help, edited by hand after.
 - Map: Nepal border (geoBoundaries) and rivers (HydroRIVERS clipped) as GeoJSON rendered with d3-geo to static SVG. No tiles, no external map service.
