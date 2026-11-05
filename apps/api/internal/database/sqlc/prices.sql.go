@@ -94,39 +94,6 @@ func (q *Queries) GetLatestPriceBySymbol(ctx context.Context, symbol string) (Ge
 	return i, err
 }
 
-const getPriceByDate = `-- name: GetPriceByDate :one
-SELECT id, company_id, business_date, open_price, high_price, low_price, close_price, last_traded_price, previous_close, change_amount, change_percent, volume, turnover, trades, created_at FROM prices
-WHERE company_id = ? AND business_date = ?
-`
-
-type GetPriceByDateParams struct {
-	CompanyID    int64  `json:"company_id"`
-	BusinessDate string `json:"business_date"`
-}
-
-func (q *Queries) GetPriceByDate(ctx context.Context, arg GetPriceByDateParams) (Price, error) {
-	row := q.db.QueryRowContext(ctx, getPriceByDate, arg.CompanyID, arg.BusinessDate)
-	var i Price
-	err := row.Scan(
-		&i.ID,
-		&i.CompanyID,
-		&i.BusinessDate,
-		&i.OpenPrice,
-		&i.HighPrice,
-		&i.LowPrice,
-		&i.ClosePrice,
-		&i.LastTradedPrice,
-		&i.PreviousClose,
-		&i.ChangeAmount,
-		&i.ChangePercent,
-		&i.Volume,
-		&i.Turnover,
-		&i.Trades,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const listLatestPrices = `-- name: ListLatestPrices :many
 WITH LatestDates AS (
     SELECT company_id, MAX(business_date) as max_date

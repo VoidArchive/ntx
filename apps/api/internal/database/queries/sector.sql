@@ -1,6 +1,7 @@
 -- name: ListSectorCounts :many
 SELECT sector, COUNT(*) AS company_count
 FROM companies
+WHERE status = 'A'
 GROUP BY sector
 ORDER BY company_count DESC, sector;
 

@@ -150,6 +150,7 @@ func (q *Queries) ListFiledRecently(ctx context.Context, limit int64) ([]ListFil
 const listSectorCounts = `-- name: ListSectorCounts :many
 SELECT sector, COUNT(*) AS company_count
 FROM companies
+WHERE status = 'A'
 GROUP BY sector
 ORDER BY company_count DESC, sector
 `
