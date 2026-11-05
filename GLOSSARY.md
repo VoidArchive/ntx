@@ -18,6 +18,10 @@ _Avoid_: test, rule (for the verdict), score, pass/fail, signal
 The two verdicts of a Check. Holds means the rule is satisfied; Watch means it is not. Neither is a recommendation.
 _Avoid_: pass, fail, buy, sell, bullish, bearish
 
+**Rating**:
+One letter, A to D, summarising a company's Checks: the share of Holds among the Checks that could be evaluated, scaled to eight (A for 7 or 8, B for 5 or 6, C for 3 or 4, D for 0 to 2). Unrated when fewer than four Checks evaluate. A summary of published rules, not a recommendation.
+_Avoid_: score, grade, signal, buy, sell
+
 **Strip**:
 A horizontal range showing where one company's ratio sits, drawn twice: on the sector's distribution and on the company's own three-year range.
 _Avoid_: gauge, meter, range bar
