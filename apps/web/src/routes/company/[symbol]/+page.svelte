@@ -43,6 +43,11 @@
 	}
 
 	const GLYPH: Record<string, string> = { holds: '✓', watch: '△', 'needs more history': '·' };
+	const VERDICT: Record<string, string> = {
+		holds: 'Holds',
+		watch: 'Watch',
+		'needs more history': 'Needs more history'
+	};
 </script>
 
 <!-- A section opens with its claim as the headline and its checks beside it. -->
@@ -59,14 +64,16 @@
 			</p>
 		</div>
 		{#if verdicts.length > 0}
-			<ul class="shrink-0 space-y-1 text-sm lg:w-72" aria-label="Checks">
+			<ul class="shrink-0 space-y-2 text-sm lg:w-72" aria-label="Checks">
 				{#each verdicts as check (check.name)}
 					<li class={check.verdict === 'holds' ? '' : 'text-muted-foreground'}>
-						<span aria-hidden="true">{GLYPH[check.verdict]}</span>
-						<span class="font-medium">{check.name}</span>
-						<span class="text-muted-foreground">
-							· {check.verdict === 'needs more history' ? 'needs more history' : check.rule}
-						</span>
+						<span class="font-medium"
+							><span aria-hidden="true">{GLYPH[check.verdict]}</span> {VERDICT[check.verdict]}</span
+						>
+						· {check.name}
+						{#if check.verdict !== 'needs more history'}
+							<span class="block text-xs text-muted-foreground">{check.rule}</span>
+						{/if}
 					</li>
 				{/each}
 			</ul>
@@ -77,10 +84,35 @@
 {#if company}
 	<div class="min-h-screen bg-background text-foreground">
 		<div class="mx-auto max-w-7xl px-4 py-8">
-			<!-- 1. Lede: symbol, rating, the earnings sentence, the quote -->
-			<StoryOpening {company} {story} />
+			<!-- 1. Lede: symbol, rating, the earnings sentence, the quote; the research prompt beside it -->
+			<div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+				<StoryOpening {company} {story} />
+				<div class="shrink-0 sm:pt-4">
+					<AIResearchButton {company} {story} />
+				</div>
+			</div>
 
-			<!-- 2. Earnings: quarter-only bars, hydro EPS line, rows as filed -->
+			<!-- 2. Price and volume, under the quote it explains -->
+			<section id="price" class="mt-12 border-t border-border pt-8">
+				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<h2 class="text-xs tracking-wide text-muted-foreground uppercase">Price and volume</h2>
+					{#if priceHistory.length > 0}
+						<TimeRangeSelector selected={chartDays} onSelect={(days) => (chartDays = days)} />
+					{/if}
+				</div>
+				{#if priceHistory.length > 0}
+					<div class="h-[350px] overflow-hidden">
+						<PriceChart prices={priceHistory} events={story?.events ?? []} days={chartDays} />
+					</div>
+					<div class="mt-2">
+						<VolumeChart prices={priceHistory} days={chartDays} />
+					</div>
+				{:else}
+					<p class="text-sm text-muted-foreground">No closes recorded. {lastFiling}</p>
+				{/if}
+			</section>
+
+			<!-- 3. Earnings: quarter-only bars, hydro EPS line, rows as filed -->
 			<section id="earnings" class="mt-12 border-t border-border pt-8">
 				{@render head(
 					'Earnings',
@@ -104,7 +136,7 @@
 				{/if}
 			</section>
 
-			<!-- 3. Valuation: four strips, peers beneath on the PE strip's range -->
+			<!-- 4. Valuation: four strips, peers beneath on the PE strip's range -->
 			<section id="valuation" class="mt-12 border-t border-border pt-8">
 				{@render head(
 					'Valuation',
@@ -125,7 +157,7 @@
 				{/if}
 			</section>
 
-			<!-- 4. Payout: cash and bonus per fiscal year, the year rows, compounded growth -->
+			<!-- 5. Payout: cash and bonus per fiscal year, the year rows, compounded growth -->
 			<section id="payout" class="mt-12 border-t border-border pt-8">
 				{@render head(
 					'Payout',
@@ -144,7 +176,7 @@
 				{/if}
 			</section>
 
-			<!-- 5. Ownership over time -->
+			<!-- 6. Ownership over time -->
 			<section id="ownership" class="mt-12 border-t border-border pt-8">
 				{@render head(
 					'Ownership',
@@ -157,7 +189,7 @@
 				{/if}
 			</section>
 
-			<!-- 6. Fund holdings -->
+			<!-- 7. Fund holdings -->
 			<section id="funds" class="mt-12 border-t border-border pt-8">
 				{@render head(
 					'Funds',
@@ -170,7 +202,7 @@
 				{/if}
 			</section>
 
-			<!-- 7. Plants, hydro companies only: river, basin, MW and today's state -->
+			<!-- 8. Plants, hydro companies only: river, basin, MW and today's state -->
 			{#if plants.length > 0}
 				<section id="plants" class="mt-12 border-t border-border pt-8">
 					<div class="mb-6 max-w-3xl">
@@ -181,30 +213,8 @@
 				</section>
 			{/if}
 
-			<!-- 8. Price and volume last: the quote is context, not the hero -->
-			<section id="price" class="mt-12 border-t border-border pt-8">
-				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<h2 class="text-xs tracking-wide text-muted-foreground uppercase">Price and volume</h2>
-					{#if priceHistory.length > 0}
-						<TimeRangeSelector selected={chartDays} onSelect={(days) => (chartDays = days)} />
-					{/if}
-				</div>
-				{#if priceHistory.length > 0}
-					<div class="h-[350px] overflow-hidden">
-						<PriceChart prices={priceHistory} events={story?.events ?? []} days={chartDays} />
-					</div>
-					<div class="mt-2">
-						<VolumeChart prices={priceHistory} days={chartDays} />
-					</div>
-				{:else}
-					<p class="text-sm text-muted-foreground">No closes recorded. {lastFiling}</p>
-				{/if}
-			</section>
-
-			<!-- 9. How fresh the data is, and the research prompt built from it -->
-			<footer
-				class="mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
-			>
+			<!-- 9. How fresh the data is -->
+			<footer class="mt-12 border-t border-border pt-6 text-xs text-muted-foreground">
 				<p class="tabular-nums">
 					Last sync {story?.syncedAt ? `${story.syncedAt} UTC` : 'not recorded'} · Newest filing
 					{#if story?.filedAt}
@@ -217,7 +227,6 @@
 					<a href="#earnings" class="underline underline-offset-2 hover:text-foreground">raw rows</a
 					>
 				</p>
-				<AIResearchButton {company} {story} />
 			</footer>
 		</div>
 	</div>

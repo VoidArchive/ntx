@@ -4,8 +4,9 @@
 	import { PlantState } from '#lib/gen/ntx/v1/hydro_pb.js';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { SvelteMap, SvelteURLSearchParams } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
 	import HydroMap from '#lib/components/hydro/HydroMap.svelte';
+	import PlantCard from '#lib/components/hydro/PlantCard.svelte';
 	import StateMark from '#lib/components/hydro/StateMark.svelte';
 	import { STATE, STATES, STATUS_LABEL, num, stateFromKey } from '#lib/hydro.js';
 
@@ -74,24 +75,52 @@
 	});
 
 	let hovered = $state<Plant | undefined>();
-	const open = new SvelteMap<bigint, Reading[] | 'loading' | 'failed'>();
+	// The pinned plant is in the URL like every other state here, so a plant is a link.
+	let selected = $derived(data.plants.find((p) => String(p.id) === params.get('plant')));
+	let active = $derived(selected ?? hovered);
+	// Readings by plant, shared by the card and the ▸ rows.
+	const readings = new SvelteMap<bigint, Reading[] | 'loading' | 'failed'>();
 
-	async function toggle(p: Plant) {
-		if (open.has(p.id)) {
-			open.delete(p.id);
-			return;
-		}
-		open.set(p.id, 'loading');
+	async function load(p: Plant) {
+		if (readings.has(p.id)) return;
+		readings.set(p.id, 'loading');
 		try {
 			const res = await fetch(`/hydro/readings/${p.id}`);
 			if (!res.ok) throw new Error(res.statusText);
-			open.set(p.id, (await res.json()) as Reading[]);
+			readings.set(p.id, (await res.json()) as Reading[]);
 		} catch {
-			open.set(p.id, 'failed');
+			readings.set(p.id, 'failed');
+		}
+	}
+
+	// A sweep across the map should not fetch for every dot it crosses.
+	$effect(() => {
+		const p = active;
+		if (!p || readings.has(p.id)) return;
+		const t = setTimeout(() => load(p), 250);
+		return () => clearTimeout(t);
+	});
+
+	function select(p: Plant | undefined) {
+		setParams({ plant: p ? String(p.id) : '' });
+		if (p) document.getElementById('hydro-map')?.scrollIntoView({ block: 'nearest' });
+	}
+
+	const open = new SvelteSet<bigint>();
+	function toggle(p: Plant) {
+		if (open.has(p.id)) open.delete(p.id);
+		else {
+			open.add(p.id);
+			load(p);
 		}
 	}
 
 	let basinsWithPlants = $derived(data.basins.filter((b) => b.plantCount > 0));
+	// The worker reads every plant on one morning, so the day belongs in the header, not in each row.
+	let readingDay = $derived.by(() => {
+		const days = new Set(data.plants.map((p) => p.latest?.day).filter(Boolean));
+		return days.size === 1 ? [...days][0] : '';
+	});
 	let lastRun = $derived(data.lastRun ? `${data.lastRun} UTC` : 'not yet');
 	const thClass = 'py-2 font-normal';
 </script>
@@ -99,6 +128,10 @@
 <svelte:head>
 	<title>Hydro · NTX</title>
 </svelte:head>
+
+{#snippet card(p: Plant, pinned: boolean)}
+	<PlantCard plant={p} readings={readings.get(p.id)} {pinned} onClose={() => select(undefined)} />
+{/snippet}
 
 <div class="mx-auto min-h-screen max-w-7xl px-4 py-8">
 	<header>
@@ -136,32 +169,20 @@
 					plants={data.plants}
 					basins={data.basins}
 					{basinFilter}
+					{selected}
+					{hovered}
 					onBasin={(name) => setParams({ basin: name })}
 					onHover={(p) => (hovered = p)}
+					onSelect={select}
+					{card}
 				/>
-				<p class="mt-2 min-h-5 text-sm text-muted-foreground tabular-nums" aria-live="polite">
-					{#if hovered}
-						<span class="font-medium text-foreground">{hovered.plant}</span>
-						·
-						<a href="/company/{hovered.symbol}" class="underline underline-offset-2"
-							>{hovered.symbol}</a
-						>
-						· {hovered.river}, {hovered.basin} · {num(hovered.mw, 2)} MW · {STATUS_LABEL[
-							hovered.status
-						]}
-						· <StateMark state={hovered.state} stale={hovered.stale} />
-						{#if hovered.latest}
-							· {hovered.latest.day}: {num(hovered.latest.rainMm)} mm, {num(
-								hovered.latest.dischargeM3s
-							)} m³/s
-						{/if}
-					{:else}
-						Hover a dot for the plant; click a river or dot to filter the list by its basin.
-					{/if}
+				<p class="mt-2 text-sm text-muted-foreground">
+					Hover a dot for the plant and its weather; click it, or a plant in the list, to keep the
+					card open. Click a river to filter the list by its basin.
 				</p>
 			</div>
 			<div class="lg:hidden">
-				<HydroMap plants={data.plants} basins={data.basins} {basinFilter} compact />
+				<HydroMap plants={data.plants} basins={data.basins} {basinFilter} {selected} compact />
 			</div>
 		</section>
 
@@ -206,18 +227,18 @@
 			</div>
 
 			<div class="mt-2 overflow-x-auto">
-				<table
-					class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-2.5 [&_th+th]:pl-2.5"
-				>
-					<thead class="text-xs text-muted-foreground">
+				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+					<!-- The header stays while 141 rows scroll; the plant stays while a phone scrolls sideways. -->
+					<thead class="sticky top-12 z-10 bg-background text-xs text-muted-foreground lg:top-0">
 						<tr class="border-b border-border">
-							<th class="{thClass} text-left"><span class="sr-only">Readings</span></th>
-							<th class="{thClass} text-left">Plant</th>
+							<th class="{thClass} sticky left-0 bg-background text-left">Plant</th>
 							<th class="{thClass} text-left">Symbol</th>
 							<th class="{thClass} text-left">River</th>
 							{#each columns as col (col.key)}
 								<th
-									class="{thClass} {col.key === 'basin' ? 'text-left' : 'text-right'}"
+									class="{thClass} {col.key === 'mw' || col.key === 'pe'
+										? 'text-right'
+										: 'text-left'}"
 									aria-sort={col.key === sortCol.key
 										? sortDesc
 											? 'descending'
@@ -228,15 +249,13 @@
 										onclick={() => sortBy(col)}
 										class="hover:text-foreground {col.key === sortCol.key ? 'text-foreground' : ''}"
 									>
-										{col.label}{#if col.key === sortCol.key}
+										{col.key === 'state'
+											? `State${readingDay ? ` on ${readingDay}` : ''}`
+											: col.label}{#if col.key === sortCol.key}
 											<span aria-hidden="true">{sortDesc ? ' ▼' : ' ▲'}</span>{/if}
 									</button>
 								</th>
-								{#if col.key === 'mw'}
-									<th class="{thClass} text-right">Rain · discharge</th>
-								{/if}
 								{#if col.key === 'state'}
-									<th class="{thClass} text-left">Reading</th>
 									<th class="{thClass} text-right">Close</th>
 								{/if}
 								{#if col.key === 'pe'}
@@ -247,24 +266,50 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each rows as p (p.id)}
-							{@const readings = open.get(p.id)}
+						{#each rows as p, i (p.id)}
+							{@const days = open.has(p.id) ? readings.get(p.id) : undefined}
+							{#if sortCol.key === 'basin' && rows[i - 1]?.basin !== p.basin}
+								{@const b = data.basins.find((x) => x.name === p.basin)}
+								<!-- Sorted by basin, each basin opens with its state and count, the same line as its chip. -->
+								<tr class="border-b border-border bg-muted/30">
+									<th colspan="11" class="sticky left-0 py-1.5 text-left text-xs font-medium">
+										{p.basin}
+										{#if b}
+											<span class="font-normal text-muted-foreground">
+												· {b.plantCount} plants
+												<span class="ml-3"><StateMark state={b.state} /></span>
+											</span>
+										{/if}
+									</th>
+								</tr>
+							{/if}
 							<tr
-								class="border-b border-border/50 hover:bg-muted/50 {hovered?.id === p.id
+								class="border-b border-border/50 hover:bg-muted/50 {active?.id === p.id
 									? 'bg-muted/50'
 									: ''}"
+								onmouseenter={() => (hovered = p)}
+								onmouseleave={() => (hovered = undefined)}
 							>
-								<td class="py-1.5">
+								<td
+									class="sticky left-0 py-1.5 font-medium {active?.id === p.id
+										? 'bg-muted'
+										: 'bg-background'}"
+								>
 									<button
 										onclick={() => toggle(p)}
 										aria-expanded={open.has(p.id)}
 										aria-label="Last seven days for {p.plant}"
-										class="w-5 text-muted-foreground hover:text-foreground"
+										class="w-4 text-muted-foreground hover:text-foreground"
 										>{open.has(p.id) ? '▾' : '▸'}</button
 									>
-								</td>
-								<td class="max-w-48 truncate py-1.5 font-medium" title={p.plant}>
-									{p.plant}{#if p.status !== 'operating'}
+									<!-- The name is the way to the map: it pins the plant and scrolls to it. -->
+									<button
+										onclick={() => select(selected?.id === p.id ? undefined : p)}
+										aria-pressed={selected?.id === p.id}
+										title={p.plant}
+										class="inline-block max-w-48 truncate align-bottom hover:underline"
+										>{p.plant}</button
+									>{#if p.status !== 'operating'}
 										<span class="text-xs font-normal text-muted-foreground">
 											({STATUS_LABEL[p.status]})</span
 										>{/if}
@@ -281,36 +326,36 @@
 								>
 								<td class="py-1.5">{p.basin}</td>
 								<td class="py-1.5 text-right">{num(p.mw, 2)}</td>
-								<td class="py-1.5 text-right">
+								<!-- State, then the day's figures; the day only when it is not the shared one. -->
+								<td class="py-1.5">
+									<StateMark state={p.state} stale={p.stale} />
 									{#if p.latest}
-										{num(p.latest.rainMm)} mm · {num(p.latest.dischargeM3s)} m³/s
+										<span class="text-xs text-muted-foreground">
+											· {num(p.latest.rainMm)} mm · {num(p.latest.dischargeM3s)} m³/s{#if p.latest.day !== readingDay}
+												· {p.latest.day}{/if}
+										</span>
 									{:else}
-										not recorded
+										<span class="text-xs text-muted-foreground">· not recorded</span>
 									{/if}
 								</td>
-								<td class="py-1.5 text-right"><StateMark state={p.state} stale={p.stale} /></td>
-								<td class="py-1.5 text-xs text-muted-foreground"
-									>{p.latest?.day ?? 'not recorded'}</td
-								>
 								<td class="py-1.5 text-right">{num(p.close, 2)}</td>
 								<td class="py-1.5 text-right">{p.pe === undefined ? '—' : `${num(p.pe)}x`}</td>
 								<td class="py-1.5">{p.rating || '—'}</td>
 								<!-- Close, PE and rating name their own filing and close (ADR 0002). -->
-								<td class="py-1.5 text-xs leading-tight text-muted-foreground">
-									{p.period || 'not recorded'}<br />{p.closeDate || 'not recorded'}
+								<td class="py-1.5 text-xs text-muted-foreground">
+									{p.period || 'not recorded'} · {p.closeDate || 'not recorded'}
 								</td>
 							</tr>
-							{#if readings}
+							{#if days}
 								<tr class="border-b border-border/50 bg-muted/20">
-									<td></td>
-									<td colspan="12" class="py-2 pr-3">
-										{#if readings === 'loading'}
+									<td colspan="11" class="py-2 pr-3 pl-7">
+										{#if days === 'loading'}
 											<span class="text-xs text-muted-foreground">Loading…</span>
-										{:else if readings === 'failed'}
+										{:else if days === 'failed'}
 											<span class="text-xs text-muted-foreground"
 												>Readings could not be loaded.</span
 											>
-										{:else if readings.length === 0}
+										{:else if days.length === 0}
 											<span class="text-xs text-muted-foreground"
 												>No readings recorded for this plant.</span
 											>
@@ -328,7 +373,7 @@
 													</tr>
 												</thead>
 												<tbody>
-													{#each readings as r (r.day)}
+													{#each days as r (r.day)}
 														<tr>
 															<td>{r.day}</td>
 															<td class="text-right">{num(r.rainMm)}</td>
@@ -352,7 +397,7 @@
 							{/if}
 						{:else}
 							<tr>
-								<td colspan="13" class="py-12 text-center text-muted-foreground">
+								<td colspan="11" class="py-12 text-center text-muted-foreground">
 									No plant matches.
 									<button
 										onclick={() => goto('?', { replace: true, shallow: true })}

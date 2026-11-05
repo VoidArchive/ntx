@@ -46,6 +46,11 @@
 		{/if}
 		<span class="text-lg text-muted-foreground">{company.name}</span>
 		<span class="text-sm text-muted-foreground">{sectorNames[company.sector] ?? 'Others'}</span>
+		{#if rating?.letter}
+			<span class="text-xs text-muted-foreground tabular-nums"
+				>· {rating.holds} of {rating.evaluated} checks hold</span
+			>
+		{/if}
 	</div>
 
 	<p class="mt-4 max-w-3xl text-lg leading-relaxed">

@@ -30,10 +30,16 @@ export function formatLarge(value: number, digits = 2): string {
 	return value.toLocaleString('en-NP');
 }
 
-// Position of value on a range's bar, as a percentage clamped so outliers sit at the ends.
-export function at(range: { low: number; high: number }, value: number): number {
-	if (range.high === range.low) return 50;
-	return Math.min(100, Math.max(0, ((value - range.low) / (range.high - range.low)) * 100));
+// Position on a strip, 0 to 100, with the median pinned at 50: the half below the median fills
+// the left half and the half above fills the right, so one outlier cannot crush the rest against
+// an end and "left of centre" always reads as below the median.
+export function at(range: { low: number; median: number; high: number }, value: number): number {
+	if (value <= range.median) {
+		const span = range.median - range.low;
+		return span <= 0 ? 50 : Math.max(0, (50 * (value - range.low)) / span);
+	}
+	const span = range.high - range.median;
+	return span <= 0 ? 50 : Math.min(100, 50 + (50 * (value - range.median)) / span);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
