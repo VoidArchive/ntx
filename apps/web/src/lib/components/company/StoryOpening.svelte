@@ -15,9 +15,6 @@
 	let lede = $derived((story?.claims ?? []).filter((c) => c.kind === 'earnings').slice(0, 1));
 	let quote = $derived(story?.quote);
 	let rating = $derived(story?.rating);
-	let evaluated = $derived(
-		(story?.checks ?? []).filter((c) => c.verdict !== 'needs more history').length
-	);
 
 	function fmt(value: number): string {
 		return value.toLocaleString('en-NP', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -31,7 +28,7 @@
 <header class="py-4">
 	<div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
 		<h1 class="font-serif text-3xl font-medium tracking-tight">{company.symbol}</h1>
-		{#if rating}
+		{#if rating?.letter}
 			<!-- The letter alone carries the meaning; no colour (GLOSSARY: Rating). -->
 			<span
 				class="inline-flex size-8 items-center justify-center self-center rounded border border-foreground font-serif text-lg font-medium"
@@ -40,11 +37,11 @@
 			>
 				{rating.letter}
 			</span>
-		{:else if story}
+		{:else if rating && story}
 			<span
 				class="text-xs text-muted-foreground"
-				title="A rating needs at least 4 checks with enough history; {evaluated} have it"
-				>Unrated</span
+				title="{rating.evaluated} of {story.checks
+					.length} checks have enough history; too few to rate">Unrated</span
 			>
 		{/if}
 		<span class="text-lg text-muted-foreground">{company.name}</span>

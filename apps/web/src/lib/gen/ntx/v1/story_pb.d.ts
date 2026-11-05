@@ -151,7 +151,7 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
   checks: Check[];
 
   /**
-   * One letter summarising the checks (GLOSSARY: Rating); unset when fewer than four evaluate.
+   * The checks summarised (GLOSSARY: Rating); the letter is empty when fewer than four evaluate.
    *
    * @generated from field: ntx.v1.Rating rating = 31;
    */
@@ -236,7 +236,7 @@ export declare const PeerSchema: GenMessage<Peer>;
  */
 export declare type Rating = Message<"ntx.v1.Rating"> & {
   /**
-   * "A".."D"
+   * "A".."D", "" when unrated
    *
    * @generated from field: string letter = 1;
    */

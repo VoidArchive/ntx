@@ -300,6 +300,11 @@ func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
 		Name:   r.Name,
 		Sector: SectorFromDB(r.Sector),
 		Rating: r.Rating.String,
+		// Each row names its own filing and close (ADR 0002); both are "" without one.
+		Period: period(
+			sqlc.Fundamental{FiscalYear: r.FiscalYear.String, Quarter: r.Quarter.String, FiscalYearNp: r.FiscalYearNp},
+		),
+		CloseDate: r.BusinessDate.String,
 	}
 	if r.Eps.Valid {
 		row.Eps = &r.Eps.Float64

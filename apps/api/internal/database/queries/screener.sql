@@ -17,7 +17,8 @@ SELECT c.symbol, c.name, c.sector,
   p.close_price, p.turnover,
   f.eps, f.book_value,
   ca.cash_dividend,
-  r.letter AS rating
+  r.letter AS rating,
+  f.fiscal_year, f.quarter, f.fiscal_year_np, p.business_date
 FROM companies c
 LEFT JOIN ownership o ON o.company_id = c.id
 LEFT JOIN prices p ON p.id = (

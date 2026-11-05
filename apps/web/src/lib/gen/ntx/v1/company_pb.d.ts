@@ -113,6 +113,20 @@ export declare type ScreenerRow = Message<"ntx.v1.ScreenerRow"> & {
    * @generated from field: string rating = 11;
    */
   rating: string;
+
+  /**
+   * the filing the ratios come from, "Q1 2083/84"; "" without one
+   *
+   * @generated from field: string period = 12;
+   */
+  period: string;
+
+  /**
+   * business date of the close, "2026-11-03"; "" without one
+   *
+   * @generated from field: string close_date = 13;
+   */
+  closeDate: string;
 };
 
 /**

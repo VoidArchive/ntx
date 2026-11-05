@@ -115,6 +115,8 @@ type ScreenerRow struct {
 	MarketCap     *float64               `protobuf:"fixed64,9,opt,name=market_cap,json=marketCap,proto3,oneof" json:"market_cap,omitempty"` // Rs, close times listed shares
 	Turnover      *float64               `protobuf:"fixed64,10,opt,name=turnover,proto3,oneof" json:"turnover,omitempty"`                   // Rs, latest session
 	Rating        string                 `protobuf:"bytes,11,opt,name=rating,proto3" json:"rating,omitempty"`                               // "A".."D", "" when unrated or not yet computed
+	Period        string                 `protobuf:"bytes,12,opt,name=period,proto3" json:"period,omitempty"`                               // the filing the ratios come from, "Q1 2083/84"; "" without one
+	CloseDate     string                 `protobuf:"bytes,13,opt,name=close_date,json=closeDate,proto3" json:"close_date,omitempty"`        // business date of the close, "2026-11-03"; "" without one
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -222,6 +224,20 @@ func (x *ScreenerRow) GetTurnover() float64 {
 func (x *ScreenerRow) GetRating() string {
 	if x != nil {
 		return x.Rating
+	}
+	return ""
+}
+
+func (x *ScreenerRow) GetPeriod() string {
+	if x != nil {
+		return x.Period
+	}
+	return ""
+}
+
+func (x *ScreenerRow) GetCloseDate() string {
+	if x != nil {
+		return x.CloseDate
 	}
 	return ""
 }
@@ -877,7 +893,7 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x14ntx/v1/company.proto\x12\x06ntx.v1\x1a\x13ntx/v1/common.proto\"\x15\n" +
 	"\x13ListScreenerRequest\"?\n" +
 	"\x14ListScreenerResponse\x12'\n" +
-	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\xfb\x02\n" +
+	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\xb2\x03\n" +
 	"\vScreenerRow\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
@@ -891,7 +907,10 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"market_cap\x18\t \x01(\x01H\x05R\tmarketCap\x88\x01\x01\x12\x1f\n" +
 	"\bturnover\x18\n" +
 	" \x01(\x01H\x06R\bturnover\x88\x01\x01\x12\x16\n" +
-	"\x06rating\x18\v \x01(\tR\x06ratingB\b\n" +
+	"\x06rating\x18\v \x01(\tR\x06rating\x12\x16\n" +
+	"\x06period\x18\f \x01(\tR\x06period\x12\x1d\n" +
+	"\n" +
+	"close_date\x18\r \x01(\tR\tcloseDateB\b\n" +
 	"\x06_closeB\x05\n" +
 	"\x03_peB\x05\n" +
 	"\x03_pbB\x06\n" +

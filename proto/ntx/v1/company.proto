@@ -35,6 +35,8 @@ message ScreenerRow {
   optional double market_cap = 9; // Rs, close times listed shares
   optional double turnover = 10;  // Rs, latest session
   string rating = 11;             // "A".."D", "" when unrated or not yet computed
+  string period = 12;             // the filing the ratios come from, "Q1 2083/84"; "" without one
+  string close_date = 13;         // business date of the close, "2026-11-03"; "" without one
 }
 
 message ListCompaniesRequest {

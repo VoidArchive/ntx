@@ -171,7 +171,7 @@ type GetCompanyStoryResponse struct {
 	Ownership []*OwnershipObservation `protobuf:"bytes,12,rep,name=ownership,proto3" json:"ownership,omitempty"`
 	// The eight published rules, in a fixed order (GLOSSARY: Check).
 	Checks []*Check `protobuf:"bytes,30,rep,name=checks,proto3" json:"checks,omitempty"`
-	// One letter summarising the checks (GLOSSARY: Rating); unset when fewer than four evaluate.
+	// The checks summarised (GLOSSARY: Rating); the letter is empty when fewer than four evaluate.
 	Rating *Rating `protobuf:"bytes,31,opt,name=rating,proto3" json:"rating,omitempty"`
 	// Same-sector companies from their latest quarterly row and close, by PE; no PE sorts last.
 	Peers []*Peer `protobuf:"bytes,40,rep,name=peers,proto3" json:"peers,omitempty"`
@@ -396,7 +396,7 @@ func (x *Peer) GetPb() float64 {
 // A to D from the share of Holds among the checks that could be evaluated; not a recommendation.
 type Rating struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Letter        string                 `protobuf:"bytes,1,opt,name=letter,proto3" json:"letter,omitempty"` // "A".."D"
+	Letter        string                 `protobuf:"bytes,1,opt,name=letter,proto3" json:"letter,omitempty"` // "A".."D", "" when unrated
 	Holds         int32                  `protobuf:"varint,2,opt,name=holds,proto3" json:"holds,omitempty"`
 	Evaluated     int32                  `protobuf:"varint,3,opt,name=evaluated,proto3" json:"evaluated,omitempty"` // checks whose verdict is not "needs more history"
 	unknownFields protoimpl.UnknownFields

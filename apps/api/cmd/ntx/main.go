@@ -101,7 +101,11 @@ func runServer() {
 	go func() {
 		ctx := context.Background()
 		n, err := queries.CountCompanyRatings(ctx)
-		if err != nil || n > 0 {
+		if err != nil {
+			slog.Error("count ratings", "error", err)
+			return
+		}
+		if n > 0 {
 			return
 		}
 		if err := w.SyncRatings(ctx); err != nil {

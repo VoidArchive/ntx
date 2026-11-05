@@ -27,7 +27,8 @@ SELECT c.symbol, c.name, c.sector,
   p.close_price, p.turnover,
   f.eps, f.book_value,
   ca.cash_dividend,
-  r.letter AS rating
+  r.letter AS rating,
+  f.fiscal_year, f.quarter, f.fiscal_year_np, p.business_date
 FROM companies c
 LEFT JOIN ownership o ON o.company_id = c.id
 LEFT JOIN prices p ON p.id = (
@@ -64,6 +65,10 @@ type ListScreenerRow struct {
 	BookValue    sql.NullFloat64 `json:"book_value"`
 	CashDividend sql.NullFloat64 `json:"cash_dividend"`
 	Rating       sql.NullString  `json:"rating"`
+	FiscalYear   sql.NullString  `json:"fiscal_year"`
+	Quarter      sql.NullString  `json:"quarter"`
+	FiscalYearNp sql.NullString  `json:"fiscal_year_np"`
+	BusinessDate sql.NullString  `json:"business_date"`
 }
 
 // One row per listed company with the inputs of the screener columns; ratios
@@ -90,6 +95,10 @@ func (q *Queries) ListScreener(ctx context.Context) ([]ListScreenerRow, error) {
 			&i.BookValue,
 			&i.CashDividend,
 			&i.Rating,
+			&i.FiscalYear,
+			&i.Quarter,
+			&i.FiscalYearNp,
+			&i.BusinessDate,
 		); err != nil {
 			return nil, err
 		}

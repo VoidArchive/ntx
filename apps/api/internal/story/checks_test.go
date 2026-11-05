@@ -113,6 +113,12 @@ func TestRating(t *testing.T) {
 	if short.Letter != "" || short.Evaluated >= minEvaluated {
 		t.Errorf("one filed year should be unrated, got %+v", short)
 	}
+	// API with filings only: two of three checks hold, and without a close nothing else can evaluate.
+	if got := Build(
+		Input{Company: api, Fundamentals: fundamentals(697, apiRows)},
+	).Rating; got != (Rating{Holds: 2, Evaluated: 3}) {
+		t.Errorf("api rating = %+v", got)
+	}
 
 	// Letters on counts alone: holds, evaluated.
 	for _, tc := range []struct {

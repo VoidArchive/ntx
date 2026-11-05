@@ -283,6 +283,7 @@
 						{#if col.key === 'symbol'}
 							<th class="py-2 text-left font-normal">Name</th>
 							<th class="py-2 text-left font-normal">Sector</th>
+							<th class="py-2 text-left font-normal">As of</th>
 						{/if}
 					{/each}
 				</tr>
@@ -301,17 +302,21 @@
 								{/if}
 							</td>
 							{#if col.key === 'symbol'}
-								<td class="max-w-56 truncate py-1.5 text-muted-foreground" title={r.name}
+								<td class="max-w-44 truncate py-1.5 text-muted-foreground" title={r.name}
 									>{r.name}</td
 								>
 								<td class="py-1.5 text-muted-foreground">{sectorLabel.get(r.sector) ?? 'Others'}</td
+								>
+								<!-- Each row's own filing and close: rows differ, so one footer line would not do. -->
+								<td class="py-1.5 text-xs text-muted-foreground"
+									>{r.period || 'not recorded'} · {r.closeDate || 'not recorded'}</td
 								>
 							{/if}
 						{/each}
 					</tr>
 				{:else}
 					<tr
-						><td colspan={columns.length + 2} class="py-12 text-center text-muted-foreground"
+						><td colspan={columns.length + 3} class="py-12 text-center text-muted-foreground"
 							>No company matches. <button onclick={clear} class="underline">Clear filters</button
 							></td
 						></tr
