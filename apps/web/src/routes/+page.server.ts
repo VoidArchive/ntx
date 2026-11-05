@@ -1,4 +1,4 @@
-import { createApiClient, listMarket } from '#lib/api/client.js';
+import { createApiClient, listCompaniesWithLatestPrices } from '#lib/api/client.js';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ parent }) => {
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 			.then((res) => res.marketDay)
 			.catch(() => undefined),
 		sector.getSectorOverview({}).catch(() => undefined),
-		listMarket(apiUrl).catch(() => ({ companies: [], prices: [] }))
+		listCompaniesWithLatestPrices(apiUrl).catch(() => ({ companies: [], prices: [] }))
 	]);
 	return { marketDay, overview, companies, prices };
 };

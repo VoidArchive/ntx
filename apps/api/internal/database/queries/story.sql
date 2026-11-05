@@ -18,7 +18,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ? AND f.eps != 0;
+WHERE c.status = 'A' AND c.sector = ? AND f.eps != 0;
 
 -- name: ListSectorPB :many
 SELECT CAST(p.close_price / f.book_value AS REAL) AS pb
@@ -35,7 +35,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ? AND f.book_value != 0;
+WHERE c.status = 'A' AND c.sector = ? AND f.book_value != 0;
 
 -- name: ListSectorEPS :many
 SELECT CAST(f.eps AS REAL) AS eps
@@ -47,7 +47,7 @@ JOIN fundamentals f ON f.id = (
     CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
   LIMIT 1
 )
-WHERE c.sector = ? AND f.eps IS NOT NULL;
+WHERE c.status = 'A' AND c.sector = ? AND f.eps IS NOT NULL;
 
 -- Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
 -- name: ListSectorYield :many
@@ -64,7 +64,7 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ? AND p.close_price != 0;
+WHERE c.status = 'A' AND c.sector = ? AND p.close_price != 0;
 
 -- name: GetLatestCorporateActionByCompany :one
 SELECT * FROM corporate_actions
@@ -87,4 +87,4 @@ JOIN prices p ON p.id = (
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
-WHERE c.sector = ?;
+WHERE c.status = 'A' AND c.sector = ?;
