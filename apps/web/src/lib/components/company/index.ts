@@ -7,3 +7,5 @@ export { default as MutualFundHoldings } from './MutualFundHoldings.svelte';
 export { default as FiscalYears } from './FiscalYears.svelte';
 export { default as OwnershipHistory } from './OwnershipHistory.svelte';
 export { default as Peers } from './Peers.svelte';
+export { default as ClaimText } from './ClaimText.svelte';
+export { default as PayoutBars } from './PayoutBars.svelte';

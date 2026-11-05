@@ -151,6 +151,13 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
   checks: Check[];
 
   /**
+   * One letter summarising the checks (GLOSSARY: Rating); unset when fewer than four evaluate.
+   *
+   * @generated from field: ntx.v1.Rating rating = 31;
+   */
+  rating?: Rating;
+
+  /**
    * Same-sector companies from their latest quarterly row and close, by PE; no PE sorts last.
    *
    * @generated from field: repeated ntx.v1.Peer peers = 40;
@@ -221,6 +228,38 @@ export declare type Peer = Message<"ntx.v1.Peer"> & {
  * Use `create(PeerSchema)` to create a new message.
  */
 export declare const PeerSchema: GenMessage<Peer>;
+
+/**
+ * A to D from the share of Holds among the checks that could be evaluated; not a recommendation.
+ *
+ * @generated from message ntx.v1.Rating
+ */
+export declare type Rating = Message<"ntx.v1.Rating"> & {
+  /**
+   * "A".."D"
+   *
+   * @generated from field: string letter = 1;
+   */
+  letter: string;
+
+  /**
+   * @generated from field: int32 holds = 2;
+   */
+  holds: number;
+
+  /**
+   * checks whose verdict is not "needs more history"
+   *
+   * @generated from field: int32 evaluated = 3;
+   */
+  evaluated: number;
+};
+
+/**
+ * Describes the message ntx.v1.Rating.
+ * Use `create(RatingSchema)` to create a new message.
+ */
+export declare const RatingSchema: GenMessage<Rating>;
 
 /**
  * One published rule and its verdict; a verdict is not a recommendation.

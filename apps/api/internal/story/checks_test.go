@@ -102,3 +102,48 @@ func TestChecksAllPublished(t *testing.T) {
 		}
 	}
 }
+
+func TestRating(t *testing.T) {
+	// NABIL on 2026-11-03 with its notices: 4 hold, 3 watch, promoter holding needs history.
+	got := Build(nabilFull()).Rating
+	if got != (Rating{Letter: "C", Holds: 4, Evaluated: 7}) {
+		t.Errorf("nabil rating = %+v", got)
+	}
+	short := Build(Input{Company: nabil, Fundamentals: fundamentals(131, nabilRows[18:22])}).Rating
+	if short.Letter != "" || short.Evaluated >= minEvaluated {
+		t.Errorf("one filed year should be unrated, got %+v", short)
+	}
+
+	// Letters on counts alone: holds, evaluated.
+	for _, tc := range []struct {
+		holds, evaluated int
+		want             string
+	}{
+		{8, 8, "A"},
+		{7, 8, "A"},
+		{6, 8, "B"},
+		{5, 8, "B"},
+		{4, 8, "C"},
+		{3, 8, "C"},
+		{2, 8, "D"},
+		{0, 8, "D"},
+		{4, 4, "A"},
+		{3, 4, "B"},
+		{2, 4, "C"},
+		{1, 4, "D"},
+		{5, 5, "A"},
+		{3, 5, "C"},
+		{3, 3, ""},
+	} {
+		checks := make([]Check, 0, len(rules))
+		for i := range tc.evaluated {
+			checks = append(checks, Check{Verdict: verdictOf(i < tc.holds)})
+		}
+		for len(checks) < len(rules) {
+			checks = append(checks, Check{Verdict: NeedsHistory})
+		}
+		if got := rating(checks).Letter; got != tc.want {
+			t.Errorf("%d of %d: got %q, want %q", tc.holds, tc.evaluated, got, tc.want)
+		}
+	}
+}

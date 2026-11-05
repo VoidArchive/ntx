@@ -19,15 +19,14 @@
 		{ href: '/mutual-funds', label: 'Mutual funds' }
 	];
 
-	// Company page anchors in page order; the sections ticket (#37) renames them.
+	// Company page sections, in page order.
 	const sections = [
-		{ id: 'strips', label: 'Valuation' },
-		{ id: 'price', label: 'Price and volume' },
-		{ id: 'fiscal-years', label: 'Fiscal years' },
-		{ id: 'quarterly', label: 'Quarterly results' },
+		{ id: 'earnings', label: 'Earnings' },
+		{ id: 'valuation', label: 'Valuation' },
+		{ id: 'payout', label: 'Payout' },
 		{ id: 'ownership', label: 'Ownership' },
-		{ id: 'funds', label: 'Fund holdings' },
-		{ id: 'peers', label: 'Peers' }
+		{ id: 'funds', label: 'Funds' },
+		{ id: 'price', label: 'Price and volume' }
 	];
 
 	let pathname = $derived(page.url.pathname);

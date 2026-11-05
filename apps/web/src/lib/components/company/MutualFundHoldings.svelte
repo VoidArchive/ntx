@@ -19,12 +19,7 @@
 
 {#if holdings.length > 0}
 	<div>
-		<div class="mb-6 flex items-baseline justify-between">
-			<h3 class="font-serif text-base font-medium">Open-Ended Mutual Fund Holdings</h3>
-			<span class="text-sm text-muted-foreground">
-				Held by {holdings.length} fund{holdings.length === 1 ? '' : 's'}
-			</span>
-		</div>
+		<p class="mb-4 text-sm text-muted-foreground">Open-ended funds, from the latest NAV reports</p>
 
 		<!-- Horizontal Bar Chart -->
 		<div class="overflow-x-auto">

@@ -20,7 +20,7 @@
 	}
 </script>
 
-<section id="peers">
+<div id="peers" class="mt-8">
 	<h3 class="mb-4 font-serif text-base font-medium">Peers by PE</h3>
 	<div class="overflow-x-auto">
 		<table class="w-full text-sm whitespace-nowrap tabular-nums">
@@ -76,4 +76,4 @@
 		PE and PB from each company's latest filed quarter and latest close; this company's is {period ||
 			'not recorded'}.
 	</p>
-</section>
+</div>
