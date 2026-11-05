@@ -42,7 +42,9 @@
 	];
 
 	// The URL is the only filter state, so a filter set is a link and back works.
-	let params = $derived(page.url.searchParams);
+	// A shallow goto leaves page.url on the loaded URL and puts the target in page.shallow.
+	let url = $derived(page.shallow?.url ?? page.url);
+	let params = $derived(url.searchParams);
 	let q = $derived(params.get('q') ?? '');
 	let sectorFilter = $derived(
 		new SvelteSet((params.get('sector') ?? '').split(',').filter(Boolean).map(Number))
@@ -62,7 +64,7 @@
 	);
 
 	function setParams(changes: Record<string, string>) {
-		const next = new SvelteURLSearchParams(page.url.searchParams.toString());
+		const next = new SvelteURLSearchParams(url.searchParams.toString());
 		for (const [k, v] of Object.entries(changes)) {
 			if (v) next.set(k, v);
 			if (!v) next.delete(k);
