@@ -47,7 +47,7 @@ func fakeOpenMeteo(t *testing.T, starts *[]string) *Weather {
 
 func seedPlant(t *testing.T, q *sqlc.Queries) {
 	t.Helper()
-	if err := q.UpsertHydroPlant(context.Background(), Plant{
+	if err := q.UpsertHydroPlant(context.Background(), PlantRow{
 		Symbol: "CHCL", Plant: "Chilime", River: "Chilime", Basin: "Gandaki", District: "Rasuwa",
 		Mw: 22, Lat: 28.1698, Lon: 85.3196, Status: "operating", SourceUrl: "https://doed.gov.np",
 	}); err != nil {

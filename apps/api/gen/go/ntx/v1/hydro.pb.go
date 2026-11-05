@@ -179,11 +179,13 @@ type Plant struct {
 	// The plant's own ten-year 95th percentile the discharge rule compares against.
 	DischargeP95 *float64 `protobuf:"fixed64,16,opt,name=discharge_p95,json=dischargeP95,proto3,oneof" json:"discharge_p95,omitempty"`
 	// Company figures, the stored values the screener shows.
-	Close         *float64 `protobuf:"fixed64,17,opt,name=close,proto3,oneof" json:"close,omitempty"`
-	CloseDate     string   `protobuf:"bytes,18,opt,name=close_date,json=closeDate,proto3" json:"close_date,omitempty"`
-	Pe            *float64 `protobuf:"fixed64,19,opt,name=pe,proto3,oneof" json:"pe,omitempty"`
-	Period        string   `protobuf:"bytes,20,opt,name=period,proto3" json:"period,omitempty"` // fiscal year and quarter of the EPS behind pe
-	Rating        string   `protobuf:"bytes,21,opt,name=rating,proto3" json:"rating,omitempty"` // '' when unrated
+	Close     *float64 `protobuf:"fixed64,17,opt,name=close,proto3,oneof" json:"close,omitempty"`
+	CloseDate string   `protobuf:"bytes,18,opt,name=close_date,json=closeDate,proto3" json:"close_date,omitempty"`
+	Pe        *float64 `protobuf:"fixed64,19,opt,name=pe,proto3,oneof" json:"pe,omitempty"`
+	Period    string   `protobuf:"bytes,20,opt,name=period,proto3" json:"period,omitempty"` // fiscal year and quarter of the EPS behind pe
+	Rating    string   `protobuf:"bytes,21,opt,name=rating,proto3" json:"rating,omitempty"` // '' when unrated
+	// "High discharge for this plant is above 123.4 m³/s, its ten-year 95th percentile."; ” without one
+	Threshold     string `protobuf:"bytes,22,opt,name=threshold,proto3" json:"threshold,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -361,6 +363,13 @@ func (x *Plant) GetPeriod() string {
 func (x *Plant) GetRating() string {
 	if x != nil {
 		return x.Rating
+	}
+	return ""
+}
+
+func (x *Plant) GetThreshold() string {
+	if x != nil {
+		return x.Threshold
 	}
 	return ""
 }
@@ -789,7 +798,7 @@ const file_ntx_v1_hydro_proto_rawDesc = "" +
 	"\x05state\x18\x06 \x01(\x0e2\x12.ntx.v1.PlantStateR\x05stateB\n" +
 	"\n" +
 	"\b_rain_mmB\x10\n" +
-	"\x0e_discharge_m3s\"\xe0\x04\n" +
+	"\x0e_discharge_m3s\"\xfe\x04\n" +
 	"\x05Plant\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
 	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12!\n" +
@@ -814,7 +823,8 @@ const file_ntx_v1_hydro_proto_rawDesc = "" +
 	"close_date\x18\x12 \x01(\tR\tcloseDate\x12\x13\n" +
 	"\x02pe\x18\x13 \x01(\x01H\x03R\x02pe\x88\x01\x01\x12\x16\n" +
 	"\x06period\x18\x14 \x01(\tR\x06period\x12\x16\n" +
-	"\x06rating\x18\x15 \x01(\tR\x06ratingB\t\n" +
+	"\x06rating\x18\x15 \x01(\tR\x06rating\x12\x1c\n" +
+	"\tthreshold\x18\x16 \x01(\tR\tthresholdB\t\n" +
 	"\a_latestB\x10\n" +
 	"\x0e_discharge_p95B\b\n" +
 	"\x06_closeB\x05\n" +

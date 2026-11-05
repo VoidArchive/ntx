@@ -13,7 +13,8 @@ export const load = async ({ params }) => {
 			company.getCompany({ symbol: params.symbol }),
 			company.getFundamentals({ symbol: params.symbol }),
 			price.getPriceHistory({ symbol: params.symbol, days: 365 }),
-			hydro.getCompanyPlants({ symbol: params.symbol })
+			// Plants are a section, not the page: a hydro outage must not 500 every company.
+			hydro.getCompanyPlants({ symbol: params.symbol }).catch(() => ({ plants: [], opening: '' }))
 		]);
 
 		// Fetch mutual fund holdings for this company

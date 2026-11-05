@@ -35,9 +35,10 @@ type Querier interface {
 	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
 	// Change columns are NULL on backfilled rows, so the change comes from consecutive closes.
 	ListDayChanges(ctx context.Context) ([]ListDayChangesRow, error)
-	// Nearest-rank 95th percentile of each plant's stored discharge: the row ranked
-	// ceil(0.95 * n) ascending, written in integer arithmetic as SQLite has no ceil.
-	ListDischargeP95(ctx context.Context) ([]ListDischargeP95Row, error)
+	// Nearest-rank 95th percentile of each plant's discharge since floor (ten years
+	// ago, so the window stays ten years as rows age): the row ranked ceil(0.95 * n)
+	// ascending, written in integer arithmetic as SQLite has no ceil.
+	ListDischargeP95(ctx context.Context, floor string) ([]ListDischargeP95Row, error)
 	// The first backfill set every created_at to one day, so every unpublished row reads "seen" on that day.
 	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
@@ -45,6 +46,8 @@ type Querier interface {
 	// in Go as the screener does) and stored rating. LEFT joins: a plant lists without them.
 	ListHydroPlants(ctx context.Context) ([]ListHydroPlantsRow, error)
 	ListHydroPlantsBySymbol(ctx context.Context, symbol string) ([]HydroPlant, error)
+	// A symbol DoED spells differently from NEPSE would list a plant with no company.
+	ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydroPlantsWithoutCompanyRow, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	// Newest day per plant, the reading the state is computed from.
 	ListLatestReadings(ctx context.Context) ([]HydroReading, error)

@@ -125,6 +125,7 @@ func (s *Service) plants(ctx context.Context) ([]*ntxv1.Plant, error) {
 		p := toPlant(r)
 		if v, ok := p95[r.ID]; ok {
 			p.DischargeP95 = &v
+			p.Threshold = Threshold(v)
 		}
 		if l, ok := latest[r.ID]; ok {
 			p.Latest = toReading(l, p95[r.ID], p.DischargeP95 != nil)
@@ -138,7 +139,8 @@ func (s *Service) plants(ctx context.Context) ([]*ntxv1.Plant, error) {
 
 // percentiles is each plant's ten-year 95th percentile of discharge, absent until it has rows.
 func (s *Service) percentiles(ctx context.Context) (map[int64]float64, error) {
-	rows, err := s.queries.ListDischargeP95(ctx)
+	floor := s.now().In(nepalTime).AddDate(-dischargeYears, 0, 0).Format(time.DateOnly)
+	rows, err := s.queries.ListDischargeP95(ctx, floor)
 	if err != nil {
 		return nil, fmt.Errorf("discharge percentile: %w", err)
 	}

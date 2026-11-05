@@ -6,7 +6,8 @@
 	import { goto } from '$app/navigation';
 	import { SvelteMap, SvelteURLSearchParams } from 'svelte/reactivity';
 	import HydroMap from '#lib/components/hydro/HydroMap.svelte';
-	import { STATE, STATUS_LABEL, num, stateFromKey } from '#lib/hydro.js';
+	import StateMark from '#lib/components/hydro/StateMark.svelte';
+	import { STATE, STATES, STATUS_LABEL, num, stateFromKey } from '#lib/hydro.js';
 
 	let { data }: { data: PageData } = $props();
 
@@ -27,7 +28,7 @@
 		{ key: 'pe', label: 'PE', desc: false }
 	];
 
-	// The URL is the only filter state, as on the screener, so "cheap hydros on the Karnali" is a link.
+	// The URL is the only filter state, as on the screener, so a basin and a PE sort are a link.
 	let params = $derived(page.url.searchParams);
 	let basinFilter = $derived(params.get('basin') ?? '');
 	let statusFilter = $derived(params.get('status') ?? '');
@@ -138,7 +139,6 @@
 				/>
 				<p class="mt-2 min-h-5 text-sm text-muted-foreground tabular-nums" aria-live="polite">
 					{#if hovered}
-						{@const s = STATE[hovered.state]}
 						<span class="font-medium text-foreground">{hovered.plant}</span>
 						·
 						<a href="/company/{hovered.symbol}" class="underline underline-offset-2"
@@ -147,8 +147,7 @@
 						· {hovered.river}, {hovered.basin} · {num(hovered.mw, 2)} MW · {STATUS_LABEL[
 							hovered.status
 						]}
-						· <span aria-hidden="true" style="color: {s.color}">{s.glyph}</span>
-						{s.label}
+						· <StateMark state={hovered.state} stale={hovered.stale} />
 						{#if hovered.latest}
 							· {hovered.latest.day}: {num(hovered.latest.rainMm)} mm, {num(
 								hovered.latest.dischargeM3s
@@ -187,7 +186,7 @@
 						class="h-8 rounded-md border border-input bg-background px-2 text-sm"
 					>
 						<option value="">any</option>
-						{#each [PlantState.NORMAL, PlantState.HEAVY_RAIN, PlantState.HIGH_DISCHARGE] as s (s)}
+						{#each STATES as s (s)}
 							<option value={STATE[s].key}>{STATE[s].label}</option>
 						{/each}
 					</select>
@@ -230,9 +229,7 @@
 									</button>
 								</th>
 								{#if col.key === 'mw'}
-									<th class="{thClass} text-left">Status</th>
-									<th class="{thClass} text-right">Rain, mm</th>
-									<th class="{thClass} text-right">Discharge, m³/s</th>
+									<th class="{thClass} text-right">Rain · discharge</th>
 								{/if}
 								{#if col.key === 'state'}
 									<th class="{thClass} text-left">Reading</th>
@@ -240,13 +237,13 @@
 								{/if}
 								{#if col.key === 'pe'}
 									<th class="{thClass} text-left">Rating</th>
+									<th class="{thClass} text-left">As of</th>
 								{/if}
 							{/each}
 						</tr>
 					</thead>
 					<tbody>
 						{#each rows as p (p.id)}
-							{@const s = STATE[p.state]}
 							{@const readings = open.get(p.id)}
 							<tr
 								class="border-b border-border/50 hover:bg-muted/50 {hovered?.id === p.id
@@ -262,7 +259,12 @@
 										>{open.has(p.id) ? '▾' : '▸'}</button
 									>
 								</td>
-								<td class="py-1.5 font-medium">{p.plant}</td>
+								<td class="max-w-56 truncate py-1.5 font-medium" title={p.plant}>
+									{p.plant}{#if p.status !== 'operating'}
+										<span class="text-xs font-normal text-muted-foreground">
+											({STATUS_LABEL[p.status]})</span
+										>{/if}
+								</td>
 								<td class="py-1.5">
 									<a
 										href="/company/{p.symbol}"
@@ -273,25 +275,29 @@
 								<td class="py-1.5 text-muted-foreground">{p.river}</td>
 								<td class="py-1.5">{p.basin}</td>
 								<td class="py-1.5 text-right">{num(p.mw, 2)}</td>
-								<td class="py-1.5 text-muted-foreground">{STATUS_LABEL[p.status] ?? p.status}</td>
-								<td class="py-1.5 text-right">{num(p.latest?.rainMm)}</td>
-								<td class="py-1.5 text-right">{num(p.latest?.dischargeM3s)}</td>
 								<td class="py-1.5 text-right">
-									<span aria-hidden="true" style="color: {s.color}">{s.glyph}</span>
-									{s.label}{#if p.stale}
-										<span class="text-xs text-muted-foreground">(stale)</span>{/if}
+									{#if p.latest}
+										{num(p.latest.rainMm)} mm · {num(p.latest.dischargeM3s)} m³/s
+									{:else}
+										not recorded
+									{/if}
 								</td>
+								<td class="py-1.5 text-right"><StateMark state={p.state} stale={p.stale} /></td>
 								<td class="py-1.5 text-xs text-muted-foreground"
 									>{p.latest?.day ?? 'not recorded'}</td
 								>
 								<td class="py-1.5 text-right">{num(p.close, 2)}</td>
 								<td class="py-1.5 text-right">{p.pe === undefined ? '—' : `${num(p.pe)}x`}</td>
 								<td class="py-1.5">{p.rating || '—'}</td>
+								<!-- Close, PE and rating name their own filing and close (ADR 0002). -->
+								<td class="py-1.5 text-xs text-muted-foreground"
+									>{p.period || 'not recorded'} · {p.closeDate || 'not recorded'}</td
+								>
 							</tr>
 							{#if readings}
 								<tr class="border-b border-border/50 bg-muted/20">
 									<td></td>
-									<td colspan="13" class="py-2 pr-3">
+									<td colspan="12" class="py-2 pr-3">
 										{#if readings === 'loading'}
 											<span class="text-xs text-muted-foreground">Loading…</span>
 										{:else if readings === 'failed'}
@@ -317,7 +323,6 @@
 												</thead>
 												<tbody>
 													{#each readings as r (r.day)}
-														{@const rs = STATE[r.state]}
 														<tr>
 															<td>{r.day}</td>
 															<td class="text-right">{num(r.rainMm)}</td>
@@ -327,20 +332,13 @@
 															<td class="text-muted-foreground"
 																>{r.dischargeSource || 'not recorded'}</td
 															>
-															<td
-																><span aria-hidden="true" style="color: {rs.color}">{rs.glyph}</span
-																>
-																{rs.label}</td
-															>
+															<td><StateMark state={r.state} /></td>
 														</tr>
 													{/each}
 												</tbody>
 											</table>
-											{#if p.dischargeP95 !== undefined}
-												<p class="mt-1 text-xs text-muted-foreground">
-													High discharge for this plant is above {num(p.dischargeP95)} m³/s, its ten-year
-													95th percentile.
-												</p>
+											{#if p.threshold}
+												<p class="mt-1 text-xs text-muted-foreground">{p.threshold}</p>
 											{/if}
 										{/if}
 									</td>
@@ -348,7 +346,7 @@
 							{/if}
 						{:else}
 							<tr>
-								<td colspan="14" class="py-12 text-center text-muted-foreground">
+								<td colspan="13" class="py-12 text-center text-muted-foreground">
 									No plant matches.
 									<button
 										onclick={() => goto('?', { replace: true, shallow: true })}
@@ -363,18 +361,13 @@
 		</section>
 	</div>
 
-	<!-- 5. The rules and where every figure comes from. -->
+	<!-- 5. The rules, as the API states them, and where every figure comes from. -->
 	<footer class="mt-12 border-t border-border pt-6 text-xs text-muted-foreground">
 		<h2 class="text-xs tracking-wide uppercase">Rules and data</h2>
 		<ul class="mt-2 space-y-1">
 			{#each data.rules as rule (rule.name)}
 				<li><span class="font-medium text-foreground">{rule.name}.</span> {rule.text}</li>
 			{/each}
-			<li>
-				A plant's state is from its latest reading; it reads <em>stale</em> when that reading is more
-				than two days old. A basin's state is the worst among its plants. Discharge is modelled by GloFAS
-				on a 5 km grid, not gauged; a reading is a day that has happened, never a forecast.
-			</li>
 		</ul>
 		<p class="mt-3 tabular-nums">
 			Last weather run {lastRun} · plants from the

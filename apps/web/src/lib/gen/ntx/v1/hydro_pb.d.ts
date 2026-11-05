@@ -177,6 +177,13 @@ export declare type Plant = Message<"ntx.v1.Plant"> & {
    * @generated from field: string rating = 21;
    */
   rating: string;
+
+  /**
+   * "High discharge for this plant is above 123.4 m³/s, its ten-year 95th percentile."; '' without one
+   *
+   * @generated from field: string threshold = 22;
+   */
+  threshold: string;
 };
 
 /**

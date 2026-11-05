@@ -26,7 +26,7 @@ func fixture(t *testing.T) *Service {
 	svc := NewService(q)
 	svc.now = func() time.Time { return today }
 
-	plants := []Plant{
+	plants := []PlantRow{
 		{
 			Symbol:    "CHCL",
 			Plant:     "Chilime",
@@ -154,10 +154,11 @@ func TestListPlantsAppliesRulesAndBasins(t *testing.T) {
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Fatalf("got\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
-	if p := res.Msg.Plants[1]; *p.DischargeP95 != 20 {
-		t.Fatalf("SJCL p95 %v, want 20", *p.DischargeP95)
+	if p := res.Msg.Plants[1]; *p.DischargeP95 != 20 ||
+		p.Threshold != "High discharge for this plant is above 20.0 m³/s, its ten-year 95th percentile." {
+		t.Fatalf("SJCL p95 %v, threshold %q", *p.DischargeP95, p.Threshold)
 	}
-	if len(res.Msg.Rules) != 2 || res.Msg.LastRun == "" {
+	if len(res.Msg.Rules) != 4 || res.Msg.LastRun == "" {
 		t.Fatalf("rules %d, last run %q", len(res.Msg.Rules), res.Msg.LastRun)
 	}
 	wantOpening := "3 plants of 3 listed companies on 3 rivers. Basins on " + day(

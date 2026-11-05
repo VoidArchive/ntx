@@ -160,6 +160,7 @@ FIXES: dict[tuple[str, str], dict[str, str]] = {
     ("MAKAR", "Upper Suri Khola HPP"): {"river": "Suri Khola"},  # DoED lists two village names as the river
     ("BEDC", "Dwari Khola SHP"): {"district": "Dailekh"},  # DoED leaves the district blank; the point is in Dailekh
     ("MHL", "Upper Sardi HEP"): {"river": "Sardi Khola"},  # DoED: "Sardi, kutmi"
+    ("AHPC", "Budum HEP"): {"river": "Budum Khola"},  # DoED: "budum"
     ("PMHPL", "Upper Mai Hydropower Project (Panchakanya Mai Hydropwer limi"): {"plant": "Upper Mai"},  # truncated by DoED
 }
 

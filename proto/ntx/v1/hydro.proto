@@ -55,6 +55,8 @@ message Plant {
   optional double pe = 19;
   string period = 20; // fiscal year and quarter of the EPS behind pe
   string rating = 21; // '' when unrated
+  // "High discharge for this plant is above 123.4 m³/s, its ten-year 95th percentile."; '' without one
+  string threshold = 22;
 }
 
 message Basin {

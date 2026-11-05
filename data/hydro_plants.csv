@@ -1,6 +1,6 @@
 symbol,plant,river,basin,district,mw,lat,lon,status,source_url
 AHL,Lower Jogmai Khola HPP,Jogmai Khola,Kankai,Ilam,6.200,26.8911,87.9772,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
-AHPC,Budum HEP,budum,Koshi,Solukhumbu,14.500,27.4865,86.8479,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+AHPC,Budum HEP,Budum Khola,Koshi,Solukhumbu,14.500,27.4865,86.8479,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
 AHPC,Kabeli B1 Cascade HPP,Kabeli Khola,Koshi,Panchthar,9.940,27.2739,87.7738,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
 AHPC,Piluwa Khola,Piluwa Khola,Koshi,Sankhuwasabha,3.000,27.2736,87.3376,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
 AHPC,Upper Kabeli-2 HEP,Kabeli Khola,Koshi,Taplejung,15.000,27.2979,87.8402,under_construction,https://www.doed.gov.np/pages/clhydromorethan1

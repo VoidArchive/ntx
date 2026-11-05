@@ -81,6 +81,12 @@ func CompanyOpening(plants []*ntxv1.Plant) string {
 	)
 }
 
+// Threshold names the figure the High discharge rule compares this plant against.
+func Threshold(p95 float64) string {
+	return fmt.Sprintf("High discharge for this plant is above %s m³/s, its ten-year 95th percentile.",
+		strconv.FormatFloat(p95, 'f', 1, 64))
+}
+
 func basinOf(plants []*ntxv1.Plant, river string) string {
 	for _, p := range plants {
 		if p.River == river {

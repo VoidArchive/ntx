@@ -2,7 +2,7 @@
 	import type { Basin, Plant } from '#lib/gen/ntx/v1/hydro_pb.js';
 	import { PlantState } from '#lib/gen/ntx/v1/hydro_pb.js';
 	import map from '#lib/data/hydro_map.json';
-	import { STATE } from '#lib/hydro.js';
+	import { STATE, STATES } from '#lib/hydro.js';
 
 	interface Props {
 		plants: Plant[];
@@ -54,7 +54,7 @@
 			vector-effect="non-scaling-stroke"
 		/>
 		{#each Object.entries(rivers) as [basin, reaches] (basin)}
-			<!-- One handler per basin: a click on any of its reaches sets the basin filter. -->
+			<!-- Handlers sit on the basin group, not on each of its reaches: a click anywhere on a river is a basin pick. -->
 			<g
 				role={compact ? undefined : 'button'}
 				aria-label="Filter by {basin}"
@@ -80,9 +80,8 @@
 				cy={y}
 				r={radius(p.mw)}
 				fill={operating ? stateColor(p.state) : 'var(--color-background)'}
-				stroke={stateColor(p.state)}
-				stroke-width={operating ? 0.5 : 1.5}
-				stroke-dasharray={operating ? undefined : '2 1.5'}
+				stroke={operating ? 'var(--color-background)' : stateColor(p.state)}
+				stroke-width={operating ? 0.8 : 1.5}
 				opacity={dim(p.basin)}
 				vector-effect="non-scaling-stroke"
 				class={compact ? '' : 'cursor-pointer'}
@@ -103,7 +102,7 @@
 		id="hydro-map-legend"
 		class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground"
 	>
-		{#each [PlantState.NORMAL, PlantState.HEAVY_RAIN, PlantState.HIGH_DISCHARGE] as s (s)}
+		{#each STATES as s (s)}
 			<span
 				><span aria-hidden="true" style="color: {STATE[s].color}">{STATE[s].glyph}</span>
 				{STATE[s].label}</span

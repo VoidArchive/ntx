@@ -1,6 +1,7 @@
 package hydro
 
 import (
+	"fmt"
 	"time"
 
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
@@ -17,13 +18,23 @@ const StaleAfter = 2 * 24 * time.Hour
 var Rules = []*ntxv1.Rule{
 	{
 		Name: "Heavy rain",
-		Text: "The day's rain at the plant is 50 mm or more, the Department of Hydrology and Meteorology's " +
-			"24-hour \"heavy\" category (DHM forecast terminology).",
+		Text: fmt.Sprintf("The day's rain at the plant is %.0f mm or more, the Department of Hydrology and "+
+			"Meteorology's 24-hour \"heavy\" category (DHM forecast terminology).", HeavyRainMM),
 	},
 	{
 		Name: "High discharge",
 		Text: "The day's modelled discharge at the plant is above the 95th percentile of the plant's own " +
-			"stored daily discharge over the last ten years. Discharge is modelled by GloFAS, not gauged.",
+			"stored daily discharge over the last ten years. Discharge is modelled by GloFAS on a 5 km grid, " +
+			"not gauged; a reading is a day that has happened, never a forecast.",
+	},
+	{
+		Name: "Stale",
+		Text: fmt.Sprintf("A plant's state is from its latest reading and is labelled stale when that reading "+
+			"is more than %.0f days old.", StaleAfter.Hours()/24),
+	},
+	{
+		Name: "Basin state",
+		Text: "A basin's state is the worst state among its plants; high discharge is worse than heavy rain.",
 	},
 }
 

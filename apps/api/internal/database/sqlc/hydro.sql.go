@@ -76,7 +76,7 @@ SELECT plant_id, discharge_m3s FROM (
   SELECT plant_id, discharge_m3s,
     ROW_NUMBER() OVER (PARTITION BY plant_id ORDER BY discharge_m3s) AS rn,
     COUNT(*) OVER (PARTITION BY plant_id) AS n
-  FROM hydro_readings WHERE discharge_m3s IS NOT NULL
+  FROM hydro_readings WHERE discharge_m3s IS NOT NULL AND day >= ?1
 )
 WHERE rn = (n * 95 + 99) / 100
 `
@@ -86,10 +86,11 @@ type ListDischargeP95Row struct {
 	DischargeM3s sql.NullFloat64 `json:"discharge_m3s"`
 }
 
-// Nearest-rank 95th percentile of each plant's stored discharge: the row ranked
-// ceil(0.95 * n) ascending, written in integer arithmetic as SQLite has no ceil.
-func (q *Queries) ListDischargeP95(ctx context.Context) ([]ListDischargeP95Row, error) {
-	rows, err := q.db.QueryContext(ctx, listDischargeP95)
+// Nearest-rank 95th percentile of each plant's discharge since floor (ten years
+// ago, so the window stays ten years as rows age): the row ranked ceil(0.95 * n)
+// ascending, written in integer arithmetic as SQLite has no ceil.
+func (q *Queries) ListDischargeP95(ctx context.Context, floor string) ([]ListDischargeP95Row, error) {
+	rows, err := q.db.QueryContext(ctx, listDischargeP95, floor)
 	if err != nil {
 		return nil, err
 	}
@@ -225,6 +226,41 @@ func (q *Queries) ListHydroPlantsBySymbol(ctx context.Context, symbol string) ([
 			&i.Status,
 			&i.SourceUrl,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listHydroPlantsWithoutCompany = `-- name: ListHydroPlantsWithoutCompany :many
+SELECT hp.symbol, hp.plant FROM hydro_plants hp
+LEFT JOIN companies c ON c.symbol = hp.symbol
+WHERE c.id IS NULL
+`
+
+type ListHydroPlantsWithoutCompanyRow struct {
+	Symbol string `json:"symbol"`
+	Plant  string `json:"plant"`
+}
+
+// A symbol DoED spells differently from NEPSE would list a plant with no company.
+func (q *Queries) ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydroPlantsWithoutCompanyRow, error) {
+	rows, err := q.db.QueryContext(ctx, listHydroPlantsWithoutCompany)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListHydroPlantsWithoutCompanyRow
+	for rows.Next() {
+		var i ListHydroPlantsWithoutCompanyRow
+		if err := rows.Scan(&i.Symbol, &i.Plant); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

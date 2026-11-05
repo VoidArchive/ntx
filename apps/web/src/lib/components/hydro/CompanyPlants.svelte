@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Plant } from '#lib/gen/ntx/v1/hydro_pb.js';
-	import { STATE, STATUS_LABEL, num } from '#lib/hydro.js';
+	import { STATUS_LABEL, num } from '#lib/hydro.js';
+	import StateMark from './StateMark.svelte';
 
 	let { plants }: { plants: Plant[] } = $props();
 </script>
@@ -16,11 +17,11 @@
 				<th class="py-2 text-left font-normal">Status</th>
 				<th class="py-2 text-left font-normal">State</th>
 				<th class="py-2 text-left font-normal">Reading</th>
+				<th class="py-2 text-left font-normal">Source</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each plants as p (p.id)}
-				{@const s = STATE[p.state]}
 				<tr class="border-b border-border/50">
 					<td class="py-1.5 font-medium">{p.plant}</td>
 					<td class="py-1.5 text-muted-foreground">{p.river}</td>
@@ -32,11 +33,7 @@
 					</td>
 					<td class="py-1.5 text-right">{num(p.mw, 2)}</td>
 					<td class="py-1.5 text-muted-foreground">{STATUS_LABEL[p.status] ?? p.status}</td>
-					<td class="py-1.5">
-						<span aria-hidden="true" style="color: {s.color}">{s.glyph}</span>
-						{s.label}{#if p.stale}
-							<span class="text-xs text-muted-foreground">(stale)</span>{/if}
-					</td>
+					<td class="py-1.5"><StateMark state={p.state} stale={p.stale} /></td>
 					<!-- Each row names its own reading day and sources (ADR 0002). -->
 					<td class="py-1.5 text-xs text-muted-foreground">
 						{#if p.latest}
@@ -45,15 +42,21 @@
 							not recorded
 						{/if}
 					</td>
+					<!-- Each row names its own sources (ADR 0002): the licence row for the plant, the models for the day. -->
+					<td class="py-1.5 text-xs text-muted-foreground">
+						<a href={p.sourceUrl} class="underline underline-offset-2">DoED</a>
+						{#if p.latest}
+							· {p.latest.rainSource || 'rain not recorded'} · {p.latest.dischargeSource ||
+								'discharge not recorded'}
+						{/if}
+					</td>
 				</tr>
 			{/each}
 		</tbody>
 	</table>
 	<p class="mt-2 text-xs text-muted-foreground">
-		Coordinates and capacity from the
-		<a href={plants[0]?.sourceUrl} class="underline underline-offset-2">DoED licence table</a>; rain
-		and discharge from {plants[0]?.latest?.rainSource || 'Open-Meteo, ECMWF IFS'} and
-		{plants[0]?.latest?.dischargeSource || 'Open-Meteo, GloFAS v4'}. Rules on
-		<a href="/hydro" class="underline underline-offset-2">the hydro page</a>.
+		States follow the rules printed on <a href="/hydro" class="underline underline-offset-2"
+			>the hydro page</a
+		>.
 	</p>
 </div>

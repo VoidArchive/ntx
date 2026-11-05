@@ -31,6 +31,9 @@ export const STATE: Record<
 	}
 };
 
+// The three states a plant can be in, in order of severity; UNSPECIFIED means no readings.
+export const STATES = [PlantState.NORMAL, PlantState.HEAVY_RAIN, PlantState.HIGH_DISCHARGE];
+
 export function stateFromKey(key: string): PlantState | undefined {
 	const hit = Object.entries(STATE).find(([, s]) => s.key === key && key !== '');
 	return hit ? (Number(hit[0]) as PlantState) : undefined;

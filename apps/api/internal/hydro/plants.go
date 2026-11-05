@@ -25,12 +25,13 @@ var statuses = []string{"operating", "under_construction"}
 
 var columns = []string{"symbol", "plant", "river", "basin", "district", "mw", "lat", "lon", "status", "source_url"}
 
-type Plant = sqlc.UpsertHydroPlantParams
+// PlantRow is one CSV row, the shape the upsert takes.
+type PlantRow = sqlc.UpsertHydroPlantParams
 
 // ReadPlants parses data/hydro_plants.csv. A row with an unknown basin or status,
 // no source URL, or a point outside Nepal fails the whole load: a bad row must
 // not reach the map.
-func ReadPlants(r io.Reader) ([]Plant, error) {
+func ReadPlants(r io.Reader) ([]PlantRow, error) {
 	rows, err := csv.NewReader(r).ReadAll()
 	if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func ReadPlants(r io.Reader) ([]Plant, error) {
 	if len(rows) == 0 || !slices.Equal(rows[0], columns) {
 		return nil, fmt.Errorf("header must be %s", strings.Join(columns, ","))
 	}
-	plants := make([]Plant, 0, len(rows)-1)
+	plants := make([]PlantRow, 0, len(rows)-1)
 	for i, rec := range rows[1:] {
 		p, err := parsePlant(rec)
 		if err != nil {
@@ -49,8 +50,8 @@ func ReadPlants(r io.Reader) ([]Plant, error) {
 	return plants, nil
 }
 
-func parsePlant(rec []string) (Plant, error) {
-	p := Plant{
+func parsePlant(rec []string) (PlantRow, error) {
+	p := PlantRow{
 		Symbol: rec[0], Plant: rec[1], River: rec[2], Basin: rec[3], District: rec[4],
 		Status: rec[8], SourceUrl: rec[9],
 	}
@@ -102,5 +103,12 @@ func SyncPlants(ctx context.Context, q *sqlc.Queries, path string) error {
 		}
 	}
 	slog.Info("hydro plants synced", "plants", len(plants))
+	orphans, err := q.ListHydroPlantsWithoutCompany(ctx)
+	if err != nil {
+		return err
+	}
+	for _, o := range orphans {
+		slog.Warn("hydro plant symbol matches no company", "symbol", o.Symbol, "plant", o.Plant)
+	}
 	return nil
 }
