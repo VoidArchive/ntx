@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+// HydroService serves the /hydro map and the company page's Plants section.
+// Plants come from data/hydro_plants.csv, readings from the daily weather job;
+// states are computed at read time from two published rules (GLOSSARY: Plant state).
+service HydroService {
+  rpc ListPlants(ListPlantsRequest) returns (ListPlantsResponse);
+  rpc GetPlantReadings(GetPlantReadingsRequest) returns (GetPlantReadingsResponse);
+  rpc GetCompanyPlants(GetCompanyPlantsRequest) returns (GetCompanyPlantsResponse);
+}
+
+enum PlantState {
+  PLANT_STATE_UNSPECIFIED = 0;
+  PLANT_STATE_NORMAL = 1;
+  PLANT_STATE_HEAVY_RAIN = 2;
+  PLANT_STATE_HIGH_DISCHARGE = 3;
+}
+
+// One day's rain and modelled discharge at a plant, each with its source.
+message Reading {
+  string day = 1; // YYYY-MM-DD, never a future date
+  optional double rain_mm = 2;
+  optional double discharge_m3s = 3;
+  string rain_source = 4;
+  string discharge_source = 5;
+  PlantState state = 6; // the rules applied to this day against the plant's percentile
+}
+
+message Plant {
+  int64 id = 1;
+  string symbol = 2;
+  string company_name = 3;
+  string plant = 4;
+  string river = 5;
+  string basin = 6;
+  string district = 7;
+  double mw = 8;
+  double lat = 9;
+  double lon = 10;
+  string status = 11; // operating | under_construction
+  string source_url = 12;
+  PlantState state = 13;
+  // True when the latest reading is more than two days old; the state is still from that reading.
+  bool stale = 14;
+  optional Reading latest = 15;
+  // The plant's own ten-year 95th percentile the discharge rule compares against.
+  optional double discharge_p95 = 16;
+  // Company figures, the stored values the screener shows.
+  optional double close = 17;
+  string close_date = 18;
+  optional double pe = 19;
+  string period = 20; // fiscal year and quarter of the EPS behind pe
+  string rating = 21; // '' when unrated
+}
+
+message Basin {
+  string name = 1;
+  PlantState state = 2; // the worst of its plants
+  int32 plant_count = 3;
+}
+
+message Rule {
+  string name = 1;
+  string text = 2;
+}
+
+message ListPlantsRequest {}
+
+message ListPlantsResponse {
+  repeated Plant plants = 1;
+  repeated Basin basins = 2; // the nine of GLOSSARY, in its order, including empty ones
+  repeated Rule rules = 3;
+  string last_run = 4; // UTC timestamp of the newest stored reading, '' before the first run
+  // "141 plants of 110 listed companies on 97 rivers. Basins on 2026-11-05: Koshi normal, …"
+  string opening = 5;
+}
+
+message GetPlantReadingsRequest {
+  int64 plant_id = 1;
+}
+
+message GetPlantReadingsResponse {
+  repeated Reading readings = 1; // newest first, at most seven
+}
+
+message GetCompanyPlantsRequest {
+  string symbol = 1;
+}
+
+message GetCompanyPlantsResponse {
+  repeated Plant plants = 1;
+  string opening = 2; // "Two plants, 36 MW, on the Trishuli (Gandaki)."; '' without plants
+}
