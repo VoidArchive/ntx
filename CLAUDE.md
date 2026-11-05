@@ -2,7 +2,7 @@
 
 ## Product
 
-Thesis and vocabulary: `PRODUCT.md`, `GLOSSARY.md`. Decisions: `docs/adr/`. Current build: spec issue #20 and its sub-issues. Visual work starts from the page structure in the spec, never from a style roll.
+Thesis and vocabulary: `PRODUCT.md`, `GLOSSARY.md`. Decisions: `docs/adr/`. Current build: the newest open issue titled `Spec:`. Visual work starts from the page structure in the spec, never from a style roll.
 
 ## Code Rules
 

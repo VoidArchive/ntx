@@ -3,14 +3,11 @@
 	import { FundCard, fundProvenance } from '#lib/components/mutual-funds/index.js';
 	import LayoutGrid from '@lucide/svelte/icons/layout-grid';
 	import List from '@lucide/svelte/icons/list';
-	import TrendingUp from '@lucide/svelte/icons/trending-up';
-	import TrendingDown from '@lucide/svelte/icons/trending-down';
-	import Wallet from '@lucide/svelte/icons/wallet';
 	import type { Fund } from '#lib/types/fund.js';
 
 	let { data } = $props();
 
-	let viewMode = $state<'grid' | 'table'>('grid');
+	let viewMode = $state<'grid' | 'table'>('table');
 
 	// Calculate totals
 	let totalAUM = $derived(data.funds.reduce((sum: number, f: Fund) => sum + f.net_assets, 0));
@@ -37,11 +34,14 @@
 		<!-- Page Header -->
 		<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 			<div>
-				<h1 class="font-serif text-3xl tracking-tight">Mutual Funds</h1>
-				<p class="mt-1 text-sm text-muted-foreground">
-					Open-End Mutual Fund NAV and Portfolio Analysis
+				<h1 class="font-serif text-3xl font-medium tracking-tight">Mutual funds</h1>
+				<!-- The sentence first, as on every page. -->
+				<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
+					{data.funds.length} open-end funds hold Rs {formatLarge(totalAUM)} in net assets; {abovePar.length}
+					are above the Rs 10 par and {belowPar.length} below. The highest NAV is {bestFund?.symbol}
+					at Rs {bestFund?.nav_per_unit.toFixed(2)}.
 				</p>
-				<p class="mt-1 text-sm text-muted-foreground">{provenance}</p>
+				<p class="mt-2 text-sm text-muted-foreground">{provenance}</p>
 			</div>
 
 			<!-- View Toggle -->
@@ -68,48 +68,6 @@
 				</button>
 			</div>
 		</div>
-		<!-- Summary Cards -->
-		<div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-			<!-- Total AUM -->
-			<div class="rounded-xl border border-border bg-card/50 p-4">
-				<div class="flex items-center gap-2 text-muted-foreground">
-					<Wallet class="size-4" />
-					<span class="text-sm">Total AUM</span>
-				</div>
-				<p class="mt-2 font-serif text-2xl tabular-nums">{formatLarge(totalAUM)}</p>
-				<p class="text-xs text-muted-foreground">{data.funds.length} funds</p>
-			</div>
-
-			<!-- Above Par -->
-			<div class="rounded-xl border border-border bg-card/50 p-4">
-				<div class="flex items-center gap-2 text-positive">
-					<TrendingUp class="size-4" />
-					<span class="text-sm">Above Par</span>
-				</div>
-				<p class="mt-2 font-serif text-2xl tabular-nums">{abovePar.length}</p>
-				<p class="text-xs text-muted-foreground">NAV &gt; 10</p>
-			</div>
-
-			<!-- Below Par -->
-			<div class="rounded-xl border border-border bg-card/50 p-4">
-				<div class="flex items-center gap-2 text-negative">
-					<TrendingDown class="size-4" />
-					<span class="text-sm">Below Par</span>
-				</div>
-				<p class="mt-2 font-serif text-2xl tabular-nums">{belowPar.length}</p>
-				<p class="text-xs text-muted-foreground">NAV &lt; 10</p>
-			</div>
-
-			<!-- Best Performer -->
-			<div class="rounded-xl border border-border bg-card/50 p-4">
-				<div class="flex items-center gap-2 text-muted-foreground">
-					<span class="text-sm">Top Performer</span>
-				</div>
-				<p class="mt-2 font-serif text-2xl">{bestFund?.symbol}</p>
-				<p class="text-xs text-positive tabular-nums">NAV {bestFund?.nav_per_unit.toFixed(2)}</p>
-			</div>
-		</div>
-
 		<!-- Fund Grid -->
 		{#if viewMode === 'grid'}
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -118,57 +76,59 @@
 				{/each}
 			</div>
 		{:else}
-			<div class="overflow-hidden rounded-xl border border-border bg-card/50 backdrop-blur-sm">
-				<div class="overflow-x-auto">
-					<table class="w-full text-left text-sm">
-						<thead class="bg-muted/50 text-xs text-muted-foreground uppercase">
-							<tr>
-								<th class="px-4 py-3 font-medium">Fund</th>
-								<th class="px-4 py-3 text-right font-medium">NAV</th>
-								<th class="px-4 py-3 text-right font-medium">Net Assets</th>
-								<th class="hidden px-4 py-3 text-right font-medium sm:table-cell">Report Date</th>
-							</tr>
-						</thead>
-						<tbody class="divide-y divide-border">
-							{#each data.funds as fund (fund.symbol)}
-								<tr class="group transition-colors hover:bg-muted/50">
-									<td class="px-4 py-3">
-										<a href="/mutual-funds/{fund.symbol}" class="block">
-											<div class="font-medium group-hover:text-primary group-hover:underline">
-												{fund.symbol}
-											</div>
-											<div
-												class="max-w-[200px] truncate text-xs text-muted-foreground sm:max-w-none"
-											>
-												{fund.fund_name}
-											</div>
-										</a>
-									</td>
-									<td class="px-4 py-3 text-right tabular-nums">
-										{fund.nav_per_unit.toFixed(2)}
-										{#if fund.nav_per_unit > 10}
-											<span class="ml-1 text-xs text-positive">
-												(+{(((fund.nav_per_unit - 10) / 10) * 100).toFixed(1)}%)
-											</span>
-										{:else if fund.nav_per_unit < 10}
-											<span class="ml-1 text-xs text-negative">
-												(-{(((10 - fund.nav_per_unit) / 10) * 100).toFixed(1)}%)
-											</span>
-										{/if}
-									</td>
-									<td class="px-4 py-3 text-right text-muted-foreground tabular-nums">
-										{formatLarge(fund.net_assets)}
-									</td>
-									<td
-										class="hidden px-4 py-3 text-right text-muted-foreground tabular-nums sm:table-cell"
+			<div class="overflow-x-auto">
+				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+					<thead class="text-xs text-muted-foreground">
+						<tr class="border-b border-border">
+							<th class="py-2 text-left font-normal">Fund</th>
+							<th class="py-2 text-left font-normal">Name</th>
+							<th class="py-2 text-right font-normal">NAV</th>
+							<th class="py-2 text-right font-normal">From par</th>
+							<th class="py-2 text-right font-normal">Net assets</th>
+							<th class="py-2 text-left font-normal">Holdings</th>
+							<th class="py-2 text-left font-normal">Report</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each data.funds as fund (fund.symbol)}
+							{@const fromPar = ((fund.nav_per_unit - 10) / 10) * 100}
+							<tr class="border-b border-border/50 hover:bg-muted/50">
+								<td class="py-1.5">
+									<a
+										href="/mutual-funds/{fund.symbol}"
+										class="font-serif font-medium hover:underline">{fund.symbol}</a
 									>
-										{fund.report_date_nepali}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+								</td>
+								<td class="max-w-56 truncate py-1.5 text-muted-foreground" title={fund.fund_name}
+									>{fund.fund_name}</td
+								>
+								<td class="py-1.5 text-right">{fund.nav_per_unit.toFixed(2)}</td>
+								<!-- Sign and glyph carry direction, so colour is never the only signal. -->
+								<td
+									class="py-1.5 text-right {fromPar > 0
+										? 'text-positive'
+										: fromPar < 0
+											? 'text-negative'
+											: 'text-muted-foreground'}"
+								>
+									{fromPar > 0 ? '▲' : fromPar < 0 ? '▼' : '■'}
+									{Math.abs(fromPar).toFixed(1)}%
+								</td>
+								<td class="py-1.5 text-right">{formatLarge(fund.net_assets)}</td>
+								<td class="py-1.5 text-muted-foreground">
+									{#if fund.holdings_disclosure === 'full'}
+										itemised
+									{:else if fund.holdings_disclosure === 'top10'}
+										top 10 only
+									{:else}
+										not published
+									{/if}
+								</td>
+								<td class="py-1.5 text-xs text-muted-foreground">{fund.report_date_nepali}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			</div>
 		{/if}
 	</main>

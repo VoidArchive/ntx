@@ -22,13 +22,13 @@
 
 	// Company page sections, in page order.
 	const sections = [
+		{ id: 'price', label: 'Price and volume' },
 		{ id: 'earnings', label: 'Earnings' },
 		{ id: 'valuation', label: 'Valuation' },
 		{ id: 'payout', label: 'Payout' },
 		{ id: 'ownership', label: 'Ownership' },
 		{ id: 'funds', label: 'Funds' },
-		{ id: 'plants', label: 'Plants' }, // hydro companies only
-		{ id: 'price', label: 'Price and volume' }
+		{ id: 'plants', label: 'Plants' } // hydro companies only
 	];
 
 	let pathname = $derived(page.url.pathname);

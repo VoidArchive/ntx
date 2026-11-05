@@ -8,6 +8,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer base {
+	:focus-visible {
+		outline: 2px solid var(--ring);
+		outline-offset: 2px;
+	}
+	::selection {
+		background: var(--accent);
+		color: var(--accent-foreground);
+	}
+}
+
 :root {
 	--radius: 0.5rem;
 

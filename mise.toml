@@ -79,3 +79,7 @@ select 'ownership', count(*), min(updated_at), max(updated_at) from ownership un
 select 'hydro_plants', count(*), min(symbol), max(symbol) from hydro_plants union all
 select 'hydro_readings', count(*), min(day), max(day) from hydro_readings;"
 '''
+
+[tasks.shot]
+description = "Headless screenshot: mise run shot URL OUT.png WIDTH [HEIGHT]"
+run = "{{config_root}}/scripts/shot.sh"

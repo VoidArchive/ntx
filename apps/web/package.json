@@ -13,7 +13,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"types": "wrangler types",
+		"types": "wrangler types && perl -ni -e 'print unless /mainModule:/' worker-configuration.d.ts",
 		"test": "vitest run"
 	},
 	"devDependencies": {

@@ -23,7 +23,9 @@
 		<tbody>
 			{#each plants as p (p.id)}
 				<tr class="border-b border-border/50">
-					<td class="py-1.5 font-medium">{p.plant}</td>
+					<td class="py-1.5 font-medium">
+						<a href="/hydro?plant={p.id}" class="hover:underline">{p.plant}</a>
+					</td>
 					<td class="py-1.5 text-muted-foreground">{p.river}</td>
 					<td class="py-1.5">
 						<a

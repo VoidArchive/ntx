@@ -13,6 +13,19 @@
 
 	let { peers, range, symbol, period }: Props = $props();
 
+	// Hydropower has over a hundred peers; the nearest few by PE answer "where does it sit".
+	const WINDOW = 5;
+	let showAll = $state(false);
+	let windowed = $derived(peers.length > WINDOW * 2 + 2);
+	let shown = $derived.by(() => {
+		if (showAll || !windowed) return peers;
+		const i = Math.max(
+			0,
+			peers.findIndex((p) => p.symbol === symbol)
+		);
+		return peers.slice(Math.max(0, i - WINDOW), i + WINDOW + 1);
+	});
+
 	function fmt(value: number | undefined): string {
 		return value === undefined
 			? '—'
@@ -32,8 +45,8 @@
 					<th class="w-1/2 py-2 pl-6 text-left font-normal">
 						{#if range}
 							<span class="flex min-w-56 justify-between gap-2">
-								<span>{fmt(range.low)}</span><span>median {fmt(range.median)}</span><span
-									>{fmt(range.high)}</span
+								<span>low {fmt(range.low)}</span><span>median {fmt(range.median)}</span><span
+									>high {fmt(range.high)}</span
 								>
 							</span>
 						{/if}
@@ -41,7 +54,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each peers as p (p.symbol)}
+				{#each shown as p (p.symbol)}
 					<tr class="border-b border-border/50 {p.symbol === symbol ? 'font-medium' : ''}">
 						<td class="py-1.5" title={p.name}>
 							<a href="/company/{p.symbol}" class="hover:underline">{p.symbol}</a>
@@ -73,6 +86,17 @@
 		</table>
 	</div>
 	<p class="mt-2 text-xs text-muted-foreground">
+		{#if windowed}
+			<button
+				onclick={() => (showAll = !showAll)}
+				aria-expanded={showAll}
+				class="underline underline-offset-2 hover:text-foreground"
+				>{showAll
+					? `Show the nearest ${WINDOW} each way`
+					: `Show all ${peers.length} peers`}</button
+			>
+			·
+		{/if}
 		PE and PB from each company's latest filed quarter and latest close; this company's is {period ||
 			'not recorded'}.
 	</p>

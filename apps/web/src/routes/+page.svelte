@@ -27,7 +27,32 @@
 
 	let marketDay = $derived(data.marketDay);
 	let sectors = $derived(data.overview?.sectors ?? []);
+
+	// The sentence first, as on every page: the session when one is recorded, else the market's shape.
+	let listed = $derived(sectors.reduce((n, s) => n + s.companyCount, 0));
+	let filed = $derived(sectors.reduce((n, s) => n + s.quarterCount, 0));
+	let profitable = $derived(
+		sectors.reduce((n, s) => n + Math.round((s.profitableShare ?? 0) * s.quarterCount), 0)
+	);
+	let breadth = $derived(
+		marketDay ? marketDay.advances + marketDay.declines + marketDay.unchanged : 0
+	);
+	function word(value: number): string {
+		return value > 0 ? 'up' : value < 0 ? 'down' : 'flat';
+	}
 	let filedRecently = $derived(data.overview?.filedRecently ?? []);
+
+	// One date heading per run of filings, instead of the same date on every row.
+	let filedGroups = $derived.by(() => {
+		const groups: { label: string; rows: typeof filedRecently }[] = [];
+		for (const f of filedRecently) {
+			const label = `${f.published ? 'Published' : 'Seen by NTX on'} ${f.date}`;
+			const last = groups.at(-1);
+			if (last?.label === label) last.rows.push(f);
+			else groups.push({ label, rows: [f] });
+		}
+		return groups;
+	});
 
 	let largestMarketCap = $derived.by(() => {
 		if (!data.companies) return [];
@@ -97,47 +122,67 @@
 
 <div class="min-h-screen">
 	<main class="mx-auto max-w-7xl px-4 py-8">
-		{#if marketDay}
-			<p
-				class="mb-6 flex flex-wrap gap-x-4 gap-y-1 border-b border-border pb-3 text-sm text-muted-foreground"
-			>
-				<span class="text-foreground">{marketDay.businessDateBs} · {marketDay.businessDate}</span>
-				<span>
-					NEPSE <span class="text-foreground tabular-nums">{marketDay.indexClose.toFixed(2)}</span>
+		<header class="border-b border-border pb-8">
+			{#if marketDay}
+				<h1 class="font-serif text-3xl font-medium tracking-tight">
+					{marketDay.businessDateBs}
+					<span class="text-lg font-normal text-muted-foreground">· {marketDay.businessDate}</span>
+				</h1>
+				<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
+					NEPSE closed at <span class="tabular-nums"
+						>{marketDay.indexClose.toLocaleString('en-NP', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2
+						})}</span
+					>,
 					<span
 						class="tabular-nums {marketDay.indexChange > 0
 							? 'text-positive'
 							: marketDay.indexChange < 0
 								? 'text-negative'
 								: ''}"
+						>{word(marketDay.indexChange)}
+						{Math.abs(marketDay.indexChangePercent).toFixed(2)}%</span
+					>, on turnover of Rs {formatLarge(marketDay.turnover)}. {profitable} of {filed} companies with
+					a filed quarter are profitable.
+				</p>
+				<!-- Breadth: one bar, three segments, each named so colour is not the only carrier. -->
+				{#if breadth > 0}
+					<div
+						class="mt-4 flex h-2 max-w-3xl overflow-hidden rounded-full bg-muted"
+						role="img"
+						aria-label="{marketDay.advances} advanced, {marketDay.declines} declined, {marketDay.unchanged} unchanged"
 					>
-						{marketDay.indexChange > 0 ? '▲' : marketDay.indexChange < 0 ? '▼' : '■'}
-						{Math.abs(marketDay.indexChange).toFixed(2)} ({Math.abs(
-							marketDay.indexChangePercent
-						).toFixed(2)}%)
-					</span>
-				</span>
-				<span class="tabular-nums">
-					<span class="text-positive">{marketDay.advances} up</span> ·
-					<span class="text-negative">{marketDay.declines} down</span> ·
-					{marketDay.unchanged} unchanged
-				</span>
-				<span
-					>Turnover <span class="text-foreground tabular-nums"
-						>Rs {formatLarge(marketDay.turnover)}</span
-					></span
-				>
-			</p>
-		{/if}
+						<div class="bg-positive" style="width: {(marketDay.advances / breadth) * 100}%"></div>
+						<div
+							class="border-l-2 border-background bg-negative"
+							style="width: {(marketDay.declines / breadth) * 100}%"
+						></div>
+					</div>
+					<p class="mt-1 flex max-w-3xl justify-between text-xs text-muted-foreground tabular-nums">
+						<span><span class="text-positive">▲</span> {marketDay.advances} advanced</span>
+						<span>{marketDay.unchanged} unchanged</span>
+						<span>{marketDay.declines} declined <span class="text-negative">▼</span></span>
+					</p>
+				{/if}
+			{:else}
+				<h1 class="font-serif text-3xl font-medium tracking-tight">NEPSE</h1>
+				<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
+					{listed} listed companies in {sectors.length} sectors; {profitable} of {filed} with a filed
+					quarter are profitable.
+				</p>
+				<p class="mt-2 text-sm text-muted-foreground">No session summary recorded yet.</p>
+			{/if}
+		</header>
 
 		{#if sectors.length > 0}
-			<section>
+			<section class="mt-10">
 				<h2 class="mb-3 font-serif text-base font-medium">Sectors</h2>
 				<div class="overflow-x-auto">
-					<table class="w-full text-sm tabular-nums">
+					<table class="w-full text-sm whitespace-nowrap tabular-nums">
 						<thead class="text-left text-xs text-muted-foreground">
 							<tr class="border-b border-border">
-								<th class="py-2 pr-4 font-normal">Sector</th>
+								<th class="sticky left-0 bg-background py-2 pr-4 font-normal">Sector</th>
 								<th class="py-2 pr-4 text-right font-normal">Companies</th>
 								<th class="py-2 pr-4 text-right font-normal">Median PE</th>
 								<th class="py-2 pr-4 text-right font-normal">Median PB</th>
@@ -149,7 +194,8 @@
 						<tbody>
 							{#each sectors as s (s.name)}
 								<tr class="border-b border-border/50 hover:bg-muted">
-									<td class="py-2 pr-4">
+									<!-- Pinned so a phone can scroll the figures and keep the row's name. -->
+									<td class="sticky left-0 bg-background py-2 pr-4">
 										<a href="/company?sector={s.sector}" class="hover:underline">{s.name}</a>
 									</td>
 									<td class="py-2 pr-4 text-right">{s.companyCount}</td>
@@ -159,6 +205,18 @@
 									</td>
 									<td class="py-2 pr-4 text-right">{ratio(s.medianPb)}</td>
 									<td class="py-2 pr-4 text-right">
+										<!-- The share as a bar beside the number, so the column reads without arithmetic. -->
+										{#if s.profitableShare !== undefined}
+											<span
+												class="mr-2 inline-block h-1.5 w-16 overflow-hidden rounded-full bg-muted align-middle"
+												aria-hidden="true"
+											>
+												<span
+													class="block h-full bg-foreground/70"
+													style="width: {s.profitableShare * 100}%"
+												></span>
+											</span>
+										{/if}
 										{s.profitableShare === undefined
 											? '—'
 											: `${Math.round(s.profitableShare * 100)}%`}
@@ -180,21 +238,24 @@
 			</section>
 		{/if}
 
-		{#if filedRecently.length > 0}
+		{#if filedGroups.length > 0}
 			<section class="mt-12 border-t border-border pt-8">
 				<h2 class="mb-3 font-serif text-base font-medium">Filed recently</h2>
-				<ul class="divide-y divide-border/50 text-sm">
-					{#each filedRecently as f (f.symbol)}
-						<li class="flex flex-wrap items-baseline gap-x-3 py-2">
-							<a href="/company/{f.symbol}" class="font-serif hover:underline">{f.symbol}</a>
-							<span class="flex-1">{f.claim || f.name}</span>
-							<span class="text-xs text-muted-foreground tabular-nums">
-								{f.published ? 'published' : 'seen by NTX on'}
-								{f.date}
-							</span>
-						</li>
-					{/each}
-				</ul>
+				{#each filedGroups as g, gi (gi)}
+					<h3 class="mt-5 mb-1 text-xs text-muted-foreground tabular-nums first:mt-0">{g.label}</h3>
+					<ul class="text-sm lg:columns-2 lg:gap-x-10">
+						{#each g.rows as f (f.symbol)}
+							<li
+								class="flex break-inside-avoid flex-wrap items-baseline gap-x-3 border-b border-border/50 py-2"
+							>
+								<a href="/company/{f.symbol}" class="font-serif hover:underline" title={f.name}
+									>{f.symbol}</a
+								>
+								<span class="min-w-64 flex-1">{f.claim || f.name}</span>
+							</li>
+						{/each}
+					</ul>
+				{/each}
 			</section>
 		{/if}
 

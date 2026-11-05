@@ -24,11 +24,14 @@
 			.sort((a, b) => yearFirst(b.period).localeCompare(yearFirst(a.period)))
 			.slice(0, 8)
 	);
+	// Two columns of "not recorded" say less than one caption line.
+	let provenance = $derived(rows.some((f) => f.publishedAt || f.sourceUrl));
 </script>
 
 <div class={className}>
 	<h4 class="mb-2 text-xs font-medium text-muted-foreground">
-		Rows as filed: year-to-date profit, annualized EPS
+		Rows as filed: year-to-date profit, annualized EPS{#if rows.length > 0 && !provenance}&nbsp;·
+			published dates and source filings not recorded{/if}
 	</h4>
 
 	{#if rows.length > 0}
@@ -41,8 +44,10 @@
 						<th class="pb-2 text-right font-medium">P/E</th>
 						<th class="pb-2 text-right font-medium">Book Value</th>
 						<th class="pb-2 text-right font-medium">Net Profit</th>
-						<th class="pb-2 text-right font-medium">Published</th>
-						<th class="pb-2 text-right font-medium">Source</th>
+						{#if provenance}
+							<th class="pb-2 text-right font-medium">Published</th>
+							<th class="pb-2 text-right font-medium">Source</th>
+						{/if}
 					</tr>
 				</thead>
 				<tbody>
@@ -57,25 +62,27 @@
 							<td class="py-2.5 text-right tabular-nums"
 								>{f.profitAmount ? formatLarge(f.profitAmount, 1) : '—'}</td
 							>
-							<td
-								class="py-2.5 text-right tabular-nums {f.publishedAt
-									? ''
-									: 'text-muted-foreground'}"
-							>
-								{f.publishedAt ?? 'not recorded'}
-							</td>
-							<td class="py-2.5 text-right">
-								{#if f.sourceUrl}
-									<a
-										href={f.sourceUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										class="underline underline-offset-2 hover:text-foreground">filing</a
-									>
-								{:else}
-									<span class="text-muted-foreground">not recorded</span>
-								{/if}
-							</td>
+							{#if provenance}
+								<td
+									class="py-2.5 text-right tabular-nums {f.publishedAt
+										? ''
+										: 'text-muted-foreground'}"
+								>
+									{f.publishedAt ?? 'not recorded'}
+								</td>
+								<td class="py-2.5 text-right">
+									{#if f.sourceUrl}
+										<a
+											href={f.sourceUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="underline underline-offset-2 hover:text-foreground">filing</a
+										>
+									{:else}
+										<span class="text-muted-foreground">not recorded</span>
+									{/if}
+								</td>
+							{/if}
 						</tr>
 					{/each}
 				</tbody>

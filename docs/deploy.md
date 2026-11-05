@@ -48,6 +48,8 @@ wrangler login            # once per machine
 pnpm build && pnpm exec wrangler deploy
 ```
 
+`pnpm run types` strips the `mainModule` line from the generated `worker-configuration.d.ts`: that line imports the built `_worker.js`, and with SvelteKit's `checkJs` it would type-check the whole build output, so `pnpm check` failed locally whenever a build existed (CI passed only because it checks before it builds).
+
 `API_URL` is a Worker var in `apps/web/wrangler.jsonc`, read through `$app/env/private`. Changing the Railway domain means changing it there and redeploying the web.
 
 ## After a merge that touches both sides
