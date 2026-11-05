@@ -6,7 +6,7 @@
 	import { beforeNavigate, afterNavigate, onNavigate } from '$app/navigation';
 	import posthog from 'posthog-js';
 	import { ModeWatcher } from 'mode-watcher';
-	import Navbar from '#lib/components/Navbar.svelte';
+	import Sidebar from '#lib/components/Sidebar.svelte';
 	import type { LayoutData } from './$types';
 	import type { Snippet } from 'svelte';
 
@@ -75,51 +75,55 @@
 	</script>
 </svelte:head>
 <ModeWatcher />
-<Navbar companies={data.search} />
-{@render children()}
+<div class="lg:flex">
+	<Sidebar companies={data.search} />
+	<div class="min-w-0 flex-1">
+		{@render children()}
 
-<footer class="mt-20 border-t border-border/50 bg-background/50 py-12 backdrop-blur-sm">
-	<div class="mx-auto max-w-7xl px-4 text-center">
-		<div class="mb-6 flex justify-center gap-6">
-			<a
-				href="https://github.com/voidarchive/ntx"
-				target="_blank"
-				rel="noreferrer"
-				class="group flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-			>
-				<div
-					class="flex size-8 items-center justify-center rounded-full bg-muted/50 transition-colors group-hover:bg-primary/10"
-				>
-					<svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-						><path
-							d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"
-						/></svg
+		<footer class="mt-20 border-t border-border/50 bg-background/50 py-12 backdrop-blur-sm">
+			<div class="mx-auto max-w-7xl px-4 text-center">
+				<div class="mb-6 flex justify-center gap-6">
+					<a
+						href="https://github.com/voidarchive/ntx"
+						target="_blank"
+						rel="noreferrer"
+						class="group flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
 					>
-				</div>
-				<span>View on GitHub</span>
-			</a>
+						<div
+							class="flex size-8 items-center justify-center rounded-full bg-muted/50 transition-colors group-hover:bg-primary/10"
+						>
+							<svg class="size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+								><path
+									d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"
+								/></svg
+							>
+						</div>
+						<span>View on GitHub</span>
+					</a>
 
-			<a
-				href="https://github.com/voidarchive/ntx/issues"
-				target="_blank"
-				rel="noreferrer"
-				class="group flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-			>
-				<div
-					class="flex size-8 items-center justify-center rounded-full bg-muted/50 transition-colors group-hover:bg-orange-500/10 group-hover:text-orange-600"
-				>
-					<AlertCircle class="size-4" />
+					<a
+						href="https://github.com/voidarchive/ntx/issues"
+						target="_blank"
+						rel="noreferrer"
+						class="group flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+					>
+						<div
+							class="flex size-8 items-center justify-center rounded-full bg-muted/50 transition-colors group-hover:bg-orange-500/10 group-hover:text-orange-600"
+						>
+							<AlertCircle class="size-4" />
+						</div>
+						<span>Report Issue</span>
+					</a>
 				</div>
-				<span>Report Issue</span>
-			</a>
-		</div>
 
-		<p class="text-xs text-muted-foreground/60">
-			Built by <a
-				target="_blank"
-				href="https://anishshrestha.com"
-				class="hover:text-foreground hover:underline">Anish Shrestha</a
-			>.
-		</p>
+				<p class="text-xs text-muted-foreground/60">
+					Built by <a
+						target="_blank"
+						href="https://anishshrestha.com"
+						class="hover:text-foreground hover:underline">Anish Shrestha</a
+					>.
+				</p>
+			</div>
+		</footer>
 	</div>
-</footer>
+</div>

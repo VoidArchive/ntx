@@ -17,6 +17,7 @@ Every page opens with what the data says, in prose, with provenance on every num
 Three sub-projects sharing one database, built in this order, each usable alone:
 
 1. **Content redesign** (this spec): story engine, provenance, company page, home page, removal of auth and portfolio.
+   - **1b. Navigation, sections, rating, screener** (added 2026-11-05, see below): a sidebar, the company page split into one section per claim with a chart each, an A to D rating summarising the checks, and the companies list turned into the screener.
 2. **Hydro map**: Nepal rivers and basins, every listed hydro's plants plotted from a curated table, daily rain and discharge per plant from Open-Meteo via the worker. Dual use: risk monitor for held basins, screener for cheap hydros in new basins.
 3. **Personal rules layer**: holdings and watchlist, per-stock break conditions evaluated against new filings, rule checker (caps, minimum size, basin, dividend), dated gates calendar, monthly order sheet. Requires bank metrics (NPL, CAR, loan growth, distributable profit) which are not in go-nepse.
 
@@ -127,7 +128,16 @@ Mutual fund pages: add the opening sentence and provenance line only.
 
 ### Out of scope for sub-project 1
 
-Hydro map, weather, holdings, break-condition evaluation, bank metrics ingestion, moving `nav.json` into SQLite, a screener route.
+Hydro map, weather, holdings, break-condition evaluation, bank metrics ingestion, moving `nav.json` into SQLite. (A screener route was out of scope here and moved to 1b on 2026-11-05.)
+
+## Sub-project 1b: navigation, sections, rating, screener
+
+Added 2026-11-05 after sub-project 1 shipped. The pages read as an info dump and the site had no place to filter companies.
+
+- **Sidebar**: one navigation surface replaces the top bar. Site links (Home, Companies, Mutual funds), then the search trigger and theme toggle; on a company page the section list follows, highlighting the section in view. On phones it collapses to a slim top bar with a menu button opening the same list. Market cap and most traded stop being pages; they are sort orders of the screener.
+- **Company page as sections**: a two-line lede (earnings claim, rating, quote line), then one section per claim kind: Earnings, Valuation (strips with peers beneath), Payout, Ownership, Funds, Price and volume last, data footer. Each section opens with its claim sentence as the headline and shows its matching check's verdict and rule beside it. Payout gains a stacked bar of cash and bonus per fiscal year; every other section keeps its existing chart. The engine emits no new prose.
+- **Rating**: computed in the API from the eight checks. A is 7 or 8 Holds of 8, B 5 or 6, C 3 or 4, D 0 to 2, scaled by the count of checks that could be evaluated; no rating when fewer than 4 evaluate. Shown once, beside the symbol, as a letter in the foreground colour with "n of m checks hold" on hover or tap. It summarises published checks and is not a recommendation; this amends the "no scores" constraint above and the glossary gains a Rating entry.
+- **Screener**: the companies list at `/company` becomes a dense sortable table (symbol, name, sector, close, PE, PB, EPS, dividend yield, market cap, rating), default sort market cap descending. Filters: sector, PE range, PB range, minimum rating, text; all filter and sort state in the URL. The worker stores each company's rating after the daily sync so the screener reads a stored value; the company page keeps computing live.
 
 ## Sub-project 2: hydro map (summary, own spec later)
 

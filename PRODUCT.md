@@ -45,7 +45,7 @@ Decided 2026-11-04: the portfolio and auth features (login, register, portfolios
 
 Decided 2026-11-04: every surface is in scope for redesign when it is needed. Nothing in the current look is protected.
 
-Decided 2026-11-04: the product thesis is "every page opens with what the data says, in prose, with provenance on every number" (see docs/superpowers/specs/2026-11-04-ntx-content-redesign-design.md). Three sub-projects in order: content redesign, hydro map of Nepal's rivers and listed plants with daily weather and discharge, and a personal rules layer (holdings, break conditions, caps, river-basin rule, gates calendar).
+Decided 2026-11-04: the product thesis is "every page opens with what the data says, in prose, with provenance on every number" (see docs/superpowers/specs/2026-11-04-ntx-content-redesign-design.md). Three sub-projects in order: content redesign (followed on 2026-11-05 by 1b: sidebar navigation, company page sections, A to D rating, screener), hydro map of Nepal's rivers and listed plants with daily weather and discharge, and a personal rules layer (holdings, break conditions, caps, river-basin rule, gates calendar).
 
 Undecided: whether a screener with fundamental filters ships as its own route (the README names it; no route exists yet). Where personal holdings are stored (local-first vs owner token).
 
