@@ -70,3 +70,25 @@ One trading day's summary: index close, turnover, traded shares, transactions, a
 
 **Notice**:
 A dividend or corporate-action announcement as published by the exchange: headline, body and filing, stored verbatim.
+
+### Hydro
+
+**Plant**:
+One generating site of a listed hydropower company: its name, river, basin, district, capacity in MW, coordinates and status (operating or under construction). A company may have several.
+_Avoid_: project (for a built plant), station, site
+
+**River**:
+The named river a plant's intake is on, as the licence names it (Tamakoshi, Trishuli, Kabeli). Two plants on different tributaries are on different rivers even when they share a basin.
+_Avoid_: stream, khola (as a separate concept)
+
+**Basin**:
+One of the major drainage basins of Nepal, from a fixed list. Every river belongs to exactly one basin. Colouring, basin state and the one-hydro-per-basin rule work at this level, never at the river level.
+_Avoid_: watershed, catchment, region
+
+**Reading**:
+One day's rain and river discharge at a plant's coordinates, carrying its date and source. Only past and current days are readings; a forecast is not a reading.
+_Avoid_: forecast, observation, data point
+
+**Plant state / Basin state**:
+A plant's state is Normal, Heavy rain, High discharge or Needs more history, from a published rule with a threshold applied to its readings. A basin's state is the worst state among its plants. Neither is an alert or a prediction.
+_Avoid_: alert, warning, risk level, flood
