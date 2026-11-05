@@ -13,8 +13,10 @@ type Querier interface {
 	// backfilled rows carry no change fields and illiquid stocks skip sessions.
 	CountBreadth(ctx context.Context, businessDate string) (CountBreadthRow, error)
 	CountCompanyRatings(ctx context.Context) (int64, error)
+	CountDischargeReadings(ctx context.Context, plantID int64) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
+	GetLastWeatherRun(ctx context.Context) (string, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
 	GetLatestCorporateActionByCompany(ctx context.Context, companyID int64) (CorporateAction, error)
 	GetLatestFundamental(ctx context.Context, companyID int64) (Fundamental, error)
@@ -27,17 +29,28 @@ type Querier interface {
 	// Stored profit is year-to-date, so a quarter's YTD is comparable with the same quarter's YTD a year earlier.
 	GetSectorProfitYoY(ctx context.Context, sector string) (GetSectorProfitYoYRow, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
+	ListAllHydroPlants(ctx context.Context) ([]HydroPlant, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
 	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
 	// Change columns are NULL on backfilled rows, so the change comes from consecutive closes.
 	ListDayChanges(ctx context.Context) ([]ListDayChangesRow, error)
+	// Nearest-rank 95th percentile of each plant's stored discharge: the row ranked
+	// ceil(0.95 * n) ascending, written in integer arithmetic as SQLite has no ceil.
+	ListDischargeP95(ctx context.Context) ([]ListDischargeP95Row, error)
 	// The first backfill set every created_at to one day, so every unpublished row reads "seen" on that day.
 	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
+	// Every plant with its company's latest close, latest quarterly EPS (for PE, divided
+	// in Go as the screener does) and stored rating. LEFT joins: a plant lists without them.
+	ListHydroPlants(ctx context.Context) ([]ListHydroPlantsRow, error)
+	ListHydroPlantsBySymbol(ctx context.Context, symbol string) ([]HydroPlant, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
+	// Newest day per plant, the reading the state is computed from.
+	ListLatestReadings(ctx context.Context) ([]HydroReading, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
+	ListRecentReadings(ctx context.Context, arg ListRecentReadingsParams) ([]HydroReading, error)
 	// One row per listed company with the inputs of the screener columns; ratios
 	// are divided in Go so a zero never reaches SQL. Every join is LEFT so a
 	// company without a filing, a close or a rating still lists.
@@ -60,11 +73,14 @@ type Querier interface {
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRatingParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error
+	UpsertDischargeReading(ctx context.Context, arg UpsertDischargeReadingParams) error
 	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
+	UpsertHydroPlant(ctx context.Context, arg UpsertHydroPlantParams) error
 	UpsertMarketDay(ctx context.Context, arg UpsertMarketDayParams) error
 	UpsertOwnership(ctx context.Context, arg UpsertOwnershipParams) error
 	UpsertOwnershipHistory(ctx context.Context, arg UpsertOwnershipHistoryParams) error
 	UpsertPrice(ctx context.Context, arg UpsertPriceParams) error
+	UpsertRainReading(ctx context.Context, arg UpsertRainReadingParams) error
 }
 
 var _ Querier = (*Queries)(nil)
