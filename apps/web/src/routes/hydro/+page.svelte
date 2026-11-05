@@ -29,7 +29,9 @@
 	];
 
 	// The URL is the only filter state, as on the screener, so a basin and a PE sort are a link.
-	let params = $derived(page.url.searchParams);
+	// A shallow goto leaves page.url on the loaded URL and puts the target in page.shallow.
+	let url = $derived(page.shallow?.url ?? page.url);
+	let params = $derived(url.searchParams);
 	let basinFilter = $derived(params.get('basin') ?? '');
 	let statusFilter = $derived(params.get('status') ?? '');
 	let stateFilter = $derived(stateFromKey(params.get('state') ?? ''));
@@ -38,7 +40,7 @@
 	let hasFilters = $derived(!!(basinFilter || statusFilter || stateFilter !== undefined));
 
 	function setParams(changes: Record<string, string>) {
-		const next = new SvelteURLSearchParams(page.url.searchParams.toString());
+		const next = new SvelteURLSearchParams(url.searchParams.toString());
 		for (const [k, v] of Object.entries(changes)) {
 			if (v) next.set(k, v);
 			if (!v) next.delete(k);
