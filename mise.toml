@@ -22,7 +22,7 @@ run = "go test ./..."
 [tasks.lint]
 description = "Go lint"
 dir = "{{config_root}}/apps/api"
-run = "golangci-lint run"
+run = ["golangci-lint run", "../../scripts/banned_words.sh"]
 
 [tasks.fmt]
 description = "Go lint with autofix"

@@ -13,7 +13,7 @@
 	let { holdings, netAssets }: Props = $props();
 
 	// Track expanded sectors
-	let expandedSectors = new SvelteSet<string>();
+	const expandedSectors = new SvelteSet<string>();
 
 	interface SectorGroup {
 		key: keyof Holdings;

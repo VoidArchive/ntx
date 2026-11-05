@@ -12,10 +12,7 @@ export default defineConfig({
 			// for more information about preprocessors
 			preprocess: vitePreprocess(),
 			inspector: true,
-			adapter: adapter(),
-			paths: {
-				relative: false /* Required for PostHog session replay to work correctly */
-			}
+			adapter: adapter()
 		})
 	],
 	test: {
