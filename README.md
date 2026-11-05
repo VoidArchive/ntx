@@ -6,7 +6,7 @@ A focused, information-dense stock snapshot for Nepal Stock Exchange.
 
 ## What NTX Does
 - Stock screener with fundamental filters
-- Company pages with dense, actionable data
+- Company pages that open with what the data says, period and source beside every figure
 - Market overview (indices, top movers)
 
 ## Tech Stack
@@ -21,28 +21,14 @@ A focused, information-dense stock snapshot for Nepal Stock Exchange.
 ## Development
 
 ```bash
-# Run backend (hot reload)
+# Run API and web with hot reload
 mise run dev
-
-# Run frontend
-mise run dev-web
 
 # After proto changes
 mise run proto
 
 # After SQL query changes
 mise run sqlc
-```
-
-## Project Structure
-
-```
-ntx/
-├── cmd/ntxd/           # Server binary
-├── internal/           # Go packages
-├── gen/                # Generated code (proto)
-├── proto/              # Proto definitions
-└── web/                # SvelteKit frontend
 ```
 
 ## License
