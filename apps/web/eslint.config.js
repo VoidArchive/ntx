@@ -27,6 +27,9 @@ export default defineConfig(
 			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
 			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
 			'no-undef': 'off',
+			// Mechanical half of CODING_STANDARDS.md; svelte/prefer-const leaves $props and $derived alone.
+			'svelte/prefer-const': 'error',
+			'no-else-return': ['error', { allowElseIf: false }],
 			'svelte/no-navigation-without-resolve': 'off',
 			'@typescript-eslint/no-unused-vars': [
 				'error',
@@ -40,6 +43,18 @@ export default defineConfig(
 	},
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+
+		rules: {
+			// Claims read as facts, never as advice: no recommending words in rendered text.
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector:
+						':not(SvelteElement[name.name="script"]) > SvelteText[value=/\\b(buy|sell|bullish|bearish|target|signal|score)\\b/i]',
+					message: 'Recommending word in user-facing copy (CODING_STANDARDS.md).'
+				}
+			]
+		},
 
 		languageOptions: {
 			parserOptions: {
