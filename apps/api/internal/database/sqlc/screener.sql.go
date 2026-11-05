@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const countCompanyRatings = `-- name: CountCompanyRatings :one
+SELECT COUNT(*) FROM company_ratings
+`
+
+func (q *Queries) CountCompanyRatings(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countCompanyRatings)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const listScreener = `-- name: ListScreener :many
 SELECT c.symbol, c.name, c.sector,
   o.listed_shares,

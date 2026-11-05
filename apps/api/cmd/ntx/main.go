@@ -96,6 +96,18 @@ func runServer() {
 	go func() {
 		_ = sched.Start(context.Background())
 	}()
+	// A fresh deploy has no ratings until the post-close job runs; fill them now
+	// so the screener is not blank for a day. The job keeps them current after.
+	go func() {
+		ctx := context.Background()
+		n, err := queries.CountCompanyRatings(ctx)
+		if err != nil || n > 0 {
+			return
+		}
+		if err := w.SyncRatings(ctx); err != nil {
+			slog.Error("initial ratings failed", "error", err)
+		}
+	}()
 
 	srv := server.NewServer(queries)
 	if err := srv.Start(); err != nil {

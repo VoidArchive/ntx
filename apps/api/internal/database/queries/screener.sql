@@ -41,3 +41,6 @@ LEFT JOIN corporate_actions ca ON ca.id = (
 LEFT JOIN company_ratings r ON r.company_id = c.id
 WHERE c.status = 'A'
 ORDER BY c.symbol;
+
+-- name: CountCompanyRatings :one
+SELECT COUNT(*) FROM company_ratings;

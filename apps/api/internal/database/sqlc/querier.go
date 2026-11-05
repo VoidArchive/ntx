@@ -12,6 +12,7 @@ type Querier interface {
 	// Compares each company's close with its own previous priced day, because
 	// backfilled rows carry no change fields and illiquid stocks skip sessions.
 	CountBreadth(ctx context.Context, businessDate string) (CountBreadthRow, error)
+	CountCompanyRatings(ctx context.Context) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
