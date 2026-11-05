@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"connectrpc.com/connect"
@@ -22,6 +23,12 @@ type Service struct {
 	ntxv1connect.UnimplementedHydroServiceHandler
 	queries *sqlc.Queries
 	now     func() time.Time
+
+	// The percentile pass sorts every plant's ten years of rows, seconds of work
+	// that only changes when the weather job writes; it is kept until it does.
+	mu      sync.Mutex
+	p95     map[int64]float64
+	p95AsOf string
 }
 
 func NewService(queries *sqlc.Queries) *Service {
@@ -137,8 +144,19 @@ func (s *Service) plants(ctx context.Context) ([]*ntxv1.Plant, error) {
 	return out, nil
 }
 
-// percentiles is each plant's ten-year 95th percentile of discharge, absent until it has rows.
+// percentiles is each plant's ten-year 95th percentile of discharge, absent until
+// it has rows. Recomputed only after a weather run; the day the window's floor
+// moves without one, the map is a day old, which no rule can notice.
 func (s *Service) percentiles(ctx context.Context) (map[int64]float64, error) {
+	lastRun, err := s.queries.GetLastWeatherRun(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("last weather run: %w", err)
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.p95 != nil && s.p95AsOf == lastRun {
+		return s.p95, nil
+	}
 	floor := s.now().In(nepalTime).AddDate(-dischargeYears, 0, 0).Format(time.DateOnly)
 	rows, err := s.queries.ListDischargeP95(ctx, floor)
 	if err != nil {
@@ -148,6 +166,7 @@ func (s *Service) percentiles(ctx context.Context) (map[int64]float64, error) {
 	for _, r := range rows {
 		p95[r.PlantID] = r.DischargeM3s.Float64
 	}
+	s.p95, s.p95AsOf = p95, lastRun
 	return p95, nil
 }
 

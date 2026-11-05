@@ -243,3 +243,33 @@ func TestGetPlantReadingsIsNewestFirstAndSevenDeep(t *testing.T) {
 		t.Fatalf("states %v %v", r.State, res.Msg.Readings[1].State)
 	}
 }
+
+func TestPercentilesAreKeptUntilTheNextWeatherRun(t *testing.T) {
+	ctx := context.Background()
+	svc := fixture(t)
+	first, err := svc.percentiles(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	again, err := svc.percentiles(ctx)
+	if err != nil || first[2] != 20 {
+		t.Fatal(err)
+	}
+	if fmt.Sprintf("%p", again) != fmt.Sprintf("%p", first) {
+		t.Fatal("no new readings, yet the percentiles were recomputed")
+	}
+	// A new reading moves the run stamp, so the next request recomputes.
+	time.Sleep(1100 * time.Millisecond) // fetched_at has one-second resolution
+	if err := svc.queries.UpsertDischargeReading(ctx, sqlc.UpsertDischargeReadingParams{
+		PlantID: 2, Day: day(1), DischargeM3s: nullFloat(500), DischargeSource: nullString(DischargeSource),
+	}); err != nil {
+		t.Fatal(err)
+	}
+	fresh, err := svc.percentiles(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fresh[2] != 55 {
+		t.Fatalf("p95 after a new reading %v, want 55 (rank 21 of 22)", fresh[2])
+	}
+}
