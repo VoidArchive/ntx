@@ -49,7 +49,8 @@ type Querier interface {
 	// A symbol DoED spells differently from NEPSE would list a plant with no company.
 	ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydroPlantsWithoutCompanyRow, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
-	// Newest day per plant, the reading the state is computed from.
+	// Newest day per plant, the reading the state is computed from. The GROUP BY
+	// walks the (plant_id, day) index once; a correlated MAX scanned every row.
 	ListLatestReadings(ctx context.Context) ([]HydroReading, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)

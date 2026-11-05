@@ -276,10 +276,12 @@ func (q *Queries) ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydr
 
 const listLatestReadings = `-- name: ListLatestReadings :many
 SELECT r.plant_id, r.day, r.rain_mm, r.discharge_m3s, r.rain_source, r.discharge_source, r.fetched_at FROM hydro_readings r
-WHERE r.day = (SELECT MAX(r2.day) FROM hydro_readings r2 WHERE r2.plant_id = r.plant_id)
+JOIN (SELECT plant_id, MAX(day) AS day FROM hydro_readings GROUP BY plant_id) m
+  ON m.plant_id = r.plant_id AND m.day = r.day
 `
 
-// Newest day per plant, the reading the state is computed from.
+// Newest day per plant, the reading the state is computed from. The GROUP BY
+// walks the (plant_id, day) index once; a correlated MAX scanned every row.
 func (q *Queries) ListLatestReadings(ctx context.Context) ([]HydroReading, error) {
 	rows, err := q.db.QueryContext(ctx, listLatestReadings)
 	if err != nil {

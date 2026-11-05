@@ -57,10 +57,12 @@ ON CONFLICT(plant_id, day) DO UPDATE SET
 -- name: CountDischargeReadings :one
 SELECT COUNT(*) FROM hydro_readings WHERE plant_id = ? AND discharge_m3s IS NOT NULL;
 
--- Newest day per plant, the reading the state is computed from.
+-- Newest day per plant, the reading the state is computed from. The GROUP BY
+-- walks the (plant_id, day) index once; a correlated MAX scanned every row.
 -- name: ListLatestReadings :many
 SELECT r.* FROM hydro_readings r
-WHERE r.day = (SELECT MAX(r2.day) FROM hydro_readings r2 WHERE r2.plant_id = r.plant_id);
+JOIN (SELECT plant_id, MAX(day) AS day FROM hydro_readings GROUP BY plant_id) m
+  ON m.plant_id = r.plant_id AND m.day = r.day;
 
 -- Nearest-rank 95th percentile of each plant's discharge since floor (ten years
 -- ago, so the window stays ten years as rows age): the row ranked ceil(0.95 * n)

@@ -35,6 +35,10 @@ CREATE TABLE hydro_readings (
 -- The discharge percentile sorts each plant's ten years of rows.
 CREATE INDEX hydro_readings_discharge ON hydro_readings(plant_id, discharge_m3s);
 -- +goose StatementEnd
+-- +goose StatementBegin
+-- Every page read asks for the newest fetched_at to know whether the weather job has run.
+CREATE INDEX hydro_readings_fetched ON hydro_readings(fetched_at);
+-- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
