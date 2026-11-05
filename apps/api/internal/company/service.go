@@ -155,13 +155,14 @@ func fundamentalToProto(f sqlc.Fundamental) *ntxv1.Fundamental {
 		PublishedAt:   nullString(f.PublishedAt),
 		SourceUrl:     nullString(f.SourceUrl),
 		FiscalYearNp:  nullString(f.FiscalYearNp),
-		Period:        period(f),
+		Period:        Period(f),
 	}
 }
 
 // period is the canonical display name of a filing's period; the stored
 // Gregorian span is never displayed.
-func period(f sqlc.Fundamental) string {
+// Period is the filing a row came from, "Q1 2083/84", or "" when the row is undated (ADR 0002).
+func Period(f sqlc.Fundamental) string {
 	y, err := fiscal.ParseFilingYear(f.FiscalYearNp.String, f.FiscalYear)
 	if err != nil {
 		return ""

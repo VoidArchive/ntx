@@ -1,0 +1,142 @@
+symbol,plant,river,basin,district,mw,lat,lon,status,source_url
+AHL,Lower Jogmai Khola HPP,Jogmai Khola,Kankai,Ilam,6.200,26.8911,87.9772,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+AHPC,Budum HEP,Budum Khola,Koshi,Solukhumbu,14.500,27.4865,86.8479,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+AHPC,Kabeli B1 Cascade HPP,Kabeli Khola,Koshi,Panchthar,9.940,27.2739,87.7738,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+AHPC,Piluwa Khola,Piluwa Khola,Koshi,Sankhuwasabha,3.000,27.2736,87.3376,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+AHPC,Upper Kabeli-2 HEP,Kabeli Khola,Koshi,Taplejung,15.000,27.2979,87.8402,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+AKJCL,Ankhu Khola - 1,Ankhu Khola,Gandaki,Dhading,7.000,28.0125,84.916,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+AKPL,Kabeli B - 1,Kabeli Khola,Koshi,Panchthar,25.000,27.2782,87.8097,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+APHL,Buku Khola,Buku,Koshi,Solukhumbu,6.000,27.5198,86.3623,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+API,Nau Gad Khola,Naugad,Mahakali,Darchula,8.500,29.7032,80.6074,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+API,Upper Chameliya HP,Chameliya Khola,Mahakali,Darchula,40.000,29.7607,80.8003,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+API,Upper Naugad Gad Hydropower Project,Naugad,Mahakali,Darchula,8.000,29.7309,80.6353,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BARUN,Hewa khola,Hewa (Sankhuwasabha),Koshi,Sankhuwasabha,4.455,27.3204,87.3312,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BEDC,Dwari Khola SHP,Dwari,Karnali,Dailekh,3.750,28.9317,81.8285,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BENH,Upper Solu Khola HPP,Solu Khola,Koshi,Solukhumbu,19.800,27.535,86.5814,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BGWT,Bijayapur-1,Bijayapur,Gandaki,Kaski,4.500,28.1837,84.0329,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BHCL,Upper Machha Khola HEP,Machha Khola,Gandaki,Gorkha,4.550,28.2157,84.8159,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BHDC,Rudi A,Rudi Khola,Gandaki,Lamjung,8.800,28.2541,84.2,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BHDC,Rudi Khola-B Hydropower Project,Rudi Khola,Gandaki,Lamjung,6.600,28.2873,84.2,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BHL,Upper Balephi A,Balephi,Koshi,Sindhupalchok,36.000,27.9229,85.7764,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BHPL,Theule Khola HPP,Theule,Gandaki,Baglung,1.500,28.1791,83.6273,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BJHL,Upper Midim Khola SHP,Midim Khola,Gandaki,Lamjung,7.500,28.3321,84.2547,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BNHC,Lower Tadi,Tadi Khola,Gandaki,Nuwakot,4.993,27.923,85.3664,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BPCL,Andhi Khola,Andhi Khola,Gandaki,Syangja,9.400,27.9383,83.6809,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BPCL,Jhimruk Khola,Jhimruk,West Rapti,Pyuthan,12.500,28.0733,82.8099,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+BPCL,Lower Manang Marsyangdi,Marsyangdi,Gandaki,Manang,139.200,28.5139,84.3438,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+BUNGAL,Sanigad,Sani Gad,Karnali,Bajhang,10.700,29.6326,80.8438,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+CHCL,Budhi Gandaki Prok Khola HEP,Budhi Gandaki,Gandaki,Gorkha,81.000,28.5303,84.8382,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+CHCL,Chilime,Chilime,Gandaki,Rasuwa,22.000,28.1698,85.3196,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+CHCL,Chunchet Syar Khola HEP,Syar Khola,Gandaki,Gorkha,45.000,28.4577,84.9336,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+CHCL,Seti Nadi-3 HEP,Seti (Far West),Karnali,Bajhang,87.000,29.5271,81.1904,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+CHL,Chhandi Khola,Chhandi,Gandaki,Lamjung,2.000,28.2606,84.4789,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+CHL,Upper Chhyandi Small HPP,Chhyangdi,Gandaki,Lamjung,4.000,28.2821,84.4882,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+CKHL,Upper Chirkhuwa Khola,Chirkhuwa,Koshi,Bhojpur,4.700,27.3657,87.0944,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+DHEL,Daram Khola HEP,Daram,Gandaki,Gulmi,9.600,28.1958,83.337,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+DHPL,Sabha Khola,Sabha Khola,Koshi,Sankhuwasabha,3.300,27.3961,87.2831,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+DOLTI,Padam Khola SHP,Padam Khola,Karnali,Dailekh,4.800,28.9087,81.8391,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+DORDI,Dordi-1,Dordi,Gandaki,Lamjung,12.000,28.2394,84.4639,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+DORDI,Myagdi Khola A HEP,Myagdi,Gandaki,Myagdi,30.000,28.6576,83.4118,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+EHPL,Pikhuwa Khola,Pikhuwa,Koshi,Bhojpur,5.000,27.1615,87.0228,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+GHL,Ghalemdi Khola,Ghalemdi,Gandaki,Myagdi,5.000,28.5333,83.6875,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+GLH,Khani Khola - 1,Khani Khola,Koshi,Dolakha,40.000,27.8189,86.35,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+GVL,Likhu-4,Likhu Khola,Koshi,Ramechhap,52.400,27.461,86.2917,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HDHPC,Mai Cascade HPP,Mai Khola,Kankai,Ilam,8.000,26.862,87.9241,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HDHPC,Mai Khola,Mai Khola,Kankai,Ilam,4.500,26.885,87.9368,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HHL,Namarjun Madi,Madi Khola,Gandaki,Kaski,12.000,28.3078,84.0927,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HIMSTAR,Buku-Kapati Hydropower Project,Buku,Koshi,Solukhumbu,5.000,27.5111,86.3894,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HPPL,Dordi Khola,Dordi,Gandaki,Lamjung,27.000,28.1961,84.4541,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HURJA,Upper Khimti,Khimti Khola,Koshi,Ramechhap,12.000,27.6775,86.3416,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+HURJA,Upper Khimti II,Khimti Khola,Koshi,Ramechhap,7.000,27.6521,86.3195,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+IHL,Upper Ingwa Khola,Ingwa Khola,Koshi,Taplejung,9.700,27.2835,87.9032,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+JOSHI,Upper Puwa-1,Puwa,Kankai,Ilam,3.000,27.0052,87.8917,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+KAHL,Kalanga,Kalanga Gad,Karnali,Bajhang,15.330,29.5407,80.8791,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+KHPL,Sangu Khola HPP,Sangu (Sorun) Khola,Koshi,Dolakha,5.000,27.7955,86.0921,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+KKHC,Khani Khola,Khani Khola (Lalitpur),Bagmati,Lalitpur,2.000,27.4909,85.2947,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+KKHC,Tungun - Thosne Khola,Tugun,Bagmati,Lalitpur,4.360,27.4924,85.3185,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+KPCL,Daraundi A,Daraudi,Gandaki,Gorkha,6.000,28.1225,84.6772,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+LEC,Upper Dordi A HEP,Dordi,Gandaki,Lamjung,25.000,28.2611,84.5062,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MABEL,Upper Piluwa 3 HPP,Piluwa Khola,Koshi,Sankhuwasabha,4.950,27.2981,87.4155,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MAKAR,Upper Suri Khola HPP,Suri Khola,Koshi,Dolakha,7.000,27.7334,86.268,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MANDU,Bagmati Nadi,Bagmati,Bagmati,Makawanpur,32.000,27.5237,85.2421,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MBJC,Madhya Bhotekoshi,Bhotekoshi (Sindhupalchowk),Koshi,Sindhupalchok,102.000,27.8511,85.8878,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MCHL,Upper Piluwa Khola-2 SHP,Piluwa Khola,Koshi,Sankhuwasabha,4.720,27.2974,87.3971,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MEHL,Ghatte Khola,Ghatte Khola (Dolakha),Koshi,Dolakha,5.000,27.7804,86.2965,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MEL,Lower Modi Khola,Modi Khola,Gandaki,Parbat,20.000,28.2537,83.7268,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MEN,Mistri Khola-2 HEP,Mistri,Gandaki,Myagdi,12.000,28.4946,83.6553,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+MEN,Mristi Khola,Mristi,Gandaki,Myagdi,42.000,28.5191,83.6655,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MEPDL,Dudhkunda Khola HEP,Solu Khola,Koshi,Solukhumbu,12.000,27.6021,86.6055,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MHCL,Molun Khola SHP,Molun,Koshi,Okhaldhunga,7.000,27.3445,86.4334,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MHL,Sardi Khola,Sardi,Gandaki,Kaski,4.000,28.3426,83.9923,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MHL,Upper Sardi HEP,Sardi Khola,Gandaki,Kaski,2.900,28.3631,84.0249,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+MHNL,Lower Hewa,Hewa (Panchthar),Koshi,Panchthar,22.100,27.1614,87.7544,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MKHC,Maya Khola Hydropower Project,Maya,Koshi,Sankhuwasabha,14.900,27.2451,87.3416,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MKHL,Super Mai Khola Cascade HPP,Mai Khola,Kankai,Ilam,3.000,26.9344,87.9482,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MKJC,Mailung Khola,Mailung Khola,Gandaki,Rasuwa,5.000,28.0754,85.2046,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+MMKJL,Middle Mailung (cascade) HEP,Mailung Khola,Gandaki,Rasuwa,13.000,28.0913,85.2006,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+MMKJL,Upper Mailung B HEP,Mailung Khola,Gandaki,Rasuwa,17.000,28.1411,85.1958,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+MSHL,Mid Solu Khola HEP,Solu Khola,Koshi,Solukhumbu,9.500,27.5043,86.5757,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+NGPL,Siuri Khola,Siuri,Gandaki,Lamjung,5.000,28.345,84.4755,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+NHDL,Charnawati Khola Hydroelectric Project,Charnawati,Koshi,Dolakha,3.520,27.6431,86.0279,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+NHPC,Indrawati -III,Indrawati,Koshi,Sindhupalchok,7.500,27.8741,85.605,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+NHPC,Tallo Indrawati HEP,Indrawati,Koshi,Sindhupalchok,4.500,27.8505,85.5934,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+NYADI,Nyadi Khola,Nyadi,Gandaki,Lamjung,30.000,28.337,84.4451,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+PHCL,Himchuli Dordi HEP,Dordi,Gandaki,Lamjung,57.000,28.3273,84.5791,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+PHCL,Super Dordi Kha Hydropower Project,Dordi,Gandaki,Lamjung,54.000,28.2921,84.543,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+PMHPL,Upper Mai,Mai Khola,Kankai,Ilam,12.000,27.0405,87.9542,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+PMHPL,Upper Mai -C,Mai Khola,Kankai,Ilam,6.100,27.0113,87.9648,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+PPCL,Hewa Khola A,Hewa (Panchthar),Koshi,Panchthar,14.900,27.1808,87.8205,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+PPL,Puwa II hydropower Project,Puwa,Kankai,Ilam,4.960,26.9719,87.9032,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RADHI,Radhi Small,Radhi,Gandaki,Lamjung,4.400,28.4025,84.4193,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RAWA,Rawa Khola,Rawa Khola,Koshi,Khotang,3.000,27.3504,86.8516,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RFPL,Down Piluwa,Piluwa Khola,Koshi,Sankhuwasabha,10.300,27.2459,87.2848,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RHGCL,Rukum gad,Rukum Gad,Karnali,Rukum,5.000,28.6036,82.6377,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RHPL,Rasuwagadhi,Bhotekoshi (Rasuwa),Gandaki,Rasuwa,111.000,28.2561,85.3701,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RIDI,Iwa Khola,Iwa Khola,Koshi,Taplejung,9.900,27.282,87.8495,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RIDI,Ridi Khola,Ridi,Gandaki,Palpa,2.400,27.9375,83.4167,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RLEL,Super Chepe HEP,Chepe Khola,Gandaki,Lamjung,9.050,28.2334,84.642,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+RURU,Upper Hugdi,Hugdi,Gandaki,Gulmi,5.000,28.0933,83.4048,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SAHAS,Solu Khola (Dudha Koshi),Solu Khola,Koshi,Solukhumbu,86.000,27.3927,86.6569,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SANVI,Jogmai Cascade,Jogmai Khola,Kankai,Ilam,5.200,26.9054,88.0082,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SANVI,Jogmai Khola,Jogmai Khola,Kankai,Ilam,7.600,26.9172,88.0374,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SGHC,Lower Likhu,Likhu Khola,Koshi,Ramechhap,28.100,27.4102,86.241,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SGHC,Tallo Likhu Cascade Hydropower Project,Likhu Khola,Koshi,Ramechhap,6.000,27.3802,86.2267,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+SGHL,Upper Kalangad,Kalanga Gad,Karnali,Bajhang,38.460,29.6111,80.9175,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SHEL,Singati Khola hydropower project,Singati,Koshi,Dolakha,25.000,27.7607,86.1417,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SHPC,Mai,Mai Khola,Kankai,Ilam,22.000,26.8113,87.8917,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SHPC,Mai Cascade,Mai Khola,Kankai,Ilam,7.000,26.7756,87.8765,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SIKLES,Madkyu Khola,Madkyu,Gandaki,Kaski,13.000,28.3681,84.1355,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SIPD,Bhim Khola Small HEP,Bhim Khola,Gandaki,Baglung,4.960,28.2899,83.2297,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SIPD,Lower Bhim Khola HEP,Bhim Khola,Gandaki,Baglung,6.050,28.2871,83.1997,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+SJCL,Sanjen,Sanjen,Gandaki,Rasuwa,42.500,28.2,85.2896,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SJCL,Upper Sanjen,Sanjen,Gandaki,Rasuwa,14.800,28.2285,85.2896,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SKHEL,Upper Tadi,Tadi Khola,Gandaki,Nuwakot,11.000,27.9671,85.4334,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SKHL,Upper Khudi,Khudi,Gandaki,Lamjung,26.000,28.335,84.3272,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+SMH,Super Mai Hydropower Project,Mai Khola,Kankai,Ilam,7.800,26.9537,87.9524,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SMHL,Super Madi,Madi Khola,Gandaki,Kaski,44.000,28.339,84.111,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SMJC,Super Mai-A HPP,Mai Khola,Kankai,Ilam,9.600,26.9843,87.9669,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SNORL,Super Kabeli Khola A HEP,Kabeli Khola,Koshi,Taplejung,13.500,27.4459,87.9142,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SOHL,Lower Solu Hydropower Project,Solu Khola,Koshi,Solukhumbu,82.000,27.4291,86.6007,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SPC,Mai Beni HPP,Mai Khola,Kankai,Ilam,9.510,26.907,87.9511,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SPDL,Sipring Khola,Sipring,Koshi,Dolakha,10.000,27.8191,86.2423,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SPHL,Daram Khola-A,Daram,Gandaki,Baglung,2.500,28.2885,83.4162,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+SSHL,Upper Chaku A,Chaku,Koshi,Sindhupalchok,22.200,27.8669,85.9508,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+TAMOR,Middle Tamor,Tamor,Koshi,Taplejung,73.000,27.4066,87.689,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+TPC,Upper Khorunga HPP,Khoranga Khola,Koshi,Terhathum,7.500,27.2149,87.5319,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+TPKHL,Taksar Pikhuwa,Pikhuwa,Koshi,Bhojpur,8.000,27.132,87.0493,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+TSHL,Sapsup Khola Small Hydro Electric Project,Sapsup Khola,Koshi,Khotang,7.151,27.1257,86.7476,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+TVCL,Upper Trishuli 3B,Trishuli,Gandaki,Nuwakot,37.000,28.0046,85.185,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+UHEWA,Upper Hewa HPP,Hewa (Sankhuwasabha),Koshi,Sankhuwasabha,8.500,27.3374,87.3604,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+ULHC,Upper Lohore SHP,Lohare Khola,Karnali,Dailekh,4.000,28.9447,81.8073,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+UMHL,Lower Modi -1,Modi Khola,Gandaki,Parbat,10.000,28.228,83.7091,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+UMRH,Upper Mardi Hydropower Project,Mardi,Gandaki,Kaski,7.000,28.3869,83.8879,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+UNHPL,Hongu Khola HEP,Hongu Khola,Koshi,Solukhumbu,28.900,27.5567,86.895,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+UNHPL,Midim Khola,Midim Khola,Gandaki,Lamjung,3.000,28.1907,84.285,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+UNHPL,Upper Tamor A HEP,Tamor,Koshi,Taplejung,60.000,27.6792,87.7728,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+UPCL,Lower Khare,Khare,Koshi,Dolakha,11.000,27.7559,86.2121,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+UPPER,Rolwaling Khola HEP,Rolwaling,Koshi,Dolakha,22.000,27.9075,86.2338,under_construction,https://www.doed.gov.np/pages/clhydromorethan1
+UPPER,Upper Tamakoshi HPP,Tama Koshi,Koshi,Dolakha,456.000,27.8805,86.2167,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+USHEC,Solu Hydropower Project,Solu Khola,Koshi,Solukhumbu,23.500,27.4625,86.5758,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+USHL,Upper Syange Khola SHP,Syange,Gandaki,Lamjung,2.400,28.3892,84.3892,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+VLUCL,Seti Khola HPP,Seti Khola (Gandaki),Gandaki,Kaski,25.000,28.3406,83.9646,operating,https://www.doed.gov.np/pages/powerplantsmorethan1
+YMHL,Yambaling Khola,Yambling,Koshi,Sindhupalchok,7.271,27.9466,85.8118,operating,https://www.doed.gov.np/pages/powerplantsmorethan1

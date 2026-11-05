@@ -13,6 +13,7 @@
 		Peers
 	} from '#lib/components/company/index.js';
 	import { PriceChart, VolumeChart, EarningsChart } from '#lib/components/charts/index.js';
+	import CompanyPlants from '#lib/components/hydro/CompanyPlants.svelte';
 	import type { Claim, Check } from '#lib/gen/ntx/v1/story_pb.js';
 
 	let { data } = $props();
@@ -22,6 +23,7 @@
 	let fundamentalsHistory = $derived(data.fundamentalsHistory ?? []);
 	let priceHistory = $derived(data.priceHistory ?? []);
 	let fundHoldings = $derived(data.fundHoldings ?? []);
+	let plants = $derived(data.plants ?? []);
 	let lastFiling = $derived(
 		story?.lastFiling ? `Last filing: ${story.lastFiling}.` : 'No filings recorded.'
 	);
@@ -168,7 +170,18 @@
 				{/if}
 			</section>
 
-			<!-- 7. Price and volume last: the quote is context, not the hero -->
+			<!-- 7. Plants, hydro companies only: river, basin, MW and today's state -->
+			{#if plants.length > 0}
+				<section id="plants" class="mt-12 border-t border-border pt-8">
+					<div class="mb-6 max-w-3xl">
+						<h2 class="text-xs tracking-wide text-muted-foreground uppercase">Plants</h2>
+						<p class="mt-1 font-serif text-xl leading-snug font-medium">{data.plantsOpening}</p>
+					</div>
+					<CompanyPlants {plants} />
+				</section>
+			{/if}
+
+			<!-- 8. Price and volume last: the quote is context, not the hero -->
 			<section id="price" class="mt-12 border-t border-border pt-8">
 				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<h2 class="text-xs tracking-wide text-muted-foreground uppercase">Price and volume</h2>
@@ -188,7 +201,7 @@
 				{/if}
 			</section>
 
-			<!-- 8. How fresh the data is, and the research prompt built from it -->
+			<!-- 9. How fresh the data is, and the research prompt built from it -->
 			<footer
 				class="mt-12 flex flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
 			>

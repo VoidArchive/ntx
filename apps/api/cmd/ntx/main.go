@@ -11,6 +11,7 @@ import (
 
 	"github.com/voidarchive/ntx/internal/database"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/hydro"
 	"github.com/voidarchive/ntx/internal/nepse"
 	"github.com/voidarchive/ntx/internal/server"
 	"github.com/voidarchive/ntx/internal/worker"
@@ -46,6 +47,7 @@ type backfillOptions struct {
 	ownership        bool
 	corporateActions bool
 	ratings          bool
+	weather          bool
 }
 
 func runBackfillCmd() {
@@ -57,11 +59,12 @@ func runBackfillCmd() {
 	fs.BoolVar(&opts.ownership, "ownership", false, "sync ownership data")
 	fs.BoolVar(&opts.corporateActions, "corporate-actions", false, "sync corporate actions")
 	fs.BoolVar(&opts.ratings, "ratings", false, "store every company's rating from the story engine")
+	fs.BoolVar(&opts.weather, "weather", false, "fetch hydro plant readings now instead of at 06:00")
 	_ = fs.Parse(os.Args[2:])
 
 	// If no flags specified, sync everything
 	if !opts.companies && !opts.fundamentals && !opts.prices && !opts.ownership && !opts.corporateActions &&
-		!opts.ratings {
+		!opts.ratings && !opts.weather {
 		opts.companies = true
 		opts.fundamentals = true
 		opts.prices = true
@@ -88,6 +91,11 @@ func runServer() {
 	defer db.Close()
 
 	w := worker.New(client, queries)
+	// The plant table is the CSV; every start re-reads it so a CSV edit plus a deploy is the workflow (ADR 0004).
+	if err := hydro.SyncPlants(context.Background(), queries, plantsPath()); err != nil {
+		slog.Error("hydro plants sync failed", "error", err)
+		os.Exit(1)
+	}
 	sched, err := worker.NewScheduler(w)
 	if err != nil {
 		slog.Error("scheduler init failed", "error", err)
@@ -146,4 +154,12 @@ func setup() (*sql.DB, *sqlc.Queries, *nepse.Client) {
 	}
 
 	return db, queries, nepseClient
+}
+
+// plantsPath is data/hydro_plants.csv: copied beside the binary in the image, pointed at by NTX_PLANTS_CSV in dev.
+func plantsPath() string {
+	if p := os.Getenv("NTX_PLANTS_CSV"); p != "" {
+		return p
+	}
+	return "data/hydro_plants.csv"
 }

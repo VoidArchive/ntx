@@ -19,8 +19,9 @@ RUN apk add --no-cache ca-certificates tzdata
 
 WORKDIR /app
 
-# Copy compiled binary
+# Copy compiled binary and the hand-curated plant table it upserts on start
 COPY --from=builder /bin/ntx /bin/ntx
+COPY data/hydro_plants.csv /app/data/hydro_plants.csv
 
 # Ensure data directory exists for SQLite volume
 ENV NTX_DB_PATH=/data/market.db

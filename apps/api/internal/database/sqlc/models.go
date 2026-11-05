@@ -60,6 +60,30 @@ type Fundamental struct {
 	FiscalYearNp  sql.NullString  `json:"fiscal_year_np"`
 }
 
+type HydroPlant struct {
+	ID        int64   `json:"id"`
+	Symbol    string  `json:"symbol"`
+	Plant     string  `json:"plant"`
+	River     string  `json:"river"`
+	Basin     string  `json:"basin"`
+	District  string  `json:"district"`
+	Mw        float64 `json:"mw"`
+	Lat       float64 `json:"lat"`
+	Lon       float64 `json:"lon"`
+	Status    string  `json:"status"`
+	SourceUrl string  `json:"source_url"`
+}
+
+type HydroReading struct {
+	PlantID         int64           `json:"plant_id"`
+	Day             string          `json:"day"`
+	RainMm          sql.NullFloat64 `json:"rain_mm"`
+	DischargeM3s    sql.NullFloat64 `json:"discharge_m3s"`
+	RainSource      sql.NullString  `json:"rain_source"`
+	DischargeSource sql.NullString  `json:"discharge_source"`
+	FetchedAt       time.Time       `json:"fetched_at"`
+}
+
 type MarketDay struct {
 	BusinessDate       string    `json:"business_date"`
 	IndexClose         float64   `json:"index_close"`
