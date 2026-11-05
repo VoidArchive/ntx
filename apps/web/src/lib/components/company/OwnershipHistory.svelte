@@ -14,8 +14,7 @@
 	}
 </script>
 
-<section id="ownership">
-	<h3 class="mb-4 font-serif text-base font-medium">Ownership over time</h3>
+<div>
 	{#if newestFirst.length === 0}
 		<p class="text-sm text-muted-foreground">No shareholding observations recorded.</p>
 	{:else}
@@ -39,4 +38,4 @@
 			{/each}
 		</ul>
 	{/if}
-</section>
+</div>

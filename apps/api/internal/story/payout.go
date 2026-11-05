@@ -54,7 +54,7 @@ func payout(rows []FiscalYear, actions []sqlc.CorporateAction) []Claim {
 			Unit:   unit,
 			Period: fy,
 			Source: last.Source,
-			Anchor: "fiscal-years",
+			Anchor: "payout",
 		}
 	}
 	if last.Payout == "not recorded" {

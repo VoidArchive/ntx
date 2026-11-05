@@ -13,6 +13,7 @@ import (
 
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 	"github.com/voidarchive/ntx/internal/nepse"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 type Worker struct {
@@ -322,4 +323,9 @@ func safeInt32(v int64) int32 {
 		return maxInt32
 	}
 	return int32(v) //nolint:gosec // bounds checked above
+}
+
+// SyncRatings stores the screener's rating per company from the story engine.
+func (w *Worker) SyncRatings(ctx context.Context) error {
+	return story.SyncRatings(ctx, w.queries)
 }

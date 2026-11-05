@@ -21,6 +21,211 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ListScreenerRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListScreenerRequest) Reset() {
+	*x = ListScreenerRequest{}
+	mi := &file_ntx_v1_company_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListScreenerRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListScreenerRequest) ProtoMessage() {}
+
+func (x *ListScreenerRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListScreenerRequest.ProtoReflect.Descriptor instead.
+func (*ListScreenerRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{0}
+}
+
+type ListScreenerResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rows          []*ScreenerRow         `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListScreenerResponse) Reset() {
+	*x = ListScreenerResponse{}
+	mi := &file_ntx_v1_company_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListScreenerResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListScreenerResponse) ProtoMessage() {}
+
+func (x *ListScreenerResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListScreenerResponse.ProtoReflect.Descriptor instead.
+func (*ListScreenerResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ListScreenerResponse) GetRows() []*ScreenerRow {
+	if x != nil {
+		return x.Rows
+	}
+	return nil
+}
+
+// Ratios come from the latest quarterly row at the latest close, as the strips do.
+type ScreenerRow struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Sector        Sector                 `protobuf:"varint,3,opt,name=sector,proto3,enum=ntx.v1.Sector" json:"sector,omitempty"`
+	Close         *float64               `protobuf:"fixed64,4,opt,name=close,proto3,oneof" json:"close,omitempty"`
+	Pe            *float64               `protobuf:"fixed64,5,opt,name=pe,proto3,oneof" json:"pe,omitempty"`                                // unset when EPS is not positive
+	Pb            *float64               `protobuf:"fixed64,6,opt,name=pb,proto3,oneof" json:"pb,omitempty"`                                // unset without book value
+	Eps           *float64               `protobuf:"fixed64,7,opt,name=eps,proto3,oneof" json:"eps,omitempty"`                              // annualized, as filed
+	Yield         *float64               `protobuf:"fixed64,8,opt,name=yield,proto3,oneof" json:"yield,omitempty"`                          // %, cash dividend over close; unset without a notice
+	MarketCap     *float64               `protobuf:"fixed64,9,opt,name=market_cap,json=marketCap,proto3,oneof" json:"market_cap,omitempty"` // Rs, close times listed shares
+	Turnover      *float64               `protobuf:"fixed64,10,opt,name=turnover,proto3,oneof" json:"turnover,omitempty"`                   // Rs, latest session
+	Rating        string                 `protobuf:"bytes,11,opt,name=rating,proto3" json:"rating,omitempty"`                               // "A".."D", "" when unrated or not yet computed
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScreenerRow) Reset() {
+	*x = ScreenerRow{}
+	mi := &file_ntx_v1_company_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScreenerRow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScreenerRow) ProtoMessage() {}
+
+func (x *ScreenerRow) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_company_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScreenerRow.ProtoReflect.Descriptor instead.
+func (*ScreenerRow) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ScreenerRow) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *ScreenerRow) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ScreenerRow) GetSector() Sector {
+	if x != nil {
+		return x.Sector
+	}
+	return Sector_SECTOR_UNSPECIFIED
+}
+
+func (x *ScreenerRow) GetClose() float64 {
+	if x != nil && x.Close != nil {
+		return *x.Close
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetPe() float64 {
+	if x != nil && x.Pe != nil {
+		return *x.Pe
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetPb() float64 {
+	if x != nil && x.Pb != nil {
+		return *x.Pb
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetEps() float64 {
+	if x != nil && x.Eps != nil {
+		return *x.Eps
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetYield() float64 {
+	if x != nil && x.Yield != nil {
+		return *x.Yield
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetMarketCap() float64 {
+	if x != nil && x.MarketCap != nil {
+		return *x.MarketCap
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetTurnover() float64 {
+	if x != nil && x.Turnover != nil {
+		return *x.Turnover
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetRating() string {
+	if x != nil {
+		return x.Rating
+	}
+	return ""
+}
+
 type ListCompaniesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Sector        *Sector                `protobuf:"varint,1,opt,name=sector,proto3,enum=ntx.v1.Sector,oneof" json:"sector,omitempty"`
@@ -33,7 +238,7 @@ type ListCompaniesRequest struct {
 
 func (x *ListCompaniesRequest) Reset() {
 	*x = ListCompaniesRequest{}
-	mi := &file_ntx_v1_company_proto_msgTypes[0]
+	mi := &file_ntx_v1_company_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +250,7 @@ func (x *ListCompaniesRequest) String() string {
 func (*ListCompaniesRequest) ProtoMessage() {}
 
 func (x *ListCompaniesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[0]
+	mi := &file_ntx_v1_company_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +263,7 @@ func (x *ListCompaniesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCompaniesRequest.ProtoReflect.Descriptor instead.
 func (*ListCompaniesRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{0}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListCompaniesRequest) GetSector() Sector {
@@ -98,7 +303,7 @@ type ListCompaniesResponse struct {
 
 func (x *ListCompaniesResponse) Reset() {
 	*x = ListCompaniesResponse{}
-	mi := &file_ntx_v1_company_proto_msgTypes[1]
+	mi := &file_ntx_v1_company_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -110,7 +315,7 @@ func (x *ListCompaniesResponse) String() string {
 func (*ListCompaniesResponse) ProtoMessage() {}
 
 func (x *ListCompaniesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[1]
+	mi := &file_ntx_v1_company_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -123,7 +328,7 @@ func (x *ListCompaniesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCompaniesResponse.ProtoReflect.Descriptor instead.
 func (*ListCompaniesResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{1}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListCompaniesResponse) GetCompanies() []*Company {
@@ -142,7 +347,7 @@ type GetCompanyRequest struct {
 
 func (x *GetCompanyRequest) Reset() {
 	*x = GetCompanyRequest{}
-	mi := &file_ntx_v1_company_proto_msgTypes[2]
+	mi := &file_ntx_v1_company_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -154,7 +359,7 @@ func (x *GetCompanyRequest) String() string {
 func (*GetCompanyRequest) ProtoMessage() {}
 
 func (x *GetCompanyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[2]
+	mi := &file_ntx_v1_company_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -167,7 +372,7 @@ func (x *GetCompanyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCompanyRequest.ProtoReflect.Descriptor instead.
 func (*GetCompanyRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{2}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetCompanyRequest) GetSymbol() string {
@@ -186,7 +391,7 @@ type GetCompanyResponse struct {
 
 func (x *GetCompanyResponse) Reset() {
 	*x = GetCompanyResponse{}
-	mi := &file_ntx_v1_company_proto_msgTypes[3]
+	mi := &file_ntx_v1_company_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -198,7 +403,7 @@ func (x *GetCompanyResponse) String() string {
 func (*GetCompanyResponse) ProtoMessage() {}
 
 func (x *GetCompanyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[3]
+	mi := &file_ntx_v1_company_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -211,7 +416,7 @@ func (x *GetCompanyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCompanyResponse.ProtoReflect.Descriptor instead.
 func (*GetCompanyResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{3}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetCompanyResponse) GetCompany() *Company {
@@ -230,7 +435,7 @@ type GetFundamentalsRequest struct {
 
 func (x *GetFundamentalsRequest) Reset() {
 	*x = GetFundamentalsRequest{}
-	mi := &file_ntx_v1_company_proto_msgTypes[4]
+	mi := &file_ntx_v1_company_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -242,7 +447,7 @@ func (x *GetFundamentalsRequest) String() string {
 func (*GetFundamentalsRequest) ProtoMessage() {}
 
 func (x *GetFundamentalsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[4]
+	mi := &file_ntx_v1_company_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -255,7 +460,7 @@ func (x *GetFundamentalsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFundamentalsRequest.ProtoReflect.Descriptor instead.
 func (*GetFundamentalsRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{4}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetFundamentalsRequest) GetSymbol() string {
@@ -275,7 +480,7 @@ type GetFundamentalsResponse struct {
 
 func (x *GetFundamentalsResponse) Reset() {
 	*x = GetFundamentalsResponse{}
-	mi := &file_ntx_v1_company_proto_msgTypes[5]
+	mi := &file_ntx_v1_company_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -287,7 +492,7 @@ func (x *GetFundamentalsResponse) String() string {
 func (*GetFundamentalsResponse) ProtoMessage() {}
 
 func (x *GetFundamentalsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[5]
+	mi := &file_ntx_v1_company_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -300,7 +505,7 @@ func (x *GetFundamentalsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFundamentalsResponse.ProtoReflect.Descriptor instead.
 func (*GetFundamentalsResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{5}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetFundamentalsResponse) GetLatest() *Fundamental {
@@ -326,7 +531,7 @@ type GetSectorStatsRequest struct {
 
 func (x *GetSectorStatsRequest) Reset() {
 	*x = GetSectorStatsRequest{}
-	mi := &file_ntx_v1_company_proto_msgTypes[6]
+	mi := &file_ntx_v1_company_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -338,7 +543,7 @@ func (x *GetSectorStatsRequest) String() string {
 func (*GetSectorStatsRequest) ProtoMessage() {}
 
 func (x *GetSectorStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[6]
+	mi := &file_ntx_v1_company_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -351,7 +556,7 @@ func (x *GetSectorStatsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSectorStatsRequest.ProtoReflect.Descriptor instead.
 func (*GetSectorStatsRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{6}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetSectorStatsRequest) GetSector() Sector {
@@ -370,7 +575,7 @@ type GetSectorStatsResponse struct {
 
 func (x *GetSectorStatsResponse) Reset() {
 	*x = GetSectorStatsResponse{}
-	mi := &file_ntx_v1_company_proto_msgTypes[7]
+	mi := &file_ntx_v1_company_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -382,7 +587,7 @@ func (x *GetSectorStatsResponse) String() string {
 func (*GetSectorStatsResponse) ProtoMessage() {}
 
 func (x *GetSectorStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[7]
+	mi := &file_ntx_v1_company_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -395,7 +600,7 @@ func (x *GetSectorStatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSectorStatsResponse.ProtoReflect.Descriptor instead.
 func (*GetSectorStatsResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{7}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetSectorStatsResponse) GetStats() *SectorStats {
@@ -419,7 +624,7 @@ type SectorStats struct {
 
 func (x *SectorStats) Reset() {
 	*x = SectorStats{}
-	mi := &file_ntx_v1_company_proto_msgTypes[8]
+	mi := &file_ntx_v1_company_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -431,7 +636,7 @@ func (x *SectorStats) String() string {
 func (*SectorStats) ProtoMessage() {}
 
 func (x *SectorStats) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[8]
+	mi := &file_ntx_v1_company_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -444,7 +649,7 @@ func (x *SectorStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SectorStats.ProtoReflect.Descriptor instead.
 func (*SectorStats) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{8}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SectorStats) GetSector() Sector {
@@ -498,7 +703,7 @@ type GetOwnershipRequest struct {
 
 func (x *GetOwnershipRequest) Reset() {
 	*x = GetOwnershipRequest{}
-	mi := &file_ntx_v1_company_proto_msgTypes[9]
+	mi := &file_ntx_v1_company_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -510,7 +715,7 @@ func (x *GetOwnershipRequest) String() string {
 func (*GetOwnershipRequest) ProtoMessage() {}
 
 func (x *GetOwnershipRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[9]
+	mi := &file_ntx_v1_company_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -523,7 +728,7 @@ func (x *GetOwnershipRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOwnershipRequest.ProtoReflect.Descriptor instead.
 func (*GetOwnershipRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{9}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetOwnershipRequest) GetSymbol() string {
@@ -542,7 +747,7 @@ type GetOwnershipResponse struct {
 
 func (x *GetOwnershipResponse) Reset() {
 	*x = GetOwnershipResponse{}
-	mi := &file_ntx_v1_company_proto_msgTypes[10]
+	mi := &file_ntx_v1_company_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -554,7 +759,7 @@ func (x *GetOwnershipResponse) String() string {
 func (*GetOwnershipResponse) ProtoMessage() {}
 
 func (x *GetOwnershipResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[10]
+	mi := &file_ntx_v1_company_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +772,7 @@ func (x *GetOwnershipResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOwnershipResponse.ProtoReflect.Descriptor instead.
 func (*GetOwnershipResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{10}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetOwnershipResponse) GetOwnership() *Ownership {
@@ -586,7 +791,7 @@ type GetCorporateActionsRequest struct {
 
 func (x *GetCorporateActionsRequest) Reset() {
 	*x = GetCorporateActionsRequest{}
-	mi := &file_ntx_v1_company_proto_msgTypes[11]
+	mi := &file_ntx_v1_company_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -598,7 +803,7 @@ func (x *GetCorporateActionsRequest) String() string {
 func (*GetCorporateActionsRequest) ProtoMessage() {}
 
 func (x *GetCorporateActionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[11]
+	mi := &file_ntx_v1_company_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -611,7 +816,7 @@ func (x *GetCorporateActionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCorporateActionsRequest.ProtoReflect.Descriptor instead.
 func (*GetCorporateActionsRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{11}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetCorporateActionsRequest) GetSymbol() string {
@@ -630,7 +835,7 @@ type GetCorporateActionsResponse struct {
 
 func (x *GetCorporateActionsResponse) Reset() {
 	*x = GetCorporateActionsResponse{}
-	mi := &file_ntx_v1_company_proto_msgTypes[12]
+	mi := &file_ntx_v1_company_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -642,7 +847,7 @@ func (x *GetCorporateActionsResponse) String() string {
 func (*GetCorporateActionsResponse) ProtoMessage() {}
 
 func (x *GetCorporateActionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_company_proto_msgTypes[12]
+	mi := &file_ntx_v1_company_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -655,7 +860,7 @@ func (x *GetCorporateActionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCorporateActionsResponse.ProtoReflect.Descriptor instead.
 func (*GetCorporateActionsResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_company_proto_rawDescGZIP(), []int{12}
+	return file_ntx_v1_company_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetCorporateActionsResponse) GetActions() []*CorporateAction {
@@ -669,7 +874,31 @@ var File_ntx_v1_company_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_company_proto_rawDesc = "" +
 	"\n" +
-	"\x14ntx/v1/company.proto\x12\x06ntx.v1\x1a\x13ntx/v1/common.proto\"\xc0\x01\n" +
+	"\x14ntx/v1/company.proto\x12\x06ntx.v1\x1a\x13ntx/v1/common.proto\"\x15\n" +
+	"\x13ListScreenerRequest\"?\n" +
+	"\x14ListScreenerResponse\x12'\n" +
+	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\xfb\x02\n" +
+	"\vScreenerRow\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
+	"\x06sector\x18\x03 \x01(\x0e2\x0e.ntx.v1.SectorR\x06sector\x12\x19\n" +
+	"\x05close\x18\x04 \x01(\x01H\x00R\x05close\x88\x01\x01\x12\x13\n" +
+	"\x02pe\x18\x05 \x01(\x01H\x01R\x02pe\x88\x01\x01\x12\x13\n" +
+	"\x02pb\x18\x06 \x01(\x01H\x02R\x02pb\x88\x01\x01\x12\x15\n" +
+	"\x03eps\x18\a \x01(\x01H\x03R\x03eps\x88\x01\x01\x12\x19\n" +
+	"\x05yield\x18\b \x01(\x01H\x04R\x05yield\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"market_cap\x18\t \x01(\x01H\x05R\tmarketCap\x88\x01\x01\x12\x1f\n" +
+	"\bturnover\x18\n" +
+	" \x01(\x01H\x06R\bturnover\x88\x01\x01\x12\x16\n" +
+	"\x06rating\x18\v \x01(\tR\x06ratingB\b\n" +
+	"\x06_closeB\x05\n" +
+	"\x03_peB\x05\n" +
+	"\x03_pbB\x06\n" +
+	"\x04_epsB\b\n" +
+	"\x06_yieldB\r\n" +
+	"\v_market_capB\v\n" +
+	"\t_turnover\"\xc0\x01\n" +
 	"\x14ListCompaniesRequest\x12+\n" +
 	"\x06sector\x18\x01 \x01(\x0e2\x0e.ntx.v1.SectorH\x00R\x06sector\x88\x01\x01\x12\x19\n" +
 	"\x05query\x18\x02 \x01(\tH\x01R\x05query\x88\x01\x01\x12\x19\n" +
@@ -714,7 +943,7 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x1aGetCorporateActionsRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"P\n" +
 	"\x1bGetCorporateActionsResponse\x121\n" +
-	"\aactions\x18\x01 \x03(\v2\x17.ntx.v1.CorporateActionR\aactions2\xf3\x03\n" +
+	"\aactions\x18\x01 \x03(\v2\x17.ntx.v1.CorporateActionR\aactions2\xbe\x04\n" +
 	"\x0eCompanyService\x12L\n" +
 	"\rListCompanies\x12\x1c.ntx.v1.ListCompaniesRequest\x1a\x1d.ntx.v1.ListCompaniesResponse\x12C\n" +
 	"\n" +
@@ -722,7 +951,8 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x0fGetFundamentals\x12\x1e.ntx.v1.GetFundamentalsRequest\x1a\x1f.ntx.v1.GetFundamentalsResponse\x12O\n" +
 	"\x0eGetSectorStats\x12\x1d.ntx.v1.GetSectorStatsRequest\x1a\x1e.ntx.v1.GetSectorStatsResponse\x12I\n" +
 	"\fGetOwnership\x12\x1b.ntx.v1.GetOwnershipRequest\x1a\x1c.ntx.v1.GetOwnershipResponse\x12^\n" +
-	"\x13GetCorporateActions\x12\".ntx.v1.GetCorporateActionsRequest\x1a#.ntx.v1.GetCorporateActionsResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x13GetCorporateActions\x12\".ntx.v1.GetCorporateActionsRequest\x1a#.ntx.v1.GetCorporateActionsResponse\x12I\n" +
+	"\fListScreener\x12\x1b.ntx.v1.ListScreenerRequest\x1a\x1c.ntx.v1.ListScreenerResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_company_proto_rawDescOnce sync.Once
@@ -736,55 +966,62 @@ func file_ntx_v1_company_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_company_proto_rawDescData
 }
 
-var file_ntx_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_ntx_v1_company_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_ntx_v1_company_proto_goTypes = []any{
-	(*ListCompaniesRequest)(nil),        // 0: ntx.v1.ListCompaniesRequest
-	(*ListCompaniesResponse)(nil),       // 1: ntx.v1.ListCompaniesResponse
-	(*GetCompanyRequest)(nil),           // 2: ntx.v1.GetCompanyRequest
-	(*GetCompanyResponse)(nil),          // 3: ntx.v1.GetCompanyResponse
-	(*GetFundamentalsRequest)(nil),      // 4: ntx.v1.GetFundamentalsRequest
-	(*GetFundamentalsResponse)(nil),     // 5: ntx.v1.GetFundamentalsResponse
-	(*GetSectorStatsRequest)(nil),       // 6: ntx.v1.GetSectorStatsRequest
-	(*GetSectorStatsResponse)(nil),      // 7: ntx.v1.GetSectorStatsResponse
-	(*SectorStats)(nil),                 // 8: ntx.v1.SectorStats
-	(*GetOwnershipRequest)(nil),         // 9: ntx.v1.GetOwnershipRequest
-	(*GetOwnershipResponse)(nil),        // 10: ntx.v1.GetOwnershipResponse
-	(*GetCorporateActionsRequest)(nil),  // 11: ntx.v1.GetCorporateActionsRequest
-	(*GetCorporateActionsResponse)(nil), // 12: ntx.v1.GetCorporateActionsResponse
-	(Sector)(0),                         // 13: ntx.v1.Sector
-	(*Company)(nil),                     // 14: ntx.v1.Company
-	(*Fundamental)(nil),                 // 15: ntx.v1.Fundamental
-	(*Ownership)(nil),                   // 16: ntx.v1.Ownership
-	(*CorporateAction)(nil),             // 17: ntx.v1.CorporateAction
+	(*ListScreenerRequest)(nil),         // 0: ntx.v1.ListScreenerRequest
+	(*ListScreenerResponse)(nil),        // 1: ntx.v1.ListScreenerResponse
+	(*ScreenerRow)(nil),                 // 2: ntx.v1.ScreenerRow
+	(*ListCompaniesRequest)(nil),        // 3: ntx.v1.ListCompaniesRequest
+	(*ListCompaniesResponse)(nil),       // 4: ntx.v1.ListCompaniesResponse
+	(*GetCompanyRequest)(nil),           // 5: ntx.v1.GetCompanyRequest
+	(*GetCompanyResponse)(nil),          // 6: ntx.v1.GetCompanyResponse
+	(*GetFundamentalsRequest)(nil),      // 7: ntx.v1.GetFundamentalsRequest
+	(*GetFundamentalsResponse)(nil),     // 8: ntx.v1.GetFundamentalsResponse
+	(*GetSectorStatsRequest)(nil),       // 9: ntx.v1.GetSectorStatsRequest
+	(*GetSectorStatsResponse)(nil),      // 10: ntx.v1.GetSectorStatsResponse
+	(*SectorStats)(nil),                 // 11: ntx.v1.SectorStats
+	(*GetOwnershipRequest)(nil),         // 12: ntx.v1.GetOwnershipRequest
+	(*GetOwnershipResponse)(nil),        // 13: ntx.v1.GetOwnershipResponse
+	(*GetCorporateActionsRequest)(nil),  // 14: ntx.v1.GetCorporateActionsRequest
+	(*GetCorporateActionsResponse)(nil), // 15: ntx.v1.GetCorporateActionsResponse
+	(Sector)(0),                         // 16: ntx.v1.Sector
+	(*Company)(nil),                     // 17: ntx.v1.Company
+	(*Fundamental)(nil),                 // 18: ntx.v1.Fundamental
+	(*Ownership)(nil),                   // 19: ntx.v1.Ownership
+	(*CorporateAction)(nil),             // 20: ntx.v1.CorporateAction
 }
 var file_ntx_v1_company_proto_depIdxs = []int32{
-	13, // 0: ntx.v1.ListCompaniesRequest.sector:type_name -> ntx.v1.Sector
-	14, // 1: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
-	14, // 2: ntx.v1.GetCompanyResponse.company:type_name -> ntx.v1.Company
-	15, // 3: ntx.v1.GetFundamentalsResponse.latest:type_name -> ntx.v1.Fundamental
-	15, // 4: ntx.v1.GetFundamentalsResponse.history:type_name -> ntx.v1.Fundamental
-	13, // 5: ntx.v1.GetSectorStatsRequest.sector:type_name -> ntx.v1.Sector
-	8,  // 6: ntx.v1.GetSectorStatsResponse.stats:type_name -> ntx.v1.SectorStats
-	13, // 7: ntx.v1.SectorStats.sector:type_name -> ntx.v1.Sector
-	16, // 8: ntx.v1.GetOwnershipResponse.ownership:type_name -> ntx.v1.Ownership
-	17, // 9: ntx.v1.GetCorporateActionsResponse.actions:type_name -> ntx.v1.CorporateAction
-	0,  // 10: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
-	2,  // 11: ntx.v1.CompanyService.GetCompany:input_type -> ntx.v1.GetCompanyRequest
-	4,  // 12: ntx.v1.CompanyService.GetFundamentals:input_type -> ntx.v1.GetFundamentalsRequest
-	6,  // 13: ntx.v1.CompanyService.GetSectorStats:input_type -> ntx.v1.GetSectorStatsRequest
-	9,  // 14: ntx.v1.CompanyService.GetOwnership:input_type -> ntx.v1.GetOwnershipRequest
-	11, // 15: ntx.v1.CompanyService.GetCorporateActions:input_type -> ntx.v1.GetCorporateActionsRequest
-	1,  // 16: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
-	3,  // 17: ntx.v1.CompanyService.GetCompany:output_type -> ntx.v1.GetCompanyResponse
-	5,  // 18: ntx.v1.CompanyService.GetFundamentals:output_type -> ntx.v1.GetFundamentalsResponse
-	7,  // 19: ntx.v1.CompanyService.GetSectorStats:output_type -> ntx.v1.GetSectorStatsResponse
-	10, // 20: ntx.v1.CompanyService.GetOwnership:output_type -> ntx.v1.GetOwnershipResponse
-	12, // 21: ntx.v1.CompanyService.GetCorporateActions:output_type -> ntx.v1.GetCorporateActionsResponse
-	16, // [16:22] is the sub-list for method output_type
-	10, // [10:16] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	2,  // 0: ntx.v1.ListScreenerResponse.rows:type_name -> ntx.v1.ScreenerRow
+	16, // 1: ntx.v1.ScreenerRow.sector:type_name -> ntx.v1.Sector
+	16, // 2: ntx.v1.ListCompaniesRequest.sector:type_name -> ntx.v1.Sector
+	17, // 3: ntx.v1.ListCompaniesResponse.companies:type_name -> ntx.v1.Company
+	17, // 4: ntx.v1.GetCompanyResponse.company:type_name -> ntx.v1.Company
+	18, // 5: ntx.v1.GetFundamentalsResponse.latest:type_name -> ntx.v1.Fundamental
+	18, // 6: ntx.v1.GetFundamentalsResponse.history:type_name -> ntx.v1.Fundamental
+	16, // 7: ntx.v1.GetSectorStatsRequest.sector:type_name -> ntx.v1.Sector
+	11, // 8: ntx.v1.GetSectorStatsResponse.stats:type_name -> ntx.v1.SectorStats
+	16, // 9: ntx.v1.SectorStats.sector:type_name -> ntx.v1.Sector
+	19, // 10: ntx.v1.GetOwnershipResponse.ownership:type_name -> ntx.v1.Ownership
+	20, // 11: ntx.v1.GetCorporateActionsResponse.actions:type_name -> ntx.v1.CorporateAction
+	3,  // 12: ntx.v1.CompanyService.ListCompanies:input_type -> ntx.v1.ListCompaniesRequest
+	5,  // 13: ntx.v1.CompanyService.GetCompany:input_type -> ntx.v1.GetCompanyRequest
+	7,  // 14: ntx.v1.CompanyService.GetFundamentals:input_type -> ntx.v1.GetFundamentalsRequest
+	9,  // 15: ntx.v1.CompanyService.GetSectorStats:input_type -> ntx.v1.GetSectorStatsRequest
+	12, // 16: ntx.v1.CompanyService.GetOwnership:input_type -> ntx.v1.GetOwnershipRequest
+	14, // 17: ntx.v1.CompanyService.GetCorporateActions:input_type -> ntx.v1.GetCorporateActionsRequest
+	0,  // 18: ntx.v1.CompanyService.ListScreener:input_type -> ntx.v1.ListScreenerRequest
+	4,  // 19: ntx.v1.CompanyService.ListCompanies:output_type -> ntx.v1.ListCompaniesResponse
+	6,  // 20: ntx.v1.CompanyService.GetCompany:output_type -> ntx.v1.GetCompanyResponse
+	8,  // 21: ntx.v1.CompanyService.GetFundamentals:output_type -> ntx.v1.GetFundamentalsResponse
+	10, // 22: ntx.v1.CompanyService.GetSectorStats:output_type -> ntx.v1.GetSectorStatsResponse
+	13, // 23: ntx.v1.CompanyService.GetOwnership:output_type -> ntx.v1.GetOwnershipResponse
+	15, // 24: ntx.v1.CompanyService.GetCorporateActions:output_type -> ntx.v1.GetCorporateActionsResponse
+	1,  // 25: ntx.v1.CompanyService.ListScreener:output_type -> ntx.v1.ListScreenerResponse
+	19, // [19:26] is the sub-list for method output_type
+	12, // [12:19] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_company_proto_init() }
@@ -793,15 +1030,16 @@ func file_ntx_v1_company_proto_init() {
 		return
 	}
 	file_ntx_v1_common_proto_init()
-	file_ntx_v1_company_proto_msgTypes[0].OneofWrappers = []any{}
-	file_ntx_v1_company_proto_msgTypes[8].OneofWrappers = []any{}
+	file_ntx_v1_company_proto_msgTypes[2].OneofWrappers = []any{}
+	file_ntx_v1_company_proto_msgTypes[3].OneofWrappers = []any{}
+	file_ntx_v1_company_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_company_proto_rawDesc), len(file_ntx_v1_company_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -43,6 +43,8 @@ message GetCompanyStoryResponse {
   repeated OwnershipObservation ownership = 12;
   // The eight published rules, in a fixed order (GLOSSARY: Check).
   repeated Check checks = 30;
+  // One letter summarising the checks (GLOSSARY: Rating); unset when fewer than four evaluate.
+  Rating rating = 31;
   // Same-sector companies from their latest quarterly row and close, by PE; no PE sorts last.
   repeated Peer peers = 40;
   // Data footer.
@@ -56,6 +58,13 @@ message Peer {
   string name = 2;
   optional double pe = 3; // unset when EPS is not positive
   optional double pb = 4; // unset without book value
+}
+
+// A to D from the share of Holds among the checks that could be evaluated; not a recommendation.
+message Rating {
+  string letter = 1; // "A".."D"
+  int32 holds = 2;
+  int32 evaluated = 3; // checks whose verdict is not "needs more history"
 }
 
 // One published rule and its verdict; a verdict is not a recommendation.
