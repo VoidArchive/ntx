@@ -90,8 +90,10 @@ func (s *Scheduler) Start(ctx context.Context) error {
 	}
 
 	// Weather every day of the week, holidays included: rivers do not observe them.
+	// A plant's first run writes ten years of discharge row by row, so the budget
+	// covers a whole fresh table; the daily run takes about a minute.
 	_, err = s.c.AddFunc("0 0 6 * * *", func() {
-		runSteps(ctx, []step{{"weather", 30 * time.Minute, w.SyncWeather}})
+		runSteps(ctx, []step{{"weather", 3 * time.Hour, w.SyncWeather}})
 	})
 	if err != nil {
 		return err
