@@ -51,7 +51,7 @@
 	{/if}
 {/snippet}
 
-<section class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+<section id="strips" class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 	{#each strips as strip (strip.ratio)}
 		<div id="strip-{strip.ratio}" class="min-w-0">
 			<div class="flex items-baseline justify-between">

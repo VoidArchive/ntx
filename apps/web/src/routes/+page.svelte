@@ -84,12 +84,12 @@
 		},
 		{
 			title: 'Most traded',
-			href: '/most-traded',
+			href: '/company',
 			rows: mostTraded.map((r) => ({ ...r, tone: 'text-muted-foreground' }))
 		},
 		{
 			title: 'Largest market cap',
-			href: '/market-cap',
+			href: '/company',
 			rows: largestMarketCap.map((r) => ({ ...r, tone: 'text-foreground' }))
 		}
 	]);
