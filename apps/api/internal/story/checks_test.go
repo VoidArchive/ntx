@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/fiscal"
 )
 
 func verdict(s Story, name string) string {
@@ -88,6 +89,28 @@ func TestChecks(t *testing.T) {
 		if got := verdict(Build(tc.in), tc.check); got != tc.want {
 			t.Errorf("%s: got %q, want %q", tc.check, got, tc.want)
 		}
+	}
+}
+
+// A loss that shrank four years running rises every year and still fails.
+func TestEPSGrowthLoss(t *testing.T) {
+	var s Story
+	for i, eps := range []float64{-1, -2, -3, -4, -5} {
+		s.FiscalYears = append(s.FiscalYears, FiscalYear{Year: fiscal.Year(2082 - i), EPS: ptr(eps)})
+	}
+	if got := epsGrowth(s, Input{}); got != Watch {
+		t.Errorf("shrinking loss = %q, want %q", got, Watch)
+	}
+}
+
+// Four holds with PE unevaluated is a B, not an A.
+func TestRatingGate(t *testing.T) {
+	checks := []Check{{Name: "PE against its own history", Verdict: NeedsHistory}}
+	for range 4 {
+		checks = append(checks, Check{Verdict: Holds})
+	}
+	if got := rating(checks); got != (Rating{Letter: "B", Holds: 4, Evaluated: 4}) {
+		t.Errorf("gated rating = %+v", got)
 	}
 }
 

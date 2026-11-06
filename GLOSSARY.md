@@ -19,7 +19,7 @@ The two verdicts of a Check. Holds means the rule is satisfied; Watch means it i
 _Avoid_: pass, fail, buy, sell, bullish, bearish
 
 **Rating**:
-One letter, A to D, summarising a company's Checks: the share of Holds among the Checks that could be evaluated, scaled to eight and rounded down (A for 7 or 8, B for 5 or 6, C for 3 or 4, D for 0 to 2). Unrated when fewer than four Checks evaluate. A summary of published rules, not a recommendation.
+One letter, A to D, summarising a company's Checks: the share of Holds among the Checks that could be evaluated, scaled to eight and rounded down (A for 7 or 8, B for 5 or 6, C for 3 or 4, D for 0 to 2). Unrated when fewer than four Checks evaluate; no A unless the Quarterly profit and PE checks evaluated, since the direction checks pass a shrinking loss. A summary of published rules, not a recommendation.
 _Avoid_: score, grade, signal, buy, sell
 
 **Strip**:

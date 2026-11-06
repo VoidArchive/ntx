@@ -1,5 +1,7 @@
 package story
 
+import "slices"
+
 // Verdicts of a Check (GLOSSARY: Check, Holds / Watch). Neither is a recommendation.
 const (
 	Holds        = "holds"
@@ -19,7 +21,7 @@ var rules = []struct {
 	name, rule string
 	eval       func(Story, Input) string
 }{
-	{"EPS growth", "EPS grew in at least 3 of the last 4 fiscal years.", epsGrowth},
+	{"EPS growth", "EPS grew in at least 3 of the last 4 fiscal years and is positive.", epsGrowth},
 	{"Quarterly profit", "Net profit for the latest quarter is above the same quarter last year.", quarterlyProfit},
 	{"PE against its own history", "PE is below its own three-year median.", peOwn},
 	{"PB against the sector", "PB is below the sector median.", pbSector},
@@ -47,13 +49,19 @@ type Rating struct {
 
 const minEvaluated = 4
 
+// aGates must evaluate before an A: EPS growth and quarterly profit measure
+// direction, so a shrinking loss passes both; these two measure level.
+var aGates = []string{"Quarterly profit", "PE against its own history"}
+
 // ratingScale is the glossary's eight; the rule count may grow, the letter grid does not.
 const ratingScale = 8
 
 func rating(checks []Check) Rating {
 	var r Rating
+	gated := false
 	for _, c := range checks {
 		if c.Verdict == NeedsHistory {
+			gated = gated || slices.Contains(aGates, c.Name)
 			continue
 		}
 		r.Evaluated++
@@ -69,6 +77,9 @@ func rating(checks []Check) Rating {
 		letter string
 		floor  int
 	}{{"A", 7}, {"B", 5}, {"C", 3}} {
+		if g.letter == "A" && gated {
+			continue
+		}
 		if int(r.Holds)*ratingScale >= g.floor*int(r.Evaluated) {
 			r.Letter = g.letter
 			return r
@@ -112,7 +123,8 @@ func epsGrowth(s Story, _ Input) string {
 			rises++
 		}
 	}
-	return verdictOf(rises >= 3)
+	// A loss that shrank three years running is still a loss.
+	return verdictOf(rises >= 3 && *rows[0].EPS > 0)
 }
 
 func quarterlyProfit(_ Story, in Input) string {
