@@ -330,6 +330,11 @@ func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
 		pb := close / r.BookValue.Float64
 		row.Pb = &pb
 	}
+	// Both per share, so the division is return on the equity behind each share.
+	if r.BookValue.Float64 > 0 && r.Eps.Valid {
+		roe := r.Eps.Float64 * 100 / r.BookValue.Float64
+		row.Roe = &roe
+	}
 	// Cash dividend is a percentage of the Rs 100 par, as in ListSectorYield.
 	if r.CashDividend.Valid && close > 0 {
 		y := r.CashDividend.Float64 * 100 / close
