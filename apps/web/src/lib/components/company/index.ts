@@ -1,11 +1,12 @@
 export { default as StoryOpening } from './StoryOpening.svelte';
-export { default as ValuationStrips } from './ValuationStrips.svelte';
 export { default as TimeRangeSelector } from './TimeRangeSelector.svelte';
 export { default as FinancialsTable } from './FinancialsTable.svelte';
 export { default as AIResearchButton } from './AIResearchButton.svelte';
 export { default as MutualFundHoldings } from './MutualFundHoldings.svelte';
 export { default as FiscalYears } from './FiscalYears.svelte';
 export { default as OwnershipHistory } from './OwnershipHistory.svelte';
-export { default as Peers } from './Peers.svelte';
 export { default as ClaimText } from './ClaimText.svelte';
 export { default as PayoutBars } from './PayoutBars.svelte';
+export { default as Snowflake } from './Snowflake.svelte';
+export { default as RatioHistory } from './RatioHistory.svelte';
+export { default as PeerBars } from './PeerBars.svelte';

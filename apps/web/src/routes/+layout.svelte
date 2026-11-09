@@ -50,7 +50,7 @@
 		}
 	</script>
 </svelte:head>
-<ModeWatcher />
+<ModeWatcher defaultMode="dark" />
 <div class="lg:flex">
 	<Sidebar companies={data.search} />
 	<div class="min-w-0 flex-1">

@@ -93,13 +93,15 @@
 </script>
 
 {#if chartData.length > 0}
-	<ChartContainer config={chartConfig} class="h-[350px] w-full {className}">
+	<ChartContainer config={chartConfig} class="w-full {className || 'h-[350px]'}">
 		<AreaChart
 			data={chartData}
 			x="date"
 			y="price"
 			xScale={scaleTime()}
 			yScale={scaleLinear().domain(yDomain).nice()}
+			yDomain={yDomain as [number, number]}
+			yBaseline={undefined}
 			padding={{ top: 18, bottom: 30, left: 45, right: 15 }}
 			{annotations}
 			series={[

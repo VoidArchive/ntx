@@ -23,7 +23,7 @@ One letter, A to D, summarising a company's Checks: the share of Holds among the
 _Avoid_: score, grade, signal, buy, sell
 
 **Strip**:
-A horizontal range showing where one company's ratio sits, drawn twice: on the sector's distribution and on the company's own three-year range.
+The story engine's range for one ratio (low, median, high and count), given twice: over the sector and over the company's own three years. The web draws only the median, as a dashed line on the question chart, never the bar.
 _Avoid_: gauge, meter, range bar
 
 **Story**:

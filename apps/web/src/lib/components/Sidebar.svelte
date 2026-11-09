@@ -20,15 +20,16 @@
 		{ href: '/mutual-funds', label: 'Mutual funds' }
 	];
 
-	// Company page sections, in page order.
+	// Company page sections, in the report's reading order; the number is the order the reader follows.
 	const sections = [
-		{ id: 'price', label: 'Price and volume' },
-		{ id: 'earnings', label: 'Earnings' },
-		{ id: 'valuation', label: 'Valuation' },
-		{ id: 'payout', label: 'Payout' },
-		{ id: 'ownership', label: 'Ownership' },
-		{ id: 'funds', label: 'Funds' },
-		{ id: 'plants', label: 'Plants' } // hydro companies only
+		{ id: 'overview', label: 'Overview' },
+		{ id: 'valuation', n: 1, label: 'Valuation' },
+		{ id: 'earnings', n: 2, label: 'Past Performance' },
+		{ id: 'health', n: 3, label: 'Financial Health' },
+		{ id: 'payout', n: 4, label: 'Dividend' },
+		{ id: 'ownership', n: 5, label: 'Ownership' },
+		{ id: 'funds', n: 6, label: 'Funds' },
+		{ id: 'plants', n: 7, label: 'Plants' } // hydro companies only
 	];
 
 	let pathname = $derived(page.url.pathname);
@@ -89,17 +90,18 @@
 	</ul>
 
 	{#if onCompanyPage}
-		<p class="mt-6 mb-1 px-2 text-xs text-muted-foreground">On this page</p>
-		<ul class="space-y-0.5 border-l border-sidebar-border text-sm">
+		<ul class="mt-6 space-y-0.5 text-sm" aria-label="On this page">
 			{#each sections.filter((s) => present.length === 0 || present.includes(s.id)) as s (s.id)}
 				<li>
 					<a
 						href="#{s.id}"
 						onclick={() => (menuOpen = false)}
-						class="-ml-px block border-l py-1 pl-3 transition-colors {activeSection === s.id
-							? 'border-foreground text-sidebar-foreground'
+						class="flex items-baseline gap-2 rounded-md border-l-2 py-1.5 pr-2 pl-3 transition-colors {activeSection ===
+						s.id
+							? 'border-primary bg-sidebar-accent font-medium text-sidebar-foreground'
 							: 'border-transparent text-muted-foreground hover:text-foreground'}"
 					>
+						{#if s.n}<span class="w-3 text-xs text-muted-foreground">{s.n}</span>{/if}
 						{s.label}
 					</a>
 				</li>
