@@ -2,18 +2,21 @@
 	import {
 		StoryOpening,
 		ClaimText,
-		ValuationStrips,
-		TimeRangeSelector,
+		RatioHistory,
+		PeerBars,
 		FinancialsTable,
-		AIResearchButton,
 		MutualFundHoldings,
 		FiscalYears,
 		PayoutBars,
 		OwnershipHistory,
-		Peers
+		Snowflake
 	} from '#lib/components/company/index.js';
-	import { PriceChart, VolumeChart, EarningsChart } from '#lib/components/charts/index.js';
+	import { AXES, checksFor, score, type AxisId } from '#lib/components/company/snowflake.js';
+	import { EarningsChart } from '#lib/components/charts/index.js';
 	import CompanyPlants from '#lib/components/hydro/CompanyPlants.svelte';
+	import CircleCheck from '@lucide/svelte/icons/circle-check';
+	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
+	import CircleDashed from '@lucide/svelte/icons/circle-dashed';
 	import type { Claim, Check } from '#lib/gen/ntx/v1/story_pb.js';
 
 	let { data } = $props();
@@ -30,204 +33,387 @@
 	let filedDaysAgo = $derived(
 		story?.filedAt ? Math.floor((Date.now() - Date.parse(story.filedAt)) / 86_400_000) : undefined
 	);
+	let allChecks = $derived(story?.checks ?? []);
+	// Listed shares when NEPSE publishes them, else paid-up capital over the Rs 100 par.
+	let shares = $derived(
+		Number(company?.listedShares ?? 0) || (fundamentalsHistory[0]?.paidUpCapital ?? 0) / 100
+	);
+	let holds = $derived(allChecks.filter((c) => c.verdict === 'holds'));
+	let watch = $derived(allChecks.filter((c) => c.verdict === 'watch'));
+	let pending = $derived(allChecks.filter((c) => c.verdict === 'needs more history'));
+	// The overview reads the first earnings and valuation sentences; each section repeats its own.
+	let lede = $derived(
+		['earnings', 'valuation']
+			.map((k) => (story?.claims ?? []).find((c) => c.kind === k))
+			.filter((c): c is Claim => !!c)
+	);
 
-	let chartDays = $state<number>(365);
+	const strip = (ratio: string) => story?.strips.find((x) => x.ratio === ratio);
+	let peCheck = $derived(allChecks.find((c) => c.name === 'PE against its own history'));
+	let pbCheck = $derived(allChecks.find((c) => c.name === 'PB against the sector'));
+	const RATIO: Record<string, string> = { pe: 'PE', pb: 'PB', eps: 'EPS', yield: 'Dividend yield' };
+	function ratioFmt(ratio: string, v: number): string {
+		const n = v.toLocaleString('en-NP', { maximumFractionDigits: 2 });
+		return ratio === 'eps' ? `Rs ${n}` : ratio === 'yield' ? `${n}%` : `${n}x`;
+	}
 
 	function claims(...kinds: string[]): Claim[] {
 		return (story?.claims ?? []).filter((c) => kinds.includes(c.kind));
 	}
 
-	// Each section shows the checks that read its own figures (GLOSSARY: Check).
-	function checks(...names: string[]): Check[] {
-		return (story?.checks ?? []).filter((c) => names.includes(c.name));
+	// A section shows the checks its snowflake axis reads (GLOSSARY: Check).
+	function axis(id: AxisId): Check[] {
+		return checksFor(allChecks, AXES.find((a) => a.id === id)!.checks);
 	}
 
-	const GLYPH: Record<string, string> = { holds: '✓', watch: '△', 'needs more history': '·' };
 	const VERDICT: Record<string, string> = {
 		holds: 'Holds',
 		watch: 'Watch',
 		'needs more history': 'Needs more history'
 	};
+	const CARD = 'mt-6 scroll-mt-6 rounded-lg bg-card p-6 shadow-card sm:p-8';
 </script>
 
-<!-- A section opens with its claim as the headline and its checks beside it. -->
-{#snippet head(label: string, sentences: Claim[], verdicts: Check[], empty: string)}
-	<div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-		<div class="max-w-3xl min-w-0 flex-1">
-			<h2 class="text-xs tracking-wide text-muted-foreground uppercase">{label}</h2>
-			<p class="mt-1 font-serif text-xl leading-snug font-medium">
-				{#if sentences.length > 0}
-					<ClaimText claims={sentences} />
-				{:else}
-					<span class="font-normal text-muted-foreground">{empty}</span>
-				{/if}
-			</p>
-		</div>
-		{#if verdicts.length > 0}
-			<ul class="shrink-0 space-y-2 text-sm lg:w-72" aria-label="Checks">
-				{#each verdicts as check (check.name)}
-					<li class={check.verdict === 'holds' ? '' : 'text-muted-foreground'}>
-						<span class="font-medium"
-							><span aria-hidden="true">{GLYPH[check.verdict]}</span> {VERDICT[check.verdict]}</span
-						>
-						· {check.name}
+{#snippet icon(verdict: string)}
+	{#if verdict === 'holds'}
+		<CircleCheck class="mt-0.5 size-4 shrink-0 text-positive" aria-hidden="true" />
+	{:else if verdict === 'watch'}
+		<TriangleAlert class="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+	{:else}
+		<CircleDashed class="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+	{/if}
+{/snippet}
+
+<!-- One chip per section: how many of its checks hold. -->
+{#snippet chip(verdicts: Check[])}
+	{@const s = score(verdicts)}
+	<span
+		class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium {verdicts.length ===
+			0 || s.evaluated === 0
+			? 'border-border text-muted-foreground'
+			: s.holds === s.evaluated
+				? 'border-positive/40 text-positive'
+				: s.holds === 0
+					? 'border-negative/40 text-negative'
+					: 'border-border text-foreground'}"
+		title={verdicts.length
+			? verdicts.map((c) => `${c.name}: ${VERDICT[c.verdict]}`).join('; ')
+			: 'None of the eight published checks reads this section'}
+	>
+		{#if verdicts.length === 0}
+			<CircleDashed class="size-3.5" aria-hidden="true" /> no checks
+		{:else if s.evaluated === 0}
+			<CircleDashed class="size-3.5" aria-hidden="true" /> needs more history
+		{:else}
+			<CircleCheck class="size-3.5" aria-hidden="true" /> {s.holds} of {s.evaluated} hold
+		{/if}
+	</span>
+{/snippet}
+
+<!-- A section opens with its number and name, its chip, the sentence the filings support, then its checks. -->
+{#snippet head(n: number, title: string, sentences: Claim[], verdicts: Check[], empty: string)}
+	<div class="flex flex-wrap items-center justify-between gap-3">
+		<h2 class="font-serif text-2xl font-medium">
+			<span class="mr-2 text-muted-foreground">{n}</span>{title}
+		</h2>
+		{@render chip(verdicts)}
+	</div>
+	{#if sentences.length > 0 || empty}
+		<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
+			{#if sentences.length > 0}
+				<ClaimText claims={sentences} />
+			{:else}
+				<span class="text-muted-foreground">{empty}</span>
+			{/if}
+		</p>
+	{/if}
+	{#if verdicts.length > 0}
+		<ul class="mt-5 grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2" aria-label="Checks">
+			{#each verdicts as check (check.name)}
+				<li class="flex gap-2.5">
+					{@render icon(check.verdict)}
+					<span>
+						<span class="font-medium">{check.name}</span>
+						<span class="text-muted-foreground"> · {VERDICT[check.verdict]}</span>
 						{#if check.verdict !== 'needs more history'}
 							<span class="block text-xs text-muted-foreground">{check.rule}</span>
 						{/if}
-					</li>
-				{/each}
-			</ul>
-		{/if}
-	</div>
+					</span>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 {/snippet}
 
 {#if company}
-	<div class="min-h-screen bg-background text-foreground">
-		<div class="mx-auto max-w-7xl px-4 py-8">
-			<!-- 1. Lede: symbol, rating, the earnings sentence, the quote; the research prompt beside it -->
-			<div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-				<StoryOpening {company} {story} />
-				<div class="shrink-0 sm:pt-4">
-					<AIResearchButton {company} {story} />
+	<div class="mx-auto max-w-7xl px-4 py-6">
+		<StoryOpening {company} {story} prices={priceHistory} {shares} />
+
+		<!-- Overview: the sentences, the lists, the snowflake -->
+		<section id="overview" class={CARD}>
+			<div class="grid gap-8 lg:grid-cols-[1fr_340px]">
+				<div class="min-w-0">
+					<h2 class="font-serif text-2xl font-medium">{company.symbol} Stock Overview</h2>
+					<p class="mt-3 max-w-3xl text-lg leading-relaxed">
+						{#if lede.length === 0}
+							Not enough filings to say anything yet. {lastFiling}
+						{:else}
+							<ClaimText claims={lede} />
+						{/if}
+					</p>
+
+					<h3
+						class="mt-7 font-sans text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+					>
+						Holds
+					</h3>
+					{#if holds.length > 0}
+						<ul class="mt-2 space-y-2">
+							{#each holds as check (check.name)}
+								<li class="flex gap-2.5">
+									{@render icon(check.verdict)}
+									<span>{check.rule}</span>
+								</li>
+							{/each}
+						</ul>
+					{:else}
+						<p class="mt-2 text-sm text-muted-foreground">No check holds yet.</p>
+					{/if}
+
+					<h3
+						class="mt-6 font-sans text-xs font-semibold tracking-wider text-muted-foreground uppercase"
+					>
+						Watch
+					</h3>
+					{#if watch.length > 0}
+						<ul class="mt-2 space-y-2">
+							{#each watch as check (check.name)}
+								<li class="flex gap-2.5">
+									{@render icon(check.verdict)}
+									<span>{check.rule}</span>
+								</li>
+							{/each}
+						</ul>
+					{:else}
+						<p class="mt-2 text-sm text-muted-foreground">No check is on watch.</p>
+					{/if}
+
+					{#if pending.length > 0}
+						<p class="mt-5 text-sm text-muted-foreground">
+							{pending.length} of {allChecks.length} checks need more history: {pending
+								.map((c) => c.name.toLowerCase())
+								.join(', ')}.
+						</p>
+					{/if}
+				</div>
+
+				<div class="flex flex-col items-center lg:items-start">
+					<Snowflake checks={allChecks} />
+					<p class="mt-2 font-medium">Snowflake</p>
+					<p class="mt-1 text-sm text-muted-foreground">
+						{#if story?.rating?.letter}
+							Rating {story.rating.letter}: {story.rating.holds} of {story.rating.evaluated} checks hold.
+						{:else}
+							Too few checks have history to rate.
+						{/if}
+						Each axis is the share of its checks that hold, from the eight published rules, drawn out
+						from a small core; a check on watch or without history adds nothing. Not a recommendation.
+					</p>
 				</div>
 			</div>
+		</section>
 
-			<!-- 2. Price and volume, under the quote it explains -->
-			<section id="price" class="mt-12 border-t border-border pt-8">
-				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<h2 class="text-xs tracking-wide text-muted-foreground uppercase">Price and volume</h2>
-					{#if priceHistory.length > 0}
-						<TimeRangeSelector selected={chartDays} onSelect={(days) => (chartDays = days)} />
-					{/if}
-				</div>
-				{#if priceHistory.length > 0}
-					<div class="h-[350px] overflow-hidden">
-						<PriceChart prices={priceHistory} events={story?.events ?? []} days={chartDays} />
-					</div>
-					<div class="mt-2">
-						<VolumeChart prices={priceHistory} days={chartDays} />
-					</div>
-				{:else}
-					<p class="text-sm text-muted-foreground">No closes recorded. {lastFiling}</p>
-				{/if}
-			</section>
-
-			<!-- 3. Earnings: quarter-only bars, hydro EPS line, rows as filed -->
-			<section id="earnings" class="mt-12 border-t border-border pt-8">
-				{@render head(
-					'Earnings',
-					claims('earnings', 'record'),
-					checks('Quarterly profit', 'EPS growth'),
-					`No quarterly filings. ${lastFiling}`
-				)}
-				{#if story?.hydroEps}
-					{@const h = story.hydroEps}
-					<p class="mb-3 text-xs text-muted-foreground tabular-nums">
-						EPS Rs {h.quarter.toFixed(2)} quarter · Rs {h.annualized.toFixed(2)} annualized · Rs
-						{h.fullYear.toFixed(2)}
-						{h.fullYearPeriod}
-					</p>
-				{/if}
-				{#if story?.quarters.length}
-					<EarningsChart quarters={story.quarters} />
-				{/if}
-				{#if fundamentalsHistory.some((f) => !!f.quarter)}
-					<FinancialsTable fundamentals={fundamentalsHistory} class="mt-6" />
-				{/if}
-			</section>
-
-			<!-- 4. Valuation: four strips, peers beneath on the PE strip's range -->
-			<section id="valuation" class="mt-12 border-t border-border pt-8">
-				{@render head(
-					'Valuation',
-					claims('valuation'),
-					checks('PE against its own history', 'PB against the sector'),
-					`No ratios recorded. ${lastFiling}`
-				)}
-				{#if story?.strips.length}
-					<ValuationStrips strips={story.strips} period={story.lastFiling} />
-				{/if}
-				{#if story?.peers.length}
-					<Peers
-						peers={story.peers}
-						range={story.strips.find((s) => s.ratio === 'pe')?.sector}
-						symbol={company.symbol}
-						period={story.lastFiling}
-					/>
-				{/if}
-			</section>
-
-			<!-- 5. Payout: cash and bonus per fiscal year, the year rows, compounded growth -->
-			<section id="payout" class="mt-12 border-t border-border pt-8">
-				{@render head(
-					'Payout',
-					claims('payout'),
-					checks('Dividend record', 'Cash payout', 'Book value growth'),
-					story?.fiscalYears.length
-						? 'No dividend notice stored yet, so the payout is not recorded; the fiscal years below are from filings.'
-						: `No full-year filings or notices. ${lastFiling}`
-				)}
-				{#if story?.fiscalYears.length}
-					<!-- Bars only once a notice has arrived; a chart of gaps says nothing. -->
-					{#if story.fiscalYears.some((y) => y.payout !== 'not recorded')}
-						<PayoutBars years={story.fiscalYears} class="mb-8" />
-					{/if}
-					<FiscalYears years={story.fiscalYears} growth={story.growth} />
-				{/if}
-			</section>
-
-			<!-- 6. Ownership over time -->
-			<section id="ownership" class="mt-12 border-t border-border pt-8">
-				{@render head(
-					'Ownership',
-					claims('ownership'),
-					checks('Promoter holding'),
-					'No shareholding observations recorded.'
-				)}
-				{#if story?.ownership.length}
-					<OwnershipHistory observations={story.ownership} />
-				{/if}
-			</section>
-
-			<!-- 7. Fund holdings -->
-			<section id="funds" class="mt-12 border-t border-border pt-8">
-				{@render head(
-					'Funds',
-					claims('funds'),
-					[],
-					`No open-ended fund lists it in the NAV reports for ${data.navMonths || 'no month on file'}.`
-				)}
-				{#if fundHoldings.length > 0}
-					<MutualFundHoldings holdings={fundHoldings} />
-				{/if}
-			</section>
-
-			<!-- 8. Plants, hydro companies only: river, basin, MW and today's state -->
-			{#if plants.length > 0}
-				<section id="plants" class="mt-12 border-t border-border pt-8">
-					<div class="mb-6 max-w-3xl">
-						<h2 class="text-xs tracking-wide text-muted-foreground uppercase">Plants</h2>
-						<p class="mt-1 font-serif text-xl leading-snug font-medium">{data.plantsOpening}</p>
-					</div>
-					<CompanyPlants {plants} />
-				</section>
+		<!-- 1. Valuation: the four figures, then one chart per check -->
+		<section id="valuation" class={CARD}>
+			{@render head(
+				1,
+				'Valuation',
+				[],
+				axis('valuation'),
+				story?.strips.length ? '' : `No ratios recorded. ${lastFiling}`
+			)}
+			{#if story?.strips.length}
+				<dl class="mt-8 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
+					{#each story.strips as st (st.ratio)}
+						<div>
+							<dt class="text-xs text-muted-foreground">{RATIO[st.ratio] ?? st.ratio}</dt>
+							<dd class="mt-0.5 font-serif text-2xl font-medium tabular-nums">
+								{st.value !== undefined ? ratioFmt(st.ratio, st.value) : '—'}
+							</dd>
+							<dd class="text-xs text-muted-foreground tabular-nums">
+								{#if st.sector}
+									sector median {ratioFmt(st.ratio, st.sector.median)}
+								{:else}
+									no sector figures
+								{/if}
+							</dd>
+						</div>
+					{/each}
+				</dl>
+				<p class="mt-2 text-xs text-muted-foreground">
+					From {story.lastFiling || 'the latest filing'} and the latest close. Sector medians are over
+					each sector company's latest filed quarter.
+				</p>
 			{/if}
 
-			<!-- 9. How fresh the data is -->
-			<footer class="mt-12 border-t border-border pt-6 text-xs text-muted-foreground">
-				<p class="tabular-nums">
-					Last sync {story?.syncedAt ? `${story.syncedAt} UTC` : 'not recorded'} · Newest filing
-					{#if story?.filedAt}
-						{story.lastFiling}, {story.filedAtSeen ? 'first seen by NTX on' : 'published'}
-						{story.filedAt} ({filedDaysAgo} days ago)
-					{:else}
-						none
+			<div class="mt-10 grid gap-10 lg:grid-cols-2">
+				<!-- Each chart answers one check; the API's verdict sits beside the question. -->
+				<div id="strip-pe" class="min-w-0 scroll-mt-6">
+					<h3 class="font-serif text-lg font-medium">Is the PE below its own three-year median?</h3>
+					{#if peCheck}
+						<p class="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+							{@render icon(peCheck.verdict)}{VERDICT[peCheck.verdict]}
+						</p>
 					{/if}
-					·
-					<a href="#earnings" class="underline underline-offset-2 hover:text-foreground">raw rows</a
-					>
+					<RatioHistory
+						fundamentals={fundamentalsHistory}
+						median={strip('pe')?.own?.median}
+						current={strip('pe')?.value}
+						class="mt-6"
+					/>
+				</div>
+				<div id="strip-pb" class="min-w-0 scroll-mt-6">
+					<h3 class="font-serif text-lg font-medium">Is the PB below the sector median?</h3>
+					{#if pbCheck}
+						<p class="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+							{@render icon(pbCheck.verdict)}{VERDICT[pbCheck.verdict]}
+						</p>
+					{/if}
+					<PeerBars
+						peers={story?.peers ?? []}
+						metric="pb"
+						symbol={company.symbol}
+						median={strip('pb')?.sector?.median}
+						period={story?.lastFiling ?? ''}
+						class="mt-6"
+					/>
+				</div>
+			</div>
+		</section>
+
+		<!-- 2. Past performance: quarter-only bars, hydro EPS line, rows as filed -->
+		<section id="earnings" class={CARD}>
+			{@render head(
+				2,
+				'Past Performance',
+				claims('earnings', 'record'),
+				axis('past'),
+				`No quarterly filings. ${lastFiling}`
+			)}
+			{#if story?.hydroEps}
+				{@const h = story.hydroEps}
+				<p class="mt-6 text-xs text-muted-foreground tabular-nums">
+					EPS Rs {h.quarter.toFixed(2)} quarter · Rs {h.annualized.toFixed(2)} annualized · Rs
+					{h.fullYear.toFixed(2)}
+					{h.fullYearPeriod}
 				</p>
-			</footer>
-		</div>
+			{/if}
+			{#if story?.quarters.length}
+				<div class="mt-6">
+					<EarningsChart quarters={story.quarters} />
+				</div>
+			{/if}
+			{#if fundamentalsHistory.some((f) => !!f.quarter)}
+				<FinancialsTable fundamentals={fundamentalsHistory} class="mt-6" />
+			{/if}
+		</section>
+
+		<!-- 3. Financial health: book value and the fiscal-year rows with compounded growth -->
+		<section id="health" class={CARD}>
+			{@render head(
+				3,
+				'Financial Health',
+				[],
+				axis('health'),
+				story?.fiscalYears.length
+					? 'Book value, profit and shares per fiscal year, from full-year filings.'
+					: `No full-year filings. ${lastFiling}`
+			)}
+			{#if story?.fiscalYears.length}
+				<div class="mt-6">
+					<FiscalYears years={story.fiscalYears} growth={story.growth} />
+				</div>
+			{/if}
+		</section>
+
+		<!-- 4. Dividend: cash and bonus per fiscal year -->
+		<section id="payout" class={CARD}>
+			{@render head(
+				4,
+				'Dividend',
+				claims('payout'),
+				axis('dividend'),
+				story?.fiscalYears.length
+					? 'No dividend notice stored yet, so the payout is not recorded.'
+					: `No full-year filings or notices. ${lastFiling}`
+			)}
+			<!-- Bars only once a notice has arrived; a chart of gaps says nothing. -->
+			{#if story?.fiscalYears.some((y) => y.payout !== 'not recorded')}
+				<PayoutBars years={story.fiscalYears} class="mt-6" />
+			{/if}
+		</section>
+
+		<!-- 5. Ownership over time -->
+		<section id="ownership" class={CARD}>
+			{@render head(
+				5,
+				'Ownership',
+				claims('ownership'),
+				axis('ownership'),
+				'No shareholding observations recorded.'
+			)}
+			{#if story?.ownership.length}
+				<div class="mt-6">
+					<OwnershipHistory observations={story.ownership} />
+				</div>
+			{/if}
+		</section>
+
+		<!-- 6. Fund holdings -->
+		<section id="funds" class={CARD}>
+			{@render head(
+				6,
+				'Funds',
+				claims('funds'),
+				[],
+				`No open-ended fund lists it in the NAV reports for ${data.navMonths || 'no month on file'}.`
+			)}
+			{#if fundHoldings.length > 0}
+				<div class="mt-6">
+					<MutualFundHoldings holdings={fundHoldings} />
+				</div>
+			{/if}
+		</section>
+
+		<!-- 7. Plants, hydro companies only: river, basin, MW and today's state -->
+		{#if plants.length > 0}
+			<section id="plants" class={CARD}>
+				<div class="flex flex-wrap items-center justify-between gap-3">
+					<h2 class="font-serif text-2xl font-medium">
+						<span class="mr-2 text-muted-foreground">7</span>Plants
+					</h2>
+					{@render chip([])}
+				</div>
+				<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{data.plantsOpening}</p>
+				<div class="mt-6">
+					<CompanyPlants {plants} />
+				</div>
+			</section>
+		{/if}
+
+		<!-- How fresh the data is -->
+		<footer class="mt-8 px-2 text-xs text-muted-foreground">
+			<p class="tabular-nums">
+				Last sync {story?.syncedAt ? `${story.syncedAt} UTC` : 'not recorded'} · Newest filing
+				{#if story?.filedAt}
+					{story.lastFiling}, {story.filedAtSeen ? 'first seen by NTX on' : 'published'}
+					{story.filedAt} ({filedDaysAgo} days ago)
+				{:else}
+					none
+				{/if}
+				·
+				<a href="#earnings" class="underline hover:text-foreground">raw rows</a>
+			</p>
+		</footer>
 	</div>
 {/if}

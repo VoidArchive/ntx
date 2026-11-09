@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-09T00:00:00Z",
+  "title": "Design System: NTX",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Molten Orange",
+        "canonical": "oklch(0.72 0.19 45)",
+        "light": "oklch(0.62 0.19 42)",
+        "tonalRamp": ["oklch(0.2 0.06 45)", "oklch(0.32 0.11 45)", "oklch(0.44 0.15 45)", "oklch(0.56 0.18 45)", "oklch(0.66 0.19 45)", "oklch(0.72 0.19 45)", "oklch(0.84 0.1 45)", "oklch(0.95 0.03 45)"]
+      },
+      "primary-foreground": { "role": "primary", "displayName": "Ground on Accent", "canonical": "oklch(0.17 0.012 250)", "light": "oklch(0.99 0.005 60)" },
+      "background": {
+        "role": "neutral",
+        "displayName": "Gunmetal Night",
+        "canonical": "oklch(0.17 0.012 250)",
+        "light": "oklch(0.94 0.006 240)",
+        "tonalRamp": ["oklch(0.17 0.012 250)", "oklch(0.215 0.012 250)", "oklch(0.235 0.012 250)", "oklch(0.27 0.012 250)", "oklch(0.3 0.012 250)", "oklch(0.5 0.012 250)", "oklch(0.66 0.01 240)", "oklch(0.87 0.008 240)"]
+      },
+      "card": { "role": "neutral", "displayName": "Raised Gunmetal", "canonical": "oklch(0.215 0.012 250)", "light": "oklch(0.985 0.003 240)" },
+      "popover": { "role": "neutral", "displayName": "Popover Gunmetal", "canonical": "oklch(0.235 0.012 250)", "light": "oklch(0.985 0.003 240)" },
+      "secondary": { "role": "neutral", "displayName": "Secondary", "canonical": "oklch(0.27 0.012 250)", "light": "oklch(0.9 0.008 240)" },
+      "muted": { "role": "neutral", "displayName": "Muted", "canonical": "oklch(0.27 0.012 250)", "light": "oklch(0.9 0.008 240)" },
+      "accent": { "role": "neutral", "displayName": "Accent Fill", "canonical": "oklch(0.3 0.012 250)", "light": "oklch(0.88 0.01 240)" },
+      "border": { "role": "neutral", "displayName": "Hairline", "canonical": "oklch(0.3 0.012 250)", "light": "oklch(0.86 0.008 240)" },
+      "foreground": { "role": "neutral", "displayName": "Fog Silver", "canonical": "oklch(0.87 0.008 240)", "light": "oklch(0.2 0.012 250)" },
+      "muted-foreground": { "role": "neutral", "displayName": "Fog Dim", "canonical": "oklch(0.66 0.01 240)", "light": "oklch(0.45 0.012 250)" },
+      "positive": {
+        "role": "semantic",
+        "displayName": "Up Green",
+        "canonical": "oklch(0.74 0.15 155)",
+        "light": "oklch(0.52 0.14 155)",
+        "tonalRamp": ["oklch(0.2 0.05 155)", "oklch(0.32 0.09 155)", "oklch(0.44 0.12 155)", "oklch(0.56 0.14 155)", "oklch(0.66 0.15 155)", "oklch(0.74 0.15 155)", "oklch(0.86 0.09 155)", "oklch(0.95 0.03 155)"]
+      },
+      "negative": {
+        "role": "semantic",
+        "displayName": "Down Red",
+        "canonical": "oklch(0.7 0.18 22)",
+        "light": "oklch(0.55 0.19 25)",
+        "tonalRamp": ["oklch(0.2 0.06 22)", "oklch(0.32 0.11 22)", "oklch(0.44 0.15 22)", "oklch(0.56 0.18 22)", "oklch(0.64 0.18 22)", "oklch(0.7 0.18 22)", "oklch(0.84 0.09 22)", "oklch(0.95 0.03 22)"]
+      },
+      "caution": { "role": "semantic", "displayName": "Caution Amber (reserved, unused on the company page)", "canonical": "oklch(0.8 0.13 85)", "light": "oklch(0.68 0.13 80)" },
+      "sidebar": { "role": "neutral", "displayName": "Sidebar Ground", "canonical": "oklch(0.17 0.012 250)", "light": "oklch(0.96 0.004 240)" },
+      "sidebar-accent": { "role": "neutral", "displayName": "Sidebar Active Fill", "canonical": "oklch(0.235 0.012 250)", "light": "oklch(0.9 0.008 240)" },
+      "sidebar-border": { "role": "neutral", "displayName": "Sidebar Hairline", "canonical": "oklch(0.27 0.012 250)", "light": "oklch(0.86 0.008 240)" },
+      "chart-2": { "role": "neutral", "displayName": "Chart Grey", "canonical": "oklch(0.7 0.01 240)", "light": "oklch(0.5 0.012 250)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The company name in the header card; 30px below 640px." },
+      "headline": { "displayName": "Section title", "purpose": "Every numbered section title and the Overview title." },
+      "claim": { "displayName": "Claim sentence", "purpose": "The one serif sentence the filings support under each section head." },
+      "figure": { "displayName": "Headline figure", "purpose": "The headline price and the monogram initials; the only serif numerals." },
+      "lede": { "displayName": "Overview lede", "purpose": "The Overview's two opening sentences, in sans so they read as summary." },
+      "body": { "displayName": "Body", "purpose": "Checks lists, nav, chips, toggles, tables, changes." },
+      "meta": { "displayName": "Meta", "purpose": "Provenance lines, check rule text, period trailers, footer." },
+      "list-label": { "displayName": "List label", "purpose": "HOLDS / WATCH headings over the Overview lists; never an eyebrow above a title." },
+      "axis-label": { "displayName": "Snowflake axis label", "purpose": "The five axis names on arcs outside the snowflake ring." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 1px 2px oklch(0 0 0 / 0.25), 0 8px 24px -12px oklch(0 0 0 / 0.5)", "purpose": "The one shadow: a soft downward lift on every report card and the header card." }
+    ],
+    "motion": [
+      { "name": "view-transition-out", "value": "150ms ease-out", "purpose": "Old route fades out on navigation." },
+      { "name": "view-transition-in", "value": "150ms ease-in 50ms", "purpose": "New route fades in after a 50ms hold; both disabled under prefers-reduced-motion." },
+      { "name": "transition-colors", "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Hover and active colour changes on links, buttons and toggles." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Report Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A raised gunmetal surface with the one card shadow; every section of the company page is one.",
+      "html": "<section class=\"ds-card\"><div class=\"ds-card-head\"><h2 class=\"ds-card-title\"><span class=\"ds-card-n\">1</span>Valuation</h2><span class=\"ds-chip ds-chip-some\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg>1 of 2 hold</span></div><p class=\"ds-claim\">PE is <a href=\"#\">16.29x</a> at <a href=\"#\">Rs 552.00</a>, against a sector median of <a href=\"#\">18.52x</a>. <span class=\"ds-period\">(Q1 2083/84)</span></p></section>",
+      "css": ".ds-card { background: var(--color-card); color: var(--color-foreground); border-radius: 8px; padding: 32px; box-shadow: 0 1px 2px oklch(0 0 0 / 0.25), 0 8px 24px -12px oklch(0 0 0 / 0.5); font-family: 'Figtree Variable', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; } .ds-card-title { margin: 0; font-family: 'Source Serif 4 Variable', Georgia, serif; font-size: 24px; font-weight: 500; line-height: 1.33; } .ds-card-n { color: var(--color-muted-foreground); margin-right: 8px; } .ds-claim { margin: 12px 0 0; max-width: 48rem; font-family: 'Source Serif 4 Variable', Georgia, serif; font-size: 20px; line-height: 1.375; } .ds-claim a { color: inherit; text-decoration: underline dotted; text-underline-offset: 4px; } .ds-claim a:hover { color: var(--color-primary); } .ds-period { font-family: 'Figtree Variable', system-ui, sans-serif; font-size: 12px; color: var(--color-muted-foreground); } .ds-chip { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; border: 1px solid var(--color-border); border-radius: 9999px; padding: 4px 10px; font-size: 12px; font-weight: 500; color: var(--color-muted-foreground); } .ds-chip-some { color: var(--color-foreground); }"
+    },
+    {
+      "name": "Section Chip",
+      "kind": "chip",
+      "refersTo": "chip-section",
+      "description": "Hairline pill counting how many of a section's checks hold; green when all hold, red when none, muted when nothing is evaluated.",
+      "html": "<span class=\"ds-chip\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg>1 of 2 hold</span> <span class=\"ds-chip ds-chip-all\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg>2 of 2 hold</span> <span class=\"ds-chip ds-chip-none\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg>0 of 2 hold</span> <span class=\"ds-chip\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-dasharray=\"3 3\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>needs more history</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--color-border); border-radius: 9999px; padding: 4px 10px; font-family: 'Figtree Variable', system-ui, sans-serif; font-size: 12px; font-weight: 500; color: var(--color-muted-foreground); } .ds-chip-all { color: var(--color-positive); border-color: color-mix(in oklab, var(--color-positive) 40%, transparent); } .ds-chip-none { color: var(--color-negative); border-color: color-mix(in oklab, var(--color-negative) 40%, transparent); }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one orange button per header card (AI Research): shadcn default variant at size sm.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/></svg>AI Research</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 12px; border: 0; border-radius: 6px; background: var(--color-primary); color: var(--color-primary-foreground); font-family: 'Figtree Variable', system-ui, sans-serif; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: color-mix(in oklab, var(--color-primary) 90%, transparent); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Muted gunmetal button for secondary actions (Copy inside the AI dialog).",
+      "html": "<button class=\"ds-btn-secondary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\"/><path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\"/></svg>Copy</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 12px; border: 0; border-radius: 6px; background: var(--color-secondary); color: var(--color-secondary-foreground); font-family: 'Figtree Variable', system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { background: color-mix(in oklab, var(--color-secondary) 80%, transparent); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Range Toggle",
+      "kind": "custom",
+      "refersTo": "toggle-range",
+      "description": "Chart period selector; the selected period inverts to Fog Silver on ground, the only inverted control.",
+      "html": "<div class=\"ds-range\"><button class=\"ds-range-btn\">1D</button><button class=\"ds-range-btn\">1M</button><button class=\"ds-range-btn ds-range-btn-on\">1YR</button><button class=\"ds-range-btn\">All</button></div>",
+      "css": ".ds-range { display: flex; gap: 6px; } .ds-range-btn { flex-shrink: 0; border: 1px solid var(--color-border); border-radius: 6px; padding: 6px 12px; background: var(--color-background); color: var(--color-muted-foreground); font-family: 'Figtree Variable', system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: color 150ms, border-color 150ms, background-color 150ms; } .ds-range-btn:hover { color: var(--color-foreground); border-color: color-mix(in oklab, var(--color-foreground) 50%, transparent); } .ds-range-btn-on, .ds-range-btn-on:hover { background: var(--color-foreground); color: var(--color-background); border-color: var(--color-foreground); } .ds-range-btn:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Section Nav",
+      "kind": "nav",
+      "refersTo": "nav-section",
+      "description": "The sidebar's numbered 'On this page' list; the active section carries an orange left bar and the sidebar-accent fill.",
+      "html": "<ul class=\"ds-nav\"><li><a class=\"ds-nav-link ds-nav-link-on\" href=\"#\">Overview</a></li><li><a class=\"ds-nav-link\" href=\"#\"><span class=\"ds-nav-n\">1</span>Valuation</a></li><li><a class=\"ds-nav-link\" href=\"#\"><span class=\"ds-nav-n\">2</span>Past Performance</a></li><li><a class=\"ds-nav-link\" href=\"#\"><span class=\"ds-nav-n\">3</span>Financial Health</a></li></ul>",
+      "css": ".ds-nav { list-style: none; margin: 0; padding: 0; width: 200px; display: flex; flex-direction: column; gap: 2px; font-family: 'Figtree Variable', system-ui, sans-serif; font-size: 14px; } .ds-nav-link { display: flex; align-items: baseline; gap: 8px; border-left: 2px solid transparent; border-radius: 6px; padding: 6px 8px 6px 12px; color: var(--color-muted-foreground); text-decoration: none; transition: color 150ms, background-color 150ms; } .ds-nav-link:hover { color: var(--color-foreground); } .ds-nav-link-on { border-left-color: var(--color-primary); background: var(--color-sidebar-accent); color: var(--color-sidebar-foreground); font-weight: 500; } .ds-nav-n { width: 12px; font-size: 12px; color: var(--color-muted-foreground); } .ds-nav-link:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Monogram Tile",
+      "kind": "custom",
+      "refersTo": "monogram-tile",
+      "description": "80px tile of the company's first two initials in serif, orange on a 15% orange tint; stands in for a logo.",
+      "html": "<div class=\"ds-monogram\" aria-hidden=\"true\">NB</div>",
+      "css": ".ds-monogram { display: flex; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 8px; background: color-mix(in oklab, var(--color-primary) 15%, transparent); color: var(--color-primary); font-family: 'Source Serif 4 Variable', Georgia, serif; font-size: 30px; font-weight: 500; }"
+    },
+    {
+      "name": "Snowflake",
+      "kind": "custom",
+      "refersTo": "snowflake",
+      "description": "Five-axis radar of the published checks: orange Catmull-Rom blob at 78% over hairline rings, uppercase tracked labels on arcs outside the ring.",
+      "html": "<svg class=\"ds-snowflake\" viewBox=\"0 0 340 340\" role=\"img\" aria-label=\"Snowflake\"><defs><path id=\"ds-sf-value\" d=\"M 90.9 77.7 A 140 140 0 0 1 249.1 77.7\" fill=\"none\"/></defs><circle cx=\"170\" cy=\"170\" r=\"128\" class=\"ds-sf-halo\"/><circle cx=\"170\" cy=\"170\" r=\"29.5\" class=\"ds-sf-ring\"/><circle cx=\"170\" cy=\"170\" r=\"59\" class=\"ds-sf-ring\"/><circle cx=\"170\" cy=\"170\" r=\"88.5\" class=\"ds-sf-ring\"/><circle cx=\"170\" cy=\"170\" r=\"118\" class=\"ds-sf-ring ds-sf-ring-outer\"/><line x1=\"170\" y1=\"170\" x2=\"170\" y2=\"52\" class=\"ds-sf-ring\"/><line x1=\"170\" y1=\"170\" x2=\"282.2\" y2=\"133.5\" class=\"ds-sf-ring\"/><line x1=\"170\" y1=\"170\" x2=\"239.4\" y2=\"265.5\" class=\"ds-sf-ring\"/><line x1=\"170\" y1=\"170\" x2=\"100.6\" y2=\"265.5\" class=\"ds-sf-ring\"/><line x1=\"170\" y1=\"170\" x2=\"57.8\" y2=\"133.5\" class=\"ds-sf-ring\"/><path class=\"ds-sf-blob\" d=\"M 170 102.7 C 192 100 221 118 232.5 149.7 C 244 181 230 236 225 246 C 220 256 166 190 160 186 C 154 182 150 176 153.5 170 C 157 164 148 105 170 102.7 Z\"/><circle cx=\"170\" cy=\"102.7\" r=\"3\" class=\"ds-sf-dot\"/><circle cx=\"232.5\" cy=\"149.7\" r=\"3\" class=\"ds-sf-dot\"/><circle cx=\"225\" cy=\"246\" r=\"3\" class=\"ds-sf-dot\"/><circle cx=\"160\" cy=\"186\" r=\"3\" class=\"ds-sf-dot\"/><circle cx=\"153.5\" cy=\"170\" r=\"3\" class=\"ds-sf-dot\"/><text class=\"ds-sf-label\"><textPath href=\"#ds-sf-value\" startOffset=\"50%\" text-anchor=\"middle\">Value</textPath></text></svg>",
+      "css": ".ds-snowflake { width: 100%; max-width: 340px; height: auto; font-family: 'Figtree Variable', system-ui, sans-serif; } .ds-sf-halo { fill: none; stroke: var(--color-muted); stroke-width: 12; opacity: 0.5; } .ds-sf-ring { fill: none; stroke: var(--color-border); stroke-width: 1; } .ds-sf-ring-outer { stroke-width: 1.5; } .ds-sf-blob { fill: var(--color-primary); fill-opacity: 0.78; stroke: var(--color-primary); stroke-width: 2; stroke-linejoin: round; } .ds-sf-dot { fill: var(--color-primary-foreground); stroke: var(--color-primary); stroke-width: 1.5; } .ds-sf-label { fill: var(--color-foreground); font-size: 13px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Report",
+    "overview": "NTX reads like a printed stock report laid on a dark desk: a gunmetal night ground, one raised gunmetal card per question, fog silver type, and a single molten orange accent that marks the thing the reader is meant to look at (the snowflake, the primary button, the active section, the price line). Serif headings and serif claim sentences carry what the filings say; a humanist sans carries the figures, labels and chrome. Nothing on the page recommends; colour that reads as a verdict (green, red) is spent only where the data itself has a direction.\n\nThe world is dark by default (`mode-watcher` sets `defaultMode=\"dark\"`). A light variant exists under `:root` with the same roles; its values live in the sidecar (`.impeccable/design.json`, `colorMeta.*.light`), not here, so the frontmatter stays one source of truth for the shipped default.\n\nScope note. Only the company page (`/company/[symbol]`), its header card, snowflake, and the sidebar were rebuilt in this world. Home, the company list, hydro and mutual fund routes inherit the tokens in `layout.css` but still carry their older compositions; nothing about their layout, chrome or chart language is recorded here as system. When those routes are rebuilt, extend this file from what ships.",
+    "keyCharacteristics": [
+      "Dark gunmetal ground, cards one step lighter, hairline borders one step lighter again; depth is tonal plus one soft shadow.",
+      "One accent, molten orange; green and red are reserved for direction and verdict.",
+      "Serif for headings, claim sentences and the headline price; sans for everything else; tabular numerals everywhere.",
+      "Sections are numbered report cards: number + title, a verdict chip, one claim sentence, a two-column checks list.",
+      "Icons are Lucide line glyphs at 14-16px, used only to mark verdicts and actions."
+    ],
+    "rules": [
+      { "name": "The One Flame Rule", "body": "Orange is a pointer, not a palette. On any screen it marks at most: the snowflake, one primary button, one active nav item, one price line. If a second orange element is a decoration rather than a pointer, remove it.", "section": "colors" },
+      { "name": "The Direction Rule", "body": "Green and red mean one of two things only: a price moved that way, or a published check holds / fails. They never colour headings, backgrounds, chips at rest, or anything a reader could mistake for advice.", "section": "colors" },
+      { "name": "The Ground-on-Accent Rule", "body": "Text on orange, green or red is the ground colour (`*-foreground` tokens), not white. The accent glows against the night; it does not carry a white label.", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "Serif for headings, claim sentences and the headline price; sans for figures, labels, lists, chrome. A serif figure is only allowed where it is the page's single headline number.", "section": "typography" },
+      { "name": "The Linked Number Rule", "body": "A number inside a claim sentence is a link to its evidence: dotted underline, 4px offset, orange on hover. Prose that cannot point at a row does not get a number.", "section": "typography" },
+      { "name": "The One Column of Cards Rule", "body": "The company page is a single vertical stack of full-width cards; nothing sits beside a card except the sidebar. Two-column layouts live inside cards, never between them.", "section": "layout" },
+      { "name": "The Breathing Anchor Rule", "body": "Every section is an anchor target with 24px scroll margin; the sidebar highlights the topmost visible section using an observer with a `-10% 0 -60% 0` root margin so long sections stay active while read.", "section": "layout" },
+      { "name": "The Tonal Step Rule", "body": "Each layer is exactly one lightness step above the one it rests on (ground 0.17 → card 0.215 → popover/active 0.235 → secondary 0.27 → border 0.3). Do not introduce a surface between steps or skip one.", "section": "elevation" },
+      { "name": "The Soft Lift Rule", "body": "The only shadow is `--shadow-card`. No hard offset shadows, no inner shadows, no glows other than the orange tints listed above.", "section": "elevation" },
+      { "name": "The 8/6 Rule", "body": "Surfaces are 8px, controls are 6px, counters are round. There is no 12px+ radius in the shipped company page even though `rounded.xl` is defined.", "section": "shapes" }
+    ],
+    "dos": [
+      "Open every section with its number, its serif title, its chip and the one sentence the filings support, in that order.",
+      "Spend orange only as a pointer: snowflake, primary button, active section, price line, flat change.",
+      "Colour green or red only for price direction and check verdicts, and set text on them in the ground colour.",
+      "Keep every figure in tabular numerals and every claim number as a dotted link to its evidence.",
+      "Separate cards by the tonal step and `--shadow-card`; separate items inside cards with hairlines.",
+      "Use Lucide line icons at 14-16px for verdicts and actions only.",
+      "End any snowflake or rating explanation with \"Not a recommendation.\""
+    ],
+    "donts": [
+      "Don't give a card a border, a header strip, or a second shadow.",
+      "Don't set a label above a title as an eyebrow or kicker; uppercase labels head lists (HOLDS, WATCH) or ride the snowflake's arcs, nothing else.",
+      "Don't introduce a third verdict colour; Watch and Needs-more-history are `muted-foreground`, and `caution` stays reserved until the build uses it.",
+      "Don't draw the snowflake as a polygon, add a sixth axis, or weight an axis; the API's verdicts are the rule.",
+      "Don't put white text on orange, green or red.",
+      "Don't use a radius other than 8px for surfaces, 6px for controls (4px for site nav links), or full for pills.",
+      "Don't describe home, company list, hydro or mutual fund layouts as this system; they inherit tokens only until rebuilt."
+    ]
+  }
+}

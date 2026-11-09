@@ -73,7 +73,7 @@ Cite the filing or page for every figure you use, and say "not found" where you 
 	}
 </script>
 
-<Button variant="outline" size="sm" onclick={() => (dialogOpen = true)}>
+<Button variant="default" size="sm" onclick={() => (dialogOpen = true)}>
 	<Sparkles class="size-4" />
 	AI Research
 </Button>
