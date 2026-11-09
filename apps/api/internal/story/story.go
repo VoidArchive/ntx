@@ -39,6 +39,14 @@ type Input struct {
 	Ownership    []sqlc.OwnershipHistory      // oldest first
 	Funds        *Funds                       // nil when the web matched none
 	Quarterly    map[int64][]sqlc.Fundamental // the sector's quarterly rows by company, for pricing peers
+	Today        string                       // "2026-11-03"; the time-based checks' reference date, now when ""
+}
+
+func (in Input) today() time.Time {
+	if d, err := time.Parse(time.DateOnly, in.Today); err == nil {
+		return d
+	}
+	return time.Now()
 }
 
 // Sector holds one value per company in the sector, from each company's latest

@@ -6,9 +6,6 @@ import (
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 )
 
-// ownershipWindow is how many recent observations the change claim looks at.
-const ownershipWindow = 4
-
 // Observation is one promoter/public split, as of a date.
 type Observation struct {
 	AsOf             string
@@ -45,25 +42,20 @@ func ownership(obs []Observation) []Claim {
 	out := []Claim{
 		claim(fmt.Sprintf("Promoters hold %.2f%% and the public %.2f%%.", *cur.Promoter, *cur.Public), *cur.Promoter),
 	}
-	window := obs[max(0, len(obs)-ownershipWindow):]
-	if len(window) < 2 || window[0].Promoter == nil {
+	// Rows are changes, so the row before the newest is the split it moved from.
+	if len(obs) == 1 {
+		return append(
+			out,
+			claim(fmt.Sprintf("No change since NTX first recorded the split on %s.", cur.AsOf), *cur.Promoter),
+		)
+	}
+	prev := obs[len(obs)-2]
+	if prev.Promoter == nil {
 		return out
 	}
-	from := *window[0].Promoter
-	for _, o := range window {
-		if o.Promoter == nil {
-			return out
-		}
-		if *o.Promoter != from {
-			return append(out, claim(fmt.Sprintf(
-				"The promoter share moved from %.2f%% to %.2f%% over the last %s observations.",
-				from, *cur.Promoter, numberWords[len(window)],
-			), from))
-		}
-	}
 	return append(out, claim(
-		fmt.Sprintf("The split is unchanged over the last %s observations.", numberWords[len(window)]),
-		*cur.Promoter,
+		fmt.Sprintf("The promoter share moved from %.2f%% to %.2f%% on %s.", *prev.Promoter, *cur.Promoter, cur.AsOf),
+		*prev.Promoter,
 	))
 }
 

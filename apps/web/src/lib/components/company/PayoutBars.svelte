@@ -28,7 +28,7 @@
 	>
 		{#each shown as y (y.year)}
 			{@const total = (y.cash ?? 0) + (y.bonus ?? 0)}
-			<div class="flex min-w-0 flex-1 flex-col items-center justify-end text-center">
+			<div class="flex h-full min-w-0 flex-1 flex-col items-center justify-end text-center">
 				<span class="mb-1 text-xs text-muted-foreground tabular-nums">
 					{#if y.payout === 'not recorded'}—{:else}{pct(total)}{/if}
 				</span>

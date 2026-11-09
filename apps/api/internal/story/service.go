@@ -112,7 +112,7 @@ func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
 	if err != nil {
 		return Input{}, err
 	}
-	in := Input{Company: c}
+	in := Input{Company: c, Today: time.Now().Format(time.DateOnly)}
 	if in.Fundamentals, err = s.queries.ListFundamentalsByCompany(ctx, c.ID); err != nil {
 		return Input{}, fmt.Errorf("fundamentals: %w", err)
 	}

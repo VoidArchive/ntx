@@ -25,6 +25,7 @@ func nabilFull() Input {
 		Prices:       []sqlc.Price{price("2026-11-03", 552)},
 		Sector:       bankSector,
 		Actions:      nabilNotices,
+		Today:        "2026-11-03",
 	}
 }
 
@@ -43,16 +44,15 @@ func TestChecks(t *testing.T) {
 	gap.Actions = []sqlc.CorporateAction{
 		notice("2025-2026", 10, 12.5, 0, ""), notice("2024-2025", 0, 0, 0, ""), notice("2023-2024", 0, 9.5, 0, ""),
 	}
+	// History rows are changes, so the newest row is the last move or the first recording.
 	steady := nabilFull()
-	steady.Ownership = []sqlc.OwnershipHistory{
-		observation("2026-02-01", 51, 49), observation("2026-05-01", 51, 49),
-		observation("2026-08-01", 51, 49), observation("2026-11-01", 51, 49),
-	}
+	steady.Ownership = []sqlc.OwnershipHistory{observation("2025-10-01", 51, 49)}
 	moved := nabilFull()
-	moved.Ownership = append([]sqlc.OwnershipHistory{}, steady.Ownership...)
-	moved.Ownership[0] = observation("2026-02-01", 60, 40)
-	three := nabilFull()
-	three.Ownership = steady.Ownership[1:]
+	moved.Ownership = []sqlc.OwnershipHistory{observation("2025-10-01", 60, 40), observation("2026-05-01", 51, 49)}
+	oldMove := nabilFull()
+	oldMove.Ownership = []sqlc.OwnershipHistory{observation("2024-01-01", 60, 40), observation("2025-06-01", 51, 49)}
+	fresh := nabilFull()
+	fresh.Ownership = []sqlc.OwnershipHistory{observation("2026-11-01", 51, 49)}
 	dear := nabilFull()
 	dear.Prices = []sqlc.Price{price("2026-11-03", 1200)}
 	// The latest filing with EPS 40 on the same book value: 17.1% return on equity.
@@ -101,9 +101,12 @@ func TestChecks(t *testing.T) {
 		{"Cash payout", nabilFull(), Watch},
 		{"Cash payout", lowCash, Holds},
 		{"Cash payout", notRecorded, NeedsHistory},
+		// Today is 2026-11-03: a year without a change holds, a move within the year is watch,
+		// and a split first recorded days ago cannot be judged yet.
 		{"Promoter holding", steady, Holds},
+		{"Promoter holding", oldMove, Holds},
 		{"Promoter holding", moved, Watch},
-		{"Promoter holding", three, NeedsHistory},
+		{"Promoter holding", fresh, NeedsHistory},
 		// 247.28 against 210.00 three years earlier.
 		{"Book value growth", nabilFull(), Holds},
 		{"Book value growth", short, NeedsHistory},

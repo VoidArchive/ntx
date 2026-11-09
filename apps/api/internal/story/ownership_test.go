@@ -25,20 +25,6 @@ func TestNabilOwnership(t *testing.T) {
 		want []string
 	}{
 		{
-			"unchanged",
-			[]sqlc.OwnershipHistory{
-				observation("2025-11-01", 60, 40),
-				observation("2026-02-01", 51, 49),
-				observation("2026-05-01", 51, 49),
-				observation("2026-08-01", 51, 49),
-				observation("2026-11-01", 51, 49),
-			},
-			[]string{
-				"Promoters hold 51.00% and the public 49.00%.",
-				"The split is unchanged over the last four observations.",
-			},
-		},
-		{
 			"changed",
 			[]sqlc.OwnershipHistory{
 				observation("2026-05-01", 60, 40),
@@ -46,13 +32,27 @@ func TestNabilOwnership(t *testing.T) {
 			},
 			[]string{
 				"Promoters hold 51.00% and the public 49.00%.",
-				"The promoter share moved from 60.00% to 51.00% over the last two observations.",
+				"The promoter share moved from 60.00% to 51.00% on 2026-11-01.",
+			},
+		},
+		{
+			"changed long ago",
+			[]sqlc.OwnershipHistory{
+				observation("2024-01-01", 60, 40),
+				observation("2025-06-01", 51, 49),
+			},
+			[]string{
+				"Promoters hold 51.00% and the public 49.00%.",
+				"The promoter share moved from 60.00% to 51.00% on 2025-06-01.",
 			},
 		},
 		{
 			"single",
 			[]sqlc.OwnershipHistory{observation("2026-11-01", 51, 49)},
-			[]string{"Promoters hold 51.00% and the public 49.00%."},
+			[]string{
+				"Promoters hold 51.00% and the public 49.00%.",
+				"No change since NTX first recorded the split on 2026-11-01.",
+			},
 		},
 		{"none", nil, nil},
 	}

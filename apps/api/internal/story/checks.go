@@ -1,5 +1,7 @@
 package story
 
+import "time"
+
 // Verdicts of a Check (GLOSSARY: Check, Holds / Watch). Neither is a recommendation.
 const (
 	Holds        = "holds"
@@ -49,7 +51,7 @@ var rules = []struct {
 	{"Cash payout", "The cash dividend is below 30% of the last fiscal year's profit.", AxisDividend, cashPayout},
 	{
 		"Promoter holding",
-		"The promoter share is unchanged over the last 4 observations.",
+		"The promoter share has not changed in the last 12 months.",
 		AxisOwnership,
 		promoterHolding,
 	},
@@ -235,22 +237,24 @@ func cashPayout(s Story, _ Input) string {
 	return verdictOf(share < cashCeiling)
 }
 
-func promoterHolding(s Story, _ Input) string {
-	if len(s.Ownership) < ownershipWindow {
+// promoterHolding reads the history as the sync writes it: one row per change,
+// so the newest row is the last move, or the first recording when there is one row.
+func promoterHolding(s Story, in Input) string {
+	if len(s.Ownership) == 0 {
 		return NeedsHistory
 	}
-	window := s.Ownership[len(s.Ownership)-ownershipWindow:]
-	for _, o := range window {
-		if o.Promoter == nil {
-			return NeedsHistory
-		}
+	newest, err := time.Parse(time.DateOnly, s.Ownership[len(s.Ownership)-1].AsOf)
+	if err != nil {
+		return NeedsHistory
 	}
-	for _, o := range window {
-		if *o.Promoter != *window[0].Promoter {
-			return Watch
-		}
+	if !newest.After(in.today().AddDate(-1, 0, 0)) {
+		return Holds
 	}
-	return Holds
+	if len(s.Ownership) >= 2 {
+		return Watch
+	}
+	// Recorded for under a year with no change yet: nobody can know.
+	return NeedsHistory
 }
 
 func bookValueGrowth(s Story, _ Input) string {
