@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"connectrpc.com/connect"
 
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 func (s *CompanyService) GetCompany(
@@ -283,18 +285,36 @@ func (s *CompanyService) ListScreener(
 	ctx context.Context,
 	_ *connect.Request[ntxv1.ListScreenerRequest],
 ) (*connect.Response[ntxv1.ListScreenerResponse], error) {
-	rows, err := s.queries.ListScreener(ctx)
+	rows, err := s.queries.ListScreener(ctx, story.RatingVersion)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	// Every company's quarterly rows, so EPS and PE are priced as the story engine prices them.
+	// shortcut: a few thousand rows parsed per request; store the trailing figure beside the rating when the screener feels slow.
+	earningsRows, err := s.queries.ListEarningsRows(ctx, nil)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	quarterly := map[int64][]sqlc.Fundamental{}
+	for _, e := range earningsRows {
+		quarterly[e.Fundamental.CompanyID] = append(quarterly[e.Fundamental.CompanyID], e.Fundamental)
+	}
 	res := &ntxv1.ListScreenerResponse{Rows: make([]*ntxv1.ScreenerRow, 0, len(rows))}
 	for _, r := range rows {
-		res.Rows = append(res.Rows, screenerRow(r))
+		res.Rows = append(res.Rows, screenerRow(r, quarterly[r.ID]))
 	}
 	return connect.NewResponse(res), nil
 }
 
-func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
+// coverage says how many checks the stored letter rests on; "" when unrated.
+func coverage(r sqlc.ListScreenerRow) string {
+	if !r.Rating.Valid || r.Rating.String == "" {
+		return ""
+	}
+	return fmt.Sprintf("%d of %d hold, %d evaluated", r.Holds.Int64, r.Total.Int64, r.Evaluated.Int64)
+}
+
+func screenerRow(r sqlc.ListScreenerRow, quarterly []sqlc.Fundamental) *ntxv1.ScreenerRow {
 	row := &ntxv1.ScreenerRow{
 		Symbol: r.Symbol,
 		Name:   r.Name,
@@ -306,8 +326,12 @@ func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
 		),
 		CloseDate: r.BusinessDate.String,
 	}
-	if r.Eps.Valid {
-		row.Eps = &r.Eps.Float64
+	row.RatingCoverage = coverage(r)
+	// Trailing four-quarter EPS where it exists, else the annualized filing; the period says which.
+	earnings, priced := story.LatestEarnings(quarterly)
+	if priced {
+		row.Eps = &earnings.EPS
+		row.Period = earnings.Period
 	}
 	if r.Turnover.Valid {
 		row.Turnover = &r.Turnover.Float64
@@ -322,8 +346,8 @@ func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
 		change := (close - r.PrevClose.Float64) * 100 / r.PrevClose.Float64
 		row.ChangePercent = &change
 	}
-	if r.Eps.Float64 > 0 {
-		pe := close / r.Eps.Float64
+	if priced && earnings.EPS > 0 {
+		pe := close / earnings.EPS
 		row.Pe = &pe
 	}
 	if r.BookValue.Float64 > 0 {

@@ -131,7 +131,7 @@ LEFT JOIN fundamentals f ON f.id = (
     CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
   LIMIT 1
 )
-LEFT JOIN company_ratings r ON r.company_id = c.id
+LEFT JOIN company_ratings r ON r.company_id = c.id AND r.version = ?1
 ORDER BY hp.basin, hp.symbol, hp.plant
 `
 
@@ -158,8 +158,8 @@ type ListHydroPlantsRow struct {
 
 // Every plant with its company's latest close, latest quarterly EPS (for PE, divided
 // in Go as the screener does) and stored rating. LEFT joins: a plant lists without them.
-func (q *Queries) ListHydroPlants(ctx context.Context) ([]ListHydroPlantsRow, error) {
-	rows, err := q.db.QueryContext(ctx, listHydroPlants)
+func (q *Queries) ListHydroPlants(ctx context.Context, version int64) ([]ListHydroPlantsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listHydroPlants, version)
 	if err != nil {
 		return nil, err
 	}

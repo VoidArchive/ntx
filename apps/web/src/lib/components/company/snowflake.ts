@@ -1,30 +1,32 @@
 import type { Check } from '#lib/gen/ntx/v1/story_pb.js';
 
-// The five axes of the snowflake, in drawing order from the top clockwise. Each
-// is also a page section, so the section chip and the axis read the same checks.
+// The five axes of the snowflake, in drawing order from the top clockwise. The
+// API names each check's axis, so the section chip and the axis read the same
+// checks without the web keeping a list of names.
 export const AXES = [
-	{
-		id: 'valuation',
-		label: 'Value',
-		checks: ['PE against its own history', 'PB against the sector']
-	},
-	{ id: 'past', label: 'Past', checks: ['Quarterly profit', 'EPS growth'] },
-	{ id: 'health', label: 'Health', checks: ['Book value growth'] },
-	{ id: 'dividend', label: 'Dividend', checks: ['Dividend record', 'Cash payout'] },
-	{ id: 'ownership', label: 'Ownership', checks: ['Promoter holding'] }
+	{ id: 'value', label: 'Value' },
+	{ id: 'past', label: 'Past' },
+	{ id: 'health', label: 'Health' },
+	{ id: 'dividend', label: 'Dividend' },
+	{ id: 'ownership', label: 'Ownership' }
 ] as const;
 
 export type AxisId = (typeof AXES)[number]['id'];
 
-export function checksFor(all: Check[], names: readonly string[]): Check[] {
-	return all.filter((c) => names.includes(c.name));
+export function checksFor(all: Check[], axis: AxisId): Check[] {
+	return all.filter((c) => c.axis === axis);
 }
 
-// The share of evaluated checks that hold; a check without history is left out,
-// and an axis with nothing evaluated scores 0. No weighting: the API's verdicts are the rule.
-export function score(checks: Check[]): { value: number; holds: number; evaluated: number } {
-	const evaluated = checks.filter((c) => c.verdict !== 'needs more history');
-	const holds = evaluated.filter((c) => c.verdict === 'holds').length;
-	if (evaluated.length === 0) return { value: 0, holds: 0, evaluated: 0 };
-	return { value: holds / evaluated.length, holds, evaluated: evaluated.length };
+// The share of all checks that hold (ADR 0005): a check on watch or without
+// history scores zero, so thin data draws a small axis. No weighting: the API's verdicts are the rule.
+export function score(checks: Check[]): {
+	value: number;
+	holds: number;
+	evaluated: number;
+	total: number;
+} {
+	const total = checks.length;
+	const evaluated = checks.filter((c) => c.verdict !== 'needs more history').length;
+	const holds = checks.filter((c) => c.verdict === 'holds').length;
+	return { value: total === 0 ? 0 : holds / total, holds, evaluated, total };
 }

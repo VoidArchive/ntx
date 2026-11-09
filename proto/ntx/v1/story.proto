@@ -41,7 +41,7 @@ message GetCompanyStoryResponse {
   repeated Growth growth = 11;
   // Oldest first.
   repeated OwnershipObservation ownership = 12;
-  // The eight published rules, in a fixed order (GLOSSARY: Check).
+  // The ten published rules, in a fixed order (GLOSSARY: Check).
   repeated Check checks = 30;
   // The checks summarised (GLOSSARY: Rating); the letter is empty when fewer than four evaluate.
   Rating rating = 31;
@@ -60,11 +60,13 @@ message Peer {
   optional double pb = 4; // unset without book value
 }
 
-// A to D from the share of Holds among the checks that could be evaluated; not a recommendation.
+// A to D from the share of Holds among every published check; a check without
+// history counts as not holding (ADR 0005). Not a recommendation.
 message Rating {
   string letter = 1; // "A".."D", "" when unrated
   int32 holds = 2;
   int32 evaluated = 3; // checks whose verdict is not "needs more history"
+  int32 total = 4;     // every published check
 }
 
 // One published rule and its verdict; a verdict is not a recommendation.
@@ -72,6 +74,7 @@ message Check {
   string name = 1;
   string rule = 2;    // the sentence, threshold included
   string verdict = 3; // holds | watch | needs more history
+  string axis = 4;    // value | past | health | dividend | ownership: its snowflake axis and page section
 }
 
 // One fiscal year's results and payout (GLOSSARY: Payout, Bonus-adjusted return).
@@ -149,6 +152,7 @@ message Quarter {
   string published_at = 7; // empty when not recorded
   string source_url = 8;   // empty when not recorded
   bool is_monsoon = 9;     // hydro Q1: annualized EPS overstates the year
+  optional double trailing_pe = 10; // price at filing over trailing four-quarter EPS; unset without four consecutive quarters
 }
 
 // A dated result or notice on the price chart's time axis.

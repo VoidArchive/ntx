@@ -19,8 +19,16 @@ The two verdicts of a Check. Holds means the rule is satisfied; Watch means it i
 _Avoid_: pass, fail, buy, sell, bullish, bearish
 
 **Rating**:
-One letter, A to D, summarising a company's Checks: the share of Holds among the Checks that could be evaluated, scaled to eight and rounded down (A for 7 or 8, B for 5 or 6, C for 3 or 4, D for 0 to 2). Unrated when fewer than four Checks evaluate; no A unless the Quarterly profit and PE checks evaluated, since the direction checks pass a shrinking loss. A summary of published rules, not a recommendation.
+One letter, A to D, summarising a company's Checks: the share of Holds among all ten published Checks, so a Check without history counts as not holding (A at 85% or more, B at 60%, C at 35%, else D). Unrated when fewer than four Checks evaluate; never A while any Check lacks history. Shown with its coverage, "B · 6 of 10 hold, 9 evaluated". A summary of published rules, not a recommendation (ADR 0005).
 _Avoid_: score, grade, signal, buy, sell
+
+**Axis**:
+One of the five groups a Check belongs to, named by the story engine: Value, Past, Health, Dividend, Ownership. Each is a company page section and one arm of the Snowflake, whose length is the axis's share of Holds among all its Checks.
+_Avoid_: category, pillar, dimension
+
+**Trailing EPS**:
+The sum of a company's last four quarter-only profits over its current shares, when those four quarters are consecutive. Every PE the engine and the screener compute uses it where it exists and the exchange's annualized EPS otherwise; a figure priced this way names its span, "4Q to Q1 2083/84".
+_Avoid_: TTM (in prose), run-rate
 
 **Strip**:
 The story engine's range for one ratio (low, median, high and count), given twice: over the sector and over the company's own three years. The web draws only the median, as a dashed line on the question chart, never the bar.

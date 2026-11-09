@@ -169,7 +169,7 @@ type GetCompanyStoryResponse struct {
 	Growth      []*Growth     `protobuf:"bytes,11,rep,name=growth,proto3" json:"growth,omitempty"`
 	// Oldest first.
 	Ownership []*OwnershipObservation `protobuf:"bytes,12,rep,name=ownership,proto3" json:"ownership,omitempty"`
-	// The eight published rules, in a fixed order (GLOSSARY: Check).
+	// The ten published rules, in a fixed order (GLOSSARY: Check).
 	Checks []*Check `protobuf:"bytes,30,rep,name=checks,proto3" json:"checks,omitempty"`
 	// The checks summarised (GLOSSARY: Rating); the letter is empty when fewer than four evaluate.
 	Rating *Rating `protobuf:"bytes,31,opt,name=rating,proto3" json:"rating,omitempty"`
@@ -393,12 +393,14 @@ func (x *Peer) GetPb() float64 {
 	return 0
 }
 
-// A to D from the share of Holds among the checks that could be evaluated; not a recommendation.
+// A to D from the share of Holds among every published check; a check without
+// history counts as not holding (ADR 0005). Not a recommendation.
 type Rating struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Letter        string                 `protobuf:"bytes,1,opt,name=letter,proto3" json:"letter,omitempty"` // "A".."D", "" when unrated
 	Holds         int32                  `protobuf:"varint,2,opt,name=holds,proto3" json:"holds,omitempty"`
 	Evaluated     int32                  `protobuf:"varint,3,opt,name=evaluated,proto3" json:"evaluated,omitempty"` // checks whose verdict is not "needs more history"
+	Total         int32                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`         // every published check
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -454,12 +456,20 @@ func (x *Rating) GetEvaluated() int32 {
 	return 0
 }
 
+func (x *Rating) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
 // One published rule and its verdict; a verdict is not a recommendation.
 type Check struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Rule          string                 `protobuf:"bytes,2,opt,name=rule,proto3" json:"rule,omitempty"`       // the sentence, threshold included
 	Verdict       string                 `protobuf:"bytes,3,opt,name=verdict,proto3" json:"verdict,omitempty"` // holds | watch | needs more history
+	Axis          string                 `protobuf:"bytes,4,opt,name=axis,proto3" json:"axis,omitempty"`       // value | past | health | dividend | ownership: its snowflake axis and page section
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -511,6 +521,13 @@ func (x *Check) GetRule() string {
 func (x *Check) GetVerdict() string {
 	if x != nil {
 		return x.Verdict
+	}
+	return ""
+}
+
+func (x *Check) GetAxis() string {
+	if x != nil {
+		return x.Axis
 	}
 	return ""
 }
@@ -1088,6 +1105,7 @@ type Quarter struct {
 	PublishedAt   string                 `protobuf:"bytes,7,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`               // empty when not recorded
 	SourceUrl     string                 `protobuf:"bytes,8,opt,name=source_url,json=sourceUrl,proto3" json:"source_url,omitempty"`                     // empty when not recorded
 	IsMonsoon     bool                   `protobuf:"varint,9,opt,name=is_monsoon,json=isMonsoon,proto3" json:"is_monsoon,omitempty"`                    // hydro Q1: annualized EPS overstates the year
+	TrailingPe    *float64               `protobuf:"fixed64,10,opt,name=trailing_pe,json=trailingPe,proto3,oneof" json:"trailing_pe,omitempty"`         // price at filing over trailing four-quarter EPS; unset without four consecutive quarters
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1183,6 +1201,13 @@ func (x *Quarter) GetIsMonsoon() bool {
 		return x.IsMonsoon
 	}
 	return false
+}
+
+func (x *Quarter) GetTrailingPe() float64 {
+	if x != nil && x.TrailingPe != nil {
+		return *x.TrailingPe
+	}
+	return 0
 }
 
 // A dated result or notice on the price chart's time axis.
@@ -1356,15 +1381,17 @@ const file_ntx_v1_story_proto_rawDesc = "" +
 	"\x02pe\x18\x03 \x01(\x01H\x00R\x02pe\x88\x01\x01\x12\x13\n" +
 	"\x02pb\x18\x04 \x01(\x01H\x01R\x02pb\x88\x01\x01B\x05\n" +
 	"\x03_peB\x05\n" +
-	"\x03_pb\"T\n" +
+	"\x03_pb\"j\n" +
 	"\x06Rating\x12\x16\n" +
 	"\x06letter\x18\x01 \x01(\tR\x06letter\x12\x14\n" +
 	"\x05holds\x18\x02 \x01(\x05R\x05holds\x12\x1c\n" +
-	"\tevaluated\x18\x03 \x01(\x05R\tevaluated\"I\n" +
+	"\tevaluated\x18\x03 \x01(\x05R\tevaluated\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\x05R\x05total\"]\n" +
 	"\x05Check\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04rule\x18\x02 \x01(\tR\x04rule\x12\x18\n" +
-	"\averdict\x18\x03 \x01(\tR\averdict\"\xac\x03\n" +
+	"\averdict\x18\x03 \x01(\tR\averdict\x12\x12\n" +
+	"\x04axis\x18\x04 \x01(\tR\x04axis\"\xac\x03\n" +
 	"\n" +
 	"FiscalYear\x12\x12\n" +
 	"\x04year\x18\x01 \x01(\tR\x04year\x12\x15\n" +
@@ -1428,7 +1455,7 @@ const file_ntx_v1_story_proto_rawDesc = "" +
 	"\rbusiness_date\x18\x04 \x01(\tR\fbusinessDate\x12(\n" +
 	"\x10business_date_bs\x18\x05 \x01(\tR\x0ebusinessDateBsB\t\n" +
 	"\a_changeB\x11\n" +
-	"\x0f_change_percent\"\xaf\x02\n" +
+	"\x0f_change_percent\"\xe5\x02\n" +
 	"\aQuarter\x12\x16\n" +
 	"\x06period\x18\x01 \x01(\tR\x06period\x12\x1f\n" +
 	"\vfiscal_year\x18\x02 \x01(\tR\n" +
@@ -1441,9 +1468,13 @@ const file_ntx_v1_story_proto_rawDesc = "" +
 	"\n" +
 	"source_url\x18\b \x01(\tR\tsourceUrl\x12\x1d\n" +
 	"\n" +
-	"is_monsoon\x18\t \x01(\bR\tisMonsoonB\x06\n" +
+	"is_monsoon\x18\t \x01(\bR\tisMonsoon\x12$\n" +
+	"\vtrailing_pe\x18\n" +
+	" \x01(\x01H\x02R\n" +
+	"trailingPe\x88\x01\x01B\x06\n" +
 	"\x04_epsB\x11\n" +
-	"\x0f_annualized_eps\"I\n" +
+	"\x0f_annualized_epsB\x0e\n" +
+	"\f_trailing_pe\"I\n" +
 	"\tEventMark\x12\x12\n" +
 	"\x04date\x18\x01 \x01(\tR\x04date\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x14\n" +

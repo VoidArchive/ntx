@@ -201,9 +201,10 @@
 	<header class="card-report">
 		<h1 class="font-serif text-3xl font-medium tracking-tight">Screener</h1>
 		<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
-			{data.rows.length} listed on NEPSE. Set a range on any ratio to narrow the list; each ratio is from
-			the company's latest quarterly filing at its latest close, and the rating is one letter for its
-			eight checks.
+			{data.rows.length} listed on NEPSE. Set a range on any ratio to narrow the list. PE and EPS are
+			over the last four quarters where four consecutive quarters exist, else from the latest filing,
+			and the As-of column says which; PB, ROE and yield use the latest filing; the rating is one letter
+			for its ten checks.
 		</p>
 
 		<!-- Filters: every control writes the URL -->
@@ -327,6 +328,7 @@
 									'changePercent'
 										? tone(r.changePercent)
 										: ''}"
+									title={col.key === 'rating' ? r.ratingCoverage || undefined : undefined}
 								>
 									{#if col.key === 'symbol'}
 										<a href="/company/{r.symbol}" class="font-medium hover:underline">{r.symbol}</a>

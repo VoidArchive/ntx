@@ -14,6 +14,7 @@ import (
 	"github.com/voidarchive/ntx/internal/hydro"
 	"github.com/voidarchive/ntx/internal/nepse"
 	"github.com/voidarchive/ntx/internal/server"
+	"github.com/voidarchive/ntx/internal/story"
 	"github.com/voidarchive/ntx/internal/worker"
 )
 
@@ -104,16 +105,17 @@ func runServer() {
 	go func() {
 		_ = sched.Start(context.Background())
 	}()
-	// A fresh deploy has no ratings until the post-close job runs; fill them now
-	// so the screener is not blank for a day. The job keeps them current after.
+	// A fresh deploy has no ratings until the post-close job runs, a deploy that
+	// changed the rules has only stale ones, and a sync that stopped part-way
+	// left some; fill them now so the screener is not blank or mixed for a day.
 	go func() {
 		ctx := context.Background()
-		n, err := queries.CountCompanyRatings(ctx)
+		n, err := queries.CountUnratedCompanies(ctx, story.RatingVersion)
 		if err != nil {
 			slog.Error("count ratings", "error", err)
 			return
 		}
-		if n > 0 {
+		if n == 0 {
 			return
 		}
 		if err := w.SyncRatings(ctx); err != nil {

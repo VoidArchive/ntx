@@ -22,7 +22,8 @@ type Quarter struct {
 	Label         string   // "Best Q1 in five years", "3rd rise in a row", or ""
 	PublishedAt   string
 	SourceURL     string
-	Monsoon       bool // a hydro Q1, whose annualized EPS overstates the year
+	Monsoon       bool     // a hydro Q1, whose annualized EPS overstates the year
+	TrailingPE    *float64 // the price at filing over trailing EPS, as the PE check compares
 }
 
 // HydroEPS states a hydro company's latest EPS three ways (GLOSSARY: monsoon quarter).
@@ -44,7 +45,7 @@ func Quarters(in Input) ([]Quarter, *HydroEPS) {
 	filings, annual := parse(in.Fundamentals)
 	hydro := in.Company.Sector == hydroSector
 	var out []Quarter
-	for _, f := range filings {
+	for i, f := range filings {
 		if f.profit == nil {
 			continue
 		}
@@ -60,6 +61,12 @@ func Quarters(in Input) ([]Quarter, *HydroEPS) {
 		}
 		if f.row.Eps.Valid {
 			q.AnnualizedEPS = &f.row.Eps.Float64
+		}
+		// The stored PE (price at filing / annualized EPS) gives back the price, as ownRanges does.
+		if t := trailingAt(i, filings); t != nil && *t > 0 && f.row.PeRatio.Valid && f.row.Eps.Valid {
+			if price := f.row.PeRatio.Float64 * f.row.Eps.Float64; price > 0 {
+				q.TrailingPE = ptr(price / *t)
+			}
 		}
 		out = append(out, q)
 	}
@@ -173,6 +180,7 @@ func addQuarters(res *ntxv1.GetCompanyStoryResponse, in Input) {
 			PublishedAt:   q.PublishedAt,
 			SourceUrl:     q.SourceURL,
 			IsMonsoon:     q.Monsoon,
+			TrailingPe:    q.TrailingPE,
 		})
 	}
 	if hydro != nil {

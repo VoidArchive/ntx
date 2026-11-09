@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"math"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/voidarchive/ntx/internal/database/sqlc"
@@ -34,9 +35,10 @@ type Input struct {
 	Prices       []sqlc.Price       // newest first; the first two give the quote
 	CashDividend *float64           // latest fiscal year's cash dividend, % of par
 	Sector       Sector
-	Actions      []sqlc.CorporateAction  // notices, newest submitted first
-	Ownership    []sqlc.OwnershipHistory // oldest first
-	Funds        *Funds                  // nil when the web matched none
+	Actions      []sqlc.CorporateAction       // notices, newest submitted first
+	Ownership    []sqlc.OwnershipHistory      // oldest first
+	Funds        *Funds                       // nil when the web matched none
+	Quarterly    map[int64][]sqlc.Fundamental // the sector's quarterly rows by company, for pricing peers
 }
 
 // Sector holds one value per company in the sector, from each company's latest
@@ -283,17 +285,20 @@ func earnings(c sqlc.Company, quarters []filing, annual map[fiscal.Year]sqlc.Fun
 
 	if cur.eps != nil && cur.row.Eps.Valid {
 		annualized := cur.row.Eps.Float64
-		text := fmt.Sprintf("EPS was Rs %.2f for the quarter and Rs %.2f annualized.", *cur.eps, annualized)
+		// The exchange's annualized figure first, then the full year for hydro, then
+		// the trailing four quarters, which is what every PE here is priced on.
+		parts := []string{
+			fmt.Sprintf("Rs %.2f for the quarter", *cur.eps),
+			fmt.Sprintf("Rs %.2f annualized", annualized),
+		}
 		fy, fyEPS, ok := lastFullYear(cur.year, quarters, annual)
 		if c.Sector == hydroSector && ok {
-			text = fmt.Sprintf(
-				"EPS was Rs %.2f for the quarter, Rs %.2f annualized and Rs %.2f for FY %s.",
-				*cur.eps,
-				annualized,
-				fyEPS,
-				fy,
-			)
+			parts = append(parts, fmt.Sprintf("Rs %.2f for FY %s", fyEPS, fy))
 		}
+		if t := trailingAt(len(quarters)-1, quarters); t != nil {
+			parts = append(parts, fmt.Sprintf("Rs %.2f over the last four quarters", *t))
+		}
+		text := "EPS was " + strings.Join(parts[:len(parts)-1], ", ") + " and " + parts[len(parts)-1] + "."
 		out = append(out, claim("earnings", text, *cur.eps, "Rs"))
 		if c.Sector == hydroSector && cur.quarter == fiscal.Q1 {
 			out = append(
@@ -423,7 +428,7 @@ func lastFullYear(
 
 func strips(in Input, q *Quote, quarters []filing) []Strip {
 	pe, pb, eps, yield := current(in, q, quarters)
-	ownPE, ownPB, ownEPS := ownRanges(quarters[max(0, len(quarters)-ownQuarters):])
+	ownPE, ownPB, ownEPS := ownRanges(quarters, ownQuarters)
 	return []Strip{
 		{Ratio: "pe", Value: pe, Sector: Median(Profitable(in.Sector.PE)), Own: Median(ownPE)},
 		{Ratio: "pb", Value: pb, Sector: Median(in.Sector.PB), Own: Median(ownPB)},
@@ -446,8 +451,9 @@ func current(in Input, q *Quote, quarters []filing) (pe, pb, eps, yield *float64
 	if q == nil || q.Close == 0 {
 		return nil, nil, eps, nil
 	}
-	if eps != nil && *eps > 0 {
-		pe = ptr(q.Close / *eps)
+	priced := pricedEPS(quarters)
+	if priced != nil && *priced > 0 {
+		pe = ptr(q.Close / *priced)
 	}
 	if cur.BookValue.Valid && cur.BookValue.Float64 != 0 {
 		pb = ptr(q.Close / cur.BookValue.Float64)
@@ -458,21 +464,45 @@ func current(in Input, q *Quote, quarters []filing) (pe, pb, eps, yield *float64
 	return pe, pb, eps, yield
 }
 
-func ownRanges(own []filing) (pe, pb, eps []float64) {
-	for _, f := range own {
-		r := f.row
-		if r.PeRatio.Valid && r.PeRatio.Float64 > 0 {
-			pe = append(pe, r.PeRatio.Float64)
-		}
-		// Prices go back one year only; the stored PE (price at filing / EPS) gives back the price.
-		if r.PeRatio.Valid && r.Eps.Valid && r.BookValue.Valid && r.BookValue.Float64 != 0 {
-			pb = append(pb, r.PeRatio.Float64*r.Eps.Float64/r.BookValue.Float64)
-		}
+// ownRanges prices the company's own window the way current does. Prices go
+// back one year only; the stored PE (price at filing / annualized EPS) gives
+// back the price at each filing. A quarter without four consecutive quarters
+// behind it is left out of the PE range rather than priced on another basis.
+func ownRanges(quarters []filing, window int) (pe, pb, eps []float64) {
+	trailing := trailingAt(len(quarters)-1, quarters) != nil
+	for i := max(0, len(quarters)-window); i < len(quarters); i++ {
+		r := quarters[i].row
 		if r.Eps.Valid {
 			eps = append(eps, r.Eps.Float64)
 		}
+		if !r.PeRatio.Valid || !r.Eps.Valid {
+			continue
+		}
+		price := r.PeRatio.Float64 * r.Eps.Float64
+		if r.BookValue.Valid && r.BookValue.Float64 != 0 {
+			pb = append(pb, price/r.BookValue.Float64)
+		}
+		// The same basis as the current PE: trailing when the latest quarter has it, else as filed.
+		if !trailing && r.PeRatio.Float64 > 0 {
+			pe = append(pe, r.PeRatio.Float64)
+		}
+		if t := trailingAt(i, quarters); trailing && t != nil && *t > 0 && price > 0 {
+			pe = append(pe, price/(*t))
+		}
 	}
 	return pe, pb, eps
+}
+
+// pricedEPS is the EPS every PE here is priced on: trailing four-quarter when
+// four consecutive quarters exist (GLOSSARY: Trailing EPS), else as filed.
+func pricedEPS(quarters []filing) *float64 {
+	if t := trailingAt(len(quarters)-1, quarters); t != nil {
+		return t
+	}
+	if r := quarters[len(quarters)-1].row; r.Eps.Valid {
+		return &r.Eps.Float64
+	}
+	return nil
 }
 
 func valuation(cur filing, q *Quote, strips []Strip) []Claim {

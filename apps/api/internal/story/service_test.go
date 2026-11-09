@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"slices"
 	"testing"
 
@@ -28,7 +29,7 @@ func TestGetCompanyStory(t *testing.T) {
 	if got := m.GetClaims()[0].GetText(); got != "Net profit for Q1 2083/84 was Rs 255.51 crore." {
 		t.Errorf("first claim = %q", got)
 	}
-	if got := m.GetClaims()[4].GetText(); got != "PE is 16.29x at Rs 552.00, against a sector median of 16.29x (1 profitable)." {
+	if got := m.GetClaims()[4].GetText(); got != "PE is 17.16x at Rs 552.00, against a sector median of 17.16x (1 profitable)." {
 		t.Errorf("pe claim = %q", got)
 	}
 	pb := m.GetStrips()[1]
@@ -53,6 +54,24 @@ func TestGetCompanyStory(t *testing.T) {
 	}
 }
 
+// Each quarter carries the PE the check compares: the price at filing over trailing EPS.
+func TestGetCompanyStoryTrailingPE(t *testing.T) {
+	q := database.OpenTestDB(t)
+	seed(t, q)
+	res, err := NewService(q).GetCompanyStory(
+		context.Background(),
+		connect.NewRequest(&ntxv1.GetCompanyStoryRequest{Symbol: "NABIL"}),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Q1 2083/84 filed at a PE of 16.14 on EPS 33.89, so Rs 546.98, over trailing EPS 32.17.
+	qs := res.Msg.GetQuarters()
+	if math.Abs(qs[16].GetTrailingPe()-17.004) > 1e-2 || qs[0].TrailingPe != nil {
+		t.Errorf("trailing pe = %v, first %v", qs[16].GetTrailingPe(), qs[0].TrailingPe)
+	}
+}
+
 func TestGetCompanyStoryChecks(t *testing.T) {
 	q := database.OpenTestDB(t)
 	seed(t, q)
@@ -63,10 +82,13 @@ func TestGetCompanyStoryChecks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// No notices are stored, so the dividend rule cannot be judged.
-	if cs := res.Msg.GetChecks(); len(cs) != 8 || cs[1].GetName() != "Quarterly profit" ||
-		cs[1].GetVerdict() != Holds || cs[4].GetVerdict() != NeedsHistory {
+	// No notices are stored, so the dividend rule cannot be judged; every check names its axis.
+	if cs := res.Msg.GetChecks(); len(cs) != 10 || cs[1].GetName() != "Quarterly profit" ||
+		cs[1].GetVerdict() != Holds || cs[4].GetVerdict() != NeedsHistory || cs[8].GetAxis() != AxisValue {
 		t.Errorf("checks = %v", cs)
+	}
+	if r := res.Msg.GetRating(); r.GetTotal() != 10 || r.GetEvaluated() != 7 {
+		t.Errorf("rating coverage = %v", r)
 	}
 }
 
@@ -180,7 +202,7 @@ func TestGetCompanyStoryPeersAndFooter(t *testing.T) {
 	// NABIL: 552 / 33.89 EPS, 552 / 233.90 book value. The loss-maker has no PE, so it sorts last.
 	ps := m.GetPeers()
 	if len(ps) != 2 || ps[0].GetSymbol() != "NABIL" || ps[1].GetSymbol() != "LOSS" ||
-		fmt.Sprintf("%.2f %.2f", ps[0].GetPe(), ps[0].GetPb()) != "16.29 2.36" ||
+		fmt.Sprintf("%.2f %.2f", ps[0].GetPe(), ps[0].GetPb()) != "17.16 2.36" ||
 		ps[1].Pe != nil || fmt.Sprintf("%.2f", ps[1].GetPb()) != "1.33" {
 		t.Errorf("peers = %v", ps)
 	}
@@ -196,7 +218,7 @@ func TestSyncRatings(t *testing.T) {
 	if err := SyncRatings(ctx, q); err != nil {
 		t.Fatal(err)
 	}
-	rows, err := q.ListScreener(ctx)
+	rows, err := q.ListScreener(ctx, RatingVersion)
 	if err != nil {
 		t.Fatal(err)
 	}

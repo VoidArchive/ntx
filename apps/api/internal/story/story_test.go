@@ -39,10 +39,10 @@ func TestNabilStory(t *testing.T) {
 		"Net profit for Q1 2083/84 was Rs 255.51 crore.",
 		"Up 45.4% on Q1 2082/83.",
 		"Best Q1 in five years.",
-		"EPS was Rs 9.44 for the quarter and Rs 33.89 annualized.",
-		"PE is 16.29x at Rs 552.00, against a sector median of 18.52x (19 profitable).",
+		"EPS was Rs 9.44 for the quarter, Rs 33.89 annualized and Rs 32.17 over the last four quarters.",
+		"PE is 17.16x at Rs 552.00, against a sector median of 18.52x (19 profitable).",
 		// 19.705 in binary floating point sits just below the half.
-		"Its three-year median PE is 19.70x.",
+		"Its three-year median PE is 18.18x.",
 		"PB is 2.36x, against a sector median of 1.56x.",
 		"Its three-year median PB is 2.21x.",
 	}
@@ -70,10 +70,26 @@ func TestQuarterOnlyFromYearToDate(t *testing.T) {
 		profit      float64
 		epsSentence string
 	}{
-		{"First Quarter", 1756991000, "EPS was Rs 6.49 for the quarter and Rs 25.49 annualized."},
-		{"Second Quarter", 3002650000, "EPS was Rs 11.10 for the quarter and Rs 35.04 annualized."},
-		{"Third Quarter", 2005005000, "EPS was Rs 7.41 for the quarter and Rs 33.02 annualized."},
-		{"Fourth Quarter", 1141150000, "EPS was Rs 4.22 for the quarter and Rs 28.36 annualized."},
+		{
+			"First Quarter",
+			1756991000,
+			"EPS was Rs 6.49 for the quarter, Rs 25.49 annualized and Rs 25.24 over the last four quarters.",
+		},
+		{
+			"Second Quarter",
+			3002650000,
+			"EPS was Rs 11.10 for the quarter, Rs 35.04 annualized and Rs 31.94 over the last four quarters.",
+		},
+		{
+			"Third Quarter",
+			2005005000,
+			"EPS was Rs 7.41 for the quarter, Rs 33.02 annualized and Rs 32.67 over the last four quarters.",
+		},
+		{
+			"Fourth Quarter",
+			1141150000,
+			"EPS was Rs 4.22 for the quarter, Rs 28.36 annualized and Rs 29.22 over the last four quarters.",
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.quarter, func(t *testing.T) {
@@ -98,13 +114,13 @@ func TestHydroStatesEPSThreeWays(t *testing.T) {
 		{
 			"monsoon quarter is flagged",
 			asOf(apiRows, "2025-2026", "First Quarter"),
-			"EPS was Rs 4.32 for the quarter, Rs 17.30 annualized and Rs 7.04 for FY 2081/82.",
+			"EPS was Rs 4.32 for the quarter, Rs 17.30 annualized, Rs 7.04 for FY 2081/82 and Rs 8.37 over the last four quarters.",
 			true,
 		},
 		{
 			"year end needs no flag",
 			apiRows,
-			"EPS was Rs 4.73 for the quarter, Rs 15.06 annualized and Rs 15.06 for FY 2082/83.",
+			"EPS was Rs 4.73 for the quarter, Rs 15.06 annualized, Rs 15.06 for FY 2082/83 and Rs 15.06 over the last four quarters.",
 			false,
 		},
 	}
@@ -143,7 +159,9 @@ func TestSectorPEExcludesLossMakers(t *testing.T) {
 	if pb.Ratio != "pb" || pb.Sector.Count != 19 {
 		t.Errorf("pb strip includes everyone: %+v", pb)
 	}
-	if pe.Value == nil || math.Abs(*pe.Value-16.288) > 1e-3 || pe.Own.Count != 12 {
+	// Trailing four-quarter EPS 32.17 at Rs 552, against twelve quarters priced the same way.
+	if pe.Value == nil || math.Abs(*pe.Value-17.1595) > 1e-3 || pe.Own.Count != 12 ||
+		math.Abs(pe.Own.Median-18.1845) > 1e-3 {
 		t.Errorf("pe company/own = %v %+v", pe.Value, pe.Own)
 	}
 }

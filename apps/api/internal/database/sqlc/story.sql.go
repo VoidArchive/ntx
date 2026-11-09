@@ -35,6 +35,71 @@ func (q *Queries) GetLatestCorporateActionByCompany(ctx context.Context, company
 	return i, err
 }
 
+const listEarningsRows = `-- name: ListEarningsRows :many
+
+SELECT f.id, f.company_id, f.fiscal_year, f.quarter, f.eps, f.pe_ratio, f.book_value, f.paid_up_capital, f.profit_amount, f.created_at, f.updated_at, f.published_at, f.source_url, f.fiscal_year_np, p.close_price AS close
+FROM companies c
+JOIN fundamentals f ON f.company_id = c.id AND f.quarter != ''
+LEFT JOIN prices p ON p.id = (
+  SELECT p2.id FROM prices p2
+  WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
+  ORDER BY p2.business_date DESC LIMIT 1
+)
+WHERE c.status = 'A' AND (?1 IS NULL OR c.sector = ?1)
+ORDER BY c.id, f.fiscal_year, f.quarter
+`
+
+type ListEarningsRowsRow struct {
+	Fundamental Fundamental     `json:"fundamental"`
+	Close       sql.NullFloat64 `json:"close"`
+}
+
+// Sector distributions for the story strips: one value per company in the
+// sector, from its latest quarterly row and its latest close. Divisions by
+// zero are filtered so every value is a number.
+// shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
+// Every quarterly row of every listed company with the company's latest close,
+// for the story engine to price earnings on a trailing four-quarter basis; one
+// sector or, with a NULL sector, all of them.
+func (q *Queries) ListEarningsRows(ctx context.Context, sector interface{}) ([]ListEarningsRowsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listEarningsRows, sector)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListEarningsRowsRow
+	for rows.Next() {
+		var i ListEarningsRowsRow
+		if err := rows.Scan(
+			&i.Fundamental.ID,
+			&i.Fundamental.CompanyID,
+			&i.Fundamental.FiscalYear,
+			&i.Fundamental.Quarter,
+			&i.Fundamental.Eps,
+			&i.Fundamental.PeRatio,
+			&i.Fundamental.BookValue,
+			&i.Fundamental.PaidUpCapital,
+			&i.Fundamental.ProfitAmount,
+			&i.Fundamental.CreatedAt,
+			&i.Fundamental.UpdatedAt,
+			&i.Fundamental.PublishedAt,
+			&i.Fundamental.SourceUrl,
+			&i.Fundamental.FiscalYearNp,
+			&i.Close,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listSectorEPS = `-- name: ListSectorEPS :many
 SELECT CAST(f.eps AS REAL) AS eps
 FROM companies c
@@ -112,54 +177,8 @@ func (q *Queries) ListSectorPB(ctx context.Context, sector string) ([]float64, e
 	return items, nil
 }
 
-const listSectorPE = `-- name: ListSectorPE :many
-
-SELECT CAST(p.close_price / f.eps AS REAL) AS pe
-FROM companies c
-JOIN fundamentals f ON f.id = (
-  SELECT f2.id FROM fundamentals f2
-  WHERE f2.company_id = c.id AND f2.quarter != ''
-  ORDER BY f2.fiscal_year DESC,
-    CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
-  LIMIT 1
-)
-JOIN prices p ON p.id = (
-  SELECT p2.id FROM prices p2
-  WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
-  ORDER BY p2.business_date DESC LIMIT 1
-)
-WHERE c.status = 'A' AND c.sector = ? AND f.eps != 0
-`
-
-// Sector distributions for the story strips: one value per company in the
-// sector, from its latest quarterly row and its latest close. Divisions by
-// zero are filtered so every value is a number.
-// shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
-func (q *Queries) ListSectorPE(ctx context.Context, sector string) ([]float64, error) {
-	rows, err := q.db.QueryContext(ctx, listSectorPE, sector)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []float64
-	for rows.Next() {
-		var pe float64
-		if err := rows.Scan(&pe); err != nil {
-			return nil, err
-		}
-		items = append(items, pe)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const listSectorPeers = `-- name: ListSectorPeers :many
-SELECT c.symbol, c.name, CAST(p.close_price AS REAL) AS close, f.eps, f.book_value
+SELECT c.id, c.symbol, c.name, CAST(p.close_price AS REAL) AS close, f.eps, f.book_value
 FROM companies c
 JOIN fundamentals f ON f.id = (
   SELECT f2.id FROM fundamentals f2
@@ -177,6 +196,7 @@ WHERE c.status = 'A' AND c.sector = ?
 `
 
 type ListSectorPeersRow struct {
+	ID        int64           `json:"id"`
 	Symbol    string          `json:"symbol"`
 	Name      string          `json:"name"`
 	Close     float64         `json:"close"`
@@ -194,6 +214,7 @@ func (q *Queries) ListSectorPeers(ctx context.Context, sector string) ([]ListSec
 	for rows.Next() {
 		var i ListSectorPeersRow
 		if err := rows.Scan(
+			&i.ID,
 			&i.Symbol,
 			&i.Name,
 			&i.Close,
