@@ -65,6 +65,10 @@ A fiscal year's return counting bonus shares and cash, excluding rights.
 **Sector median**:
 The median of a ratio across a sector's listed companies. For PE, companies with non-positive earnings are excluded and the count is stated.
 
+**ROE**:
+Annualized EPS over book value per share, as a percentage; both from the same quarterly filing. Unset without book value.
+_Avoid_: return on equity from the income statement (the filings do not carry total equity)
+
 **Market day**:
 One trading day's summary: index close, turnover, traded shares, transactions, and the advances, declines and unchanged derived from that day's price rows.
 

@@ -134,6 +134,13 @@ export declare type ScreenerRow = Message<"ntx.v1.ScreenerRow"> & {
    * @generated from field: optional double change_percent = 14;
    */
   changePercent?: number;
+
+  /**
+   * %, annualized EPS over book value per share; unset without both
+   *
+   * @generated from field: optional double roe = 15;
+   */
+  roe?: number;
 };
 
 /**

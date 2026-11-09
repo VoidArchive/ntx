@@ -144,6 +144,7 @@ func TestListScreener(t *testing.T) {
 		{
 			Symbol: "NABIL", Name: "Nabil Bank Limited", Sector: ntxv1.Sector_SECTOR_COMMERCIAL_BANK, Rating: "B",
 			Close: proto.Float64(552), Pe: proto.Float64(16), Pb: proto.Float64(2.3), Eps: proto.Float64(34.5),
+			Roe:       proto.Float64(34.5 * 100 / 240),
 			MarketCap: proto.Float64(552 * 270_000_000), Turnover: proto.Float64(1e8),
 			Period: "Q1 2083/84", CloseDate: "2026-11-03",
 		},

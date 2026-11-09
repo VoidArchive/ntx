@@ -34,7 +34,7 @@
 			"description": "Real-time Nepal Stock Exchange (NEPSE) explorer and analytics platform.",
 			"potentialAction": {
 				"@type": "SearchAction",
-				"target": "https://ntx.anishshrestha.com/company?q={search_term_string}",
+				"target": "https://ntx.anishshrestha.com/screener?q={search_term_string}",
 				"query-input": "required name=search_term_string"
 			}
 		}

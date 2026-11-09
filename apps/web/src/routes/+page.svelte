@@ -115,13 +115,13 @@
 		},
 		{
 			title: 'Most traded',
-			href: '/company?sort=turnover',
+			href: '/screener?sort=turnover',
 			empty: 'No volume recorded for the latest session.',
 			rows: mostTraded.map((r) => ({ ...r, tone: 'text-muted-foreground' }))
 		},
 		{
 			title: 'Largest market cap',
-			href: '/company?sort=market_cap',
+			href: '/screener?sort=market_cap',
 			empty: 'No listed-share counts on file yet.',
 			rows: largestMarketCap.map((r) => ({ ...r, tone: 'text-foreground' }))
 		}
@@ -347,7 +347,7 @@
 							<tr class="border-b border-border/50 hover:bg-accent/40">
 								<!-- Pinned so a phone can scroll the figures and keep the row's name. -->
 								<td class="sticky left-0 bg-card py-2.5 pr-4">
-									<a href="/company?sector={s.sector}" class="hover:underline">{s.name}</a>
+									<a href="/screener?sector={s.sector}" class="hover:underline">{s.name}</a>
 								</td>
 								<td class="py-2.5 pr-4 text-right">{s.companyCount}</td>
 								<td class="py-2.5 pr-4 text-right">

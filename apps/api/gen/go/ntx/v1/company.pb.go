@@ -118,6 +118,7 @@ type ScreenerRow struct {
 	Period        string                 `protobuf:"bytes,12,opt,name=period,proto3" json:"period,omitempty"`                                            // the filing the ratios come from, "Q1 2083/84"; "" without one
 	CloseDate     string                 `protobuf:"bytes,13,opt,name=close_date,json=closeDate,proto3" json:"close_date,omitempty"`                     // business date of the close, "2026-11-03"; "" without one
 	ChangePercent *float64               `protobuf:"fixed64,14,opt,name=change_percent,json=changePercent,proto3,oneof" json:"change_percent,omitempty"` // %, on the previous close; unset without one
+	Roe           *float64               `protobuf:"fixed64,15,opt,name=roe,proto3,oneof" json:"roe,omitempty"`                                          // %, annualized EPS over book value per share; unset without both
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -246,6 +247,13 @@ func (x *ScreenerRow) GetCloseDate() string {
 func (x *ScreenerRow) GetChangePercent() float64 {
 	if x != nil && x.ChangePercent != nil {
 		return *x.ChangePercent
+	}
+	return 0
+}
+
+func (x *ScreenerRow) GetRoe() float64 {
+	if x != nil && x.Roe != nil {
+		return *x.Roe
 	}
 	return 0
 }
@@ -901,7 +909,7 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x14ntx/v1/company.proto\x12\x06ntx.v1\x1a\x13ntx/v1/common.proto\"\x15\n" +
 	"\x13ListScreenerRequest\"?\n" +
 	"\x14ListScreenerResponse\x12'\n" +
-	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\xf1\x03\n" +
+	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\x90\x04\n" +
 	"\vScreenerRow\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
@@ -919,7 +927,8 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x06period\x18\f \x01(\tR\x06period\x12\x1d\n" +
 	"\n" +
 	"close_date\x18\r \x01(\tR\tcloseDate\x12*\n" +
-	"\x0echange_percent\x18\x0e \x01(\x01H\aR\rchangePercent\x88\x01\x01B\b\n" +
+	"\x0echange_percent\x18\x0e \x01(\x01H\aR\rchangePercent\x88\x01\x01\x12\x15\n" +
+	"\x03roe\x18\x0f \x01(\x01H\bR\x03roe\x88\x01\x01B\b\n" +
 	"\x06_closeB\x05\n" +
 	"\x03_peB\x05\n" +
 	"\x03_pbB\x06\n" +
@@ -927,7 +936,8 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x06_yieldB\r\n" +
 	"\v_market_capB\v\n" +
 	"\t_turnoverB\x11\n" +
-	"\x0f_change_percent\"\xc0\x01\n" +
+	"\x0f_change_percentB\x06\n" +
+	"\x04_roe\"\xc0\x01\n" +
 	"\x14ListCompaniesRequest\x12+\n" +
 	"\x06sector\x18\x01 \x01(\x0e2\x0e.ntx.v1.SectorH\x00R\x06sector\x88\x01\x01\x12\x19\n" +
 	"\x05query\x18\x02 \x01(\tH\x01R\x05query\x88\x01\x01\x12\x19\n" +

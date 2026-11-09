@@ -6,7 +6,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const apiUrl = apiBaseUrl();
 
 	// Static pages
-	const pages = ['', '/company', '/mutual-funds'];
+	const pages = ['', '/screener', '/mutual-funds'];
 
 	// Fetch dynamic data
 	const { company } = createApiClient(apiUrl);

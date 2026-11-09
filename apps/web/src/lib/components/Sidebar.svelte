@@ -15,17 +15,17 @@
 
 	const links = [
 		{ href: '/', label: 'Home' },
-		{ href: '/company', label: 'Companies' },
+		{ href: '/screener', label: 'Screener' },
 		{ href: '/hydro', label: 'Hydro' },
 		{ href: '/mutual-funds', label: 'Mutual funds' }
 	];
 
 	// Saved views of the company list; each is a URL the screener already understands.
 	const lists = [
-		{ href: '/company?sort=change&dir=desc', label: 'Gainers' },
-		{ href: '/company?sort=change&dir=asc', label: 'Losers' },
-		{ href: '/company?sort=turnover&dir=desc', label: 'Most traded' },
-		{ href: '/company?sort=market_cap&dir=desc', label: 'Largest market cap' }
+		{ href: '/screener?sort=change&dir=desc', label: 'Gainers' },
+		{ href: '/screener?sort=change&dir=asc', label: 'Losers' },
+		{ href: '/screener?sort=turnover&dir=desc', label: 'Most traded' },
+		{ href: '/screener?sort=market_cap&dir=desc', label: 'Largest market cap' }
 	];
 
 	// Company page sections, in the report's reading order; the number is the order the reader follows.

@@ -25,8 +25,30 @@
 	];
 	const sectorLabel = new Map(sectors.map((s) => [s.value, s.label]));
 
+	// Range filters, read from `<key>_min` and `<key>_max`; `value` is the row's figure in the input's unit.
+	const ranges: {
+		key: string;
+		label: string;
+		unit: string;
+		step: string;
+		value: (r: ScreenerRow) => number | undefined;
+	}[] = [
+		{ key: 'pe', label: 'PE', unit: 'x', step: '1', value: (r) => r.pe },
+		{ key: 'pb', label: 'PB', unit: 'x', step: '0.1', value: (r) => r.pb },
+		{ key: 'eps', label: 'EPS', unit: 'Rs', step: '1', value: (r) => r.eps },
+		{ key: 'roe', label: 'ROE', unit: '%', step: '1', value: (r) => r.roe },
+		{ key: 'yield', label: 'Dividend yield', unit: '%', step: '0.5', value: (r) => r.yield },
+		{
+			key: 'cap',
+			label: 'Market cap',
+			unit: 'Rs cr',
+			step: '100',
+			value: (r) => (r.marketCap === undefined ? undefined : r.marketCap / 1e7)
+		}
+	];
+
 	type NumericKey =
-		'close' | 'changePercent' | 'pe' | 'pb' | 'eps' | 'yield' | 'marketCap' | 'turnover';
+		'close' | 'changePercent' | 'pe' | 'pb' | 'eps' | 'roe' | 'yield' | 'marketCap' | 'turnover';
 	type SortKey = 'symbol' | 'rating' | NumericKey;
 
 	// Column order; `param` is the URL spelling, `desc` the direction a first click sorts by.
@@ -37,6 +59,7 @@
 		{ key: 'pe', param: 'pe', label: 'PE', desc: false },
 		{ key: 'pb', param: 'pb', label: 'PB', desc: false },
 		{ key: 'eps', param: 'eps', label: 'EPS', desc: true },
+		{ key: 'roe', param: 'roe', label: 'ROE', desc: true },
 		{ key: 'yield', param: 'yield', label: 'Yield', desc: true },
 		{ key: 'marketCap', param: 'market_cap', label: 'Mkt cap, Rs cr', desc: true },
 		{ key: 'turnover', param: 'turnover', label: 'Turnover, Rs cr', desc: true },
@@ -51,10 +74,6 @@
 	let sectorFilter = $derived(
 		new SvelteSet((params.get('sector') ?? '').split(',').filter(Boolean).map(Number))
 	);
-	let peMin = $derived(params.get('pe_min') ?? '');
-	let peMax = $derived(params.get('pe_max') ?? '');
-	let pbMin = $derived(params.get('pb_min') ?? '');
-	let pbMax = $derived(params.get('pb_max') ?? '');
 	let minRating = $derived(params.get('rating') ?? '');
 	let sortCol = $derived(
 		columns.find((c) => c.param === params.get('sort')) ??
@@ -62,8 +81,13 @@
 	);
 	let sortDesc = $derived(params.has('dir') ? params.get('dir') === 'desc' : sortCol.desc);
 	let hasFilters = $derived(
-		!!(q || sectorFilter.size || peMin || peMax || pbMin || pbMax || minRating)
+		!!(q || sectorFilter.size || minRating) ||
+			ranges.some((f) => bound(f, 'min') || bound(f, 'max'))
 	);
+
+	function bound(f: (typeof ranges)[number], side: 'min' | 'max'): string {
+		return params.get(`${f.key}_${side}`) ?? '';
+	}
 
 	function setParams(changes: Record<string, string>) {
 		const next = new SvelteURLSearchParams(url.searchParams.toString());
@@ -108,8 +132,8 @@
 			)
 				return false;
 			if (sectorFilter.size && !sectorFilter.has(r.sector)) return false;
-			if (!inRange(r.pe, peMin, peMax)) return false;
-			if (!inRange(r.pb, pbMin, pbMax)) return false;
+			for (const f of ranges)
+				if (!inRange(f.value(r), bound(f, 'min'), bound(f, 'max'))) return false;
 			// Letters order A < B < C < D; unrated never meets a minimum.
 			if (minRating && (!r.rating || r.rating > minRating)) return false;
 			return true;
@@ -160,7 +184,7 @@
 				: `${r.changePercent > 0 ? '+' : ''}${num(r.changePercent)}%`;
 		if (key === 'pe' || key === 'pb') return r[key] === undefined ? '—' : `${num(r[key], 1)}x`;
 		if (key === 'eps') return num(r.eps);
-		if (key === 'yield') return r.yield === undefined ? '—' : `${num(r.yield, 1)}%`;
+		if (key === 'yield' || key === 'roe') return r[key] === undefined ? '—' : `${num(r[key], 1)}%`;
 		if (key === 'marketCap') return crore(r.marketCap);
 		return crore(r.turnover, 2);
 	}
@@ -170,19 +194,20 @@
 </script>
 
 <svelte:head>
-	<title>Companies · NTX</title>
+	<title>Screener · NTX</title>
 </svelte:head>
 
 <div class="mx-auto min-h-screen max-w-7xl px-4 py-6">
 	<header class="card-report">
-		<h1 class="font-serif text-3xl font-medium tracking-tight">Companies</h1>
+		<h1 class="font-serif text-3xl font-medium tracking-tight">Screener</h1>
 		<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
-			{data.rows.length} listed on NEPSE. Ratios from each company's latest quarterly filing at its latest
-			close; the rating is one letter for its eight checks.
+			{data.rows.length} listed on NEPSE. Set a range on any ratio to narrow the list; each ratio is from
+			the company's latest quarterly filing at its latest close, and the rating is one letter for its
+			eight checks.
 		</p>
 
 		<!-- Filters: every control writes the URL -->
-		<div class="mt-6 flex flex-col gap-3 text-sm">
+		<div class="mt-6 flex flex-col gap-4 text-sm">
 			<div class="flex flex-wrap items-center gap-x-4 gap-y-2">
 				<input
 					type="search"
@@ -191,46 +216,6 @@
 					oninput={(e) => setParams({ q: e.currentTarget.value })}
 					class="{inputClass} w-48"
 				/>
-				<label class="flex items-center gap-1">
-					PE
-					<input
-						type="number"
-						min="0"
-						placeholder="min"
-						value={peMin}
-						oninput={(e) => setParams({ pe_min: e.currentTarget.value })}
-						class={inputClass}
-					/>
-					<input
-						type="number"
-						min="0"
-						placeholder="max"
-						value={peMax}
-						oninput={(e) => setParams({ pe_max: e.currentTarget.value })}
-						class={inputClass}
-					/>
-				</label>
-				<label class="flex items-center gap-1">
-					PB
-					<input
-						type="number"
-						min="0"
-						step="0.1"
-						placeholder="min"
-						value={pbMin}
-						oninput={(e) => setParams({ pb_min: e.currentTarget.value })}
-						class={inputClass}
-					/>
-					<input
-						type="number"
-						min="0"
-						step="0.1"
-						placeholder="max"
-						value={pbMax}
-						oninput={(e) => setParams({ pb_max: e.currentTarget.value })}
-						class={inputClass}
-					/>
-				</label>
 				<label class="flex items-center gap-1">
 					Rating at least
 					<select
@@ -252,6 +237,34 @@
 						Clear
 					</button>
 				{/if}
+			</div>
+			<div class="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 lg:grid-cols-6">
+				{#each ranges as f (f.key)}
+					<fieldset>
+						<legend class="mb-1 text-muted-foreground">{f.label}, {f.unit}</legend>
+						<div class="flex items-center gap-1">
+							<input
+								type="number"
+								step={f.step}
+								placeholder="min"
+								aria-label="{f.label} minimum"
+								value={bound(f, 'min')}
+								oninput={(e) => setParams({ [`${f.key}_min`]: e.currentTarget.value })}
+								class="{inputClass} w-full min-w-0"
+							/>
+							<span class="text-muted-foreground" aria-hidden="true">–</span>
+							<input
+								type="number"
+								step={f.step}
+								placeholder="max"
+								aria-label="{f.label} maximum"
+								value={bound(f, 'max')}
+								oninput={(e) => setParams({ [`${f.key}_max`]: e.currentTarget.value })}
+								class="{inputClass} w-full min-w-0"
+							/>
+						</div>
+					</fieldset>
+				{/each}
 			</div>
 			<div class="flex flex-wrap gap-1.5">
 				{#each sectors as sector (sector.value)}
