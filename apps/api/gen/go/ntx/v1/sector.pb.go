@@ -320,7 +320,8 @@ type RecentFiling struct {
 	Date   string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"` // YYYY-MM-DD
 	// False when the row has no published date and date is when NTX first saw it.
 	Published     bool   `protobuf:"varint,4,opt,name=published,proto3" json:"published,omitempty"`
-	Claim         string `protobuf:"bytes,5,opt,name=claim,proto3" json:"claim,omitempty"` // the company's first earnings claim, empty when none
+	Claim         string `protobuf:"bytes,5,opt,name=claim,proto3" json:"claim,omitempty"`   // the company's first earnings claim, empty when none
+	Source        string `protobuf:"bytes,6,opt,name=source,proto3" json:"source,omitempty"` // that claim's filing URL, empty when not recorded
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -390,6 +391,13 @@ func (x *RecentFiling) GetClaim() string {
 	return ""
 }
 
+func (x *RecentFiling) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
 var File_ntx_v1_sector_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_sector_proto_rawDesc = "" +
@@ -425,13 +433,14 @@ const file_ntx_v1_sector_proto_rawDesc = "" +
 	"_median_pbB\x13\n" +
 	"\x11_profitable_shareB\x14\n" +
 	"\x12_profit_change_yoyB\r\n" +
-	"\v_day_change\"\x82\x01\n" +
+	"\v_day_change\"\x9a\x01\n" +
 	"\fRecentFiling\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04date\x18\x03 \x01(\tR\x04date\x12\x1c\n" +
 	"\tpublished\x18\x04 \x01(\bR\tpublished\x12\x14\n" +
-	"\x05claim\x18\x05 \x01(\tR\x05claim2i\n" +
+	"\x05claim\x18\x05 \x01(\tR\x05claim\x12\x16\n" +
+	"\x06source\x18\x06 \x01(\tR\x06source2i\n" +
 	"\rSectorService\x12X\n" +
 	"\x11GetSectorOverview\x12 .ntx.v1.GetSectorOverviewRequest\x1a!.ntx.v1.GetSectorOverviewResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 

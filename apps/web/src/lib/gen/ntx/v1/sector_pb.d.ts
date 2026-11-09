@@ -204,6 +204,13 @@ export declare type RecentFiling = Message<"ntx.v1.RecentFiling"> & {
    * @generated from field: string claim = 5;
    */
   claim: string;
+
+  /**
+   * that claim's filing URL, empty when not recorded
+   *
+   * @generated from field: string source = 6;
+   */
+  source: string;
 };
 
 /**

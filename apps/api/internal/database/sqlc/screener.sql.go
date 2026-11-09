@@ -25,6 +25,7 @@ const listScreener = `-- name: ListScreener :many
 SELECT c.symbol, c.name, c.sector,
   o.listed_shares,
   p.close_price, p.turnover,
+  prev.close_price AS prev_close,
   f.eps, f.book_value,
   ca.cash_dividend,
   r.letter AS rating,
@@ -34,6 +35,11 @@ LEFT JOIN ownership o ON o.company_id = c.id
 LEFT JOIN prices p ON p.id = (
   SELECT p2.id FROM prices p2
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
+  ORDER BY p2.business_date DESC LIMIT 1
+)
+LEFT JOIN prices prev ON prev.id = (
+  SELECT p2.id FROM prices p2
+  WHERE p2.company_id = c.id AND p2.business_date < p.business_date AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
 LEFT JOIN fundamentals f ON f.id = (
@@ -61,6 +67,7 @@ type ListScreenerRow struct {
 	ListedShares sql.NullInt64   `json:"listed_shares"`
 	ClosePrice   sql.NullFloat64 `json:"close_price"`
 	Turnover     sql.NullFloat64 `json:"turnover"`
+	PrevClose    sql.NullFloat64 `json:"prev_close"`
 	Eps          sql.NullFloat64 `json:"eps"`
 	BookValue    sql.NullFloat64 `json:"book_value"`
 	CashDividend sql.NullFloat64 `json:"cash_dividend"`
@@ -91,6 +98,7 @@ func (q *Queries) ListScreener(ctx context.Context) ([]ListScreenerRow, error) {
 			&i.ListedShares,
 			&i.ClosePrice,
 			&i.Turnover,
+			&i.PrevClose,
 			&i.Eps,
 			&i.BookValue,
 			&i.CashDividend,

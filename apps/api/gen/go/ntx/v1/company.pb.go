@@ -108,15 +108,16 @@ type ScreenerRow struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Sector        Sector                 `protobuf:"varint,3,opt,name=sector,proto3,enum=ntx.v1.Sector" json:"sector,omitempty"`
 	Close         *float64               `protobuf:"fixed64,4,opt,name=close,proto3,oneof" json:"close,omitempty"`
-	Pe            *float64               `protobuf:"fixed64,5,opt,name=pe,proto3,oneof" json:"pe,omitempty"`                                // unset when EPS is not positive
-	Pb            *float64               `protobuf:"fixed64,6,opt,name=pb,proto3,oneof" json:"pb,omitempty"`                                // unset without book value
-	Eps           *float64               `protobuf:"fixed64,7,opt,name=eps,proto3,oneof" json:"eps,omitempty"`                              // annualized, as filed
-	Yield         *float64               `protobuf:"fixed64,8,opt,name=yield,proto3,oneof" json:"yield,omitempty"`                          // %, cash dividend over close; unset without a notice
-	MarketCap     *float64               `protobuf:"fixed64,9,opt,name=market_cap,json=marketCap,proto3,oneof" json:"market_cap,omitempty"` // Rs, close times listed shares
-	Turnover      *float64               `protobuf:"fixed64,10,opt,name=turnover,proto3,oneof" json:"turnover,omitempty"`                   // Rs, latest session
-	Rating        string                 `protobuf:"bytes,11,opt,name=rating,proto3" json:"rating,omitempty"`                               // "A".."D", "" when unrated or not yet computed
-	Period        string                 `protobuf:"bytes,12,opt,name=period,proto3" json:"period,omitempty"`                               // the filing the ratios come from, "Q1 2083/84"; "" without one
-	CloseDate     string                 `protobuf:"bytes,13,opt,name=close_date,json=closeDate,proto3" json:"close_date,omitempty"`        // business date of the close, "2026-11-03"; "" without one
+	Pe            *float64               `protobuf:"fixed64,5,opt,name=pe,proto3,oneof" json:"pe,omitempty"`                                             // unset when EPS is not positive
+	Pb            *float64               `protobuf:"fixed64,6,opt,name=pb,proto3,oneof" json:"pb,omitempty"`                                             // unset without book value
+	Eps           *float64               `protobuf:"fixed64,7,opt,name=eps,proto3,oneof" json:"eps,omitempty"`                                           // annualized, as filed
+	Yield         *float64               `protobuf:"fixed64,8,opt,name=yield,proto3,oneof" json:"yield,omitempty"`                                       // %, cash dividend over close; unset without a notice
+	MarketCap     *float64               `protobuf:"fixed64,9,opt,name=market_cap,json=marketCap,proto3,oneof" json:"market_cap,omitempty"`              // Rs, close times listed shares
+	Turnover      *float64               `protobuf:"fixed64,10,opt,name=turnover,proto3,oneof" json:"turnover,omitempty"`                                // Rs, latest session
+	Rating        string                 `protobuf:"bytes,11,opt,name=rating,proto3" json:"rating,omitempty"`                                            // "A".."D", "" when unrated or not yet computed
+	Period        string                 `protobuf:"bytes,12,opt,name=period,proto3" json:"period,omitempty"`                                            // the filing the ratios come from, "Q1 2083/84"; "" without one
+	CloseDate     string                 `protobuf:"bytes,13,opt,name=close_date,json=closeDate,proto3" json:"close_date,omitempty"`                     // business date of the close, "2026-11-03"; "" without one
+	ChangePercent *float64               `protobuf:"fixed64,14,opt,name=change_percent,json=changePercent,proto3,oneof" json:"change_percent,omitempty"` // %, on the previous close; unset without one
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -240,6 +241,13 @@ func (x *ScreenerRow) GetCloseDate() string {
 		return x.CloseDate
 	}
 	return ""
+}
+
+func (x *ScreenerRow) GetChangePercent() float64 {
+	if x != nil && x.ChangePercent != nil {
+		return *x.ChangePercent
+	}
+	return 0
 }
 
 type ListCompaniesRequest struct {
@@ -893,7 +901,7 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x14ntx/v1/company.proto\x12\x06ntx.v1\x1a\x13ntx/v1/common.proto\"\x15\n" +
 	"\x13ListScreenerRequest\"?\n" +
 	"\x14ListScreenerResponse\x12'\n" +
-	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\xb2\x03\n" +
+	"\x04rows\x18\x01 \x03(\v2\x13.ntx.v1.ScreenerRowR\x04rows\"\xf1\x03\n" +
 	"\vScreenerRow\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12&\n" +
@@ -910,14 +918,16 @@ const file_ntx_v1_company_proto_rawDesc = "" +
 	"\x06rating\x18\v \x01(\tR\x06rating\x12\x16\n" +
 	"\x06period\x18\f \x01(\tR\x06period\x12\x1d\n" +
 	"\n" +
-	"close_date\x18\r \x01(\tR\tcloseDateB\b\n" +
+	"close_date\x18\r \x01(\tR\tcloseDate\x12*\n" +
+	"\x0echange_percent\x18\x0e \x01(\x01H\aR\rchangePercent\x88\x01\x01B\b\n" +
 	"\x06_closeB\x05\n" +
 	"\x03_peB\x05\n" +
 	"\x03_pbB\x06\n" +
 	"\x04_epsB\b\n" +
 	"\x06_yieldB\r\n" +
 	"\v_market_capB\v\n" +
-	"\t_turnover\"\xc0\x01\n" +
+	"\t_turnoverB\x11\n" +
+	"\x0f_change_percent\"\xc0\x01\n" +
 	"\x14ListCompaniesRequest\x12+\n" +
 	"\x06sector\x18\x01 \x01(\x0e2\x0e.ntx.v1.SectorH\x00R\x06sector\x88\x01\x01\x12\x19\n" +
 	"\x05query\x18\x02 \x01(\tH\x01R\x05query\x88\x01\x01\x12\x19\n" +

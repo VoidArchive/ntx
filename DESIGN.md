@@ -177,7 +177,7 @@ NTX reads like a printed stock report laid on a dark desk: a gunmetal night grou
 
 The world is dark by default (`mode-watcher` sets `defaultMode="dark"`). A light variant exists under `:root` with the same roles; its values live in the sidecar (`.impeccable/design.json`, `colorMeta.*.light`), not here, so the frontmatter stays one source of truth for the shipped default.
 
-**Scope note.** Only the company page (`/company/[symbol]`), its header card, snowflake, and the sidebar were rebuilt in this world. Home, the company list, hydro and mutual fund routes inherit the tokens in `layout.css` but still carry their older compositions; nothing about their layout, chrome or chart language is recorded here as system. When those routes are rebuilt, extend this file from what ships.
+**Scope note.** Every route is in this world (2026-11-09): the company page and its header card, snowflake and sidebar; the home page; the company list, hydro and mutual fund list as a header card over content cards; the fund detail as the company header's twin over a holdings card. A list route keeps its filters inside the header card and its table in one card that scrolls sideways on a phone, clipping at the card edge.
 
 **Key Characteristics:**
 - Dark gunmetal ground, cards one step lighter, hairline borders one step lighter again; depth is tonal plus one soft shadow.
@@ -287,6 +287,7 @@ Depth is tonal first, shadow second. The ground is the darkest step; cards sit o
 ## Components
 
 ### Report card (`card`, `card-wide`)
+Shipped as the `card-report` utility in `layout.css`; pages add `mt-6` between cards.
 A raised gunmetal surface, 8px corners, `--shadow-card`, 24px padding on phone and 32px from `sm`, stacked 24px apart with a 24px scroll margin. It has no border and no header strip; its first line is always a serif title.
 
 ### Section head (the anatomy every numbered card follows)
@@ -314,6 +315,12 @@ A `<dl>` of four figures (PE, PB, EPS, Dividend yield), two columns on phone and
 A `lede`-sized serif question that is the published check reworded ("Is the PE below its own three-year median?"), the verdict icon and word in `body` muted directly under it, then the chart 24px below. Two per Valuation card, side by side from `lg`, each carrying the claim anchor the API links to (`strip-pe`, `strip-pb`). Both obey the One Encoding Rule:
 - **Ratio history:** up to twelve quarterly columns, 176px tall, 8px apart, oldest six hidden on phone; the latest column orange, the rest Fog 25%, 2px top radius; values above each column at 11px (latest in weight 500), periods beneath at 10px; the company's own median as one dashed horizontal line with its value in a small ground-filled label at the right end.
 - **Peer bars:** a 3-column grid (4.5rem symbol, bar, 3.5rem value), 12px-tall bars 6px apart, sorted ascending; this company in orange and weight 500, peers Fog 25% with muted symbols that link to their pages; the sector median as a dashed vertical line drawn through every row with its value labelled above the column. Shows the nearest five each way when a sector has more than twelve peers, with a "Show all" text button.
+
+### Home header card
+The company header's twin for the market: left, "Nepal Stock Exchange" with the session's Bikram Sambat and Gregorian dates in `body` muted, the `display` "NEPSE", the one-sentence session summary in `claim` serif (close, direction by the Direction Rule, turnover, profitable share), a `meta` provenance line. Right, when a session is recorded: "NEPSE index" with the orange dot, the `figure` close with its 1D change, the advance / decline / unchanged bar (green, red, `muted`, 8px tall, segments separated by a 2px card-coloured line) with its legend, and a `<dl>` of session figures (turnover, shares traded, transactions, scrips, market cap when known) in two columns on phone and four from `sm`. Sectors, Filed recently and Latest session follow as unnumbered report cards: the sector table keeps its first column sticky on `card`, the filings list stacks symbol over sentence on phone and runs in two columns from `lg`.
+
+### List route (companies, hydro, mutual funds)
+A header card with the `display` title, the `claim` sentence and the route's filters or view toggle, then one content card per table or map. Table symbols are sans weight 500, never serif; rows hover to `accent` at 40%; a sticky first column sits on `card`. The fund grid is the exception: each fund is its own report card, so the grid is not wrapped in another. The fund detail header mirrors the company header (monogram, name, "SYM Fund Report", manager line, sentence, provenance; right, "NAV per unit" with the orange dot, the figure, from-par change, and the stats list) and the holdings list draws each sector's share as a Fog bar scaled to the largest sector, with no colour legend.
 
 ### Snowflake
 A 340px-wide SVG (viewBox 340×340, centre 170, outer radius 118) with five axes drawn clockwise from the top: Value, Past, Health, Dividend, Ownership. Each axis is the share of its evaluated checks that hold, drawn out from a 14% core so a zero still shows a sprout. Rings at 25/50/75/100% in `border` (the outer at 1.5px), spokes in `border`, a 12px halo ring just outside at `muted` 50%. The shape is an orange Catmull-Rom blob at 78% opacity with a 2px orange outline; axis points are 3px circles, ground-filled, orange-stroked, each with a title tooltip. Labels ride arcs outside the ring (22px out above, 34px out below, reversed in the lower half so text stays upright) in `axis-label`; an axis with no evaluated checks sets its label in `muted-foreground`. A "Snowflake" caption in weight 500 and a `body` muted explanation sit under it; the explanation always ends "Not a recommendation."
@@ -345,4 +352,3 @@ Route changes cross-fade through the View Transitions API (150ms ease-out out, 1
 - Don't draw the snowflake as a polygon, add a sixth axis, or weight an axis; the API's verdicts are the rule.
 - Don't put white text on orange, green or red.
 - Don't use a radius other than 8px for surfaces, 6px for controls (4px for site nav links), or full for pills.
-- Don't describe home, company list, hydro or mutual fund layouts as this system; they inherit tokens only until rebuilt.

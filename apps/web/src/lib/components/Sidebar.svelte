@@ -20,6 +20,14 @@
 		{ href: '/mutual-funds', label: 'Mutual funds' }
 	];
 
+	// Saved views of the company list; each is a URL the screener already understands.
+	const lists = [
+		{ href: '/company?sort=change&dir=desc', label: 'Gainers' },
+		{ href: '/company?sort=change&dir=asc', label: 'Losers' },
+		{ href: '/company?sort=turnover&dir=desc', label: 'Most traded' },
+		{ href: '/company?sort=market_cap&dir=desc', label: 'Largest market cap' }
+	];
+
 	// Company page sections, in the report's reading order; the number is the order the reader follows.
 	const sections = [
 		{ id: 'overview', label: 'Overview' },
@@ -32,7 +40,9 @@
 		{ id: 'plants', n: 7, label: 'Plants' } // hydro companies only
 	];
 
-	let pathname = $derived(page.url.pathname);
+	// A shallow goto leaves page.url on the loaded URL; the target is in page.shallow.
+	let current = $derived(page.shallow?.url ?? page.url);
+	let pathname = $derived(current.pathname);
 	let onCompanyPage = $derived(/^\/company\/[^/]+$/.test(pathname));
 	let activeSection = $state('');
 	// Sections the current page renders; a company without plants has no Plants link.
@@ -42,6 +52,15 @@
 	function isCurrent(href: string): boolean {
 		if (href === '/') return pathname === '/';
 		return pathname.startsWith(href);
+	}
+
+	// A list link is current only when the screener shows exactly that sort.
+	function isList(href: string): boolean {
+		const want = new URL(href, 'http://x');
+		return (
+			pathname === want.pathname &&
+			[...want.searchParams].every(([k, v]) => current.searchParams.get(k) === v)
+		);
 	}
 
 	// The topmost visible section wins; a long section stays active while scrolled through.
@@ -88,6 +107,28 @@
 			</li>
 		{/each}
 	</ul>
+
+	{#if !onCompanyPage}
+		<p class="mt-6 mb-1 px-2 text-xs text-muted-foreground">Lists</p>
+		<ul class="space-y-0.5 text-sm" aria-label="Lists">
+			{#each lists as list (list.href)}
+				<li>
+					<a
+						href={list.href}
+						aria-current={isList(list.href) ? 'page' : undefined}
+						onclick={() => (menuOpen = false)}
+						class="block rounded px-2 py-1.5 transition-colors hover:bg-sidebar-accent {isList(
+							list.href
+						)
+							? 'font-medium text-sidebar-foreground'
+							: 'text-muted-foreground'}"
+					>
+						{list.label}
+					</a>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 
 	{#if onCompanyPage}
 		<ul class="mt-6 space-y-0.5 text-sm" aria-label="On this page">

@@ -122,6 +122,7 @@ func (s *Service) filedRecently(ctx context.Context) ([]*ntxv1.RecentFiling, err
 		for _, c := range st.Claims {
 			if c.Kind == "earnings" {
 				f.Claim = c.Text
+				f.Source = c.Source
 				break
 			}
 		}

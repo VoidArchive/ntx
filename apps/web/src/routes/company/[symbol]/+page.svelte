@@ -71,7 +71,6 @@
 		watch: 'Watch',
 		'needs more history': 'Needs more history'
 	};
-	const CARD = 'mt-6 scroll-mt-6 rounded-lg bg-card p-6 shadow-card sm:p-8';
 </script>
 
 {#snippet icon(verdict: string)}
@@ -150,7 +149,7 @@
 		<StoryOpening {company} {story} prices={priceHistory} {shares} />
 
 		<!-- Overview: the sentences, the lists, the snowflake -->
-		<section id="overview" class={CARD}>
+		<section id="overview" class="mt-6 card-report">
 			<div class="grid gap-8 lg:grid-cols-[1fr_340px]">
 				<div class="min-w-0">
 					<h2 class="font-serif text-2xl font-medium">{company.symbol} Stock Overview</h2>
@@ -224,7 +223,7 @@
 		</section>
 
 		<!-- 1. Valuation: the four figures, then one chart per check -->
-		<section id="valuation" class={CARD}>
+		<section id="valuation" class="mt-6 card-report">
 			{@render head(
 				1,
 				'Valuation',
@@ -292,7 +291,7 @@
 		</section>
 
 		<!-- 2. Past performance: quarter-only bars, hydro EPS line, rows as filed -->
-		<section id="earnings" class={CARD}>
+		<section id="earnings" class="mt-6 card-report">
 			{@render head(
 				2,
 				'Past Performance',
@@ -319,7 +318,7 @@
 		</section>
 
 		<!-- 3. Financial health: book value and the fiscal-year rows with compounded growth -->
-		<section id="health" class={CARD}>
+		<section id="health" class="mt-6 card-report">
 			{@render head(
 				3,
 				'Financial Health',
@@ -337,7 +336,7 @@
 		</section>
 
 		<!-- 4. Dividend: cash and bonus per fiscal year -->
-		<section id="payout" class={CARD}>
+		<section id="payout" class="mt-6 card-report">
 			{@render head(
 				4,
 				'Dividend',
@@ -354,7 +353,7 @@
 		</section>
 
 		<!-- 5. Ownership over time -->
-		<section id="ownership" class={CARD}>
+		<section id="ownership" class="mt-6 card-report">
 			{@render head(
 				5,
 				'Ownership',
@@ -370,7 +369,7 @@
 		</section>
 
 		<!-- 6. Fund holdings -->
-		<section id="funds" class={CARD}>
+		<section id="funds" class="mt-6 card-report">
 			{@render head(
 				6,
 				'Funds',
@@ -387,7 +386,7 @@
 
 		<!-- 7. Plants, hydro companies only: river, basin, MW and today's state -->
 		{#if plants.length > 0}
-			<section id="plants" class={CARD}>
+			<section id="plants" class="mt-6 card-report">
 				<div class="flex flex-wrap items-center justify-between gap-3">
 					<h2 class="font-serif text-2xl font-medium">
 						<span class="mr-2 text-muted-foreground">7</span>Plants

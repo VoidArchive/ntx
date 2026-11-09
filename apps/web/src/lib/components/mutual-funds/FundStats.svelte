@@ -50,7 +50,6 @@
 		...optional('Total Assets', fund.total_assets),
 		...optional('Total Liabilities', fund.total_liabilities),
 		{ label: 'Total Units', value: formatLarge(fund.total_units) },
-		{ label: 'NAV/Unit', value: `Rs. ${fund.nav_per_unit.toFixed(2)}` },
 		{ label: 'Holdings', value: holdingsLabel },
 		...(fund.holdings_disclosure === 'full'
 			? [{ label: 'Sectors', value: fmtNumber(sectorsCount) }]

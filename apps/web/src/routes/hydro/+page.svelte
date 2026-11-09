@@ -133,37 +133,37 @@
 	<PlantCard plant={p} readings={readings.get(p.id)} {pinned} onClose={() => select(undefined)} />
 {/snippet}
 
-<div class="mx-auto min-h-screen max-w-7xl px-4 py-8">
-	<header>
+<div class="mx-auto min-h-screen max-w-7xl px-4 py-6">
+	<header class="card-report">
 		<h1 class="font-serif text-3xl font-medium tracking-tight">Hydro</h1>
 		<!-- 1. The sentence first, as on every page. -->
 		<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{data.opening}</p>
+
+		<!-- Basin states double as the basin filter; on a phone they stand in for the map. -->
+		<ul class="mt-5 flex flex-wrap gap-1.5 text-xs" aria-label="Basins">
+			{#each basinsWithPlants as b (b.name)}
+				{@const s = STATE[b.state]}
+				<li>
+					<button
+						onclick={() => setParams({ basin: basinFilter === b.name ? '' : b.name })}
+						aria-pressed={basinFilter === b.name}
+						class="rounded-full px-2.5 py-1 transition-colors {basinFilter === b.name
+							? 'bg-foreground text-background'
+							: 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'}"
+					>
+						<span aria-hidden="true" style={basinFilter === b.name ? '' : `color: ${s.color}`}
+							>{s.glyph}</span
+						>
+						{b.name} · {s.label} · {b.plantCount}
+					</button>
+				</li>
+			{/each}
+		</ul>
 	</header>
 
-	<!-- Basin states double as the basin filter; on a phone they stand in for the map. -->
-	<ul class="mt-4 flex flex-wrap gap-1.5 text-xs" aria-label="Basins">
-		{#each basinsWithPlants as b (b.name)}
-			{@const s = STATE[b.state]}
-			<li>
-				<button
-					onclick={() => setParams({ basin: basinFilter === b.name ? '' : b.name })}
-					aria-pressed={basinFilter === b.name}
-					class="rounded-full px-2.5 py-1 transition-colors {basinFilter === b.name
-						? 'bg-foreground text-background'
-						: 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'}"
-				>
-					<span aria-hidden="true" style={basinFilter === b.name ? '' : `color: ${s.color}`}
-						>{s.glyph}</span
-					>
-					{b.name} · {s.label} · {b.plantCount}
-				</button>
-			</li>
-		{/each}
-	</ul>
-
-	<div class="mt-6 flex flex-col gap-8">
+	<div class="mt-6 flex flex-col gap-6">
 		<!-- 2. Map: desktop above the list with hover; phone below it, read-only. -->
-		<section class="order-3 lg:order-1" aria-label="Map">
+		<section class="order-3 card-report lg:order-1" aria-label="Map">
 			<div class="hidden lg:block">
 				<HydroMap
 					plants={data.plants}
@@ -187,7 +187,7 @@
 		</section>
 
 		<!-- 3. Plant list: the phone and keyboard surface. -->
-		<section class="order-2" aria-label="Plants">
+		<section class="order-2 card-report" aria-label="Plants">
 			<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
 				<label class="flex items-center gap-1">
 					Status
@@ -226,12 +226,12 @@
 				>
 			</div>
 
-			<div class="mt-2 overflow-x-auto">
+			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<!-- The header stays while 141 rows scroll; the plant stays while a phone scrolls sideways. -->
 					<thead class="sticky top-12 z-10 bg-background text-xs text-muted-foreground lg:top-0">
 						<tr class="border-b border-border">
-							<th class="{thClass} sticky left-0 bg-background text-left">Plant</th>
+							<th class="{thClass} sticky left-0 bg-card text-left">Plant</th>
 							<th class="{thClass} text-left">Symbol</th>
 							<th class="{thClass} text-left">River</th>
 							{#each columns as col (col.key)}
@@ -284,7 +284,7 @@
 								</tr>
 							{/if}
 							<tr
-								class="border-b border-border/50 hover:bg-muted/50 {active?.id === p.id
+								class="border-b border-border/50 hover:bg-accent/40 {active?.id === p.id
 									? 'bg-muted/50'
 									: ''}"
 								onmouseenter={() => (hovered = p)}
@@ -413,8 +413,8 @@
 	</div>
 
 	<!-- 5. The rules, as the API states them, and where every figure comes from. -->
-	<footer class="mt-12 border-t border-border pt-6 text-xs text-muted-foreground">
-		<h2 class="text-xs tracking-wide uppercase">Rules and data</h2>
+	<footer class="mt-6 card-report text-xs text-muted-foreground">
+		<h2 class="font-serif text-lg font-medium text-foreground">Rules and data</h2>
 		<ul class="mt-2 space-y-1">
 			{#each data.rules as rule (rule.name)}
 				<li><span class="font-medium text-foreground">{rule.name}.</span> {rule.text}</li>

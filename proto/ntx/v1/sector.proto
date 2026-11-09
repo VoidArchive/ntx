@@ -51,4 +51,5 @@ message RecentFiling {
   // False when the row has no published date and date is when NTX first saw it.
   bool published = 4;
   string claim = 5; // the company's first earnings claim, empty when none
+  string source = 6; // that claim's filing URL, empty when not recorded
 }

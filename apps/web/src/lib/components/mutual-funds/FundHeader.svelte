@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { Fund } from '#lib/types/fund.js';
-	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
-	import Building2 from '@lucide/svelte/icons/building';
-	import Calendar from '@lucide/svelte/icons/calendar';
+	import FundStats from './FundStats.svelte';
+	import { fundOpeningSentence, fundProvenance } from './story.js';
 
 	interface Props {
 		fund: Fund;
@@ -10,73 +9,67 @@
 
 	let { fund }: Props = $props();
 
-	let navStatus = $derived.by(() => {
-		if (fund.nav_per_unit > 10) return 'positive';
-		if (fund.nav_per_unit < 10) return 'negative';
-		return 'neutral';
-	});
+	// NEPSE open-end funds issue units at Rs 10.
+	let fromPar = $derived(((fund.nav_per_unit - 10) / 10) * 100);
+	let initials = $derived(
+		fund.fund_name
+			.split(/\s+/)
+			.filter((w) => /^[A-Za-z]/.test(w))
+			.slice(0, 2)
+			.map((w) => w[0])
+			.join('')
+			.toUpperCase()
+	);
+	function tone(value: number): string {
+		return value > 0 ? 'text-positive' : value < 0 ? 'text-negative' : 'text-primary';
+	}
 </script>
 
-<div class="border-b border-border pb-6">
-	<!-- Back link -->
-	<a
-		href="/mutual-funds"
-		class="mb-4 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-	>
-		<ArrowLeft class="size-4" />
-		<span>All Funds</span>
-	</a>
-
-	<div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-		<!-- Left: Fund info -->
-		<div>
-			<div class="flex items-center gap-3">
-				<h1 class="font-serif text-4xl tracking-tight md:text-5xl">{fund.symbol}</h1>
-				<span
-					class="rounded-full border px-3 py-1 text-xs font-medium {navStatus === 'positive'
-						? 'border-positive/30 bg-positive/10 text-positive'
-						: navStatus === 'negative'
-							? 'border-negative/30 bg-negative/10 text-negative'
-							: 'border-border bg-muted text-muted-foreground'}"
+<header class="card-report">
+	<div class="grid gap-8 lg:grid-cols-[1fr_minmax(0,420px)]">
+		<div class="min-w-0">
+			<p class="text-sm text-muted-foreground">
+				<a href="/mutual-funds" class="hover:text-foreground">Mutual funds</a>
+				<span aria-hidden="true" class="mx-1">/</span>
+				{fund.fund_manager}
+			</p>
+			<div class="mt-4 flex items-start gap-5">
+				<div
+					class="flex size-20 shrink-0 items-center justify-center rounded-lg bg-primary/15 font-serif text-3xl font-medium text-primary"
+					aria-hidden="true"
 				>
-					{navStatus === 'positive'
-						? 'Above Par'
-						: navStatus === 'negative'
-							? 'Below Par'
-							: 'At Par'}
-				</span>
+					{initials}
+				</div>
+				<div class="min-w-0">
+					<h1 class="font-serif text-3xl font-medium tracking-tight sm:text-4xl">
+						{fund.fund_name}
+					</h1>
+					<p class="mt-1 text-base text-muted-foreground">{fund.symbol} Fund Report</p>
+					<p class="mt-1 text-sm text-muted-foreground">
+						Open-end fund managed by {fund.fund_manager} · NAV report for {fund.report_date_nepali}
+					</p>
+				</div>
 			</div>
-			<p class="mt-2 text-lg text-muted-foreground">{fund.fund_name}</p>
-
-			<!-- Meta -->
-			<div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-				<span class="flex items-center gap-1.5">
-					<Building2 class="size-4" />
-					{fund.fund_manager}
-				</span>
-				<span class="flex items-center gap-1.5">
-					<Calendar class="size-4" />
-					{fund.report_date_english}
-				</span>
-			</div>
+			<p class="mt-6 max-w-3xl font-serif text-xl leading-snug">{fundOpeningSentence(fund)}</p>
+			<p class="mt-6 text-xs text-muted-foreground">{fundProvenance(fund)}</p>
 		</div>
 
-		<!-- Right: NAV -->
-		<div class="text-right">
-			<p class="text-sm text-muted-foreground">NAV per Unit</p>
-			<p class="font-serif text-5xl tabular-nums md:text-6xl">
-				{fund.nav_per_unit.toFixed(2)}
+		<div class="min-w-0 lg:pt-1">
+			<p class="flex items-center gap-2 text-sm text-muted-foreground">
+				<span class="size-2 rounded-full bg-primary" aria-hidden="true"></span> NAV per unit
 			</p>
-			{#if navStatus !== 'neutral'}
-				<p
-					class="mt-1 text-sm font-medium tabular-nums {navStatus === 'positive'
-						? 'text-positive'
-						: 'text-negative'}"
+			<p class="mt-1 flex flex-wrap items-baseline gap-x-4">
+				<span class="font-serif text-3xl font-medium tabular-nums"
+					>Rs {fund.nav_per_unit.toFixed(2)}</span
 				>
-					{navStatus === 'positive' ? '+' : ''}{(((fund.nav_per_unit - 10) / 10) * 100).toFixed(2)}%
-					from par
-				</p>
-			{/if}
+				<span class="text-sm tabular-nums">
+					<span class="text-muted-foreground">from par</span>
+					<span class={tone(fromPar)}>{fromPar > 0 ? '+' : ''}{fromPar.toFixed(2)}%</span>
+				</span>
+			</p>
+			<div class="mt-5">
+				<FundStats {fund} />
+			</div>
 		</div>
 	</div>
-</div>
+</header>
