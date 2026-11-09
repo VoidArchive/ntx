@@ -1,26 +1,24 @@
 <script lang="ts">
-	import type { Fundamental } from '#lib/gen/ntx/v1/common_pb.js';
+	import type { Quarter } from '#lib/gen/ntx/v1/story_pb.js';
 
 	interface Props {
-		fundamentals: Fundamental[]; // quarterly rows, any order
-		median?: number; // the company's own three-year median PE
+		quarters: Quarter[]; // oldest first, as the story returns them
+		median?: number; // the company's own three-year median PE, on the same trailing basis
 		current?: number; // PE at the latest close, which moves daily while the filed figure does not
 		class?: string;
 	}
 
-	let { fundamentals, median, current, class: className = '' }: Props = $props();
+	let { quarters, median, current, class: className = '' }: Props = $props();
 
-	// "Q1 2083/84" sorts as "2083/84 Q1": year first, then quarter.
-	const yearFirst = (period: string) => period.split(' ').reverse().join(' ');
-
-	// The last twelve quarters with a PE; a loss quarter has none and leaves a gap.
+	// The last twelve quarters priced on trailing EPS (GLOSSARY: Trailing EPS); a quarter
+	// without four consecutive quarters behind it, or with a trailing loss, leaves a gap.
 	let rows = $derived(
-		fundamentals
-			.filter((f) => !!f.quarter && f.peRatio !== undefined && f.peRatio > 0)
-			.sort((a, b) => yearFirst(a.period).localeCompare(yearFirst(b.period)))
+		quarters
+			.filter((q) => q.trailingPe !== undefined && q.trailingPe > 0)
+			.map((q) => ({ period: q.period, peRatio: q.trailingPe as number }))
 			.slice(-12)
 	);
-	let max = $derived(Math.max(...rows.map((r) => r.peRatio ?? 0), median ?? 0) * 1.15);
+	let max = $derived(Math.max(...rows.map((r) => r.peRatio), median ?? 0) * 1.15);
 	const fmt = (v: number) => `${v.toLocaleString('en-NP', { maximumFractionDigits: 2 })}x`;
 </script>
 
@@ -72,13 +70,12 @@
 			{/each}
 		</div>
 		<p class="mt-3 text-xs text-muted-foreground">
-			PE as filed each quarter{#if current !== undefined}; at the latest close it is {fmt(
-					current
-				)}{/if}.
+			PE at each filing's price on the four quarters to it{#if current !== undefined}; at the latest
+				close it is {fmt(current)}{/if}.
 		</p>
 	</div>
 {:else}
 	<p class="text-sm text-muted-foreground {className}">
-		No quarter with a positive EPS, so no PE to show.
+		No four consecutive quarters with a profit, so no trailing PE to show.
 	</p>
 {/if}

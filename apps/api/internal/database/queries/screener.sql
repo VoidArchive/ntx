@@ -1,10 +1,12 @@
 -- name: UpsertCompanyRating :exec
-INSERT INTO company_ratings (company_id, letter, holds, evaluated, computed_at)
-VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+INSERT INTO company_ratings (company_id, letter, holds, evaluated, total, version, computed_at)
+VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 ON CONFLICT(company_id) DO UPDATE SET
   letter = excluded.letter,
   holds = excluded.holds,
   evaluated = excluded.evaluated,
+  total = excluded.total,
+  version = excluded.version,
   computed_at = excluded.computed_at;
 
 -- One row per listed company with the inputs of the screener columns; ratios
@@ -12,13 +14,13 @@ ON CONFLICT(company_id) DO UPDATE SET
 -- company without a filing, a close or a rating still lists.
 -- shortcut: the "latest quarterly row" subquery repeats story.sql and sector.sql; fold all three into one view when the quarter ordering next changes.
 -- name: ListScreener :many
-SELECT c.symbol, c.name, c.sector,
+SELECT c.id, c.symbol, c.name, c.sector,
   o.listed_shares,
   p.close_price, p.turnover,
   prev.close_price AS prev_close,
   f.eps, f.book_value,
   ca.cash_dividend,
-  r.letter AS rating,
+  r.letter AS rating, r.holds, r.evaluated, r.total,
   f.fiscal_year, f.quarter, f.fiscal_year_np, p.business_date
 FROM companies c
 LEFT JOIN ownership o ON o.company_id = c.id
@@ -45,9 +47,13 @@ LEFT JOIN corporate_actions ca ON ca.id = (
   ORDER BY ca2.fiscal_year DESC, ca2.submitted_date DESC
   LIMIT 1
 )
-LEFT JOIN company_ratings r ON r.company_id = c.id
+LEFT JOIN company_ratings r ON r.company_id = c.id AND r.version = sqlc.arg('version')
 WHERE c.status = 'A'
 ORDER BY c.symbol;
 
--- name: CountCompanyRatings :one
-SELECT COUNT(*) FROM company_ratings;
+-- Listed companies without a rating from the current rule set: every one after a
+-- deploy that changed the rules, the remainder after a sync that stopped part-way.
+-- name: CountUnratedCompanies :one
+SELECT COUNT(*) FROM companies c
+WHERE c.status = 'A'
+  AND NOT EXISTS (SELECT 1 FROM company_ratings r WHERE r.company_id = c.id AND r.version = ?);

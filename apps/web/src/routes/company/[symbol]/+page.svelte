@@ -11,7 +11,7 @@
 		OwnershipHistory,
 		Snowflake
 	} from '#lib/components/company/index.js';
-	import { AXES, checksFor, score, type AxisId } from '#lib/components/company/snowflake.js';
+	import { checksFor, score, type AxisId } from '#lib/components/company/snowflake.js';
 	import { EarningsChart } from '#lib/components/charts/index.js';
 	import CompanyPlants from '#lib/components/hydro/CompanyPlants.svelte';
 	import CircleCheck from '@lucide/svelte/icons/circle-check';
@@ -63,7 +63,7 @@
 
 	// A section shows the checks its snowflake axis reads (GLOSSARY: Check).
 	function axis(id: AxisId): Check[] {
-		return checksFor(allChecks, AXES.find((a) => a.id === id)!.checks);
+		return checksFor(allChecks, id);
 	}
 
 	const VERDICT: Record<string, string> = {
@@ -83,28 +83,28 @@
 	{/if}
 {/snippet}
 
-<!-- One chip per section: how many of its checks hold. -->
+<!-- One chip per section: how many of all its checks hold; one without history counts as not holding. -->
 {#snippet chip(verdicts: Check[])}
 	{@const s = score(verdicts)}
 	<span
-		class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium {verdicts.length ===
+		class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium {s.total ===
 			0 || s.evaluated === 0
 			? 'border-border text-muted-foreground'
-			: s.holds === s.evaluated
+			: s.holds === s.total
 				? 'border-positive/40 text-positive'
 				: s.holds === 0
 					? 'border-negative/40 text-negative'
 					: 'border-border text-foreground'}"
 		title={verdicts.length
 			? verdicts.map((c) => `${c.name}: ${VERDICT[c.verdict]}`).join('; ')
-			: 'None of the eight published checks reads this section'}
+			: 'None of the ten published checks reads this section'}
 	>
-		{#if verdicts.length === 0}
+		{#if s.total === 0}
 			<CircleDashed class="size-3.5" aria-hidden="true" /> no checks
 		{:else if s.evaluated === 0}
 			<CircleDashed class="size-3.5" aria-hidden="true" /> needs more history
 		{:else}
-			<CircleCheck class="size-3.5" aria-hidden="true" /> {s.holds} of {s.evaluated} hold
+			<CircleCheck class="size-3.5" aria-hidden="true" /> {s.holds} of {s.total} hold
 		{/if}
 	</span>
 {/snippet}
@@ -211,12 +211,14 @@
 					<p class="mt-2 font-medium">Snowflake</p>
 					<p class="mt-1 text-sm text-muted-foreground">
 						{#if story?.rating?.letter}
-							Rating {story.rating.letter}: {story.rating.holds} of {story.rating.evaluated} checks hold.
+							Rating {story.rating.letter}: {story.rating.holds} of {story.rating.total} checks hold,
+							{story.rating.evaluated} evaluated.
 						{:else}
 							Too few checks have history to rate.
 						{/if}
-						Each axis is the share of its checks that hold, from the eight published rules, drawn out
-						from a small core; a check on watch or without history adds nothing. Not a recommendation.
+						Each axis is the share of all its checks that hold, from the ten published rules, drawn out
+						from a small core. A check on watch or without history scores zero, and no company is rated
+						A while a check lacks history. Not a recommendation.
 					</p>
 				</div>
 			</div>
@@ -228,7 +230,7 @@
 				1,
 				'Valuation',
 				[],
-				axis('valuation'),
+				axis('value'),
 				story?.strips.length ? '' : `No ratios recorded. ${lastFiling}`
 			)}
 			{#if story?.strips.length}
@@ -250,7 +252,8 @@
 					{/each}
 				</dl>
 				<p class="mt-2 text-xs text-muted-foreground">
-					From {story.lastFiling || 'the latest filing'} and the latest close. Sector medians are over
+					From {story.lastFiling || 'the latest filing'} and the latest close; PE is on trailing four-quarter
+					EPS where four consecutive quarters exist, EPS is annualized as filed. Sector medians are over
 					each sector company's latest filed quarter.
 				</p>
 			{/if}
@@ -265,7 +268,7 @@
 						</p>
 					{/if}
 					<RatioHistory
-						fundamentals={fundamentalsHistory}
+						quarters={story?.quarters ?? []}
 						median={strip('pe')?.own?.median}
 						current={strip('pe')?.value}
 						class="mt-6"

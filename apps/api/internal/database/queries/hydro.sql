@@ -32,7 +32,7 @@ LEFT JOIN fundamentals f ON f.id = (
     CASE f2.quarter WHEN 'Fourth Quarter' THEN 4 WHEN 'Third Quarter' THEN 3 WHEN 'Second Quarter' THEN 2 ELSE 1 END DESC
   LIMIT 1
 )
-LEFT JOIN company_ratings r ON r.company_id = c.id
+LEFT JOIN company_ratings r ON r.company_id = c.id AND r.version = sqlc.arg('version')
 ORDER BY hp.basin, hp.symbol, hp.plant;
 
 -- name: ListHydroPlantsBySymbol :many

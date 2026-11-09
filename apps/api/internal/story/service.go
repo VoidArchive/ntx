@@ -57,17 +57,18 @@ func (s *Service) GetCompanyStory(
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("sector peers: %w", err))
 	}
-	res.Peers = peers(rows)
+	res.Peers = peers(rows, in.Quarterly)
 	return connect.NewResponse(res), nil
 }
 
-// peers ratios the latest close against the latest quarterly row, as the strips do.
-func peers(rows []sqlc.ListSectorPeersRow) []*ntxv1.Peer {
+// peers ratios the latest close against the latest quarterly row, pricing
+// earnings as the strips do (trailing where four consecutive quarters exist).
+func peers(rows []sqlc.ListSectorPeersRow, quarterly map[int64][]sqlc.Fundamental) []*ntxv1.Peer {
 	out := make([]*ntxv1.Peer, 0, len(rows))
 	for _, r := range rows {
 		p := &ntxv1.Peer{Symbol: r.Symbol, Name: r.Name}
-		if r.Eps.Float64 > 0 {
-			p.Pe = proto.Float64(r.Close / r.Eps.Float64)
+		if e, ok := LatestEarnings(quarterly[r.ID]); ok && e.EPS > 0 {
+			p.Pe = proto.Float64(r.Close / e.EPS)
 		}
 		if r.BookValue.Float64 > 0 {
 			p.Pb = proto.Float64(r.Close / r.BookValue.Float64)
@@ -111,7 +112,7 @@ func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
 	if err != nil {
 		return Input{}, err
 	}
-	in := Input{Company: c}
+	in := Input{Company: c, Today: time.Now().Format(time.DateOnly)}
 	if in.Fundamentals, err = s.queries.ListFundamentalsByCompany(ctx, c.ID); err != nil {
 		return Input{}, fmt.Errorf("fundamentals: %w", err)
 	}
@@ -136,11 +137,16 @@ func (s *Service) load(ctx context.Context, symbol string) (Input, error) {
 	if in.Ownership, err = s.queries.ListOwnershipHistory(ctx, c.ID); err != nil {
 		return Input{}, fmt.Errorf("ownership history: %w", err)
 	}
+	earningsRows, err := s.queries.ListEarningsRows(ctx, c.Sector)
+	if err != nil {
+		return Input{}, fmt.Errorf("sector earnings: %w", err)
+	}
+	in.Sector.PE = SectorPE(earningsRows)
+	in.Quarterly, _, _ = Quarterly(earningsRows)
 	for _, d := range []struct {
 		dst  *[]float64
 		list func(context.Context, string) ([]float64, error)
 	}{
-		{&in.Sector.PE, s.queries.ListSectorPE},
 		{&in.Sector.PB, s.queries.ListSectorPB},
 		{&in.Sector.EPS, s.queries.ListSectorEPS},
 		{&in.Sector.Yield, s.queries.ListSectorYield},
@@ -205,10 +211,10 @@ func toProto(st Story) *ntxv1.GetCompanyStoryResponse {
 		)
 	}
 	for _, c := range st.Checks {
-		res.Checks = append(res.Checks, &ntxv1.Check{Name: c.Name, Rule: c.Rule, Verdict: c.Verdict})
+		res.Checks = append(res.Checks, &ntxv1.Check{Name: c.Name, Rule: c.Rule, Verdict: c.Verdict, Axis: c.Axis})
 	}
 	r := st.Rating
-	res.Rating = &ntxv1.Rating{Letter: r.Letter, Holds: r.Holds, Evaluated: r.Evaluated}
+	res.Rating = &ntxv1.Rating{Letter: r.Letter, Holds: r.Holds, Evaluated: r.Evaluated, Total: r.Total}
 	return res
 }
 

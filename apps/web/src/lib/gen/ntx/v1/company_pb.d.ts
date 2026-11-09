@@ -80,7 +80,7 @@ export declare type ScreenerRow = Message<"ntx.v1.ScreenerRow"> & {
   pb?: number;
 
   /**
-   * annualized, as filed
+   * trailing four quarters when `period` starts "4Q to", else annualized as filed
    *
    * @generated from field: optional double eps = 7;
    */
@@ -141,6 +141,13 @@ export declare type ScreenerRow = Message<"ntx.v1.ScreenerRow"> & {
    * @generated from field: optional double roe = 15;
    */
   roe?: number;
+
+  /**
+   * "5 of 10 hold, 9 evaluated"; "" when unrated
+   *
+   * @generated from field: string rating_coverage = 16;
+   */
+  ratingCoverage: string;
 };
 
 /**

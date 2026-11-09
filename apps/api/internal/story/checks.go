@@ -1,6 +1,6 @@
 package story
 
-import "slices"
+import "time"
 
 // Verdicts of a Check (GLOSSARY: Check, Holds / Watch). Neither is a recommendation.
 const (
@@ -9,59 +9,91 @@ const (
 	NeedsHistory = "needs more history"
 )
 
+// Axes of the snowflake; each check sits on one, and each is a company page section.
+const (
+	AxisValue     = "value"
+	AxisPast      = "past"
+	AxisHealth    = "health"
+	AxisDividend  = "dividend"
+	AxisOwnership = "ownership"
+)
+
 // Check is one published rule and its verdict for this company.
 type Check struct {
-	Name, Rule, Verdict string
+	Name, Rule, Verdict, Axis string
 }
 
 // cashCeiling is the cash payout rule's threshold, % of the fiscal year's profit.
 const cashCeiling = 30
 
+// roeFloor is the return on equity rule's threshold, in percent.
+const roeFloor = 15
+
 var rules = []struct {
-	name, rule string
-	eval       func(Story, Input) string
+	name, rule, axis string
+	eval             func(Story, Input) string
 }{
-	{"EPS growth", "EPS grew in at least 3 of the last 4 fiscal years and is positive.", epsGrowth},
-	{"Quarterly profit", "Net profit for the latest quarter is above the same quarter last year.", quarterlyProfit},
-	{"PE against its own history", "PE is below its own three-year median.", peOwn},
-	{"PB against the sector", "PB is below the sector median.", pbSector},
-	{"Dividend record", "A cash or bonus dividend was paid in each of the last 3 fiscal years.", dividendRecord},
-	{"Cash payout", "The cash dividend is below 30% of the last fiscal year's profit.", cashPayout},
-	{"Promoter holding", "The promoter share is unchanged over the last 4 observations.", promoterHolding},
-	{"Book value growth", "Book value per share grew over the last 3 fiscal years.", bookValueGrowth},
+	{"EPS growth", "EPS grew in at least 3 of the last 4 fiscal years and is positive.", AxisPast, epsGrowth},
+	{
+		"Quarterly profit",
+		"Net profit for the latest quarter is above the same quarter last year.",
+		AxisPast,
+		quarterlyProfit,
+	},
+	{"PE against its own history", "PE is below its own three-year median.", AxisValue, peOwn},
+	{"PB against the sector", "PB is below the sector median.", AxisValue, pbSector},
+	{
+		"Dividend record",
+		"A cash or bonus dividend was paid in each of the last 3 fiscal years.",
+		AxisDividend,
+		dividendRecord,
+	},
+	{"Cash payout", "The cash dividend is below 30% of the last fiscal year's profit.", AxisDividend, cashPayout},
+	{
+		"Promoter holding",
+		"The promoter share has not changed in the last 12 months.",
+		AxisOwnership,
+		promoterHolding,
+	},
+	{"Book value growth", "Book value per share grew over the last 3 fiscal years.", AxisHealth, bookValueGrowth},
+	{"PE against the sector", "PE is below the sector median among profitable companies.", AxisValue, peSector},
+	{
+		"Return on equity",
+		"Annualized EPS is at least 15% of book value per share, both from the latest filing.",
+		AxisPast,
+		returnOnEquity,
+	},
 }
 
 // Checks evaluates every published rule on the story's own figures.
 func Checks(s Story, in Input) []Check {
 	out := make([]Check, 0, len(rules))
 	for _, r := range rules {
-		out = append(out, Check{Name: r.name, Rule: r.rule, Verdict: r.eval(s, in)})
+		out = append(out, Check{Name: r.name, Rule: r.rule, Verdict: r.eval(s, in), Axis: r.axis})
 	}
 	return out
 }
 
-// Rating is one letter for the checks (GLOSSARY: Rating). Holds are scaled to
-// eight so a company with unevaluated checks is rated on the ones it has.
+// Rating is one letter for the checks (GLOSSARY: Rating). Holds are counted
+// against every published check, so a check without history lowers the letter
+// instead of vanishing from it (ADR 0005).
 type Rating struct {
-	Letter           string // "" when fewer than minEvaluated checks evaluate
-	Holds, Evaluated int32
+	Letter                  string // "" when fewer than minEvaluated checks evaluate
+	Holds, Evaluated, Total int32
 }
 
 const minEvaluated = 4
 
-// aGates must evaluate before an A: EPS growth and quarterly profit measure
-// direction, so a shrinking loss passes both; these two measure level.
-var aGates = []string{"Quarterly profit", "PE against its own history"}
-
-// ratingScale is the glossary's eight; the rule count may grow, the letter grid does not.
-const ratingScale = 8
+// letterFloors are the share of all checks that hold, in percent, for each letter.
+var letterFloors = []struct {
+	letter string
+	floor  int
+}{{"A", 85}, {"B", 60}, {"C", 35}}
 
 func rating(checks []Check) Rating {
-	var r Rating
-	gated := false
+	r := Rating{Total: int32(len(checks))} //nolint:gosec // ten checks
 	for _, c := range checks {
 		if c.Verdict == NeedsHistory {
-			gated = gated || slices.Contains(aGates, c.Name)
 			continue
 		}
 		r.Evaluated++
@@ -72,15 +104,12 @@ func rating(checks []Check) Rating {
 	if r.Evaluated < minEvaluated {
 		return r
 	}
-	// holds/evaluated >= floor/8 in integers, so the share rounds down: A from 7 of 8, B from 5, C from 3.
-	for _, g := range []struct {
-		letter string
-		floor  int
-	}{{"A", 7}, {"B", 5}, {"C", 3}} {
-		if g.letter == "A" && gated {
+	for _, g := range letterFloors {
+		// An A means the whole record was seen.
+		if g.letter == "A" && r.Evaluated < r.Total {
 			continue
 		}
-		if int(r.Holds)*ratingScale >= g.floor*int(r.Evaluated) {
+		if int(r.Holds)*100 >= g.floor*int(r.Total) {
 			r.Letter = g.letter
 			return r
 		}
@@ -149,6 +178,27 @@ func peOwn(s Story, _ Input) string {
 	return verdictOf(*pe.Value < pe.Own.Median)
 }
 
+func peSector(s Story, _ Input) string {
+	pe := s.Strips[0]
+	if pe.Value == nil || pe.Sector.Count == 0 {
+		return NeedsHistory
+	}
+	return verdictOf(*pe.Value < pe.Sector.Median)
+}
+
+// returnOnEquity divides two per-share figures from the same filing (GLOSSARY: ROE).
+func returnOnEquity(_ Story, in Input) string {
+	quarters, _ := parse(in.Fundamentals)
+	if len(quarters) == 0 {
+		return NeedsHistory
+	}
+	row := quarters[len(quarters)-1].row
+	if !row.Eps.Valid || !row.BookValue.Valid || row.BookValue.Float64 <= 0 {
+		return NeedsHistory
+	}
+	return verdictOf(row.Eps.Float64*100/row.BookValue.Float64 >= roeFloor)
+}
+
 func pbSector(s Story, _ Input) string {
 	pb := s.Strips[1]
 	if pb.Value == nil || pb.Sector.Count == 0 {
@@ -187,22 +237,24 @@ func cashPayout(s Story, _ Input) string {
 	return verdictOf(share < cashCeiling)
 }
 
-func promoterHolding(s Story, _ Input) string {
-	if len(s.Ownership) < ownershipWindow {
+// promoterHolding reads the history as the sync writes it: one row per change,
+// so the newest row is the last move, or the first recording when there is one row.
+func promoterHolding(s Story, in Input) string {
+	if len(s.Ownership) == 0 {
 		return NeedsHistory
 	}
-	window := s.Ownership[len(s.Ownership)-ownershipWindow:]
-	for _, o := range window {
-		if o.Promoter == nil {
-			return NeedsHistory
-		}
+	newest, err := time.Parse(time.DateOnly, s.Ownership[len(s.Ownership)-1].AsOf)
+	if err != nil {
+		return NeedsHistory
 	}
-	for _, o := range window {
-		if *o.Promoter != *window[0].Promoter {
-			return Watch
-		}
+	if !newest.After(in.today().AddDate(-1, 0, 0)) {
+		return Holds
 	}
-	return Holds
+	if len(s.Ownership) >= 2 {
+		return Watch
+	}
+	// Recorded for under a year with no change yet: nobody can know.
+	return NeedsHistory
 }
 
 func bookValueGrowth(s Story, _ Input) string {

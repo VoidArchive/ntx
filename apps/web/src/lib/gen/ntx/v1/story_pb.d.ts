@@ -144,7 +144,7 @@ export declare type GetCompanyStoryResponse = Message<"ntx.v1.GetCompanyStoryRes
   ownership: OwnershipObservation[];
 
   /**
-   * The eight published rules, in a fixed order (GLOSSARY: Check).
+   * The ten published rules, in a fixed order (GLOSSARY: Check).
    *
    * @generated from field: repeated ntx.v1.Check checks = 30;
    */
@@ -230,7 +230,8 @@ export declare type Peer = Message<"ntx.v1.Peer"> & {
 export declare const PeerSchema: GenMessage<Peer>;
 
 /**
- * A to D from the share of Holds among the checks that could be evaluated; not a recommendation.
+ * A to D from the share of Holds among every published check; a check without
+ * history counts as not holding (ADR 0005). Not a recommendation.
  *
  * @generated from message ntx.v1.Rating
  */
@@ -253,6 +254,13 @@ export declare type Rating = Message<"ntx.v1.Rating"> & {
    * @generated from field: int32 evaluated = 3;
    */
   evaluated: number;
+
+  /**
+   * every published check
+   *
+   * @generated from field: int32 total = 4;
+   */
+  total: number;
 };
 
 /**
@@ -285,6 +293,13 @@ export declare type Check = Message<"ntx.v1.Check"> & {
    * @generated from field: string verdict = 3;
    */
   verdict: string;
+
+  /**
+   * value | past | health | dividend | ownership: its snowflake axis and page section
+   *
+   * @generated from field: string axis = 4;
+   */
+  axis: string;
 };
 
 /**
@@ -680,6 +695,13 @@ export declare type Quarter = Message<"ntx.v1.Quarter"> & {
    * @generated from field: bool is_monsoon = 9;
    */
   isMonsoon: boolean;
+
+  /**
+   * price at filing over trailing four-quarter EPS; unset without four consecutive quarters
+   *
+   * @generated from field: optional double trailing_pe = 10;
+   */
+  trailingPe?: number;
 };
 
 /**

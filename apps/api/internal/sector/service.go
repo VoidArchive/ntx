@@ -68,11 +68,11 @@ func (s *Service) summary(ctx context.Context, c sqlc.ListSectorCountsRow) (*ntx
 		Sector:       company.SectorFromDB(c.Sector),
 		CompanyCount: int32(c.CompanyCount), //nolint:gosec // a few hundred companies
 	}
-	pe, err := s.queries.ListSectorPE(ctx, c.Sector)
+	earnings, err := s.queries.ListEarningsRows(ctx, c.Sector)
 	if err != nil {
 		return nil, fmt.Errorf("sector pe: %w", err)
 	}
-	r := story.Median(story.Profitable(pe))
+	r := story.Median(story.SectorPE(earnings))
 	row.MedianPe, row.PeCount = median(r), int32(r.Count) //nolint:gosec // bounded by company count
 
 	pb, err := s.queries.ListSectorPB(ctx, c.Sector)

@@ -73,7 +73,7 @@ Claims computed, all from existing columns:
 - **Earnings.** Latest quarter profit and EPS; change on the same quarter of the previous fiscal year; record and streak labels: "best Q1 in five years", "third consecutive year-on-year increase", "first loss in N quarters". For `sector = Hydro Power`, EPS is always stated three ways: quarter, annualized, last full year, with the monsoon quarter (Q1, Shrawan–Ashwin) flagged.
 - **Valuation.** PE and PB at the latest close against the sector **median** and the company's own three-year median. Medians, not means: hydropower has 112 names.
 - **Payout.** Last fiscal year's bonus, cash and rights; consecutive years with any payout; cash payout as a share of that year's profit.
-- **Ownership.** Promoter and public share; changed or unchanged over the last four observations in `ownership_history`.
+- **Ownership.** Promoter and public share; the last change and its date from `ownership_history`, which holds one row per change (rule made time-based 2026-11-09, see issue #53).
 - **Funds.** Count of funds holding, total value, largest holder, from `nav.json` (passed in by the web layer; the engine does not read files).
 - **Checks.** Eight rules in `rules.go`, each `{Name, Sentence, Evaluate(input) (Holds|Watch|NoData)}`. Initial set:
   1. EPS grew in at least 3 of the last 4 fiscal years.
@@ -82,7 +82,7 @@ Claims computed, all from existing columns:
   4. PB is below the sector median.
   5. Paid a dividend (bonus or cash) in each of the last 3 fiscal years.
   6. Cash payout is below 30% of last fiscal year's profit.
-  7. Promoter holding unchanged over the last 4 observations.
+  7. Promoter holding unchanged in the last 12 months (time-based since 2026-11-09; history rows are changes, so an observation count could never be met).
   8. Book value per share grew over the last 3 fiscal years.
   Rendered as two lists, Holds and Watch, each item carrying its sentence, plus one quiet line "N checks need more history" for rules whose inputs do not reach back far enough. Never a score, never a buy/sell word. Rule text is in the repo and shown on the page.
 

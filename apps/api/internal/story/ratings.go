@@ -8,6 +8,10 @@ import (
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 )
 
+// RatingVersion names the rule set; bump it when a check or the letter rule
+// changes so the startup fill recomputes every stored letter.
+const RatingVersion = 2
+
 // SyncRatings stores every listed company's Rating for the screener, which
 // must not build 281 stories per request. The company page still computes live.
 func SyncRatings(ctx context.Context, queries *sqlc.Queries) error {
@@ -29,7 +33,8 @@ func SyncRatings(ctx context.Context, queries *sqlc.Queries) error {
 		}
 		r := Build(in).Rating
 		if err := queries.UpsertCompanyRating(ctx, sqlc.UpsertCompanyRatingParams{
-			CompanyID: c.ID, Letter: r.Letter, Holds: int64(r.Holds), Evaluated: int64(r.Evaluated),
+			CompanyID: c.ID, Letter: r.Letter,
+			Holds: int64(r.Holds), Evaluated: int64(r.Evaluated), Total: int64(r.Total), Version: RatingVersion,
 		}); err != nil {
 			return fmt.Errorf("store rating %s: %w", c.Symbol, err)
 		}

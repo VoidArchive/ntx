@@ -81,7 +81,7 @@
 							{#if marketCap}·{/if}
 							<span title="A to D from the share of checks that hold; not a recommendation">
 								Rating <span class="font-medium text-foreground">{rating.letter}</span>, {rating.holds}
-								of {rating.evaluated} checks hold
+								of {rating.total} checks hold, {rating.evaluated} evaluated
 							</span>
 						{:else if rating && story}
 							{#if marketCap}·{/if}

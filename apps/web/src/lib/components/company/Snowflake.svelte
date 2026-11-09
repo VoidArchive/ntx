@@ -15,7 +15,7 @@
 
 	let axes = $derived(
 		AXES.map((axis, i) => {
-			const s = score(checksFor(checks, axis.checks));
+			const s = score(checksFor(checks, axis.id));
 			const angle = -Math.PI / 2 + (i * 2 * Math.PI) / AXES.length;
 			const r = R * (CORE + (1 - CORE) * s.value);
 			return { ...axis, ...s, angle, x: C + r * Math.cos(angle), y: C + r * Math.sin(angle) };
@@ -53,9 +53,14 @@
 		return `M ${x0} ${y0} A ${r} ${r} 0 0 ${lower ? 0 : 1} ${x1} ${y1}`;
 	}
 
-	let summary = $derived(
-		axes.map((a) => `${a.label} ${a.holds} of ${a.evaluated} checks hold`).join(', ')
-	);
+	// "2 of 3 checks hold, 1 without history" names what the axis could not see.
+	function describe(a: (typeof axes)[number]): string {
+		const missing = a.total - a.evaluated;
+		const base = `${a.holds} of ${a.total} checks hold`;
+		return missing ? `${base}, ${missing} without history` : base;
+	}
+
+	let summary = $derived(axes.map((a) => `${a.label} ${describe(a)}`).join(', '));
 	const uid = $props.id();
 </script>
 
@@ -101,19 +106,17 @@
 		stroke-width="2"
 		stroke-linejoin="round"
 	/>
+	<!-- An axis with a check that lacks history gets a hollow, dashed marker. -->
 	{#each axes as a (a.id)}
 		<circle
 			cx={a.x}
 			cy={a.y}
-			r="3"
-			class="fill-primary-foreground stroke-primary"
+			r={a.evaluated < a.total ? 4 : 3}
+			class="stroke-primary {a.evaluated < a.total ? 'fill-background' : 'fill-primary-foreground'}"
 			stroke-width="1.5"
+			stroke-dasharray={a.evaluated < a.total ? '2 1.5' : undefined}
 		>
-			<title
-				>{a.label}: {a.evaluated
-					? `${a.holds} of ${a.evaluated} checks hold`
-					: 'needs more history'}</title
-			>
+			<title>{a.label}: {describe(a)}</title>
 		</circle>
 	{/each}
 

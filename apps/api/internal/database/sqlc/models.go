@@ -28,6 +28,8 @@ type CompanyRating struct {
 	Holds      int64     `json:"holds"`
 	Evaluated  int64     `json:"evaluated"`
 	ComputedAt time.Time `json:"computed_at"`
+	Total      int64     `json:"total"`
+	Version    int64     `json:"version"`
 }
 
 type CorporateAction struct {

@@ -13,6 +13,7 @@ import (
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/internal/database"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 // fixture seeds three plants in two basins: Chilime (Gandaki) with heavy rain
@@ -92,7 +93,7 @@ func fixture(t *testing.T) *Service {
 	}
 	if err := q.UpsertCompanyRating(
 		ctx,
-		sqlc.UpsertCompanyRatingParams{CompanyID: 1, Letter: "B", Holds: 5, Evaluated: 8},
+		sqlc.UpsertCompanyRatingParams{Version: story.RatingVersion, CompanyID: 1, Letter: "B", Holds: 5, Evaluated: 8},
 	); err != nil {
 		t.Fatal(err)
 	}

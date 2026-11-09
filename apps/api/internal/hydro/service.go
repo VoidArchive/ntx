@@ -13,6 +13,7 @@ import (
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/company"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 const readingDays = 7
@@ -110,7 +111,7 @@ func (s *Service) GetPlantReadings(
 // applies the rules. The whole table is a few hundred rows, so one pass serves
 // both the map and a company's section.
 func (s *Service) plants(ctx context.Context) ([]*ntxv1.Plant, error) {
-	rows, err := s.queries.ListHydroPlants(ctx)
+	rows, err := s.queries.ListHydroPlants(ctx, story.RatingVersion)
 	if err != nil {
 		return nil, fmt.Errorf("list plants: %w", err)
 	}

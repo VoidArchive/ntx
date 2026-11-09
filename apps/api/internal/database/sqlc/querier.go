@@ -12,8 +12,10 @@ type Querier interface {
 	// Compares each company's close with its own previous priced day, because
 	// backfilled rows carry no change fields and illiquid stocks skip sessions.
 	CountBreadth(ctx context.Context, businessDate string) (CountBreadthRow, error)
-	CountCompanyRatings(ctx context.Context) (int64, error)
 	CountDischargeReadings(ctx context.Context, plantID int64) (int64, error)
+	// Listed companies without a rating from the current rule set: every one after a
+	// deploy that changed the rules, the remainder after a sync that stopped part-way.
+	CountUnratedCompanies(ctx context.Context, version int64) (int64, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetLastWeatherRun(ctx context.Context) (string, error)
@@ -39,12 +41,20 @@ type Querier interface {
 	// ago, so the window stays ten years as rows age): the row ranked ceil(0.95 * n)
 	// ascending, written in integer arithmetic as SQLite has no ceil.
 	ListDischargeP95(ctx context.Context, floor string) ([]ListDischargeP95Row, error)
+	// Sector distributions for the story strips: one value per company in the
+	// sector, from its latest quarterly row and its latest close. Divisions by
+	// zero are filtered so every value is a number.
+	// shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
+	// Every quarterly row of every listed company with the company's latest close,
+	// for the story engine to price earnings on a trailing four-quarter basis; one
+	// sector or, with a NULL sector, all of them.
+	ListEarningsRows(ctx context.Context, sector interface{}) ([]ListEarningsRowsRow, error)
 	// The first backfill set every created_at to one day, so every unpublished row reads "seen" on that day.
 	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
 	// Every plant with its company's latest close, latest quarterly EPS (for PE, divided
 	// in Go as the screener does) and stored rating. LEFT joins: a plant lists without them.
-	ListHydroPlants(ctx context.Context) ([]ListHydroPlantsRow, error)
+	ListHydroPlants(ctx context.Context, version int64) ([]ListHydroPlantsRow, error)
 	ListHydroPlantsBySymbol(ctx context.Context, symbol string) ([]HydroPlant, error)
 	// A symbol DoED spells differently from NEPSE would list a plant with no company.
 	ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydroPlantsWithoutCompanyRow, error)
@@ -59,15 +69,10 @@ type Querier interface {
 	// are divided in Go so a zero never reaches SQL. Every join is LEFT so a
 	// company without a filing, a close or a rating still lists.
 	// shortcut: the "latest quarterly row" subquery repeats story.sql and sector.sql; fold all three into one view when the quarter ordering next changes.
-	ListScreener(ctx context.Context) ([]ListScreenerRow, error)
+	ListScreener(ctx context.Context, version int64) ([]ListScreenerRow, error)
 	ListSectorCounts(ctx context.Context) ([]ListSectorCountsRow, error)
 	ListSectorEPS(ctx context.Context, sector string) ([]float64, error)
 	ListSectorPB(ctx context.Context, sector string) ([]float64, error)
-	// Sector distributions for the story strips: one value per company in the
-	// sector, from its latest quarterly row and its latest close. Divisions by
-	// zero are filtered so every value is a number.
-	// shortcut: the "latest quarterly row" subquery repeats here and in sector.sql; replace it with a latest_quarterly_fundamentals view when the quarter ordering next changes.
-	ListSectorPE(ctx context.Context, sector string) ([]float64, error)
 	ListSectorPeers(ctx context.Context, sector string) ([]ListSectorPeersRow, error)
 	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
 	ListSectorYield(ctx context.Context, sector string) ([]float64, error)
