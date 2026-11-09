@@ -112,7 +112,7 @@ func (w *Worker) SyncFundamentals(ctx context.Context, c Company) error {
 		return err
 	}
 
-	for _, f := range fundamentals {
+	for _, f := range normalizeFundamentals(fundamentals) {
 		params := sqlc.UpsertFundamentalParams{
 			CompanyID:     c.ID,
 			FiscalYear:    f.FiscalYear,
