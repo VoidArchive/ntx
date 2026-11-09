@@ -127,6 +127,13 @@ export declare type ScreenerRow = Message<"ntx.v1.ScreenerRow"> & {
    * @generated from field: string close_date = 13;
    */
   closeDate: string;
+
+  /**
+   * %, on the previous close; unset without one
+   *
+   * @generated from field: optional double change_percent = 14;
+   */
+  changePercent?: number;
 };
 
 /**

@@ -31,7 +31,7 @@
 
 <a
 	href="/mutual-funds/{fund.symbol}"
-	class="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-card/50 p-6 shadow-sm backdrop-blur-sm transition-all hover:-translate-y-1 hover:border-foreground/20 hover:shadow-md"
+	class="group relative flex card-report flex-col justify-between transition-colors hover:bg-popover"
 >
 	<!-- Top: Header -->
 	<div class="flex items-start justify-between gap-4">
@@ -47,9 +47,7 @@
 		</div>
 
 		<!-- Fund Size Badge -->
-		<div
-			class="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-background/50 px-2.5 py-1"
-		>
+		<div class="flex shrink-0 items-center gap-1.5 rounded-full border border-border px-2.5 py-1">
 			<Wallet class="size-3 text-muted-foreground" />
 			<span class="text-xs font-medium tabular-nums">{formatLarge(fund.net_assets)}</span>
 		</div>

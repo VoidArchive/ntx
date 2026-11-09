@@ -317,6 +317,11 @@ func screenerRow(r sqlc.ListScreenerRow) *ntxv1.ScreenerRow {
 	}
 	close := r.ClosePrice.Float64
 	row.Close = &close
+	// Against the previous recorded close, as the home page's movers are; unset without one.
+	if r.PrevClose.Valid && r.PrevClose.Float64 != 0 {
+		change := (close - r.PrevClose.Float64) * 100 / r.PrevClose.Float64
+		row.ChangePercent = &change
+	}
 	if r.Eps.Float64 > 0 {
 		pe := close / r.Eps.Float64
 		row.Pe = &pe

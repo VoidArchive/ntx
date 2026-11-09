@@ -15,6 +15,7 @@ ON CONFLICT(company_id) DO UPDATE SET
 SELECT c.symbol, c.name, c.sector,
   o.listed_shares,
   p.close_price, p.turnover,
+  prev.close_price AS prev_close,
   f.eps, f.book_value,
   ca.cash_dividend,
   r.letter AS rating,
@@ -24,6 +25,11 @@ LEFT JOIN ownership o ON o.company_id = c.id
 LEFT JOIN prices p ON p.id = (
   SELECT p2.id FROM prices p2
   WHERE p2.company_id = c.id AND p2.close_price IS NOT NULL
+  ORDER BY p2.business_date DESC LIMIT 1
+)
+LEFT JOIN prices prev ON prev.id = (
+  SELECT p2.id FROM prices p2
+  WHERE p2.company_id = c.id AND p2.business_date < p.business_date AND p2.close_price IS NOT NULL
   ORDER BY p2.business_date DESC LIMIT 1
 )
 LEFT JOIN fundamentals f ON f.id = (

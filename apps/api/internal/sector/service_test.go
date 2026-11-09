@@ -43,6 +43,7 @@ func seed(t *testing.T, q *sqlc.Queries, fixtures []fixture) {
 				CompanyID: c.ID, FiscalYear: r.fy, Quarter: "First Quarter",
 				Eps: num(r.eps), BookValue: num(r.bv), PaidUpCapital: num(1e10), ProfitAmount: num(r.profitYTD),
 				PublishedAt: sql.NullString{String: f.published, Valid: f.published != ""},
+				SourceUrl:   sql.NullString{String: "https://example.test/" + c.Symbol, Valid: true},
 			}); err != nil {
 				t.Fatal(err)
 			}
@@ -149,6 +150,9 @@ func TestFiledRecentlyWindow(t *testing.T) {
 	}
 	if got := filed[2].GetClaim(); got != "Net profit for Q1 2083/84 was Rs 120.00 crore." {
 		t.Errorf("AAA claim = %q", got)
+	}
+	if got := filed[2].GetSource(); got != "https://example.test/AAA" {
+		t.Errorf("AAA source = %q", got)
 	}
 }
 

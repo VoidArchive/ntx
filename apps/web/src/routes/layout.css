@@ -189,6 +189,18 @@
 	}
 }
 
+/* The report card every page section sits in (DESIGN.md: Report card). */
+@utility card-report {
+	scroll-margin-top: --spacing(6);
+	border-radius: var(--radius-lg);
+	background: var(--card);
+	padding: --spacing(6);
+	box-shadow: var(--shadow-card);
+	@variant sm {
+		padding: --spacing(8);
+	}
+}
+
 /* View Transitions */
 ::view-transition-old(root) {
 	animation: 150ms ease-out both fade-out;

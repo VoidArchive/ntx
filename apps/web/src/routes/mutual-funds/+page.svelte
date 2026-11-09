@@ -30,9 +30,9 @@
 
 <div class="min-h-screen">
 	<!-- Main Content -->
-	<main class="mx-auto max-w-7xl px-4 py-8">
+	<main class="mx-auto max-w-7xl px-4 py-6">
 		<!-- Page Header -->
-		<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+		<header class="flex card-report flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 			<div>
 				<h1 class="font-serif text-3xl font-medium tracking-tight">Mutual funds</h1>
 				<!-- The sentence first, as on every page. -->
@@ -45,12 +45,12 @@
 			</div>
 
 			<!-- View Toggle -->
-			<div class="flex items-center gap-1 rounded-lg border border-border bg-muted/30 p-1">
+			<div class="flex items-center gap-1 rounded-md bg-muted p-0.5">
 				<button
 					onclick={() => (viewMode = 'grid')}
-					class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors {viewMode ===
+					class="flex items-center gap-1.5 rounded px-3 py-1.5 text-sm transition-colors {viewMode ===
 					'grid'
-						? 'bg-background text-foreground shadow-sm'
+						? 'bg-foreground text-background'
 						: 'text-muted-foreground hover:text-foreground'}"
 				>
 					<LayoutGrid class="size-4" />
@@ -58,25 +58,25 @@
 				</button>
 				<button
 					onclick={() => (viewMode = 'table')}
-					class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors {viewMode ===
+					class="flex items-center gap-1.5 rounded px-3 py-1.5 text-sm transition-colors {viewMode ===
 					'table'
-						? 'bg-background text-foreground shadow-sm'
+						? 'bg-foreground text-background'
 						: 'text-muted-foreground hover:text-foreground'}"
 				>
 					<List class="size-4" />
 					<span class="hidden sm:inline">Table</span>
 				</button>
 			</div>
-		</div>
+		</header>
 		<!-- Fund Grid -->
 		{#if viewMode === 'grid'}
-			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			<div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 				{#each data.funds as fund (fund.symbol)}
 					<FundCard {fund} />
 				{/each}
 			</div>
 		{:else}
-			<div class="overflow-x-auto">
+			<section class="mt-6 card-report overflow-x-auto">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<thead class="text-xs text-muted-foreground">
 						<tr class="border-b border-border">
@@ -92,11 +92,10 @@
 					<tbody>
 						{#each data.funds as fund (fund.symbol)}
 							{@const fromPar = ((fund.nav_per_unit - 10) / 10) * 100}
-							<tr class="border-b border-border/50 hover:bg-muted/50">
+							<tr class="border-b border-border/50 hover:bg-accent/40">
 								<td class="py-1.5">
-									<a
-										href="/mutual-funds/{fund.symbol}"
-										class="font-serif font-medium hover:underline">{fund.symbol}</a
+									<a href="/mutual-funds/{fund.symbol}" class="font-medium hover:underline"
+										>{fund.symbol}</a
 									>
 								</td>
 								<td class="max-w-56 truncate py-1.5 text-muted-foreground" title={fund.fund_name}
@@ -129,7 +128,7 @@
 						{/each}
 					</tbody>
 				</table>
-			</div>
+			</section>
 		{/if}
 	</main>
 </div>

@@ -22,9 +22,9 @@ export const sectorNames: Record<number, string> = {
 	[Sector.OTHERS]: 'Others'
 };
 
-// Large rupee amounts and counts in billions, crore and lakh.
+// Large rupee amounts and counts in arba, crore and lakh.
 export function formatLarge(value: number, digits = 2): string {
-	if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(digits)}B`;
+	if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(digits)} Arba`;
 	if (value >= 10_000_000) return `${(value / 10_000_000).toFixed(digits)} Cr`;
 	if (value >= 100_000) return `${(value / 100_000).toFixed(digits)} L`;
 	return value.toLocaleString('en-NP');

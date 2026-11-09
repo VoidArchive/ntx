@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Holdings, Holding } from '#lib/types/fund.js';
-	import { SECTOR_LABELS, SECTOR_COLORS } from '#lib/types/fund.js';
+	import { SECTOR_LABELS } from '#lib/types/fund.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import ChevronRight from '@lucide/svelte/icons/chevron-right';
@@ -18,7 +18,6 @@
 	interface SectorGroup {
 		key: keyof Holdings;
 		label: string;
-		color: string;
 		items: Holding[];
 		total: number;
 		percent: number;
@@ -35,7 +34,6 @@
 			groups.push({
 				key: key as keyof Holdings,
 				label: SECTOR_LABELS[key as keyof Holdings] || key,
-				color: SECTOR_COLORS[key as keyof Holdings] || '#64748b',
 				items: [...items].sort((a, b) => b.value - a.value),
 				total,
 				percent: (total / netAssets) * 100
@@ -63,18 +61,19 @@
 		if (!units) return '-';
 		return units.toLocaleString('en-NP');
 	}
+	let maxPercent = $derived(Math.max(...sectorGroups.map((g) => g.percent), 1));
 </script>
 
 <div>
-	<h3 class="mb-4 font-serif text-lg font-medium">Holdings by Sector</h3>
+	<h2 class="font-serif text-2xl font-medium">Holdings by sector</h2>
 
-	<div class="space-y-2">
+	<div class="mt-4">
 		{#each sectorGroups as group (group.key)}
 			{@const isExpanded = expandedSectors.has(group.key)}
-			<div class="overflow-hidden rounded-lg border border-border">
+			<div class="border-b border-border/50 last:border-0">
 				<!-- Sector Header -->
 				<button
-					class="flex w-full items-center gap-2 bg-card/50 px-3 py-3 text-left transition-colors hover:bg-muted/50 sm:gap-3 sm:px-4"
+					class="-mx-2 flex w-[calc(100%+1rem)] items-center gap-2 rounded-md px-2 py-3 text-left transition-colors hover:bg-accent/40 sm:gap-3"
 					onclick={() => toggleSector(group.key)}
 				>
 					{#if isExpanded}
@@ -83,10 +82,19 @@
 						<ChevronRight class="size-4 shrink-0 text-muted-foreground" />
 					{/if}
 
-					<div class="size-3 shrink-0 rounded-sm" style="background: {group.color};"></div>
-
 					<span class="min-w-0 flex-1 truncate text-sm font-medium sm:text-base">{group.label}</span
 					>
+
+					<!-- The share as a bar, scaled to the largest sector so the small ones still show. -->
+					<span
+						class="hidden h-1.5 w-32 overflow-hidden rounded-full bg-muted sm:block"
+						aria-hidden="true"
+					>
+						<span
+							class="block h-full bg-foreground/60"
+							style="width: {(group.percent / maxPercent) * 100}%"
+						></span>
+					</span>
 
 					<span class="hidden text-sm text-muted-foreground tabular-nums sm:inline">
 						{group.items.length}
@@ -104,7 +112,7 @@
 
 				<!-- Holdings List -->
 				{#if isExpanded}
-					<div class="border-t border-border bg-background">
+					<div class="mb-3 rounded-md bg-background/60">
 						<!-- Mobile: Card layout -->
 						<div class="sm:hidden">
 							{#each group.items as item, i (item.name + i)}
@@ -129,7 +137,7 @@
 							</thead>
 							<tbody>
 								{#each group.items as item, i (item.name + i)}
-									<tr class="hover:bg-muted/30">
+									<tr class="hover:bg-accent/30">
 										<td class="px-4 py-2">{item.name}</td>
 										<td class="px-4 py-2 text-right text-muted-foreground tabular-nums">
 											{fmtUnits(item.units)}

@@ -19,6 +19,6 @@ STORY: The reader sees the name, price and one-year line, then the snowflake tel
 
 FIRST VIEWPORT: Full-width header card: monogram tile, name, "NEPSE:SYM Stock Report", market cap; AI research as the orange primary button; right side the latest close with 1D/1Y change over a one-year sparkline. Below, the left sticky numbered section nav and the Overview card: claims and the holds/watch lists on the left, the orange snowflake with curved axis labels and its one-line summary on the right.
 
-FORM: Report card with sticky section nav (first on the list; the brief pins the composition to the reference). seed: none (unavailable)
+FORM: Report card with sticky section nav (first on the list; the brief pins the composition to the reference). seed: none (roll skipped: CLAUDE.md says visual work starts from the spec's page structure, never from a style roll; the user pinned the composition with a reference screenshot)
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
