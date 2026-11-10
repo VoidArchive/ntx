@@ -117,6 +117,7 @@ func (s *Service) portfolio(ctx context.Context, navs map[string]float64) (*ntxv
 	today := now()
 	res.OrderSheet = sheet(month(today), rules, index, holdings)
 	res.Calendar = calendar(today, holdings)
+	res.CalendarOpening = calendarOpening(res.Calendar)
 	res.Opening = opening(res)
 	return res, nil
 }

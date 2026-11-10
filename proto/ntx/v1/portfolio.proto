@@ -39,6 +39,7 @@ message OrderLine {
   // Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
   string note = 11;
   string review_date = 12;
+  string close_day = 13;
 }
 
 message OrderSheet {
@@ -61,6 +62,8 @@ message CalendarEntry {
   string day = 1;
   string symbol = 2;
   string what = 3;
+  // The day has passed without a tick, review or filing recorded against it.
+  bool overdue = 4;
 }
 
 enum GateKind {
@@ -209,6 +212,8 @@ message GetPortfolioResponse {
   OrderSheet order_sheet = 8;
   // Soonest first.
   repeated CalendarEntry calendar = 9;
+  // The Calendar section's sentence: what is next, and how many dates have passed.
+  string calendar_opening = 10;
 }
 
 message UpsertHoldingRequest {

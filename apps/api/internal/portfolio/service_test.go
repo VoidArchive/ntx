@@ -528,7 +528,7 @@ func TestOrderSheetAndCalendarOnTheBook(t *testing.T) {
 		t.Errorf("sheet %v", sh)
 	}
 	want := "Order sheet for Kartik: Rs 24,000, 2x the Rs 12,000 budget with the index at 2050.00 on 2026-11-01, " +
-		"in the bottom quarter of its 52-week range of 2000.00 to 3000.00."
+		"in the bottom quarter of its 52-week closes, 2000.00 to 3000.00."
 	if sh.GetOpening() != want || !strings.HasSuffix(res.Msg.GetOpening(), want) {
 		t.Errorf("sheet opening %q\nlede %q", sh.GetOpening(), res.Msg.GetOpening())
 	}

@@ -89,8 +89,10 @@ export const actions: Actions = {
 	executed: async ({ request, cookies }) => {
 		const form = await request.formData();
 		const carries: Record<string, number> = {};
+		// A cleared field is left alone; only a number the owner typed is written.
 		for (const [key, value] of form.entries()) {
-			if (key.startsWith('carry:')) carries[key.slice('carry:'.length)] = Number(value) || 0;
+			if (key.startsWith('carry:') && String(value).trim() !== '')
+				carries[key.slice('carry:'.length)] = Number(value);
 		}
 		return forward(cookies, (api) => api.markMonthExecuted({ carries }));
 	},

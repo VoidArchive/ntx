@@ -254,6 +254,7 @@ type OrderLine struct {
 	// Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
 	Note          string `protobuf:"bytes,11,opt,name=note,proto3" json:"note,omitempty"`
 	ReviewDate    string `protobuf:"bytes,12,opt,name=review_date,json=reviewDate,proto3" json:"review_date,omitempty"`
+	CloseDay      string `protobuf:"bytes,13,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -368,6 +369,13 @@ func (x *OrderLine) GetNote() string {
 func (x *OrderLine) GetReviewDate() string {
 	if x != nil {
 		return x.ReviewDate
+	}
+	return ""
+}
+
+func (x *OrderLine) GetCloseDay() string {
+	if x != nil {
+		return x.CloseDay
 	}
 	return ""
 }
@@ -492,10 +500,12 @@ func (x *OrderSheet) GetLines() []*OrderLine {
 
 // CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
 type CalendarEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Day           string                 `protobuf:"bytes,1,opt,name=day,proto3" json:"day,omitempty"`
-	Symbol        string                 `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	What          string                 `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Day    string                 `protobuf:"bytes,1,opt,name=day,proto3" json:"day,omitempty"`
+	Symbol string                 `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	What   string                 `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
+	// The day has passed without a tick, review or filing recorded against it.
+	Overdue       bool `protobuf:"varint,4,opt,name=overdue,proto3" json:"overdue,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -549,6 +559,13 @@ func (x *CalendarEntry) GetWhat() string {
 		return x.What
 	}
 	return ""
+}
+
+func (x *CalendarEntry) GetOverdue() bool {
+	if x != nil {
+		return x.Overdue
+	}
+	return false
 }
 
 // Gate is one of the owner's written break conditions with its verdict
@@ -1324,9 +1341,11 @@ type GetPortfolioResponse struct {
 	Rules      *Rules      `protobuf:"bytes,7,opt,name=rules,proto3" json:"rules,omitempty"`
 	OrderSheet *OrderSheet `protobuf:"bytes,8,opt,name=order_sheet,json=orderSheet,proto3" json:"order_sheet,omitempty"`
 	// Soonest first.
-	Calendar      []*CalendarEntry `protobuf:"bytes,9,rep,name=calendar,proto3" json:"calendar,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Calendar []*CalendarEntry `protobuf:"bytes,9,rep,name=calendar,proto3" json:"calendar,omitempty"`
+	// The Calendar section's sentence: what is next, and how many dates have passed.
+	CalendarOpening string `protobuf:"bytes,10,opt,name=calendar_opening,json=calendarOpening,proto3" json:"calendar_opening,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetPortfolioResponse) Reset() {
@@ -1420,6 +1439,13 @@ func (x *GetPortfolioResponse) GetCalendar() []*CalendarEntry {
 		return x.Calendar
 	}
 	return nil
+}
+
+func (x *GetPortfolioResponse) GetCalendarOpening() string {
+	if x != nil {
+		return x.CalendarOpening
+	}
+	return ""
 }
 
 type UpsertHoldingRequest struct {
@@ -2390,7 +2416,7 @@ var File_ntx_v1_portfolio_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\n" +
-	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\"\x80\x03\n" +
+	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\"\x9d\x03\n" +
 	"\tOrderLine\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12-\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x15.ntx.v1.HoldingStatusR\x06status\x12-\n" +
@@ -2406,7 +2432,8 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"newCarryRs\x12\x12\n" +
 	"\x04note\x18\v \x01(\tR\x04note\x12\x1f\n" +
 	"\vreview_date\x18\f \x01(\tR\n" +
-	"reviewDateB\b\n" +
+	"reviewDate\x12\x1b\n" +
+	"\tclose_day\x18\r \x01(\tR\bcloseDayB\b\n" +
 	"\x06_close\"\xd4\x02\n" +
 	"\n" +
 	"OrderSheet\x12\x14\n" +
@@ -2425,11 +2452,12 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\aopening\x18\t \x01(\tR\aopening\x12'\n" +
 	"\x05lines\x18\n" +
 	" \x03(\v2\x11.ntx.v1.OrderLineR\x05linesB\x0e\n" +
-	"\f_index_close\"M\n" +
+	"\f_index_close\"g\n" +
 	"\rCalendarEntry\x12\x10\n" +
 	"\x03day\x18\x01 \x01(\tR\x03day\x12\x16\n" +
 	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12\x12\n" +
-	"\x04what\x18\x03 \x01(\tR\x04what\"\xca\x03\n" +
+	"\x04what\x18\x03 \x01(\tR\x04what\x12\x18\n" +
+	"\aoverdue\x18\x04 \x01(\bR\aoverdue\"\xca\x03\n" +
 	"\x04Gate\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
 	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12$\n" +
@@ -2510,7 +2538,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\tfund_navs\x18\x01 \x03(\v2).ntx.v1.GetPortfolioRequest.FundNavsEntryR\bfundNavs\x1a;\n" +
 	"\rFundNavsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xe0\x02\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\x8b\x03\n" +
 	"\x14GetPortfolioResponse\x12+\n" +
 	"\bholdings\x18\x01 \x03(\v2\x0f.ntx.v1.HoldingR\bholdings\x12\x1f\n" +
 	"\vtotal_value\x18\x02 \x01(\x01R\n" +
@@ -2522,7 +2550,9 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x05rules\x18\a \x01(\v2\r.ntx.v1.RulesR\x05rules\x123\n" +
 	"\vorder_sheet\x18\b \x01(\v2\x12.ntx.v1.OrderSheetR\n" +
 	"orderSheet\x121\n" +
-	"\bcalendar\x18\t \x03(\v2\x15.ntx.v1.CalendarEntryR\bcalendar\"\xe6\x02\n" +
+	"\bcalendar\x18\t \x03(\v2\x15.ntx.v1.CalendarEntryR\bcalendar\x12)\n" +
+	"\x10calendar_opening\x18\n" +
+	" \x01(\tR\x0fcalendarOpening\"\xe6\x02\n" +
 	"\x14UpsertHoldingRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12-\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x15.ntx.v1.HoldingStatusR\x06status\x12#\n" +

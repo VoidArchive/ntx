@@ -81,6 +81,11 @@ export declare type OrderLine = Message<"ntx.v1.OrderLine"> & {
    * @generated from field: string review_date = 12;
    */
   reviewDate: string;
+
+  /**
+   * @generated from field: string close_day = 13;
+   */
+  closeDay: string;
 };
 
 /**
@@ -174,6 +179,13 @@ export declare type CalendarEntry = Message<"ntx.v1.CalendarEntry"> & {
    * @generated from field: string what = 3;
    */
   what: string;
+
+  /**
+   * The day has passed without a tick, review or filing recorded against it.
+   *
+   * @generated from field: bool overdue = 4;
+   */
+  overdue: boolean;
 };
 
 /**
@@ -654,6 +666,13 @@ export declare type GetPortfolioResponse = Message<"ntx.v1.GetPortfolioResponse"
    * @generated from field: repeated ntx.v1.CalendarEntry calendar = 9;
    */
   calendar: CalendarEntry[];
+
+  /**
+   * The Calendar section's sentence: what is next, and how many dates have passed.
+   *
+   * @generated from field: string calendar_opening = 10;
+   */
+  calendarOpening: string;
 };
 
 /**

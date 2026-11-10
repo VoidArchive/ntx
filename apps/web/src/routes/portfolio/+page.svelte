@@ -271,6 +271,7 @@
 								<th class="py-2 text-right font-normal">Carry in</th>
 								<th class="py-2 text-right font-normal">Available</th>
 								<th class="py-2 text-right font-normal">Close</th>
+								<th class="py-2 text-left font-normal">As of</th>
 								<th class="py-2 text-right font-normal">Shares</th>
 								<th class="py-2 text-right font-normal">Cost</th>
 								<th class="py-2 text-right font-normal">Carry out</th>
@@ -306,7 +307,7 @@
 								</tr>
 							{:else}
 								<tr
-									><td colspan="9" class="py-3 text-muted-foreground"
+									><td colspan="10" class="py-3 text-muted-foreground"
 										>No Build or Frozen holding: nothing to propose this month.</td
 									></tr
 								>
@@ -322,13 +323,14 @@
 
 		<section class="mt-6 card-report" aria-label="Calendar">
 			<h2 class="font-serif text-xl">Calendar</h2>
+			<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{p.calendarOpening}</p>
 			<p class="mt-1 text-sm text-muted-foreground">
 				Filing due dates (quarter end plus thirty days), review dates and event gates due a
 				re-check. No notices.
 			</p>
 			<ul class="mt-3 space-y-1 text-sm tabular-nums">
 				{#each calendar as e (e.day + e.symbol + e.what)}
-					<li class="flex gap-3 {e.day < today ? 'text-destructive' : ''}">
+					<li class="flex gap-3 {e.overdue ? 'text-destructive' : ''}">
 						<span class="w-24 shrink-0">{e.day}</span>
 						<span class="w-16 shrink-0 font-medium">{e.symbol}</span>
 						<span class="text-muted-foreground">{e.what}</span>

@@ -94,16 +94,29 @@ func TestMultiplierFollowsTheIndexInItsYear(t *testing.T) {
 		opening      string
 	}{
 		{2100, 2, "Order sheet for Mangsir: Rs 24,000, 2x the Rs 12,000 budget with the index at 2100.00 on 2026-11-09, " +
-			"in the bottom quarter of its 52-week range of 2000.00 to 3000.00."},
+			"in the bottom quarter of its 52-week closes, 2000.00 to 3000.00."},
 		{2400, 1.5, "Order sheet for Mangsir: Rs 18,000, 1.5x the Rs 12,000 budget with the index at 2400.00 on 2026-11-09, " +
-			"in the lower half of its 52-week range of 2000.00 to 3000.00."},
+			"below the median of its 52-week closes, 2000.00 to 3000.00."},
 		{2800, 1, "Order sheet for Mangsir: Rs 12,000, the index at 2800.00 on 2026-11-09 " +
-			"in the upper half of its 52-week range of 2000.00 to 3000.00."},
+			"above the median of its 52-week closes, 2000.00 to 3000.00."},
 	} {
 		s := sheet("Mangsir", defaults, closes(tc.latest), nil)
 		if s.GetMultiplier() != tc.want || s.GetOpening() != tc.opening {
 			t.Errorf("at %.0f: %gx, %q", tc.latest, s.GetMultiplier(), s.GetOpening())
 		}
+	}
+}
+
+// A lone close is its own low and high; it must not double the budget.
+func TestTooFewClosesLeaveTheBudgetAlone(t *testing.T) {
+	s := sheet("Mangsir", defaults, closes(2100)[11:], nil)
+	if s.GetMultiplier() != 1 ||
+		s.GetOpening() != "Order sheet for Mangsir: Rs 12,000; only 1 index close in the last 52 weeks, so the budget stands." {
+		t.Errorf("%gx %q", s.GetMultiplier(), s.GetOpening())
+	}
+	// Twelve closes with an even count: the median averages the two middle values.
+	if m := median([]float64{1, 2, 3, 4}); m != 2.5 {
+		t.Errorf("median = %v", m)
 	}
 }
 
