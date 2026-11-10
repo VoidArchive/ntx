@@ -11,6 +11,202 @@ import type { Message } from "@bufbuild/protobuf";
 export declare const file_ntx_v1_portfolio: GenFile;
 
 /**
+ * Gate is one of the owner's written break conditions with its verdict
+ * (GLOSSARY: Gate; Triggered / Holds / Needs data). Every verdict names the
+ * period it was evaluated against (ADR 0002).
+ *
+ * @generated from message ntx.v1.Gate
+ */
+export declare type Gate = Message<"ntx.v1.Gate"> & {
+  /**
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+
+  /**
+   * @generated from field: string symbol = 2;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: ntx.v1.GateKind kind = 3;
+   */
+  kind: GateKind;
+
+  /**
+   * Metric gates: one of eps, pe, cash_dividend_percent, bonus_percent, book_value, roe,
+   * promoter_percent, weight_percent, drawdown_percent, npl_percent, car_percent,
+   * loan_growth_percent, distributable_profit.
+   *
+   * @generated from field: string metric = 4;
+   */
+  metric: string;
+
+  /**
+   * @generated from field: ntx.v1.GateDirection direction = 5;
+   */
+  direction: GateDirection;
+
+  /**
+   * @generated from field: double threshold = 6;
+   */
+  threshold: number;
+
+  /**
+   * @generated from field: int32 periods = 7;
+   */
+  periods: number;
+
+  /**
+   * Event gates: the condition in the owner's words and the day it was last ticked.
+   *
+   * @generated from field: string text = 8;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string checked_on = 9;
+   */
+  checkedOn: string;
+
+  /**
+   * Computed: "triggered", "holds" or "needs data"; empty for an event gate.
+   *
+   * @generated from field: string verdict = 10;
+   */
+  verdict: string;
+
+  /**
+   * The gate in words, "NPL above 5% for 1 quarter"; the lede and the table share it.
+   *
+   * @generated from field: string label = 11;
+   */
+  label: string;
+
+  /**
+   * @generated from field: optional double value = 12;
+   */
+  value?: number;
+
+  /**
+   * For a prior direction, the previous period's figure the value was held against.
+   *
+   * @generated from field: optional double prior = 13;
+   */
+  prior?: number;
+
+  /**
+   * @generated from field: string period = 14;
+   */
+  period: string;
+
+  /**
+   * @generated from field: string source = 15;
+   */
+  source: string;
+};
+
+/**
+ * Describes the message ntx.v1.Gate.
+ * Use `create(GateSchema)` to create a new message.
+ */
+export declare const GateSchema: GenMessage<Gate>;
+
+/**
+ * Cap is one portfolio rule's verdict: "holds", "watch" or "triggered", with the figures.
+ *
+ * @generated from message ntx.v1.Cap
+ */
+export declare type Cap = Message<"ntx.v1.Cap"> & {
+  /**
+   * @generated from field: string rule = 1;
+   */
+  rule: string;
+
+  /**
+   * @generated from field: string verdict = 2;
+   */
+  verdict: string;
+
+  /**
+   * @generated from field: string detail = 3;
+   */
+  detail: string;
+};
+
+/**
+ * Describes the message ntx.v1.Cap.
+ * Use `create(CapSchema)` to create a new message.
+ */
+export declare const CapSchema: GenMessage<Cap>;
+
+/**
+ * @generated from message ntx.v1.Rules
+ */
+export declare type Rules = Message<"ntx.v1.Rules"> & {
+  /**
+   * @generated from field: double soft_cap_percent = 1;
+   */
+  softCapPercent: number;
+
+  /**
+   * @generated from field: double hard_cap_percent = 2;
+   */
+  hardCapPercent: number;
+
+  /**
+   * @generated from field: double sector_cap_percent = 3;
+   */
+  sectorCapPercent: number;
+
+  /**
+   * @generated from field: int32 max_positions = 4;
+   */
+  maxPositions: number;
+
+  /**
+   * @generated from field: double min_entry_rs = 5;
+   */
+  minEntryRs: number;
+
+  /**
+   * @generated from field: bool one_hydro_per_basin = 6;
+   */
+  oneHydroPerBasin: boolean;
+
+  /**
+   * @generated from field: string candidate_min_rating = 7;
+   */
+  candidateMinRating: string;
+
+  /**
+   * @generated from field: bool candidate_dividend_record = 8;
+   */
+  candidateDividendRecord: boolean;
+
+  /**
+   * @generated from field: double monthly_budget_rs = 9;
+   */
+  monthlyBudgetRs: number;
+
+  /**
+   * @generated from field: double multiplier_below_median = 10;
+   */
+  multiplierBelowMedian: number;
+
+  /**
+   * @generated from field: double multiplier_bottom_quarter = 11;
+   */
+  multiplierBottomQuarter: number;
+};
+
+/**
+ * Describes the message ntx.v1.Rules.
+ * Use `create(RulesSchema)` to create a new message.
+ */
+export declare const RulesSchema: GenMessage<Rules>;
+
+/**
  * @generated from message ntx.v1.Transaction
  */
 export declare type Transaction = Message<"ntx.v1.Transaction"> & {
@@ -185,6 +381,18 @@ export declare type Holding = Message<"ntx.v1.Holding"> & {
    * @generated from field: string close_day = 20;
    */
   closeDay: string;
+
+  /**
+   * @generated from field: repeated ntx.v1.Gate gates = 21;
+   */
+  gates: Gate[];
+
+  /**
+   * The holding against the soft and hard caps: "holds", "watch", "triggered"; empty without shares.
+   *
+   * @generated from field: string cap_verdict = 22;
+   */
+  capVerdict: string;
 };
 
 /**
@@ -243,6 +451,18 @@ export declare type GetPortfolioResponse = Message<"ntx.v1.GetPortfolioResponse"
    * @generated from field: string opening = 5;
    */
   opening: string;
+
+  /**
+   * Sector cap, position count and one hydro per basin.
+   *
+   * @generated from field: repeated ntx.v1.Cap caps = 6;
+   */
+  caps: Cap[];
+
+  /**
+   * @generated from field: ntx.v1.Rules rules = 7;
+   */
+  rules?: Rules;
 };
 
 /**
@@ -446,6 +666,246 @@ export declare type AddNoteResponse = Message<"ntx.v1.AddNoteResponse"> & {
 export declare const AddNoteResponseSchema: GenMessage<AddNoteResponse>;
 
 /**
+ * @generated from message ntx.v1.UpsertGateRequest
+ */
+export declare type UpsertGateRequest = Message<"ntx.v1.UpsertGateRequest"> & {
+  /**
+   * Zero inserts; an existing id updates.
+   *
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+
+  /**
+   * @generated from field: string symbol = 2;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: ntx.v1.GateKind kind = 3;
+   */
+  kind: GateKind;
+
+  /**
+   * @generated from field: string metric = 4;
+   */
+  metric: string;
+
+  /**
+   * @generated from field: ntx.v1.GateDirection direction = 5;
+   */
+  direction: GateDirection;
+
+  /**
+   * @generated from field: double threshold = 6;
+   */
+  threshold: number;
+
+  /**
+   * @generated from field: int32 periods = 7;
+   */
+  periods: number;
+
+  /**
+   * @generated from field: string text = 8;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string checked_on = 9;
+   */
+  checkedOn: string;
+};
+
+/**
+ * Describes the message ntx.v1.UpsertGateRequest.
+ * Use `create(UpsertGateRequestSchema)` to create a new message.
+ */
+export declare const UpsertGateRequestSchema: GenMessage<UpsertGateRequest>;
+
+/**
+ * @generated from message ntx.v1.UpsertGateResponse
+ */
+export declare type UpsertGateResponse = Message<"ntx.v1.UpsertGateResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Gate gate = 1;
+   */
+  gate?: Gate;
+};
+
+/**
+ * Describes the message ntx.v1.UpsertGateResponse.
+ * Use `create(UpsertGateResponseSchema)` to create a new message.
+ */
+export declare const UpsertGateResponseSchema: GenMessage<UpsertGateResponse>;
+
+/**
+ * @generated from message ntx.v1.DeleteGateRequest
+ */
+export declare type DeleteGateRequest = Message<"ntx.v1.DeleteGateRequest"> & {
+  /**
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+};
+
+/**
+ * Describes the message ntx.v1.DeleteGateRequest.
+ * Use `create(DeleteGateRequestSchema)` to create a new message.
+ */
+export declare const DeleteGateRequestSchema: GenMessage<DeleteGateRequest>;
+
+/**
+ * @generated from message ntx.v1.DeleteGateResponse
+ */
+export declare type DeleteGateResponse = Message<"ntx.v1.DeleteGateResponse"> & {
+};
+
+/**
+ * Describes the message ntx.v1.DeleteGateResponse.
+ * Use `create(DeleteGateResponseSchema)` to create a new message.
+ */
+export declare const DeleteGateResponseSchema: GenMessage<DeleteGateResponse>;
+
+/**
+ * @generated from message ntx.v1.UpdateRulesRequest
+ */
+export declare type UpdateRulesRequest = Message<"ntx.v1.UpdateRulesRequest"> & {
+  /**
+   * @generated from field: ntx.v1.Rules rules = 1;
+   */
+  rules?: Rules;
+};
+
+/**
+ * Describes the message ntx.v1.UpdateRulesRequest.
+ * Use `create(UpdateRulesRequestSchema)` to create a new message.
+ */
+export declare const UpdateRulesRequestSchema: GenMessage<UpdateRulesRequest>;
+
+/**
+ * @generated from message ntx.v1.UpdateRulesResponse
+ */
+export declare type UpdateRulesResponse = Message<"ntx.v1.UpdateRulesResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Rules rules = 1;
+   */
+  rules?: Rules;
+};
+
+/**
+ * Describes the message ntx.v1.UpdateRulesResponse.
+ * Use `create(UpdateRulesResponseSchema)` to create a new message.
+ */
+export declare const UpdateRulesResponseSchema: GenMessage<UpdateRulesResponse>;
+
+/**
+ * @generated from message ntx.v1.GetHoldingStoryRequest
+ */
+export declare type GetHoldingStoryRequest = Message<"ntx.v1.GetHoldingStoryRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: map<string, double> fund_navs = 2;
+   */
+  fundNavs: { [key: string]: number };
+};
+
+/**
+ * Describes the message ntx.v1.GetHoldingStoryRequest.
+ * Use `create(GetHoldingStoryRequestSchema)` to create a new message.
+ */
+export declare const GetHoldingStoryRequestSchema: GenMessage<GetHoldingStoryRequest>;
+
+/**
+ * @generated from message ntx.v1.GetHoldingStoryResponse
+ */
+export declare type GetHoldingStoryResponse = Message<"ntx.v1.GetHoldingStoryResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Holding holding = 1;
+   */
+  holding?: Holding;
+
+  /**
+   * A bonus the exchange has published that no bonus transaction credits yet; empty otherwise.
+   *
+   * @generated from field: string bonus_hint = 2;
+   */
+  bonusHint: string;
+};
+
+/**
+ * Describes the message ntx.v1.GetHoldingStoryResponse.
+ * Use `create(GetHoldingStoryResponseSchema)` to create a new message.
+ */
+export declare const GetHoldingStoryResponseSchema: GenMessage<GetHoldingStoryResponse>;
+
+/**
+ * @generated from enum ntx.v1.GateKind
+ */
+export enum GateKind {
+  /**
+   * @generated from enum value: GATE_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: GATE_KIND_METRIC = 1;
+   */
+  METRIC = 1,
+
+  /**
+   * @generated from enum value: GATE_KIND_EVENT = 2;
+   */
+  EVENT = 2,
+}
+
+/**
+ * Describes the enum ntx.v1.GateKind.
+ */
+export declare const GateKindSchema: GenEnum<GateKind>;
+
+/**
+ * The prior directions are ratchets: the threshold is the previous period's own figure.
+ *
+ * @generated from enum ntx.v1.GateDirection
+ */
+export enum GateDirection {
+  /**
+   * @generated from enum value: GATE_DIRECTION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_ABOVE = 1;
+   */
+  ABOVE = 1,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_BELOW = 2;
+   */
+  BELOW = 2,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_NOT_BELOW_PRIOR = 3;
+   */
+  NOT_BELOW_PRIOR = 3,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_NOT_ABOVE_PRIOR = 4;
+   */
+  NOT_ABOVE_PRIOR = 4,
+}
+
+/**
+ * Describes the enum ntx.v1.GateDirection.
+ */
+export declare const GateDirectionSchema: GenEnum<GateDirection>;
+
+/**
  * @generated from enum ntx.v1.HoldingStatus
  */
 export enum HoldingStatus {
@@ -562,6 +1022,40 @@ export declare const PortfolioService: GenService<{
     methodKind: "unary";
     input: typeof AddNoteRequestSchema;
     output: typeof AddNoteResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.UpsertGate
+   */
+  upsertGate: {
+    methodKind: "unary";
+    input: typeof UpsertGateRequestSchema;
+    output: typeof UpsertGateResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.DeleteGate
+   */
+  deleteGate: {
+    methodKind: "unary";
+    input: typeof DeleteGateRequestSchema;
+    output: typeof DeleteGateResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.UpdateRules
+   */
+  updateRules: {
+    methodKind: "unary";
+    input: typeof UpdateRulesRequestSchema;
+    output: typeof UpdateRulesResponseSchema;
+  },
+  /**
+   * GetHoldingStory is the "Your thesis" section of a held company's page.
+   *
+   * @generated from rpc ntx.v1.PortfolioService.GetHoldingStory
+   */
+  getHoldingStory: {
+    methodKind: "unary";
+    input: typeof GetHoldingStoryRequestSchema;
+    output: typeof GetHoldingStoryResponseSchema;
   },
 }>;
 

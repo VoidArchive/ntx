@@ -64,7 +64,16 @@ func (s *Service) GetPortfolio(
 	ctx context.Context,
 	req *connect.Request[ntxv1.GetPortfolioRequest],
 ) (*connect.Response[ntxv1.GetPortfolioResponse], error) {
-	holdings, err := s.load(ctx, req.Msg.GetFundNavs())
+	res, err := s.portfolio(ctx, req.Msg.GetFundNavs())
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(res), nil
+}
+
+// portfolio is the whole page: holdings with weights, gate verdicts, caps and the lede.
+func (s *Service) portfolio(ctx context.Context, navs map[string]float64) (*ntxv1.GetPortfolioResponse, error) {
+	holdings, err := s.load(ctx, navs)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -85,15 +94,66 @@ func (s *Service) GetPortfolio(
 			h.WeightPercent = 100 * h.GetValue() / res.TotalValue
 		}
 	}
+	rules, err := s.queries.GetRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.Rules = rulesToProto(rules)
+	if err := s.judge(ctx, holdings); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	plants, err := s.queries.ListAllHydroPlants(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.Caps = caps(res, rules, plants)
 	res.Opening = opening(res)
-	return connect.NewResponse(res), nil
+	return res, nil
 }
 
-// opening names the newest close the total rests on; fund rows carry their own NAV date.
+// opening is the lede: the value at its close, then what the owner's rules say.
 func opening(p *ntxv1.GetPortfolioResponse) string {
 	if len(p.GetHoldings()) == 0 {
 		return "No holdings recorded."
 	}
+	parts := []string{value(p)}
+	var triggered []string
+	needs := 0
+	for _, h := range p.GetHoldings() {
+		for _, g := range h.GetGates() {
+			switch g.GetVerdict() {
+			case Triggered:
+				triggered = append(triggered, h.GetSymbol()+" "+g.GetLabel())
+			case NeedsData:
+				needs++
+			}
+		}
+	}
+	if len(triggered) > 0 {
+		parts = append(
+			parts,
+			fmt.Sprintf("%s triggered: %s.", plural(len(triggered), "gate"), strings.Join(triggered, ", ")),
+		)
+	}
+	if needs == 1 {
+		parts = append(parts, "1 gate needs data.")
+	} else if needs > 1 {
+		parts = append(parts, fmt.Sprintf("%d gates need data.", needs))
+	}
+	var over []string
+	for _, c := range p.GetCaps() {
+		if c.GetVerdict() != Holds {
+			over = append(over, c.GetDetail())
+		}
+	}
+	if len(over) > 0 {
+		parts = append(parts, "Over cap: "+strings.Join(over, ", ")+".")
+	}
+	return strings.Join(parts, " ")
+}
+
+// value names the newest close the total rests on; fund rows carry their own NAV date.
+func value(p *ntxv1.GetPortfolioResponse) string {
 	across := plural(int(p.GetPositions()), "position")
 	if p.GetFunds() > 0 {
 		across += " and " + plural(int(p.GetFunds()), "fund")
@@ -150,6 +210,14 @@ func (s *Service) load(ctx context.Context, navs map[string]float64) ([]*ntxv1.H
 	for _, n := range notes {
 		notesBy[n.HoldingID] = append(notesBy[n.HoldingID], n)
 	}
+	gates, err := s.queries.ListGates(ctx)
+	if err != nil {
+		return nil, err
+	}
+	gatesBy := map[int64][]sqlc.Gate{}
+	for _, g := range gates {
+		gatesBy[g.HoldingID] = append(gatesBy[g.HoldingID], g)
+	}
 
 	out := make([]*ntxv1.Holding, 0, len(rows))
 	for _, r := range rows {
@@ -189,6 +257,7 @@ func (s *Service) load(ctx context.Context, navs map[string]float64) ([]*ntxv1.H
 		for _, n := range notesBy[r.ID] {
 			h.Notes = append(h.Notes, &ntxv1.Note{Id: n.ID, Day: n.Day, Text: n.Text})
 		}
+		h.Gates = gatesToProto(r.Symbol, gatesBy[r.ID])
 		out = append(out, h)
 	}
 	return out, nil
@@ -225,11 +294,11 @@ func (s *Service) UpsertHolding(
 	}); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	holdings, err := s.load(ctx, nil)
+	p, err := s.portfolio(ctx, nil)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+		return nil, err
 	}
-	for _, h := range holdings {
+	for _, h := range p.GetHoldings() {
 		if h.GetSymbol() == symbol {
 			return connect.NewResponse(&ntxv1.UpsertHoldingResponse{Holding: h}), nil
 		}
@@ -319,4 +388,28 @@ func (s *Service) AddNote(
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return connect.NewResponse(&ntxv1.AddNoteResponse{Note: &ntxv1.Note{Id: n.ID, Day: n.Day, Text: n.Text}}), nil
+}
+
+// gatesToProto carries the stored rule; judge fills the verdict.
+func gatesToProto(symbol string, gates []sqlc.Gate) []*ntxv1.Gate {
+	out := make([]*ntxv1.Gate, 0, len(gates))
+	for _, g := range gates {
+		pg := &ntxv1.Gate{
+			Id:        g.ID,
+			Symbol:    symbol,
+			Kind:      gateKindFrom(g.Kind),
+			Metric:    g.Metric,
+			Direction: directionFrom(g.Direction),
+			Threshold: g.Threshold,
+			Periods:   int32(min(g.Periods, 1<<31-1)), //nolint:gosec // clamped
+			Text:      g.Text,
+			CheckedOn: g.CheckedOn,
+			Label:     g.Text,
+		}
+		if pg.Kind == ntxv1.GateKind_GATE_KIND_METRIC {
+			pg.Label = label(g.Metric, g.Direction, g.Threshold, int(g.Periods))
+		}
+		out = append(out, pg)
+	}
+	return out
 }
