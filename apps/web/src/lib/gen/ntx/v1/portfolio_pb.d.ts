@@ -160,6 +160,89 @@ export declare type OrderSheet = Message<"ntx.v1.OrderSheet"> & {
 export declare const OrderSheetSchema: GenMessage<OrderSheet>;
 
 /**
+ * Candidate is a company the owner's rules admit (GLOSSARY: Candidates): a list
+ * of what the rules admit, not a ranking of what to buy.
+ *
+ * @generated from message ntx.v1.Candidate
+ */
+export declare type Candidate = Message<"ntx.v1.Candidate"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string sector = 3;
+   */
+  sector: string;
+
+  /**
+   * @generated from field: string rating = 4;
+   */
+  rating: string;
+
+  /**
+   * @generated from field: double close = 5;
+   */
+  close: number;
+
+  /**
+   * @generated from field: string close_day = 6;
+   */
+  closeDay: string;
+
+  /**
+   * @generated from field: optional double pe = 7;
+   */
+  pe?: number;
+
+  /**
+   * @generated from field: optional double sector_pe_median = 8;
+   */
+  sectorPeMedian?: number;
+
+  /**
+   * Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
+   *
+   * @generated from field: string basin = 9;
+   */
+  basin: string;
+
+  /**
+   * The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
+   *
+   * @generated from field: int64 shares = 10;
+   */
+  shares: bigint;
+
+  /**
+   * @generated from field: double cost_rs = 11;
+   */
+  costRs: number;
+
+  /**
+   * @generated from field: double months = 12;
+   */
+  months: number;
+
+  /**
+   * @generated from field: string note = 13;
+   */
+  note: string;
+};
+
+/**
+ * Describes the message ntx.v1.Candidate.
+ * Use `create(CandidateSchema)` to create a new message.
+ */
+export declare const CandidateSchema: GenMessage<Candidate>;
+
+/**
  * CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
  *
  * @generated from message ntx.v1.CalendarEntry
@@ -673,6 +756,20 @@ export declare type GetPortfolioResponse = Message<"ntx.v1.GetPortfolioResponse"
    * @generated from field: string calendar_opening = 10;
    */
   calendarOpening: string;
+
+  /**
+   * Sorted by rating, then PE against the sector.
+   *
+   * @generated from field: repeated ntx.v1.Candidate candidates = 11;
+   */
+  candidates: Candidate[];
+
+  /**
+   * The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+   *
+   * @generated from field: string candidates_opening = 12;
+   */
+  candidatesOpening: string;
 };
 
 /**

@@ -23,13 +23,14 @@ type Company struct {
 }
 
 type CompanyRating struct {
-	CompanyID  int64     `json:"company_id"`
-	Letter     string    `json:"letter"`
-	Holds      int64     `json:"holds"`
-	Evaluated  int64     `json:"evaluated"`
-	ComputedAt time.Time `json:"computed_at"`
-	Total      int64     `json:"total"`
-	Version    int64     `json:"version"`
+	CompanyID      int64     `json:"company_id"`
+	Letter         string    `json:"letter"`
+	Holds          int64     `json:"holds"`
+	Evaluated      int64     `json:"evaluated"`
+	ComputedAt     time.Time `json:"computed_at"`
+	Total          int64     `json:"total"`
+	Version        int64     `json:"version"`
+	DividendRecord string    `json:"dividend_record"`
 }
 
 type CorporateAction struct {

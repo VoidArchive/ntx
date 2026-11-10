@@ -11,6 +11,7 @@ import (
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/internal/database"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 func TestGetFundamentalsCarriesProvenance(t *testing.T) {
@@ -159,7 +160,14 @@ func TestListScreener(t *testing.T) {
 	must(
 		q.UpsertCompanyRating(
 			ctx,
-			sqlc.UpsertCompanyRatingParams{CompanyID: 131, Letter: "B", Holds: 5, Evaluated: 7, Total: 8, Version: 2},
+			sqlc.UpsertCompanyRatingParams{
+				CompanyID: 131,
+				Letter:    "B",
+				Holds:     5,
+				Evaluated: 7,
+				Total:     8,
+				Version:   story.RatingVersion,
+			},
 		),
 	)
 

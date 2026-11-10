@@ -16,6 +16,7 @@ import (
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 // now is the sheet's and calendar's clock; tests pin it.
@@ -118,8 +119,41 @@ func (s *Service) portfolio(ctx context.Context, navs map[string]float64) (*ntxv
 	res.OrderSheet = sheet(month(today), rules, index, holdings)
 	res.Calendar = calendar(today, holdings)
 	res.CalendarOpening = calendarOpening(res.Calendar)
+	if res.Candidates, err = s.candidates(ctx, res, rules, plants); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.CandidatesOpening = candidatesOpening(len(res.Candidates), res, rules)
 	res.Opening = opening(res)
 	return res, nil
+}
+
+// candidates prices the screener as the screener page does and filters it by the rules.
+// shortcut: every company's quarterly rows are parsed per request, as ListScreener does; store the trailing PE beside the rating when the page feels slow.
+func (s *Service) candidates(
+	ctx context.Context,
+	res *ntxv1.GetPortfolioResponse,
+	rules sqlc.Rule,
+	plants []sqlc.HydroPlant,
+) ([]*ntxv1.Candidate, error) {
+	rows, err := s.queries.ListScreener(ctx, story.RatingVersion)
+	if err != nil {
+		return nil, err
+	}
+	earningsRows, err := s.queries.ListEarningsRows(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	quarterly := map[int64][]sqlc.Fundamental{}
+	for _, e := range earningsRows {
+		quarterly[e.Fundamental.CompanyID] = append(quarterly[e.Fundamental.CompanyID], e.Fundamental)
+	}
+	pes := map[int64]float64{}
+	for _, row := range rows {
+		if e, ok := story.LatestEarnings(quarterly[row.ID]); ok && e.EPS > 0 && row.ClosePrice.Valid {
+			pes[row.ID] = row.ClosePrice.Float64 / e.EPS
+		}
+	}
+	return candidates(rows, pes, res, rules, plants), nil
 }
 
 // indexYear is the index's trailing 52 weeks of closes, oldest first; nil without a market day.
@@ -350,7 +384,7 @@ func (s *Service) drawdownDefault(ctx context.Context, symbol string, chosen *bo
 	if err != nil {
 		return 0, err
 	}
-	return flag(strings.Contains(strings.ToLower(c.Sector), "hydro")), nil
+	return flag(isHydro(c.Sector)), nil
 }
 
 func (s *Service) DeleteHolding(

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -18,6 +19,7 @@ import (
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/database"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
 
 const testToken = "owner-secret"
@@ -561,5 +563,80 @@ func TestOrderSheetAndCalendarOnTheBook(t *testing.T) {
 		if err == nil {
 			t.Errorf("%s accepted", name)
 		}
+	}
+}
+
+// SAHAS shares MEN's basin and is left out; API sits in the Mahakali basin and is in;
+// NTC, an A outside hydro, leads. The sector cap is lifted so hydro has headroom.
+func TestCandidatesOnTheBook(t *testing.T) {
+	c, q := clientAndDB(t, testToken)
+	book(t, c)
+	ctx := context.Background()
+	for _, co := range []struct {
+		id           int64
+		symbol, name string
+		sector       string
+		close        float64
+		rating, dr   string
+		plant, basin string
+	}{
+		{2, "SAHAS", "Sahas Urja", "Hydropower", 685, "A", "holds", "", ""},
+		{3, "API", "Api Power", "Hydro Power", 343, "B", "holds", "Naugadh Gad", "Mahakali"},
+		{4, "NTC", "Nepal Doorsanchar", "Others", 910, "A", "holds", "", ""},
+		{5, "NABIL", "Nabil Bank", "Commercial Banks", 500, "C", "holds", "", ""},
+	} {
+		if co.id != 2 {
+			must(t, q.UpsertCompany(ctx, sqlc.UpsertCompanyParams{
+				ID: co.id, Name: co.name, Symbol: co.symbol, Status: "A", Sector: co.sector, InstrumentType: "Equity",
+			}))
+			must(t, q.UpsertPrice(ctx, sqlc.UpsertPriceParams{
+				CompanyID:    co.id,
+				BusinessDate: "2026-10-16",
+				ClosePrice:   sql.NullFloat64{Float64: co.close, Valid: true},
+			}))
+		}
+		if co.plant != "" {
+			must(t, q.UpsertHydroPlant(ctx, sqlc.UpsertHydroPlantParams{
+				Symbol: co.symbol, Plant: co.plant, River: co.plant, Basin: co.basin, District: "Darchula",
+				Mw: 8, Lat: 29.8, Lon: 80.6, Status: "operating", SourceUrl: "https://apipower.com.np",
+			}))
+		}
+		must(t, q.UpsertCompanyRating(ctx, sqlc.UpsertCompanyRatingParams{
+			CompanyID: co.id, Letter: co.rating, Holds: 7, Evaluated: 9, Total: 10, Version: story.RatingVersion,
+			DividendRecord: co.dr,
+		}))
+	}
+	rules := &ntxv1.Rules{
+		SoftCapPercent: 20, HardCapPercent: 25, SectorCapPercent: 90, MaxPositions: 8, MinEntryRs: 15000,
+		OneHydroPerBasin: true, CandidateMinRating: "B", CandidateDividendRecord: true, MonthlyBudgetRs: 12000,
+		MultiplierBelowMedian: 1.5, MultiplierBottomQuarter: 2,
+	}
+	_, err := c.UpdateRules(ctx, connect.NewRequest(&ntxv1.UpdateRulesRequest{Rules: rules}))
+	must(t, err)
+
+	res, err := c.GetPortfolio(
+		ctx,
+		connect.NewRequest(&ntxv1.GetPortfolioRequest{FundNavs: map[string]float64{"NIBLSF": 10.29}}),
+	)
+	must(t, err)
+	var got []string
+	for _, cd := range res.Msg.GetCandidates() {
+		got = append(
+			got,
+			fmt.Sprintf(
+				"%s %s %d@%.0f %s",
+				cd.GetSymbol(),
+				cd.GetRating(),
+				cd.GetShares(),
+				cd.GetCostRs(),
+				cd.GetBasin(),
+			),
+		)
+	}
+	if want := []string{"NTC A 20@18200 ", "API B 50@17150 Mahakali"}; !slices.Equal(got, want) {
+		t.Errorf("candidates %q, want %q", got, want)
+	}
+	if res.Msg.GetCandidatesOpening() != "Positions stand at 1 of 8; a new scrip needs a sale first. 2 companies pass the rules." {
+		t.Errorf("opening %q", res.Msg.GetCandidatesOpening())
 	}
 }

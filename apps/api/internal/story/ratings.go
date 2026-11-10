@@ -10,7 +10,7 @@ import (
 
 // RatingVersion names the rule set; bump it when a check or the letter rule
 // changes so the startup fill recomputes every stored letter.
-const RatingVersion = 2
+const RatingVersion = 3
 
 // SyncRatings stores every listed company's Rating for the screener, which
 // must not build 281 stories per request. The company page still computes live.
@@ -31,14 +31,28 @@ func SyncRatings(ctx context.Context, queries *sqlc.Queries) error {
 			slog.Warn("rating skipped", "symbol", c.Symbol, "err", err)
 			continue
 		}
-		r := Build(in).Rating
+		st := Build(in)
+		r := st.Rating
 		if err := queries.UpsertCompanyRating(ctx, sqlc.UpsertCompanyRatingParams{
 			CompanyID: c.ID, Letter: r.Letter,
 			Holds: int64(r.Holds), Evaluated: int64(r.Evaluated), Total: int64(r.Total), Version: RatingVersion,
+			DividendRecord: checkVerdict(st.Checks, DividendRecordCheck),
 		}); err != nil {
 			return fmt.Errorf("store rating %s: %w", c.Symbol, err)
 		}
 	}
 	slog.Info("ratings stored", "companies", len(companies)-failed, "failed", failed)
 	return nil
+}
+
+// DividendRecordCheck is the published check the owner's Candidates rule reads.
+const DividendRecordCheck = "Dividend record"
+
+func checkVerdict(checks []Check, name string) string {
+	for _, c := range checks {
+		if c.Name == name {
+			return c.Verdict
+		}
+	}
+	return ""
 }

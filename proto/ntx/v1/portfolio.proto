@@ -57,6 +57,26 @@ message OrderSheet {
   repeated OrderLine lines = 10;
 }
 
+// Candidate is a company the owner's rules admit (GLOSSARY: Candidates): a list
+// of what the rules admit, not a ranking of what to buy.
+message Candidate {
+  string symbol = 1;
+  string name = 2;
+  string sector = 3;
+  string rating = 4;
+  double close = 5;
+  string close_day = 6;
+  optional double pe = 7;
+  optional double sector_pe_median = 8;
+  // Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
+  string basin = 9;
+  // The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
+  int64 shares = 10;
+  double cost_rs = 11;
+  double months = 12;
+  string note = 13;
+}
+
 // CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
 message CalendarEntry {
   string day = 1;
@@ -214,6 +234,10 @@ message GetPortfolioResponse {
   repeated CalendarEntry calendar = 9;
   // The Calendar section's sentence: what is next, and how many dates have passed.
   string calendar_opening = 10;
+  // Sorted by rating, then PE against the sector.
+  repeated Candidate candidates = 11;
+  // The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+  string candidates_opening = 12;
 }
 
 message UpsertHoldingRequest {

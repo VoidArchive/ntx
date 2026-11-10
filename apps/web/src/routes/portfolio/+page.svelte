@@ -321,6 +321,63 @@
 			</section>
 		{/if}
 
+		<section class="mt-6 card-report" aria-label="Candidates">
+			<h2 class="font-serif text-xl">Candidates</h2>
+			<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{p.candidatesOpening}</p>
+			<p class="mt-1 text-sm text-muted-foreground">
+				What your rules admit from the screener, not a ranking: not held, rated at least the
+				minimum, the dividend record holding, sector headroom after a minimum entry, and no second
+				hydro in a basin you hold. Entry is the smallest whole lot that reaches the minimum.
+			</p>
+			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+					<thead class="text-xs text-muted-foreground">
+						<tr class="border-b border-border">
+							<th class="py-2 text-left font-normal">Symbol</th>
+							<th class="py-2 text-left font-normal">Sector</th>
+							<th class="py-2 text-left font-normal">Rating</th>
+							<th class="py-2 text-right font-normal">Close</th>
+							<th class="py-2 text-left font-normal">As of</th>
+							<th class="py-2 text-right font-normal">PE</th>
+							<th class="py-2 text-right font-normal">Sector median</th>
+							<th class="py-2 text-left font-normal">Basin</th>
+							<th class="py-2 text-right font-normal">Entry</th>
+							<th class="py-2 text-right font-normal">Cost</th>
+							<th class="py-2 text-right font-normal">Months</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each p.candidates as c (c.symbol)}
+							<tr class="border-b border-border/50 hover:bg-accent/40">
+								<td class="py-1.5">
+									<a href="/company/{c.symbol}" class="font-medium hover:underline">{c.symbol}</a>
+									<span class="ml-2 text-muted-foreground">{c.name}</span>
+								</td>
+								<td class="py-1.5 text-muted-foreground">{c.sector}</td>
+								<td class="py-1.5">{c.rating}</td>
+								<td class="py-1.5 text-right">{rs(c.close)}</td>
+								<td class="py-1.5 text-xs text-muted-foreground">{c.closeDay || 'not recorded'}</td>
+								<td class="py-1.5 text-right">{c.pe === undefined ? '—' : `${rs(c.pe, 1)}x`}</td>
+								<td class="py-1.5 text-right text-muted-foreground"
+									>{c.sectorPeMedian === undefined ? '—' : `${rs(c.sectorPeMedian, 1)}x`}</td
+								>
+								<td class="py-1.5 text-xs text-muted-foreground">{c.basin || c.note || '—'}</td>
+								<td class="py-1.5 text-right">{n(c.shares)}</td>
+								<td class="py-1.5 text-right">{rs(c.costRs, 0)}</td>
+								<td class="py-1.5 text-right">{rs(c.months, 1)}</td>
+							</tr>
+						{:else}
+							<tr
+								><td colspan="11" class="py-3 text-muted-foreground"
+									>No company passes the rules at the latest close.</td
+								></tr
+							>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
 		<section class="mt-6 card-report" aria-label="Calendar">
 			<h2 class="font-serif text-xl">Calendar</h2>
 			<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{p.calendarOpening}</p>
