@@ -166,7 +166,7 @@ func (s *Service) load(ctx context.Context, navs map[string]float64) ([]*ntxv1.H
 				h.Close = &nav
 			}
 		} else if r.ClosePrice.Valid {
-			h.Close = &r.ClosePrice.Float64
+			h.Close, h.CloseDay = &r.ClosePrice.Float64, r.CloseDay
 		}
 		if h.Close != nil {
 			h.Value = float64(qty) * *h.Close

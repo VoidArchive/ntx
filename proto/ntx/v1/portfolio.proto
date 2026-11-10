@@ -69,6 +69,8 @@ message Holding {
   bool is_fund = 17;
   repeated Transaction transactions = 18;
   repeated Note notes = 19;
+  // Business date of the close; empty for a fund, whose NAV date the caller knows.
+  string close_day = 20;
 }
 
 message GetPortfolioRequest {

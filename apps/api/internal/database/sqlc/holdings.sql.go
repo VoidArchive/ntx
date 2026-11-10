@@ -104,7 +104,9 @@ func (q *Queries) InsertTransaction(ctx context.Context, arg InsertTransactionPa
 const listHoldings = `-- name: ListHoldings :many
 SELECT h.id, h.symbol, h.status, h.target_shares, h.allocation_percent, h.carry_rs, h.drawdown_gate, h.thesis, h.frozen_reason, h.review_date, h.created_at, c.id AS company_id, c.name AS company_name, c.sector,
     (SELECT close_price FROM prices p WHERE p.company_id = c.id
-        ORDER BY p.business_date DESC LIMIT 1) AS close_price
+        ORDER BY p.business_date DESC LIMIT 1) AS close_price,
+    CAST(COALESCE((SELECT business_date FROM prices p WHERE p.company_id = c.id
+        ORDER BY p.business_date DESC LIMIT 1), '') AS TEXT) AS close_day
 FROM holdings h
 LEFT JOIN companies c ON c.symbol = h.symbol
 ORDER BY h.symbol
@@ -126,6 +128,7 @@ type ListHoldingsRow struct {
 	CompanyName       sql.NullString  `json:"company_name"`
 	Sector            sql.NullString  `json:"sector"`
 	ClosePrice        sql.NullFloat64 `json:"close_price"`
+	CloseDay          string          `json:"close_day"`
 }
 
 // A holding without a company row is a mutual fund, priced by the caller.
@@ -154,6 +157,7 @@ func (q *Queries) ListHoldings(ctx context.Context) ([]ListHoldingsRow, error) {
 			&i.CompanyName,
 			&i.Sector,
 			&i.ClosePrice,
+			&i.CloseDay,
 		); err != nil {
 			return nil, err
 		}

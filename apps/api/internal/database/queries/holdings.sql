@@ -25,7 +25,9 @@ DELETE FROM holdings WHERE symbol = ?;
 -- A holding without a company row is a mutual fund, priced by the caller.
 SELECT h.*, c.id AS company_id, c.name AS company_name, c.sector,
     (SELECT close_price FROM prices p WHERE p.company_id = c.id
-        ORDER BY p.business_date DESC LIMIT 1) AS close_price
+        ORDER BY p.business_date DESC LIMIT 1) AS close_price,
+    CAST(COALESCE((SELECT business_date FROM prices p WHERE p.company_id = c.id
+        ORDER BY p.business_date DESC LIMIT 1), '') AS TEXT) AS close_day
 FROM holdings h
 LEFT JOIN companies c ON c.symbol = h.symbol
 ORDER BY h.symbol;

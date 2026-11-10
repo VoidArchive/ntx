@@ -92,6 +92,13 @@ func TestEveryMethodRefusesWithoutTheToken(t *testing.T) {
 	}
 }
 
+func boolf(b bool) float64 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
 func must(t *testing.T, err error) {
 	t.Helper()
 	if err != nil {
@@ -143,17 +150,22 @@ func TestOwnerReadsWeightsWithFundsInTheDenominator(t *testing.T) {
 		t.Fatalf("holdings %d positions %d funds %d", len(m.GetHoldings()), m.GetPositions(), m.GetFunds())
 	}
 	men, fund := m.GetHoldings()[0], m.GetHoldings()[1]
-	if men.GetQuantity() != 144 || math.Abs(men.GetWac()-463.78) > 0.01 || men.GetClose() != 664.80 {
-		t.Errorf("MEN qty %d wac %.2f close %.2f", men.GetQuantity(), men.GetWac(), men.GetClose())
+	for name, got := range map[string][2]float64{
+		"MEN quantity":   {float64(men.GetQuantity()), 144},
+		"MEN wac":        {men.GetWac(), 463.78},
+		"MEN close":      {men.GetClose(), 664.80},
+		"MEN value":      {men.GetValue(), 95731.20},
+		"MEN weight":     {men.GetWeightPercent(), 64.92},
+		"fund value":     {fund.GetValue(), 51727.83},
+		"MEN rows":       {float64(len(men.GetTransactions())*10 + len(men.GetNotes())), 21},
+		"fund is a fund": {boolf(fund.GetIsFund()), 1},
+	} {
+		if math.Abs(got[0]-got[1]) > 0.01 {
+			t.Errorf("%s = %.2f, want %.2f", name, got[0], got[1])
+		}
 	}
-	if math.Abs(men.GetValue()-95731.20) > 0.01 || math.Abs(men.GetWeightPercent()-64.92) > 0.01 {
-		t.Errorf("MEN value %.2f weight %.2f, want 95731.20 and 64.92", men.GetValue(), men.GetWeightPercent())
-	}
-	if !fund.GetIsFund() || math.Abs(fund.GetValue()-51727.83) > 0.01 || fund.GetSector() != "Mutual Fund" {
-		t.Errorf("fund %v", fund)
-	}
-	if len(men.GetTransactions()) != 2 || len(men.GetNotes()) != 1 {
-		t.Errorf("MEN rows: %d transactions, %v", len(men.GetTransactions()), men.GetNotes())
+	if men.GetCloseDay() != "2026-10-16" || fund.GetSector() != "Mutual Fund" {
+		t.Errorf("close day %q, fund sector %q", men.GetCloseDay(), fund.GetSector())
 	}
 	if m.GetOpening() != "Rs 1.47 lakh across 1 position and 1 fund." {
 		t.Errorf("opening = %q", m.GetOpening())

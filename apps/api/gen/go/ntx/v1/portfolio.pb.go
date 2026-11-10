@@ -289,9 +289,11 @@ type Holding struct {
 	Value         float64  `protobuf:"fixed64,15,opt,name=value,proto3" json:"value,omitempty"`
 	WeightPercent float64  `protobuf:"fixed64,16,opt,name=weight_percent,json=weightPercent,proto3" json:"weight_percent,omitempty"`
 	// A holding with no company row is a mutual fund: in the weight denominator, not a position.
-	IsFund        bool           `protobuf:"varint,17,opt,name=is_fund,json=isFund,proto3" json:"is_fund,omitempty"`
-	Transactions  []*Transaction `protobuf:"bytes,18,rep,name=transactions,proto3" json:"transactions,omitempty"`
-	Notes         []*Note        `protobuf:"bytes,19,rep,name=notes,proto3" json:"notes,omitempty"`
+	IsFund       bool           `protobuf:"varint,17,opt,name=is_fund,json=isFund,proto3" json:"is_fund,omitempty"`
+	Transactions []*Transaction `protobuf:"bytes,18,rep,name=transactions,proto3" json:"transactions,omitempty"`
+	Notes        []*Note        `protobuf:"bytes,19,rep,name=notes,proto3" json:"notes,omitempty"`
+	// Business date of the close; empty for a fund, whose NAV date the caller knows.
+	CloseDay      string `protobuf:"bytes,20,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -457,6 +459,13 @@ func (x *Holding) GetNotes() []*Note {
 		return x.Notes
 	}
 	return nil
+}
+
+func (x *Holding) GetCloseDay() string {
+	if x != nil {
+		return x.CloseDay
+	}
+	return ""
 }
 
 type GetPortfolioRequest struct {
@@ -1052,7 +1061,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x04Note\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
 	"\x03day\x18\x02 \x01(\tR\x03day\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"\xf4\x04\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\"\x91\x05\n" +
 	"\aHolding\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -1074,7 +1083,8 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x0eweight_percent\x18\x10 \x01(\x01R\rweightPercent\x12\x17\n" +
 	"\ais_fund\x18\x11 \x01(\bR\x06isFund\x127\n" +
 	"\ftransactions\x18\x12 \x03(\v2\x13.ntx.v1.TransactionR\ftransactions\x12\"\n" +
-	"\x05notes\x18\x13 \x03(\v2\f.ntx.v1.NoteR\x05notesB\b\n" +
+	"\x05notes\x18\x13 \x03(\v2\f.ntx.v1.NoteR\x05notes\x12\x1b\n" +
+	"\tclose_day\x18\x14 \x01(\tR\bcloseDayB\b\n" +
 	"\x06_close\"\x9a\x01\n" +
 	"\x13GetPortfolioRequest\x12F\n" +
 	"\tfund_navs\x18\x01 \x03(\v2).ntx.v1.GetPortfolioRequest.FundNavsEntryR\bfundNavs\x1a;\n" +
