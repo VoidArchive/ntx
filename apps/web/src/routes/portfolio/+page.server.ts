@@ -85,6 +85,15 @@ export const actions: Actions = {
 		const form = await request.formData();
 		return forward(cookies, (api) => api.deleteHolding({ symbol: str(form, 'symbol') }));
 	},
+	// The owner confirms or edits each proposed carry; one number per symbol.
+	executed: async ({ request, cookies }) => {
+		const form = await request.formData();
+		const carries: Record<string, number> = {};
+		for (const [key, value] of form.entries()) {
+			if (key.startsWith('carry:')) carries[key.slice('carry:'.length)] = Number(value) || 0;
+		}
+		return forward(cookies, (api) => api.markMonthExecuted({ carries }));
+	},
 	rules: async ({ request, cookies }) => {
 		const form = await request.formData();
 		return forward(cookies, (api) =>
