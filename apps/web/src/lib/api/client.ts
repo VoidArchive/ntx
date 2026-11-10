@@ -1,16 +1,25 @@
-import { createClient } from '@connectrpc/connect';
+import { createClient, type Interceptor } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-web';
 import { API_URL } from '$app/env/private';
 import { CompanyService } from '#lib/gen/ntx/v1/company_pb.js';
 import { HydroService } from '#lib/gen/ntx/v1/hydro_pb.js';
 import { MarketService } from '#lib/gen/ntx/v1/market_pb.js';
+import { PortfolioService } from '#lib/gen/ntx/v1/portfolio_pb.js';
 import { PriceService } from '#lib/gen/ntx/v1/price_pb.js';
 import { SectorService } from '#lib/gen/ntx/v1/sector_pb.js';
 import { StoryService } from '#lib/gen/ntx/v1/story_pb.js';
 
-export function createApiClient(baseUrl: string) {
+// The owner token rides on every call as a header (ADR 0006); public services ignore it.
+const OWNER_HEADER = 'Ntx-Owner-Token';
+
+export function createApiClient(baseUrl: string, ownerToken?: string) {
+	const withToken: Interceptor = (next) => (req) => {
+		if (ownerToken) req.header.set(OWNER_HEADER, ownerToken);
+		return next(req);
+	};
 	const transport = createConnectTransport({
 		baseUrl,
+		interceptors: [withToken],
 		fetch: (input, init) => fetch(input, { ...init, redirect: 'follow' })
 	});
 
@@ -20,7 +29,8 @@ export function createApiClient(baseUrl: string) {
 		story: createClient(StoryService, transport),
 		market: createClient(MarketService, transport),
 		sector: createClient(SectorService, transport),
-		hydro: createClient(HydroService, transport)
+		hydro: createClient(HydroService, transport),
+		portfolio: createClient(PortfolioService, transport)
 	};
 }
 

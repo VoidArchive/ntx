@@ -52,7 +52,7 @@
 </svelte:head>
 <ModeWatcher defaultMode="dark" />
 <div class="lg:flex">
-	<Sidebar companies={data.search} />
+	<Sidebar companies={data.search} owner={data.owner} />
 	<div class="min-w-0 flex-1">
 		{@render children()}
 

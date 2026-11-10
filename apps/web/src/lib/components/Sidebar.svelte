@@ -9,16 +9,19 @@
 
 	interface Props {
 		companies?: SearchEntry[];
+		owner?: boolean;
 	}
 
-	let { companies = [] }: Props = $props();
+	let { companies = [], owner = false }: Props = $props();
 
-	const links = [
+	// Portfolio is the owner's page; without the token it is not offered (ADR 0006).
+	let links = $derived([
 		{ href: '/', label: 'Home' },
 		{ href: '/screener', label: 'Screener' },
 		{ href: '/hydro', label: 'Hydro' },
-		{ href: '/mutual-funds', label: 'Mutual funds' }
-	];
+		{ href: '/mutual-funds', label: 'Mutual funds' },
+		...(owner ? [{ href: '/portfolio', label: 'Portfolio' }] : [])
+	]);
 
 	// Saved views of the company list; each is a URL the screener already understands.
 	const lists = [

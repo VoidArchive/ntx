@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package ntx.v1;
+
+option go_package = "github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1";
+
+// PortfolioService is the owner's personal layer (GLOSSARY: Holding). Every
+// method requires the owner token in the "Ntx-Owner-Token" header (ADR 0006);
+// without it the call fails with Unauthenticated and no detail.
+service PortfolioService {
+  rpc GetPortfolio(GetPortfolioRequest) returns (GetPortfolioResponse);
+  rpc UpsertHolding(UpsertHoldingRequest) returns (UpsertHoldingResponse);
+  rpc DeleteHolding(DeleteHoldingRequest) returns (DeleteHoldingResponse);
+  rpc AddTransaction(AddTransactionRequest) returns (AddTransactionResponse);
+  rpc AddNote(AddNoteRequest) returns (AddNoteResponse);
+}
+
+enum HoldingStatus {
+  HOLDING_STATUS_UNSPECIFIED = 0;
+  HOLDING_STATUS_BUILD = 1;
+  HOLDING_STATUS_HOLD = 2;
+  HOLDING_STATUS_FROZEN = 3;
+}
+
+enum TransactionKind {
+  TRANSACTION_KIND_UNSPECIFIED = 0;
+  TRANSACTION_KIND_BUY = 1;
+  TRANSACTION_KIND_SELL = 2;
+  TRANSACTION_KIND_BONUS = 3;
+  TRANSACTION_KIND_RIGHTS = 4;
+  TRANSACTION_KIND_IPO = 5;
+}
+
+message Transaction {
+  int64 id = 1;
+  string day = 2;
+  TransactionKind kind = 3;
+  int64 quantity = 4;
+  // Per share as TMS shows it, fees included; NAV for a fund unit.
+  double price = 5;
+}
+
+message Note {
+  int64 id = 1;
+  string day = 2;
+  string text = 3;
+}
+
+message Holding {
+  string symbol = 1;
+  string name = 2;
+  string sector = 3;
+  HoldingStatus status = 4;
+  int64 target_shares = 5;
+  double allocation_percent = 6;
+  double carry_rs = 7;
+  bool drawdown_gate = 8;
+  string thesis = 9;
+  string frozen_reason = 10;
+  string review_date = 11;
+  // Derived from transactions: quantity and weighted average cost.
+  int64 quantity = 12;
+  double wac = 13;
+  // Latest close, or the NAV the caller supplied for a fund; unset when neither exists.
+  optional double close = 14;
+  double value = 15;
+  double weight_percent = 16;
+  // A holding with no company row is a mutual fund: in the weight denominator, not a position.
+  bool is_fund = 17;
+  repeated Transaction transactions = 18;
+  repeated Note notes = 19;
+  // Business date of the close; empty for a fund, whose NAV date the caller knows.
+  string close_day = 20;
+}
+
+message GetPortfolioRequest {
+  // NAV per unit by fund symbol, from the web's nav.json snapshot.
+  map<string, double> fund_navs = 1;
+}
+
+message GetPortfolioResponse {
+  repeated Holding holdings = 1;
+  double total_value = 2;
+  // Holdings with shares and a company row; funds and watched companies are not positions.
+  int32 positions = 3;
+  int32 funds = 4;
+  // The page's opening sentence, computed here (ADR 0001).
+  string opening = 5;
+}
+
+message UpsertHoldingRequest {
+  string symbol = 1;
+  HoldingStatus status = 2;
+  int64 target_shares = 3;
+  double allocation_percent = 4;
+  double carry_rs = 5;
+  bool drawdown_gate = 6;
+  string thesis = 7;
+  string frozen_reason = 8;
+  string review_date = 9;
+}
+
+message UpsertHoldingResponse { Holding holding = 1; }
+
+message DeleteHoldingRequest { string symbol = 1; }
+
+message DeleteHoldingResponse {}
+
+message AddTransactionRequest {
+  string symbol = 1;
+  string day = 2;
+  TransactionKind kind = 3;
+  int64 quantity = 4;
+  double price = 5;
+}
+
+message AddTransactionResponse { Transaction transaction = 1; }
+
+message AddNoteRequest {
+  string symbol = 1;
+  string day = 2;
+  string text = 3;
+}
+
+message AddNoteResponse { Note note = 1; }

@@ -62,6 +62,27 @@ type Fundamental struct {
 	FiscalYearNp  sql.NullString  `json:"fiscal_year_np"`
 }
 
+type Holding struct {
+	ID                int64     `json:"id"`
+	Symbol            string    `json:"symbol"`
+	Status            string    `json:"status"`
+	TargetShares      int64     `json:"target_shares"`
+	AllocationPercent float64   `json:"allocation_percent"`
+	CarryRs           float64   `json:"carry_rs"`
+	DrawdownGate      int64     `json:"drawdown_gate"`
+	Thesis            string    `json:"thesis"`
+	FrozenReason      string    `json:"frozen_reason"`
+	ReviewDate        string    `json:"review_date"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
+type HoldingNote struct {
+	ID        int64  `json:"id"`
+	HoldingID int64  `json:"holding_id"`
+	Day       string `json:"day"`
+	Text      string `json:"text"`
+}
+
 type HydroPlant struct {
 	ID        int64   `json:"id"`
 	Symbol    string  `json:"symbol"`
@@ -139,4 +160,13 @@ type Price struct {
 	Turnover        sql.NullFloat64 `json:"turnover"`
 	Trades          sql.NullInt64   `json:"trades"`
 	CreatedAt       time.Time       `json:"created_at"`
+}
+
+type Transaction struct {
+	ID        int64   `json:"id"`
+	HoldingID int64   `json:"holding_id"`
+	Day       string  `json:"day"`
+	Kind      string  `json:"kind"`
+	Quantity  int64   `json:"quantity"`
+	Price     float64 `json:"price"`
 }
