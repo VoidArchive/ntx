@@ -167,7 +167,7 @@ func TestOwnerReadsWeightsWithFundsInTheDenominator(t *testing.T) {
 	if men.GetCloseDay() != "2026-10-16" || fund.GetSector() != "Mutual Fund" {
 		t.Errorf("close day %q, fund sector %q", men.GetCloseDay(), fund.GetSector())
 	}
-	if m.GetOpening() != "Rs 1.47 lakh across 1 position and 1 fund." {
+	if m.GetOpening() != "Rs 1.47 lakh across 1 position and 1 fund, at the 2026-10-16 close." {
 		t.Errorf("opening = %q", m.GetOpening())
 	}
 }
@@ -181,8 +181,26 @@ func TestDeletingAHoldingDropsItsRows(t *testing.T) {
 	must(t, err)
 	res, err := c.GetPortfolio(ctx, connect.NewRequest(&ntxv1.GetPortfolioRequest{}))
 	must(t, err)
-	if len(res.Msg.GetHoldings()) != 1 || res.Msg.GetOpening() != "Rs 95,731 across 1 position." {
+	if len(res.Msg.GetHoldings()) != 1 ||
+		res.Msg.GetOpening() != "Rs 95,731 across 1 position, at the 2026-10-16 close." {
 		t.Errorf("after delete: %d holdings, opening %q", len(res.Msg.GetHoldings()), res.Msg.GetOpening())
+	}
+	// Re-adding the symbol starts from nothing: its transactions went with it.
+	again, err := c.UpsertHolding(ctx, connect.NewRequest(&ntxv1.UpsertHoldingRequest{Symbol: "NIBLSF"}))
+	must(t, err)
+	if again.Msg.GetHolding().GetQuantity() != 0 || len(again.Msg.GetHolding().GetTransactions()) != 0 {
+		t.Errorf("rows survived the delete: %v", again.Msg.GetHolding())
+	}
+}
+
+func TestSaleBeyondTheHoldingIsRefused(t *testing.T) {
+	c := client(t, testToken)
+	book(t, c)
+	_, err := c.AddTransaction(context.Background(), connect.NewRequest(&ntxv1.AddTransactionRequest{
+		Symbol: "MEN", Day: "2026-11-09", Kind: ntxv1.TransactionKind_TRANSACTION_KIND_SELL, Quantity: 145, Price: 700,
+	}))
+	if connect.CodeOf(err) != connect.CodeInvalidArgument {
+		t.Fatalf("got %v, want InvalidArgument", err)
 	}
 }
 

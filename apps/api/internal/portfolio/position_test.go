@@ -30,6 +30,18 @@ func TestPositionBonusLowersWACAndSellKeepsIt(t *testing.T) {
 	}
 }
 
+// Selling out and buying back starts a fresh book: the old cost does not leak into the new WAC.
+func TestPositionSoldOutThenRebought(t *testing.T) {
+	txs := []sqlc.Transaction{
+		{Kind: kindOf(ntxv1.TransactionKind_TRANSACTION_KIND_BUY), Quantity: 10, Price: 100},
+		{Kind: kindOf(ntxv1.TransactionKind_TRANSACTION_KIND_SELL), Quantity: 10, Price: 150},
+		{Kind: kindOf(ntxv1.TransactionKind_TRANSACTION_KIND_BUY), Quantity: 10, Price: 200},
+	}
+	if qty, wac := position(txs); qty != 10 || wac != 200 {
+		t.Fatalf("got %d at %.2f, want 10 at 200", qty, wac)
+	}
+}
+
 func TestPositionWithoutTransactionsIsWatched(t *testing.T) {
 	if qty, wac := position(nil); qty != 0 || wac != 0 {
 		t.Fatalf("got %d %.2f, want 0 0", qty, wac)

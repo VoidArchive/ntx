@@ -53,6 +53,17 @@ async function forward(
 	}
 }
 
+async function isListed(symbol: string) {
+	if (funds.some((f) => f.symbol === symbol)) return true;
+	try {
+		await createApiClient(apiBaseUrl()).company.getCompany({ symbol });
+		return true;
+	} catch (e) {
+		if (e instanceof ConnectError && e.code === Code.NotFound) return false;
+		throw e;
+	}
+}
+
 export const actions: Actions = {
 	token: async ({ request, cookies }) => {
 		const token = str(await request.formData(), 'token');
@@ -66,9 +77,13 @@ export const actions: Actions = {
 	},
 	holding: async ({ request, cookies }) => {
 		const form = await request.formData();
+		const symbol = str(form, 'symbol').toUpperCase();
+		// A symbol the API has never heard of would otherwise be stored as a priceless fund.
+		if (!(await isListed(symbol)))
+			return fail(400, { message: `${symbol} is not a listed company or fund.` });
 		return forward(cookies, (api) =>
 			api.upsertHolding({
-				symbol: str(form, 'symbol'),
+				symbol,
 				status: num(form, 'status') as HoldingStatus,
 				targetShares: BigInt(Math.trunc(num(form, 'target_shares'))),
 				allocationPercent: num(form, 'allocation_percent'),

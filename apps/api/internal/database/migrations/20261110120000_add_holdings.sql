@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
--- The owner's holdings and watchlist (GLOSSARY: Holding). A watched company is a
+-- The owner's holdings (GLOSSARY: Holding). A watched company is a
 -- row with no transactions. Owner-only state behind one token (ADR 0006).
 CREATE TABLE holdings (
     id INTEGER PRIMARY KEY,

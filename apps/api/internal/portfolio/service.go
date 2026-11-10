@@ -47,6 +47,8 @@ func ownerOnly(token string) connect.UnaryInterceptorFunc {
 	}
 }
 
+func normSymbol(s string) string { return strings.ToUpper(strings.TrimSpace(s)) }
+
 func statusOf(s ntxv1.HoldingStatus) string {
 	if s == ntxv1.HoldingStatus_HOLDING_STATUS_UNSPECIFIED {
 		s = ntxv1.HoldingStatus_HOLDING_STATUS_HOLD
@@ -87,6 +89,7 @@ func (s *Service) GetPortfolio(
 	return connect.NewResponse(res), nil
 }
 
+// opening names the newest close the total rests on; fund rows carry their own NAV date.
 func opening(p *ntxv1.GetPortfolioResponse) string {
 	if len(p.GetHoldings()) == 0 {
 		return "No holdings recorded."
@@ -95,7 +98,14 @@ func opening(p *ntxv1.GetPortfolioResponse) string {
 	if p.GetFunds() > 0 {
 		across += " and " + plural(int(p.GetFunds()), "fund")
 	}
-	return fmt.Sprintf("Rs %s across %s.", rupees(p.GetTotalValue()), across)
+	day := ""
+	for _, h := range p.GetHoldings() {
+		day = max(day, h.GetCloseDay())
+	}
+	if day == "" {
+		return fmt.Sprintf("Rs %s across %s, at the latest NAV.", rupees(p.GetTotalValue()), across)
+	}
+	return fmt.Sprintf("Rs %s across %s, at the %s close.", rupees(p.GetTotalValue()), across, day)
 }
 
 func plural(n int, word string) string {
@@ -189,7 +199,7 @@ func (s *Service) UpsertHolding(
 	req *connect.Request[ntxv1.UpsertHoldingRequest],
 ) (*connect.Response[ntxv1.UpsertHoldingResponse], error) {
 	m := req.Msg
-	symbol := strings.ToUpper(strings.TrimSpace(m.GetSymbol()))
+	symbol := normSymbol(m.GetSymbol())
 	if symbol == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("symbol is required"))
 	}
@@ -231,14 +241,14 @@ func (s *Service) DeleteHolding(
 	ctx context.Context,
 	req *connect.Request[ntxv1.DeleteHoldingRequest],
 ) (*connect.Response[ntxv1.DeleteHoldingResponse], error) {
-	if err := s.queries.DeleteHolding(ctx, strings.ToUpper(strings.TrimSpace(req.Msg.GetSymbol()))); err != nil {
+	if err := s.queries.DeleteHolding(ctx, normSymbol(req.Msg.GetSymbol())); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return connect.NewResponse(&ntxv1.DeleteHoldingResponse{}), nil
 }
 
 func (s *Service) holding(ctx context.Context, symbol string) (sqlc.Holding, error) {
-	h, err := s.queries.GetHolding(ctx, strings.ToUpper(strings.TrimSpace(symbol)))
+	h, err := s.queries.GetHolding(ctx, normSymbol(symbol))
 	if errors.Is(err, sql.ErrNoRows) {
 		return h, connect.NewError(connect.CodeNotFound, fmt.Errorf("no holding %q", symbol))
 	}
@@ -265,6 +275,15 @@ func (s *Service) AddTransaction(
 	h, err := s.holding(ctx, m.GetSymbol())
 	if err != nil {
 		return nil, err
+	}
+	if m.GetKind() == ntxv1.TransactionKind_TRANSACTION_KIND_SELL {
+		txs, err := s.queries.ListTransactionsByHolding(ctx, h.ID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		if held, _ := position(txs); m.GetQuantity() > held {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("only %d shares held", held))
+		}
 	}
 	tx, err := s.queries.InsertTransaction(ctx, sqlc.InsertTransactionParams{
 		HoldingID: h.ID, Day: m.GetDay(), Kind: kindOf(m.GetKind()), Quantity: m.GetQuantity(), Price: m.GetPrice(),

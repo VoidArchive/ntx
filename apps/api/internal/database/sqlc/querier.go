@@ -84,6 +84,7 @@ type Querier interface {
 	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
 	ListSectorYield(ctx context.Context, sector string) ([]float64, error)
 	ListTransactions(ctx context.Context) ([]Transaction, error)
+	ListTransactionsByHolding(ctx context.Context, holdingID int64) ([]Transaction, error)
 	// Companies that stop arriving in the NEPSE feed keep their row (and history) but leave every list.
 	MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)

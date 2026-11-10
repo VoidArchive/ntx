@@ -40,7 +40,7 @@
 	}
 
 	let editing = $state<string | undefined>();
-	let draft = $derived(data.portfolio?.holdings.find((h) => h.symbol === editing));
+	let selected = $derived(data.portfolio?.holdings.find((h) => h.symbol === editing));
 </script>
 
 <svelte:head>
@@ -52,7 +52,8 @@
 		<header class="max-w-xl card-report">
 			<h1 class="font-serif text-3xl font-medium tracking-tight">Portfolio</h1>
 			<p class="mt-3 font-serif text-xl leading-snug">
-				The owner's holdings. Enter the owner token once; it is kept in this browser only.
+				The owner's holdings. Enter the owner token once; this browser keeps it as a cookie and
+				sends it only to NTX.
 			</p>
 			<form method="POST" action="?/token" use:enhance class="mt-6 flex gap-2">
 				<input
@@ -110,7 +111,7 @@
 								</td>
 								<td class="py-1.5 text-muted-foreground">{h.sector}</td>
 								<td class="py-1.5">
-									{statusLabel.get(h.status) ?? 'Hold'}
+									{statusLabel.get(h.status)}
 									{#if h.status === HoldingStatus.FROZEN && h.frozenReason}
 										<span class="text-xs text-muted-foreground"
 											>· {h.frozenReason}{h.reviewDate ? `, review ${h.reviewDate}` : ''}</span
@@ -151,17 +152,19 @@
 			</div>
 		</section>
 
-		{#if draft}
-			<section class="mt-6 card-report" aria-label="{draft.symbol} details">
-				<h2 class="font-serif text-xl">{draft.symbol} · {draft.name}</h2>
-				{#if draft.thesis}<p class="mt-2 max-w-3xl font-serif leading-snug">{draft.thesis}</p>{/if}
+		{#if selected}
+			<section class="mt-6 card-report" aria-label="{selected.symbol} details">
+				<h2 class="font-serif text-xl">{selected.symbol} · {selected.name}</h2>
+				{#if selected.thesis}<p class="mt-2 max-w-3xl font-serif leading-snug">
+						{selected.thesis}
+					</p>{/if}
 
 				<div class="mt-4 grid gap-6 lg:grid-cols-2">
 					<div>
 						<h3 class="text-xs text-muted-foreground">Transactions</h3>
 						<table class="mt-1 w-full text-sm tabular-nums [&_td+td]:pl-3">
 							<tbody>
-								{#each draft.transactions as tx (tx.id)}
+								{#each selected.transactions as tx (tx.id)}
 									<tr class="border-b border-border/50">
 										<td class="py-1">{tx.day}</td>
 										<td class="py-1">{kindLabel.get(tx.kind)}</td>
@@ -183,7 +186,7 @@
 							use:enhance
 							class="mt-3 flex flex-wrap items-center gap-2 text-sm"
 						>
-							<input type="hidden" name="symbol" value={draft.symbol} />
+							<input type="hidden" name="symbol" value={selected.symbol} />
 							<input type="date" name="day" value={today} required class={field} />
 							<select name="kind" class={field}>
 								{#each kinds as k (k.value)}<option value={k.value}>{k.label}</option>{/each}
@@ -213,7 +216,7 @@
 					<div>
 						<h3 class="text-xs text-muted-foreground">Notes</h3>
 						<ul class="mt-1 space-y-1 text-sm">
-							{#each draft.notes as note (note.id)}
+							{#each selected.notes as note (note.id)}
 								<li>
 									<span class="text-muted-foreground tabular-nums">{note.day}</span>
 									{note.text}
@@ -228,7 +231,7 @@
 							use:enhance
 							class="mt-3 flex flex-wrap gap-2 text-sm"
 						>
-							<input type="hidden" name="symbol" value={draft.symbol} />
+							<input type="hidden" name="symbol" value={selected.symbol} />
 							<input type="date" name="day" value={today} required class={field} />
 							<input
 								type="text"
@@ -243,20 +246,20 @@
 				</div>
 
 				<form method="POST" action="?/delete" use:enhance class="mt-6">
-					<input type="hidden" name="symbol" value={draft.symbol} />
+					<input type="hidden" name="symbol" value={selected.symbol} />
 					<button type="submit" class="text-xs text-destructive underline underline-offset-2"
-						>Remove {draft.symbol} and its rows</button
+						>Remove {selected.symbol} and its rows</button
 					>
 				</form>
 			</section>
 		{/if}
 
 		<section class="mt-6 card-report" aria-label="Add or edit a holding">
-			<h2 class="font-serif text-xl">{draft ? `Edit ${draft.symbol}` : 'Add a holding'}</h2>
+			<h2 class="font-serif text-xl">{selected ? `Edit ${selected.symbol}` : 'Add a holding'}</h2>
 			<p class="mt-1 text-sm text-muted-foreground">
 				A symbol with no shares is watched. A fund symbol is priced from the NAV snapshot.
 			</p>
-			{#key draft?.symbol}
+			{#key selected?.symbol}
 				<form
 					method="POST"
 					action="?/holding"
@@ -268,14 +271,14 @@
 						<input
 							name="symbol"
 							required
-							value={draft?.symbol ?? ''}
-							readonly={!!draft}
+							value={selected?.symbol ?? ''}
+							readonly={!!selected}
 							class="{field} uppercase"
 						/>
 					</label>
 					<label class="flex flex-col gap-1">
 						Status
-						<select name="status" value={draft?.status ?? HoldingStatus.HOLD} class={field}>
+						<select name="status" value={selected?.status ?? HoldingStatus.HOLD} class={field}>
 							{#each statuses as s (s.value)}<option value={s.value}>{s.label}</option>{/each}
 						</select>
 					</label>
@@ -286,7 +289,7 @@
 							name="target_shares"
 							min="0"
 							step="1"
-							value={Number(draft?.targetShares ?? 0)}
+							value={Number(selected?.targetShares ?? 0)}
 							class={field}
 						/>
 					</label>
@@ -298,7 +301,7 @@
 							min="0"
 							max="100"
 							step="1"
-							value={draft?.allocationPercent ?? 0}
+							value={selected?.allocationPercent ?? 0}
 							class={field}
 						/>
 					</label>
@@ -309,17 +312,22 @@
 							name="carry_rs"
 							min="0"
 							step="1"
-							value={draft?.carryRs ?? 0}
+							value={selected?.carryRs ?? 0}
 							class={field}
 						/>
 					</label>
 					<label class="flex flex-col gap-1">
 						Review date
-						<input type="date" name="review_date" value={draft?.reviewDate ?? ''} class={field} />
+						<input
+							type="date"
+							name="review_date"
+							value={selected?.reviewDate ?? ''}
+							class={field}
+						/>
 					</label>
 					<label class="flex flex-col gap-1 sm:col-span-2">
 						Frozen because
-						<input name="frozen_reason" value={draft?.frozenReason ?? ''} class={field} />
+						<input name="frozen_reason" value={selected?.frozenReason ?? ''} class={field} />
 					</label>
 					<label class="flex flex-col gap-1 sm:col-span-2 lg:col-span-4">
 						Thesis
@@ -327,15 +335,15 @@
 							name="thesis"
 							rows="2"
 							class="rounded-md border border-input bg-background px-2 py-1 text-sm"
-							>{draft?.thesis ?? ''}</textarea
+							>{selected?.thesis ?? ''}</textarea
 						>
 					</label>
 					<label class="flex items-center gap-2">
-						<input type="checkbox" name="drawdown_gate" checked={draft?.drawdownGate ?? false} />
+						<input type="checkbox" name="drawdown_gate" checked={selected?.drawdownGate ?? false} />
 						Drawdown gate applies
 					</label>
 					<div class="flex items-end">
-						<button type="submit" class={button}>{draft ? 'Save' : 'Add'}</button>
+						<button type="submit" class={button}>{selected ? 'Save' : 'Add'}</button>
 					</div>
 				</form>
 			{/key}

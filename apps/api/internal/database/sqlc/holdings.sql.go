@@ -238,6 +238,40 @@ func (q *Queries) ListTransactions(ctx context.Context) ([]Transaction, error) {
 	return items, nil
 }
 
+const listTransactionsByHolding = `-- name: ListTransactionsByHolding :many
+SELECT id, holding_id, day, kind, quantity, price FROM transactions WHERE holding_id = ? ORDER BY day, id
+`
+
+func (q *Queries) ListTransactionsByHolding(ctx context.Context, holdingID int64) ([]Transaction, error) {
+	rows, err := q.db.QueryContext(ctx, listTransactionsByHolding, holdingID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Transaction
+	for rows.Next() {
+		var i Transaction
+		if err := rows.Scan(
+			&i.ID,
+			&i.HoldingID,
+			&i.Day,
+			&i.Kind,
+			&i.Quantity,
+			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertHolding = `-- name: UpsertHolding :one
 INSERT INTO holdings (
     symbol, status, target_shares, allocation_percent, carry_rs,

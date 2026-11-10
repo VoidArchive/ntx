@@ -40,6 +40,9 @@ RETURNING *;
 -- name: ListTransactions :many
 SELECT * FROM transactions ORDER BY holding_id, day, id;
 
+-- name: ListTransactionsByHolding :many
+SELECT * FROM transactions WHERE holding_id = ? ORDER BY day, id;
+
 -- name: InsertNote :one
 INSERT INTO holding_notes (holding_id, day, text)
 VALUES (?, ?, ?)

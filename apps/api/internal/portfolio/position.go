@@ -25,6 +25,9 @@ func position(txs []sqlc.Transaction) (qty int64, wac float64) {
 		if tx.Kind == kindOf(ntxv1.TransactionKind_TRANSACTION_KIND_SELL) {
 			cost -= float64(tx.Quantity) * wac
 			qty -= tx.Quantity
+			if qty <= 0 {
+				qty, cost, wac = 0, 0, 0
+			}
 			continue
 		}
 		cost += float64(tx.Quantity) * tx.Price
@@ -32,9 +35,6 @@ func position(txs []sqlc.Transaction) (qty int64, wac float64) {
 		if qty > 0 {
 			wac = cost / float64(qty)
 		}
-	}
-	if qty <= 0 {
-		return 0, 0
 	}
 	return qty, wac
 }
