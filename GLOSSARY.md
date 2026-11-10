@@ -42,6 +42,28 @@ _Avoid_: narrative, analysis, report
 The period, published date and source filing attached to a figure. A figure without provenance is not shown.
 _Avoid_: citation, metadata
 
+### Personal
+
+**Gate**:
+One of the owner's own written break conditions for a holding, evaluated against a filing to a verdict of Triggered, Holds or Needs data, shown with the value, the threshold and the source. A Gate is the owner's rule, never NTX's view, and is distinct from a published Check.
+_Avoid_: signal, sell trigger (as the display word), alert, recommendation
+
+**Candidates**:
+The companies that pass the owner's rules and are not held: the screener filtered by sector headroom, basin, rating and minimum size. A list of what the rules admit, not a ranking of what to buy.
+_Avoid_: picks, recommendations, ideas, best buys
+
+**Triggered / Holds / Needs data**:
+The three verdicts of a Gate. Triggered means the owner's condition is met for the required consecutive periods, against a fixed threshold or against the previous period's own figure (a ratchet); Holds means it is not; Needs data means the figure or its provenance is missing. Every verdict names the period it was evaluated against.
+_Avoid_: fired, breached, sell, pass, fail
+
+**Holding**:
+A company or mutual fund the owner tracks, with its thesis, gates and dated notes, in one of three states: Build toward a target, Hold, or Frozen with a reason and a review date. A watched company is a Holding with no shares.
+_Avoid_: position (as the stored concept), watchlist item, portfolio entry
+
+**Order sheet**:
+The month's proposed purchases: the budget scaled by where the index sits in its own year, split across Build holdings under their caps, in whole lots of ten, with the remainder carried. A proposal the owner confirms, never an order placed.
+_Avoid_: trade list, buy list, plan (for the month's sheet)
+
 ### Periods
 
 **Fiscal year**:

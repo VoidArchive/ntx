@@ -47,7 +47,9 @@ Decided 2026-11-04: every surface is in scope for redesign when it is needed. No
 
 Decided 2026-11-04: the product thesis is "every page opens with what the data says, in prose, with provenance on every number" (see docs/superpowers/specs/2026-11-04-ntx-content-redesign-design.md). Three sub-projects in order: content redesign (followed on 2026-11-05 by 1b: sidebar navigation, company page sections, A to D rating, screener), hydro map of Nepal's rivers and listed plants with daily weather and discharge (spec approved 2026-11-05: docs/superpowers/specs/2026-11-05-ntx-hydro-map-design.md; v1 is holdings-free), and a personal rules layer (holdings, break conditions, caps, river-basin rule, gates calendar).
 
-Decided 2026-11-09: the screener ships as its own route, `/screener`, with range filters on PE, PB, EPS, ROE, dividend yield and market cap plus a minimum rating and sector chips; `/company` redirects there. Undecided: where personal holdings are stored (local-first vs owner token).
+Decided 2026-11-09: the screener ships as its own route, `/screener`, with range filters on PE, PB, EPS, ROE, dividend yield and market cap plus a minimum rating and sector chips; `/company` redirects there. Personal holdings storage decided 2026-11-10: SQLite behind one owner token (ADR 0006).
+
+Decided 2026-11-10: sub-project 3, the personal rules layer, is specified (docs/superpowers/specs/2026-11-10-ntx-personal-rules-design.md). Gates are the owner's own written break conditions evaluated against filings; Candidates are the screener filtered by the owner's rules. Neither is a recommendation, so principle 2 stands.
 
 ## Brand Commitments
 
