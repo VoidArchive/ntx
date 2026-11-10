@@ -50,6 +50,10 @@ func (s *Service) judge(ctx context.Context, holdings []*ntxv1.Holding) error {
 			if g.GetKind() != ntxv1.GateKind_GATE_KIND_METRIC {
 				continue
 			}
+			// The drawdown gate runs only where the owner switched it on; off is not missing data.
+			if g.GetMetric() == "drawdown_percent" && !h.GetDrawdownGate() {
+				continue
+			}
 			v := evaluate(
 				directionOf(g.GetDirection()),
 				g.GetThreshold(),
@@ -85,8 +89,8 @@ func series(metric string, h *ntxv1.Holding, r rows) []point {
 			return []point{{h.GetWeightPercent(), h.GetCloseDay(), ""}}
 		}
 	case "drawdown_percent":
-		// Against the bonus-adjusted WAC, and only where the owner switched it on.
-		if h.GetDrawdownGate() && h.GetQuantity() > 0 && h.GetWac() > 0 && h.Close != nil {
+		// Against the bonus-adjusted WAC.
+		if h.GetQuantity() > 0 && h.GetWac() > 0 && h.Close != nil {
 			return []point{{(h.GetWac() - h.GetClose()) / h.GetWac() * 100, h.GetCloseDay(), ""}}
 		}
 	}
@@ -182,7 +186,10 @@ func notices(actions []sqlc.CorporateAction, metric string) []point {
 		if metric == "bonus_percent" {
 			v = a.BonusPercentage
 		}
-		out = append(out, point{v.Float64, "FY " + y.String(), a.NoticeUrl.String})
+		// A notice silent on this figure is not a zero.
+		if v.Valid {
+			out = append(out, point{v.Float64, "FY " + y.String(), a.NoticeUrl.String})
+		}
 	}
 	return out
 }
@@ -215,15 +222,7 @@ func caps(p *ntxv1.GetPortfolioResponse, r sqlc.Rule, plants []sqlc.HydroPlant) 
 		}
 	}
 
-	sector := &ntxv1.Cap{Rule: "Sector cap", Verdict: Holds, Detail: "no sector held"}
-	if names := slices.Sorted(maps.Keys(sectors)); len(names) > 0 {
-		top := slices.MaxFunc(names, func(a, b string) int { return cmp.Compare(sectors[a], sectors[b]) })
-		sector.Detail = fmt.Sprintf("%s %.1f%% of the %s%% sector cap", top, sectors[top], num(r.SectorCapPercent))
-		if sectors[top] > r.SectorCapPercent {
-			sector.Verdict = Triggered
-		}
-	}
-	out = append(out, sector)
+	out = append(out, sectorCap(sectors, r.SectorCapPercent))
 
 	positions := &ntxv1.Cap{
 		Rule:    "Positions",
@@ -239,6 +238,31 @@ func caps(p *ntxv1.GetPortfolioResponse, r sqlc.Rule, plants []sqlc.HydroPlant) 
 		out = append(out, basinCap(p.GetHoldings(), plants))
 	}
 	return out
+}
+
+// sectorCap names every sector over the cap, else the largest one.
+func sectorCap(sectors map[string]float64, cap float64) *ntxv1.Cap {
+	c := &ntxv1.Cap{Rule: "Sector cap", Verdict: Holds, Detail: "no sector held"}
+	names := slices.Sorted(maps.Keys(sectors))
+	if len(names) == 0 {
+		return c
+	}
+	figure := func(name string) string {
+		return fmt.Sprintf("%s %.1f%% of the %s%% sector cap", name, sectors[name], num(cap))
+	}
+	var over []string
+	for _, name := range names {
+		if sectors[name] > cap {
+			over = append(over, figure(name))
+		}
+	}
+	if len(over) > 0 {
+		c.Verdict, c.Detail = Triggered, strings.Join(over, ", ")
+		return c
+	}
+	top := slices.MaxFunc(names, func(a, b string) int { return cmp.Compare(sectors[a], sectors[b]) })
+	c.Detail = figure(top)
+	return c
 }
 
 // basinCap finds basins where two held hydro companies both have a plant (GLOSSARY: Basin).
@@ -359,6 +383,7 @@ func (s *Service) UpsertGate(
 	} else {
 		row, err = s.queries.UpdateGate(ctx, sqlc.UpdateGateParams{
 			ID:        m.GetId(),
+			HoldingID: h.ID,
 			Kind:      gateKindOf(m.GetKind()),
 			Metric:    m.GetMetric(),
 			Direction: directionOf(m.GetDirection()),
@@ -369,7 +394,7 @@ func (s *Service) UpsertGate(
 		})
 	}
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("no gate %d", m.GetId()))
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("no gate %d on %s", m.GetId(), h.Symbol))
 	}
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -378,9 +403,11 @@ func (s *Service) UpsertGate(
 	if err != nil {
 		return nil, err
 	}
-	for _, g := range p.GetHoldings()[slices.IndexFunc(p.GetHoldings(), func(x *ntxv1.Holding) bool { return x.GetSymbol() == h.Symbol })].GetGates() {
-		if g.GetId() == row.ID {
-			return connect.NewResponse(&ntxv1.UpsertGateResponse{Gate: g}), nil
+	for _, x := range p.GetHoldings() {
+		for _, g := range x.GetGates() {
+			if g.GetId() == row.ID {
+				return connect.NewResponse(&ntxv1.UpsertGateResponse{Gate: g}), nil
+			}
 		}
 	}
 	return nil, connect.NewError(connect.CodeInternal, errors.New("gate vanished after upsert"))

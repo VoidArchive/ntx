@@ -8,9 +8,15 @@ export const VERDICT: Record<string, string> = {
 	'needs data': 'Needs data'
 };
 
-// Triggered and Needs data first (spec, section 5); event gates carry no verdict.
+// Triggered and Needs data first (spec, section 5); event gates and switched-off gates carry no verdict.
 const RANK: Record<string, number> = { triggered: 0, 'needs data': 1, watch: 2, holds: 3 };
-export const byVerdict = (a: Gate, b: Gate) => (RANK[a.verdict] ?? 4) - (RANK[b.verdict] ?? 4);
+export const byVerdict = (a: { verdict: string }, b: { verdict: string }) =>
+	(RANK[a.verdict] ?? 4) - (RANK[b.verdict] ?? 4);
+
+// An event gate has no verdict; a metric gate without one was not run (its switch is off).
+export const verdictOf = (g: Gate) => VERDICT[g.verdict] ?? (isEvent(g) ? '' : 'Not run');
+
+export const isEvent = (g: Gate) => g.kind === GateKind.EVENT;
 
 export const metrics = [
 	{ value: 'eps', label: 'EPS' },
@@ -34,8 +40,6 @@ export const directions = [
 	{ value: GateDirection.NOT_BELOW_PRIOR, label: 'not below the prior period' },
 	{ value: GateDirection.NOT_ABOVE_PRIOR, label: 'not above the prior period' }
 ];
-
-export const isEvent = (g: Gate) => g.kind === GateKind.EVENT;
 
 export function figure(v: number | undefined, unit: string) {
 	if (v === undefined) return 'not recorded';

@@ -124,7 +124,7 @@ func (q *Queries) ListGates(ctx context.Context) ([]Gate, error) {
 
 const updateGate = `-- name: UpdateGate :one
 UPDATE gates SET kind = ?, metric = ?, direction = ?, threshold = ?, periods = ?, text = ?, checked_on = ?
-WHERE id = ?
+WHERE id = ? AND holding_id = ?
 RETURNING id, holding_id, kind, metric, direction, threshold, periods, text, checked_on
 `
 
@@ -137,6 +137,7 @@ type UpdateGateParams struct {
 	Text      string  `json:"text"`
 	CheckedOn string  `json:"checked_on"`
 	ID        int64   `json:"id"`
+	HoldingID int64   `json:"holding_id"`
 }
 
 func (q *Queries) UpdateGate(ctx context.Context, arg UpdateGateParams) (Gate, error) {
@@ -149,6 +150,7 @@ func (q *Queries) UpdateGate(ctx context.Context, arg UpdateGateParams) (Gate, e
 		arg.Text,
 		arg.CheckedOn,
 		arg.ID,
+		arg.HoldingID,
 	)
 	var i Gate
 	err := row.Scan(

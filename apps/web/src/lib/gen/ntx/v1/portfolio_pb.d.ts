@@ -508,9 +508,11 @@ export declare type UpsertHoldingRequest = Message<"ntx.v1.UpsertHoldingRequest"
   carryRs: number;
 
   /**
-   * @generated from field: bool drawdown_gate = 6;
+   * Unset on a new holding means the sector's default: on for hydropower, off elsewhere.
+   *
+   * @generated from field: optional bool drawdown_gate = 6;
    */
-  drawdownGate: boolean;
+  drawdownGate?: boolean;
 
   /**
    * @generated from field: string thesis = 7;

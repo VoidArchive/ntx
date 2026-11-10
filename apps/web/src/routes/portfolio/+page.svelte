@@ -3,7 +3,13 @@
 	import type { Gate, Holding } from '#lib/gen/ntx/v1/portfolio_pb.js';
 	import { HoldingStatus, TransactionKind } from '#lib/gen/ntx/v1/portfolio_pb.js';
 	import Gates from '#lib/components/portfolio/Gates.svelte';
-	import { VERDICT, byVerdict, figure, isEvent } from '#lib/components/portfolio/gates.js';
+	import {
+		VERDICT,
+		byVerdict,
+		figure,
+		isEvent,
+		verdictOf
+	} from '#lib/components/portfolio/gates.js';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -43,12 +49,11 @@
 
 	let editing = $state<string | undefined>();
 	let selected = $derived(data.portfolio?.holdings.find((h) => h.symbol === editing));
-	// Every metric gate across holdings, Triggered and Needs data first; events live with their holding.
+	// Every gate across holdings, Triggered and Needs data first; event gates last with their tick date.
 	let gates = $derived(
-		(data.portfolio?.holdings ?? [])
-			.flatMap((h) => h.gates.filter((g) => !isEvent(g)))
-			.sort(byVerdict) as Gate[]
+		(data.portfolio?.holdings ?? []).flatMap((h) => h.gates).sort(byVerdict) as Gate[]
 	);
+	let caps = $derived([...(data.portfolio?.caps ?? [])].sort(byVerdict));
 	let rules = $derived(data.portfolio?.rules);
 	let numberRules = $derived<[string, string, number][]>(
 		rules
@@ -133,25 +138,30 @@
 								<td class="py-1.5 font-medium">{g.symbol}</td>
 								<td class="py-1.5">{g.label}</td>
 								<td class="py-1.5 text-right">
-									{figure(g.value, g.unit)}{#if g.prior !== undefined}
-										<span class="text-xs text-muted-foreground">
-											vs {figure(g.prior, g.unit)}</span
-										>{/if}
+									{#if !isEvent(g)}
+										{figure(g.value, g.unit)}{#if g.prior !== undefined}
+											<span class="text-xs text-muted-foreground">
+												vs {figure(g.prior, g.unit)}</span
+											>{/if}
+									{/if}
 								</td>
 								<td class="py-1.5 text-xs text-muted-foreground">
-									{#if g.source}<a href={g.source} class="underline" rel="noreferrer">{g.period}</a
+									{#if isEvent(g)}
+										checked {g.checkedOn || 'never'}
+									{:else if g.source}<a href={g.source} class="underline" rel="noreferrer"
+											>{g.period}</a
 										>{:else}{g.period || 'no period'}{/if}
 								</td>
-								<td class="py-1.5 font-medium">{VERDICT[g.verdict] ?? g.verdict}</td>
+								<td class="py-1.5 font-medium">{verdictOf(g)}</td>
 							</tr>
 						{:else}
 							<tr
 								><td colspan="5" class="py-3 text-muted-foreground"
-									>No metric gates written. Open a holding below to write one.</td
+									>No gates written. Open a holding below to write one.</td
 								></tr
 							>
 						{/each}
-						{#each p.caps as c (c.rule)}
+						{#each caps as c (c.rule + c.detail)}
 							<tr class="border-b border-border/50">
 								<td class="py-1.5 text-muted-foreground">Cap</td>
 								<td class="py-1.5">{c.rule}</td>
@@ -427,10 +437,17 @@
 							>{selected?.thesis ?? ''}</textarea
 						>
 					</label>
-					<label class="flex items-center gap-2">
-						<input type="checkbox" name="drawdown_gate" checked={selected?.drawdownGate ?? false} />
-						Drawdown gate applies
-					</label>
+					{#if selected}
+						<label class="flex items-center gap-2">
+							<input type="hidden" name="drawdown_gate_known" value="1" />
+							<input type="checkbox" name="drawdown_gate" checked={selected.drawdownGate} />
+							Drawdown gate applies
+						</label>
+					{:else}
+						<p class="self-center text-xs text-muted-foreground">
+							The drawdown gate starts on for hydropower and off elsewhere; edit after adding.
+						</p>
+					{/if}
 					<div class="flex items-end">
 						<button type="submit" class={button}>{selected ? 'Save' : 'Add'}</button>
 					</div>

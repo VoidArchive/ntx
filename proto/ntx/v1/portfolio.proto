@@ -171,7 +171,8 @@ message UpsertHoldingRequest {
   int64 target_shares = 3;
   double allocation_percent = 4;
   double carry_rs = 5;
-  bool drawdown_gate = 6;
+  // Unset on a new holding means the sector's default: on for hydropower, off elsewhere.
+  optional bool drawdown_gate = 6;
   string thesis = 7;
   string frozen_reason = 8;
   string review_date = 9;

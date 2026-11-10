@@ -1097,12 +1097,13 @@ type UpsertHoldingRequest struct {
 	TargetShares      int64                  `protobuf:"varint,3,opt,name=target_shares,json=targetShares,proto3" json:"target_shares,omitempty"`
 	AllocationPercent float64                `protobuf:"fixed64,4,opt,name=allocation_percent,json=allocationPercent,proto3" json:"allocation_percent,omitempty"`
 	CarryRs           float64                `protobuf:"fixed64,5,opt,name=carry_rs,json=carryRs,proto3" json:"carry_rs,omitempty"`
-	DrawdownGate      bool                   `protobuf:"varint,6,opt,name=drawdown_gate,json=drawdownGate,proto3" json:"drawdown_gate,omitempty"`
-	Thesis            string                 `protobuf:"bytes,7,opt,name=thesis,proto3" json:"thesis,omitempty"`
-	FrozenReason      string                 `protobuf:"bytes,8,opt,name=frozen_reason,json=frozenReason,proto3" json:"frozen_reason,omitempty"`
-	ReviewDate        string                 `protobuf:"bytes,9,opt,name=review_date,json=reviewDate,proto3" json:"review_date,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Unset on a new holding means the sector's default: on for hydropower, off elsewhere.
+	DrawdownGate  *bool  `protobuf:"varint,6,opt,name=drawdown_gate,json=drawdownGate,proto3,oneof" json:"drawdown_gate,omitempty"`
+	Thesis        string `protobuf:"bytes,7,opt,name=thesis,proto3" json:"thesis,omitempty"`
+	FrozenReason  string `protobuf:"bytes,8,opt,name=frozen_reason,json=frozenReason,proto3" json:"frozen_reason,omitempty"`
+	ReviewDate    string `protobuf:"bytes,9,opt,name=review_date,json=reviewDate,proto3" json:"review_date,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpsertHoldingRequest) Reset() {
@@ -1171,8 +1172,8 @@ func (x *UpsertHoldingRequest) GetCarryRs() float64 {
 }
 
 func (x *UpsertHoldingRequest) GetDrawdownGate() bool {
-	if x != nil {
-		return x.DrawdownGate
+	if x != nil && x.DrawdownGate != nil {
+		return *x.DrawdownGate
 	}
 	return false
 }
@@ -2066,18 +2067,19 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x05funds\x18\x04 \x01(\x05R\x05funds\x12\x18\n" +
 	"\aopening\x18\x05 \x01(\tR\aopening\x12\x1f\n" +
 	"\x04caps\x18\x06 \x03(\v2\v.ntx.v1.CapR\x04caps\x12#\n" +
-	"\x05rules\x18\a \x01(\v2\r.ntx.v1.RulesR\x05rules\"\xcf\x02\n" +
+	"\x05rules\x18\a \x01(\v2\r.ntx.v1.RulesR\x05rules\"\xe6\x02\n" +
 	"\x14UpsertHoldingRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12-\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x15.ntx.v1.HoldingStatusR\x06status\x12#\n" +
 	"\rtarget_shares\x18\x03 \x01(\x03R\ftargetShares\x12-\n" +
 	"\x12allocation_percent\x18\x04 \x01(\x01R\x11allocationPercent\x12\x19\n" +
-	"\bcarry_rs\x18\x05 \x01(\x01R\acarryRs\x12#\n" +
-	"\rdrawdown_gate\x18\x06 \x01(\bR\fdrawdownGate\x12\x16\n" +
+	"\bcarry_rs\x18\x05 \x01(\x01R\acarryRs\x12(\n" +
+	"\rdrawdown_gate\x18\x06 \x01(\bH\x00R\fdrawdownGate\x88\x01\x01\x12\x16\n" +
 	"\x06thesis\x18\a \x01(\tR\x06thesis\x12#\n" +
 	"\rfrozen_reason\x18\b \x01(\tR\ffrozenReason\x12\x1f\n" +
 	"\vreview_date\x18\t \x01(\tR\n" +
-	"reviewDate\"B\n" +
+	"reviewDateB\x10\n" +
+	"\x0e_drawdown_gate\"B\n" +
 	"\x15UpsertHoldingResponse\x12)\n" +
 	"\aholding\x18\x01 \x01(\v2\x0f.ntx.v1.HoldingR\aholding\".\n" +
 	"\x14DeleteHoldingRequest\x12\x16\n" +
@@ -2264,6 +2266,7 @@ func file_ntx_v1_portfolio_proto_init() {
 	}
 	file_ntx_v1_portfolio_proto_msgTypes[0].OneofWrappers = []any{}
 	file_ntx_v1_portfolio_proto_msgTypes[5].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

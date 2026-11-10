@@ -5,7 +5,7 @@ RETURNING *;
 
 -- name: UpdateGate :one
 UPDATE gates SET kind = ?, metric = ?, direction = ?, threshold = ?, periods = ?, text = ?, checked_on = ?
-WHERE id = ?
+WHERE id = ? AND holding_id = ?
 RETURNING *;
 
 -- name: DeleteGate :exec

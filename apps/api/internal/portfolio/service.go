@@ -277,9 +277,9 @@ func (s *Service) UpsertHolding(
 			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
 	}
-	gate := int64(0)
-	if m.GetDrawdownGate() {
-		gate = 1
+	gate, err := s.drawdownDefault(ctx, symbol, m.DrawdownGate)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if _, err := s.queries.UpsertHolding(ctx, sqlc.UpsertHoldingParams{
 		Symbol:            symbol,
@@ -304,6 +304,25 @@ func (s *Service) UpsertHolding(
 		}
 	}
 	return nil, connect.NewError(connect.CodeInternal, errors.New("holding vanished after upsert"))
+}
+
+// drawdownDefault keeps an explicit choice, else an existing row's, else the
+// sector's: on for hydropower, whose plants carry the flood and GLOF risk.
+func (s *Service) drawdownDefault(ctx context.Context, symbol string, chosen *bool) (int64, error) {
+	if chosen != nil {
+		return flag(*chosen), nil
+	}
+	if h, err := s.queries.GetHolding(ctx, symbol); err == nil {
+		return h.DrawdownGate, nil
+	}
+	c, err := s.queries.GetCompany(ctx, symbol)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+	return flag(strings.Contains(strings.ToLower(c.Sector), "hydro")), nil
 }
 
 func (s *Service) DeleteHolding(

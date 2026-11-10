@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { GateKind, type Gate } from '#lib/gen/ntx/v1/portfolio_pb.js';
-	import { VERDICT, byVerdict, directions, figure, isEvent, metrics } from './gates.js';
+	import { byVerdict, directions, figure, isEvent, metrics, verdictOf } from './gates.js';
 
 	// One holding's gates with their verdicts, a remove per row and the entry form.
 	let { symbol, gates }: { symbol: string; gates: Gate[] } = $props();
@@ -37,9 +37,24 @@
 							>{:else}{g.period || 'no period'}{/if}
 					{/if}
 				</td>
-				<td class="py-1 font-medium">{VERDICT[g.verdict] ?? ''}</td>
-				<td class="py-1 text-right">
-					<form method="POST" action="?/deleteGate" use:enhance>
+				<td class="py-1 font-medium">{verdictOf(g)}</td>
+				<td class="py-1 text-right whitespace-nowrap">
+					{#if isEvent(g)}
+						<!-- Ticking keeps the words and stamps today (spec: "ticked at each review"). -->
+						<form method="POST" action="?/gate" use:enhance class="inline">
+							<input type="hidden" name="id" value={g.id} />
+							<input type="hidden" name="symbol" value={symbol} />
+							<input type="hidden" name="kind" value={GateKind.EVENT} />
+							<input type="hidden" name="text" value={g.text} />
+							<input type="hidden" name="checked_on" value={today} />
+							<button
+								type="submit"
+								class="mr-2 text-xs text-muted-foreground underline underline-offset-2"
+								>Tick today</button
+							>
+						</form>
+					{/if}
+					<form method="POST" action="?/deleteGate" use:enhance class="inline">
 						<input type="hidden" name="id" value={g.id} />
 						<button type="submit" class="text-xs text-muted-foreground underline underline-offset-2"
 							>Remove</button

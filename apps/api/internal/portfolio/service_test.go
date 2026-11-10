@@ -7,6 +7,7 @@ import (
 	"math"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 
 	"connectrpc.com/connect"
@@ -140,12 +141,13 @@ func book(t *testing.T, c ntxv1connect.PortfolioServiceClient) {
 	t.Helper()
 	ctx := context.Background()
 	up, err := c.UpsertHolding(ctx, connect.NewRequest(&ntxv1.UpsertHoldingRequest{
-		Symbol: "MEN", Status: ntxv1.HoldingStatus_HOLDING_STATUS_BUILD, TargetShares: 150, DrawdownGate: true,
+		Symbol: "MEN", Status: ntxv1.HoldingStatus_HOLDING_STATUS_BUILD, TargetShares: 150,
 		Thesis: "42 MW Mistri Khola, Kaligandaki.",
 	}))
 	must(t, err)
+	// The drawdown gate was not chosen: a hydro holding gets it on by default.
 	if h := up.Msg.GetHolding(); h.GetName() != "Mountain Energy Nepal" ||
-		h.GetStatus() != ntxv1.HoldingStatus_HOLDING_STATUS_BUILD {
+		h.GetStatus() != ntxv1.HoldingStatus_HOLDING_STATUS_BUILD || !h.GetDrawdownGate() {
 		t.Fatalf("upsert returned %v", h)
 	}
 	_, err = c.UpsertHolding(ctx, connect.NewRequest(&ntxv1.UpsertHoldingRequest{Symbol: "NIBLSF"}))
@@ -281,7 +283,8 @@ func TestGatesAndCapsOnTheBook(t *testing.T) {
 	seedFilings(t, q)
 	book(t, c)
 	ctx := context.Background()
-	_, err := c.UpsertHolding(ctx, connect.NewRequest(&ntxv1.UpsertHoldingRequest{Symbol: "SAHAS"}))
+	off := false
+	_, err := c.UpsertHolding(ctx, connect.NewRequest(&ntxv1.UpsertHoldingRequest{Symbol: "SAHAS", DrawdownGate: &off}))
 	must(t, err)
 	_, err = c.AddTransaction(ctx, connect.NewRequest(&ntxv1.AddTransactionRequest{
 		Symbol: "SAHAS", Day: "2026-10-01", Kind: ntxv1.TransactionKind_TRANSACTION_KIND_BUY, Quantity: 10, Price: 685,
@@ -295,6 +298,7 @@ func TestGatesAndCapsOnTheBook(t *testing.T) {
 		{Symbol: "MEN", Kind: metric, Metric: "drawdown_percent", Direction: ntxv1.GateDirection_GATE_DIRECTION_ABOVE, Threshold: 15},
 		{Symbol: "MEN", Kind: metric, Metric: "npl_percent", Direction: ntxv1.GateDirection_GATE_DIRECTION_ABOVE, Threshold: 5},
 		{Symbol: "MEN", Kind: ntxv1.GateKind_GATE_KIND_EVENT, Text: "Plant damage reported", CheckedOn: "2026-10-16"},
+		{Symbol: "SAHAS", Kind: metric, Metric: "drawdown_percent", Direction: ntxv1.GateDirection_GATE_DIRECTION_ABOVE, Threshold: 15},
 	} {
 		gate(t, c, g)
 	}
@@ -316,6 +320,8 @@ func TestGatesAndCapsOnTheBook(t *testing.T) {
 		"needs data  NPL above 5%",
 		"  Plant damage reported",
 	})
+	// SAHAS switched the drawdown gate off, so its gate is not run rather than short of data.
+	assertGates(t, m.GetHoldings()[2].GetGates(), []string{"  Drawdown above 15%"})
 	if eps := men.GetGates()[0]; eps.GetValue() != 25.52 ||
 		eps.GetSource() != "https://nepalstock.com/men/First Quarter" {
 		t.Errorf("eps gate carries %v from %q", eps.GetValue(), eps.GetSource())
@@ -346,33 +352,36 @@ func TestGatesAndCapsOnTheBook(t *testing.T) {
 	}
 }
 
-// Raising the hard cap past MEN's weight leaves it over the soft cap only: Watch.
+// MEN at 21.3% of the book, the owner's Oct 16 reading: over the soft cap, under the hard cap.
 func TestOverTheSoftCapReadsWatch(t *testing.T) {
 	c := client(t, testToken)
 	book(t, c)
 	ctx := context.Background()
 	up, err := c.UpdateRules(ctx, connect.NewRequest(&ntxv1.UpdateRulesRequest{Rules: &ntxv1.Rules{
-		SoftCapPercent: 20, HardCapPercent: 70, SectorCapPercent: 70, MaxPositions: 8, MinEntryRs: 15000,
+		SoftCapPercent: 20, HardCapPercent: 25, SectorCapPercent: 40, MaxPositions: 7, MinEntryRs: 15000,
 		OneHydroPerBasin: true, CandidateMinRating: "B", CandidateDividendRecord: true, MonthlyBudgetRs: 12000,
 		MultiplierBelowMedian: 1.5, MultiplierBottomQuarter: 2,
 	}}))
 	must(t, err)
-	if up.Msg.GetRules().GetHardCapPercent() != 70 {
+	if up.Msg.GetRules().GetMaxPositions() != 7 {
 		t.Fatalf("rules %v", up.Msg.GetRules())
 	}
 	res, err := c.GetPortfolio(
 		ctx,
-		connect.NewRequest(&ntxv1.GetPortfolioRequest{FundNavs: map[string]float64{"NIBLSF": 10.29}}),
+		connect.NewRequest(&ntxv1.GetPortfolioRequest{FundNavs: map[string]float64{"NIBLSF": 70.36}}),
 	)
 	must(t, err)
 	if men := res.Msg.GetHoldings()[0]; men.GetCapVerdict() != Watch {
 		t.Errorf("MEN cap %q", men.GetCapVerdict())
 	}
-	if res.Msg.GetCaps()[0].GetDetail() != "MEN 64.9% of the 20% soft cap" {
-		t.Errorf("detail %q", res.Msg.GetCaps()[0].GetDetail())
-	}
-	if res.Msg.GetOpening() != "Rs 1.47 lakh across 1 position and 1 fund, at the 2026-10-16 close. "+
-		"Over cap: MEN 64.9% of the 20% soft cap." {
+	assertCaps(t, res.Msg.GetCaps(), []string{
+		"Single holding: watch, MEN 21.3% of the 20% soft cap",
+		"Sector cap: triggered, Mutual Fund 78.7% of the 40% sector cap",
+		"Positions: holds, 1 of 7",
+		"One hydro per basin: holds, no basin held twice",
+	})
+	if res.Msg.GetOpening() != "Rs 4.49 lakh across 1 position and 1 fund, at the 2026-10-16 close. "+
+		"Over cap: MEN 21.3% of the 20% soft cap, Mutual Fund 78.7% of the 40% sector cap." {
 		t.Errorf("opening = %q", res.Msg.GetOpening())
 	}
 }
@@ -399,6 +408,13 @@ func TestGateEditsAndTheBonusHint(t *testing.T) {
 	if edited.GetId() != g.GetId() || edited.GetVerdict() != Triggered {
 		t.Errorf("edited %v", edited)
 	}
+	// A gate id belongs to one holding; another symbol cannot edit it.
+	if _, err := c.UpsertGate(ctx, connect.NewRequest(&ntxv1.UpsertGateRequest{
+		Id: g.GetId(), Symbol: "SAHAS", Kind: ntxv1.GateKind_GATE_KIND_METRIC, Metric: "eps",
+		Direction: ntxv1.GateDirection_GATE_DIRECTION_BELOW, Threshold: 30,
+	})); connect.CodeOf(err) != connect.CodeNotFound {
+		t.Errorf("cross-holding edit: %v", err)
+	}
 
 	story, err := c.GetHoldingStory(ctx, connect.NewRequest(&ntxv1.GetHoldingStoryRequest{Symbol: "men"}))
 	must(t, err)
@@ -422,7 +438,12 @@ func TestGateEditsAndTheBonusHint(t *testing.T) {
 	if len(story.Msg.GetHolding().GetGates()) != 0 {
 		t.Errorf("gate survived the delete")
 	}
+}
 
+func TestGateEntryRefusesWhatItCannotRead(t *testing.T) {
+	c := client(t, testToken)
+	book(t, c)
+	ctx := context.Background()
 	for name, bad := range map[string]*ntxv1.UpsertGateRequest{
 		"unknown metric": {Symbol: "MEN", Kind: ntxv1.GateKind_GATE_KIND_METRIC, Metric: "npa", Direction: ntxv1.GateDirection_GATE_DIRECTION_ABOVE},
 		"no direction":   {Symbol: "MEN", Kind: ntxv1.GateKind_GATE_KIND_METRIC, Metric: "eps"},
@@ -433,7 +454,7 @@ func TestGateEditsAndTheBonusHint(t *testing.T) {
 			t.Errorf("%s: got %v, want InvalidArgument", name, err)
 		}
 	}
-	_, err = c.GetHoldingStory(ctx, connect.NewRequest(&ntxv1.GetHoldingStoryRequest{Symbol: "EBL"}))
+	_, err := c.GetHoldingStory(ctx, connect.NewRequest(&ntxv1.GetHoldingStoryRequest{Symbol: "EBL"}))
 	if connect.CodeOf(err) != connect.CodeNotFound {
 		t.Errorf("story of a stranger: %v", err)
 	}
@@ -457,9 +478,11 @@ func assertCaps(t *testing.T, caps []*ntxv1.Cap, want []string) {
 
 func assertGates(t *testing.T, gates []*ntxv1.Gate, want []string) {
 	t.Helper()
-	for i, g := range gates {
-		if got := g.GetVerdict() + " " + g.GetPeriod() + " " + g.GetLabel(); got != want[i] {
-			t.Errorf("gate %d = %q, want %q", i, got, want[i])
-		}
+	var got []string
+	for _, g := range gates {
+		got = append(got, g.GetVerdict()+" "+g.GetPeriod()+" "+g.GetLabel())
+	}
+	if !slices.Equal(got, want) {
+		t.Errorf("gates %q, want %q", got, want)
 	}
 }

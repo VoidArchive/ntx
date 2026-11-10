@@ -88,7 +88,8 @@ func evaluate(direction string, threshold float64, periods int, series []point) 
 	v.Verdict = Triggered
 	for i := len(series) - periods; i < len(series); i++ {
 		if series[i].Period == "" {
-			return verdict{Verdict: NeedsData}
+			v.Verdict = NeedsData
+			return v
 		}
 		wrong := false
 		switch direction {

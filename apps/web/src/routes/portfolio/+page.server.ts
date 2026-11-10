@@ -71,7 +71,10 @@ export const actions: Actions = {
 				targetShares: BigInt(Math.trunc(num(form, 'target_shares'))),
 				allocationPercent: num(form, 'allocation_percent'),
 				carryRs: num(form, 'carry_rs'),
-				drawdownGate: form.get('drawdown_gate') === 'on',
+				// Absent on an add: the API picks the sector's default.
+				drawdownGate: form.has('drawdown_gate_known')
+					? form.get('drawdown_gate') === 'on'
+					: undefined,
 				thesis: str(form, 'thesis'),
 				frozenReason: str(form, 'frozen_reason'),
 				reviewDate: str(form, 'review_date')
