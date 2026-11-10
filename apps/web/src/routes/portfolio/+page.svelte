@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { Holding } from '#lib/gen/ntx/v1/portfolio_pb.js';
+	import type { Gate, Holding } from '#lib/gen/ntx/v1/portfolio_pb.js';
 	import { HoldingStatus, TransactionKind } from '#lib/gen/ntx/v1/portfolio_pb.js';
+	import Gates from '#lib/components/portfolio/Gates.svelte';
+	import { VERDICT, byVerdict, figure, isEvent } from '#lib/components/portfolio/gates.js';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -41,6 +43,31 @@
 
 	let editing = $state<string | undefined>();
 	let selected = $derived(data.portfolio?.holdings.find((h) => h.symbol === editing));
+	// Every metric gate across holdings, Triggered and Needs data first; events live with their holding.
+	let gates = $derived(
+		(data.portfolio?.holdings ?? [])
+			.flatMap((h) => h.gates.filter((g) => !isEvent(g)))
+			.sort(byVerdict) as Gate[]
+	);
+	let rules = $derived(data.portfolio?.rules);
+	let numberRules = $derived<[string, string, number][]>(
+		rules
+			? [
+					['soft_cap_percent', 'Soft cap %', rules.softCapPercent],
+					['hard_cap_percent', 'Hard cap %', rules.hardCapPercent],
+					['sector_cap_percent', 'Sector cap %', rules.sectorCapPercent],
+					['max_positions', 'Max positions', rules.maxPositions],
+					['min_entry_rs', 'Minimum entry (Rs)', rules.minEntryRs],
+					['monthly_budget_rs', 'Monthly budget (Rs)', rules.monthlyBudgetRs],
+					['multiplier_below_median', 'Multiplier below the median', rules.multiplierBelowMedian],
+					[
+						'multiplier_bottom_quarter',
+						'Multiplier in the bottom quarter',
+						rules.multiplierBottomQuarter
+					]
+				]
+			: []
+	);
 </script>
 
 <svelte:head>
@@ -83,6 +110,60 @@
 			{#if form?.message}<p class="mt-2 text-sm text-destructive">{form.message}</p>{/if}
 		</header>
 
+		<section class="mt-6 card-report" aria-label="Gates">
+			<h2 class="font-serif text-xl">Gates</h2>
+			<p class="mt-1 text-sm text-muted-foreground">
+				Your written conditions against the latest filings, then the portfolio caps. Each verdict
+				names the period it read.
+			</p>
+			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+					<thead class="text-xs text-muted-foreground">
+						<tr class="border-b border-border">
+							<th class="py-2 text-left font-normal">Holding</th>
+							<th class="py-2 text-left font-normal">Gate</th>
+							<th class="py-2 text-right font-normal">Value</th>
+							<th class="py-2 text-left font-normal">Period</th>
+							<th class="py-2 text-left font-normal">Verdict</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each gates as g (g.id)}
+							<tr class="border-b border-border/50">
+								<td class="py-1.5 font-medium">{g.symbol}</td>
+								<td class="py-1.5">{g.label}</td>
+								<td class="py-1.5 text-right">
+									{figure(g.value, g.unit)}{#if g.prior !== undefined}
+										<span class="text-xs text-muted-foreground">
+											vs {figure(g.prior, g.unit)}</span
+										>{/if}
+								</td>
+								<td class="py-1.5 text-xs text-muted-foreground">
+									{#if g.source}<a href={g.source} class="underline" rel="noreferrer">{g.period}</a
+										>{:else}{g.period || 'no period'}{/if}
+								</td>
+								<td class="py-1.5 font-medium">{VERDICT[g.verdict] ?? g.verdict}</td>
+							</tr>
+						{:else}
+							<tr
+								><td colspan="5" class="py-3 text-muted-foreground"
+									>No metric gates written. Open a holding below to write one.</td
+								></tr
+							>
+						{/each}
+						{#each p.caps as c (c.rule)}
+							<tr class="border-b border-border/50">
+								<td class="py-1.5 text-muted-foreground">Cap</td>
+								<td class="py-1.5">{c.rule}</td>
+								<td colspan="2" class="py-1.5 text-xs text-muted-foreground">{c.detail}</td>
+								<td class="py-1.5 font-medium">{VERDICT[c.verdict] ?? c.verdict}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
 		<section class="mt-6 card-report" aria-label="Holdings">
 			<h2 class="font-serif text-xl">Holdings</h2>
 			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
@@ -98,6 +179,7 @@
 							<th class="py-2 text-left font-normal">As of</th>
 							<th class="py-2 text-right font-normal">Value</th>
 							<th class="py-2 text-right font-normal">Weight</th>
+							<th class="py-2 text-left font-normal">Cap</th>
 							<th class="py-2 text-right font-normal">To build</th>
 							<th class="py-2"></th>
 						</tr>
@@ -128,6 +210,7 @@
 								<td class="py-1.5 text-right"
 									>{h.close === undefined ? '—' : `${rs(h.weightPercent, 1)}%`}</td
 								>
+								<td class="py-1.5 text-xs">{VERDICT[h.capVerdict] ?? '—'}</td>
 								<td class="py-1.5 text-right text-muted-foreground">
 									{h.targetShares > 0n ? n(h.targetShares) : '—'}
 								</td>
@@ -142,7 +225,7 @@
 							</tr>
 						{:else}
 							<tr
-								><td colspan="11" class="py-12 text-center text-muted-foreground"
+								><td colspan="12" class="py-12 text-center text-muted-foreground"
 									>No holdings yet. Add one below.</td
 								></tr
 							>
@@ -244,6 +327,12 @@
 						</form>
 					</div>
 				</div>
+
+				{#if !selected.isFund}
+					<div class="mt-6">
+						<Gates symbol={selected.symbol} gates={selected.gates} />
+					</div>
+				{/if}
 
 				<form method="POST" action="?/delete" use:enhance class="mt-6">
 					<input type="hidden" name="symbol" value={selected.symbol} />
@@ -348,5 +437,49 @@
 				</form>
 			{/key}
 		</section>
+
+		{#if rules}
+			<section class="mt-6 card-report" aria-label="Rules">
+				<h2 class="font-serif text-xl">Rules</h2>
+				<p class="mt-1 text-sm text-muted-foreground">
+					The caps and the monthly budget the sections above read. One row, yours to edit.
+				</p>
+				<form
+					method="POST"
+					action="?/rules"
+					use:enhance
+					class="mt-3 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4"
+				>
+					{#each numberRules as [name, text, value] (name)}
+						<label class="flex flex-col gap-1">
+							{text}
+							<input type="number" {name} step="any" min="0" {value} class={field} />
+						</label>
+					{/each}
+					<label class="flex flex-col gap-1">
+						Candidate rating at least
+						<select name="candidate_min_rating" value={rules.candidateMinRating} class={field}>
+							{#each ['A', 'B', 'C', 'D'] as letter (letter)}<option value={letter}>{letter}</option
+								>{/each}
+						</select>
+					</label>
+					<label class="flex items-center gap-2">
+						<input type="checkbox" name="one_hydro_per_basin" checked={rules.oneHydroPerBasin} />
+						One hydro per basin
+					</label>
+					<label class="flex items-center gap-2">
+						<input
+							type="checkbox"
+							name="candidate_dividend_record"
+							checked={rules.candidateDividendRecord}
+						/>
+						Candidates need the dividend record
+					</label>
+					<div class="flex items-end">
+						<button type="submit" class={button}>Save rules</button>
+					</div>
+				</form>
+			</section>
+		{/if}
 	{/if}
 </div>

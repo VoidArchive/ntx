@@ -407,7 +407,7 @@ func gatesToProto(symbol string, gates []sqlc.Gate) []*ntxv1.Gate {
 			Label:     g.Text,
 		}
 		if pg.Kind == ntxv1.GateKind_GATE_KIND_METRIC {
-			pg.Label = label(g.Metric, g.Direction, g.Threshold, int(g.Periods))
+			pg.Label, pg.Unit = label(g.Metric, g.Direction, g.Threshold, int(g.Periods)), metrics[g.Metric].unit
 		}
 		out = append(out, pg)
 	}

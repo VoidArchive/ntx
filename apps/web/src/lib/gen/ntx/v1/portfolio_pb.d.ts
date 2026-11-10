@@ -104,6 +104,13 @@ export declare type Gate = Message<"ntx.v1.Gate"> & {
    * @generated from field: string source = 15;
    */
   source: string;
+
+  /**
+   * How value and prior print: "%", "x" or "Rs".
+   *
+   * @generated from field: string unit = 16;
+   */
+  unit: string;
 };
 
 /**

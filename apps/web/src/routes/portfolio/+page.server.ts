@@ -2,8 +2,9 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { fail, redirect } from '@sveltejs/kit';
 import { apiBaseUrl, createApiClient } from '#lib/api/client.js';
 import navData from '#lib/data/nav.json';
-import { HoldingStatus, TransactionKind } from '#lib/gen/ntx/v1/portfolio_pb.js';
+import { HoldingStatus } from '#lib/gen/ntx/v1/portfolio_pb.js';
 import { OWNER_COOKIE, forgetOwner, rememberOwner } from '#lib/owner.js';
+import { forward, holdingActions, num, str } from '#lib/owner-actions.js';
 import type { Fund } from '#lib/types/fund.js';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -34,25 +35,6 @@ export const load: PageServerLoad = async ({ parent, cookies }) => {
 	}
 };
 
-const str = (form: FormData, key: string) => String(form.get(key) ?? '').trim();
-const num = (form: FormData, key: string) => Number(form.get(key) ?? 0) || 0;
-
-// Each action forwards one RPC; the API validates and the message comes back verbatim.
-async function forward(
-	cookies: import('@sveltejs/kit').Cookies,
-	call: (api: ReturnType<typeof createApiClient>['portfolio']) => Promise<unknown>
-) {
-	const token = cookies.get(OWNER_COOKIE);
-	if (!token) return fail(401, { message: 'Enter the owner token first.' });
-	try {
-		await call(createApiClient(apiBaseUrl(), token).portfolio);
-		return { ok: true };
-	} catch (e) {
-		if (e instanceof ConnectError) return fail(400, { message: e.rawMessage || e.code.toString() });
-		throw e;
-	}
-}
-
 async function isListed(symbol: string) {
 	if (funds.some((f) => f.symbol === symbol)) return true;
 	try {
@@ -65,6 +47,7 @@ async function isListed(symbol: string) {
 }
 
 export const actions: Actions = {
+	...holdingActions,
 	token: async ({ request, cookies }) => {
 		const token = str(await request.formData(), 'token');
 		if (!token) return fail(400, { message: 'The token is empty.' });
@@ -99,22 +82,24 @@ export const actions: Actions = {
 		const form = await request.formData();
 		return forward(cookies, (api) => api.deleteHolding({ symbol: str(form, 'symbol') }));
 	},
-	transaction: async ({ request, cookies }) => {
+	rules: async ({ request, cookies }) => {
 		const form = await request.formData();
 		return forward(cookies, (api) =>
-			api.addTransaction({
-				symbol: str(form, 'symbol'),
-				day: str(form, 'day'),
-				kind: num(form, 'kind') as TransactionKind,
-				quantity: BigInt(Math.trunc(num(form, 'quantity'))),
-				price: num(form, 'price')
+			api.updateRules({
+				rules: {
+					softCapPercent: num(form, 'soft_cap_percent'),
+					hardCapPercent: num(form, 'hard_cap_percent'),
+					sectorCapPercent: num(form, 'sector_cap_percent'),
+					maxPositions: Math.trunc(num(form, 'max_positions')),
+					minEntryRs: num(form, 'min_entry_rs'),
+					oneHydroPerBasin: form.get('one_hydro_per_basin') === 'on',
+					candidateMinRating: str(form, 'candidate_min_rating'),
+					candidateDividendRecord: form.get('candidate_dividend_record') === 'on',
+					monthlyBudgetRs: num(form, 'monthly_budget_rs'),
+					multiplierBelowMedian: num(form, 'multiplier_below_median'),
+					multiplierBottomQuarter: num(form, 'multiplier_bottom_quarter')
+				}
 			})
-		);
-	},
-	note: async ({ request, cookies }) => {
-		const form = await request.formData();
-		return forward(cookies, (api) =>
-			api.addNote({ symbol: str(form, 'symbol'), day: str(form, 'day'), text: str(form, 'text') })
 		);
 	}
 };

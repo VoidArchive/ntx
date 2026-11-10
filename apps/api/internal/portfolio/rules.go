@@ -474,8 +474,12 @@ func (s *Service) bonusHint(ctx context.Context, h *ntxv1.Holding) (string, erro
 	if y, err := fiscal.ParseYear(a.FiscalYear); err == nil {
 		fy = y.String()
 	}
+	published := ""
+	if a.SubmittedDate.String != "" {
+		published = ", published " + a.SubmittedDate.String
+	}
 	return fmt.Sprintf(
-		"A %s%% bonus for FY %s, published %s, is not yet credited in the book.",
-		num(a.BonusPercentage.Float64), fy, a.SubmittedDate.String,
+		"A %s%% bonus for FY %s%s, is not yet credited in the book.",
+		num(a.BonusPercentage.Float64), fy, published,
 	), nil
 }

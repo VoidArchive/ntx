@@ -260,9 +260,11 @@ type Gate struct {
 	Label string   `protobuf:"bytes,11,opt,name=label,proto3" json:"label,omitempty"`
 	Value *float64 `protobuf:"fixed64,12,opt,name=value,proto3,oneof" json:"value,omitempty"`
 	// For a prior direction, the previous period's figure the value was held against.
-	Prior         *float64 `protobuf:"fixed64,13,opt,name=prior,proto3,oneof" json:"prior,omitempty"`
-	Period        string   `protobuf:"bytes,14,opt,name=period,proto3" json:"period,omitempty"`
-	Source        string   `protobuf:"bytes,15,opt,name=source,proto3" json:"source,omitempty"`
+	Prior  *float64 `protobuf:"fixed64,13,opt,name=prior,proto3,oneof" json:"prior,omitempty"`
+	Period string   `protobuf:"bytes,14,opt,name=period,proto3" json:"period,omitempty"`
+	Source string   `protobuf:"bytes,15,opt,name=source,proto3" json:"source,omitempty"`
+	// How value and prior print: "%", "x" or "Rs".
+	Unit          string `protobuf:"bytes,16,opt,name=unit,proto3" json:"unit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -398,6 +400,13 @@ func (x *Gate) GetPeriod() string {
 func (x *Gate) GetSource() string {
 	if x != nil {
 		return x.Source
+	}
+	return ""
+}
+
+func (x *Gate) GetUnit() string {
+	if x != nil {
+		return x.Unit
 	}
 	return ""
 }
@@ -1967,7 +1976,7 @@ var File_ntx_v1_portfolio_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\n" +
-	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\"\xb6\x03\n" +
+	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\"\xca\x03\n" +
 	"\x04Gate\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
 	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12$\n" +
@@ -1985,7 +1994,8 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x05value\x18\f \x01(\x01H\x00R\x05value\x88\x01\x01\x12\x19\n" +
 	"\x05prior\x18\r \x01(\x01H\x01R\x05prior\x88\x01\x01\x12\x16\n" +
 	"\x06period\x18\x0e \x01(\tR\x06period\x12\x16\n" +
-	"\x06source\x18\x0f \x01(\tR\x06sourceB\b\n" +
+	"\x06source\x18\x0f \x01(\tR\x06source\x12\x12\n" +
+	"\x04unit\x18\x10 \x01(\tR\x04unitB\b\n" +
 	"\x06_valueB\b\n" +
 	"\x06_prior\"K\n" +
 	"\x03Cap\x12\x12\n" +

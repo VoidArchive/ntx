@@ -61,6 +61,8 @@ message Gate {
   optional double prior = 13;
   string period = 14;
   string source = 15;
+  // How value and prior print: "%", "x" or "Rs".
+  string unit = 16;
 }
 
 // Cap is one portfolio rule's verdict: "holds", "watch" or "triggered", with the figures.
