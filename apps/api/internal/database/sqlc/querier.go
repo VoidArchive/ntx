@@ -16,8 +16,10 @@ type Querier interface {
 	// Listed companies without a rating from the current rule set: every one after a
 	// deploy that changed the rules, the remainder after a sync that stopped part-way.
 	CountUnratedCompanies(ctx context.Context, version int64) (int64, error)
+	DeleteHolding(ctx context.Context, symbol string) error
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
+	GetHolding(ctx context.Context, symbol string) (Holding, error)
 	GetLastWeatherRun(ctx context.Context) (string, error)
 	GetLatestCorporateAction(ctx context.Context, symbol string) (CorporateAction, error)
 	GetLatestCorporateActionByCompany(ctx context.Context, companyID int64) (CorporateAction, error)
@@ -31,6 +33,8 @@ type Querier interface {
 	// Stored profit is year-to-date, so a quarter's YTD is comparable with the same quarter's YTD a year earlier.
 	GetSectorProfitYoY(ctx context.Context, sector string) (GetSectorProfitYoYRow, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
+	InsertNote(ctx context.Context, arg InsertNoteParams) (HoldingNote, error)
+	InsertTransaction(ctx context.Context, arg InsertTransactionParams) (Transaction, error)
 	ListAllHydroPlants(ctx context.Context) ([]HydroPlant, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
@@ -52,6 +56,8 @@ type Querier interface {
 	// The first backfill set every created_at to one day, so every unpublished row reads "seen" on that day.
 	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
+	// A holding without a company row is a mutual fund, priced by the caller.
+	ListHoldings(ctx context.Context) ([]ListHoldingsRow, error)
 	// Every plant with its company's latest close, latest quarterly EPS (for PE, divided
 	// in Go as the screener does) and stored rating. LEFT joins: a plant lists without them.
 	ListHydroPlants(ctx context.Context, version int64) ([]ListHydroPlantsRow, error)
@@ -62,6 +68,7 @@ type Querier interface {
 	// Newest day per plant, the reading the state is computed from. The GROUP BY
 	// walks the (plant_id, day) index once; a correlated MAX scanned every row.
 	ListLatestReadings(ctx context.Context) ([]HydroReading, error)
+	ListNotes(ctx context.Context) ([]HoldingNote, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)
 	ListRecentReadings(ctx context.Context, arg ListRecentReadingsParams) ([]HydroReading, error)
@@ -76,6 +83,7 @@ type Querier interface {
 	ListSectorPeers(ctx context.Context, sector string) ([]ListSectorPeersRow, error)
 	// Cash dividend is a percentage of the Rs 100 par, so percent yield = cash% * 100 / close.
 	ListSectorYield(ctx context.Context, sector string) ([]float64, error)
+	ListTransactions(ctx context.Context) ([]Transaction, error)
 	// Companies that stop arriving in the NEPSE feed keep their row (and history) but leave every list.
 	MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
@@ -84,6 +92,7 @@ type Querier interface {
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error
 	UpsertDischargeReading(ctx context.Context, arg UpsertDischargeReadingParams) error
 	UpsertFundamental(ctx context.Context, arg UpsertFundamentalParams) error
+	UpsertHolding(ctx context.Context, arg UpsertHoldingParams) (Holding, error)
 	UpsertHydroPlant(ctx context.Context, arg UpsertHydroPlantParams) error
 	UpsertMarketDay(ctx context.Context, arg UpsertMarketDayParams) error
 	UpsertOwnership(ctx context.Context, arg UpsertOwnershipParams) error
