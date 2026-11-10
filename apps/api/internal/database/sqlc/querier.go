@@ -68,6 +68,8 @@ type Querier interface {
 	ListHydroPlantsBySymbol(ctx context.Context, symbol string) ([]HydroPlant, error)
 	// A symbol DoED spells differently from NEPSE would list a plant with no company.
 	ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydroPlantsWithoutCompanyRow, error)
+	// The index's trailing range for the order sheet's multiplier.
+	ListIndexCloses(ctx context.Context, businessDate string) ([]ListIndexClosesRow, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	// Newest day per plant, the reading the state is computed from. The GROUP BY
 	// walks the (plant_id, day) index once; a correlated MAX scanned every row.
@@ -93,6 +95,7 @@ type Querier interface {
 	MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
 	UpdateGate(ctx context.Context, arg UpdateGateParams) (Gate, error)
+	UpdateHoldingCarry(ctx context.Context, arg UpdateHoldingCarryParams) error
 	UpdateRules(ctx context.Context, arg UpdateRulesParams) (Rule, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRatingParams) error

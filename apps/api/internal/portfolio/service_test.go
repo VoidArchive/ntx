@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"slices"
+	"strings"
 	"testing"
+	"time"
 
 	"connectrpc.com/connect"
 
@@ -19,6 +21,11 @@ import (
 )
 
 const testToken = "owner-secret"
+
+// Every test reads the book on 2026-11-10, Kartik 24, 2083.
+func init() {
+	now = func() time.Time { return time.Date(2026, time.November, 10, 0, 0, 0, 0, time.UTC) }
+}
 
 func client(t *testing.T, header string) ntxv1connect.PortfolioServiceClient {
 	t.Helper()
@@ -110,6 +117,10 @@ func TestEveryMethodRefusesWithoutTheToken(t *testing.T) {
 				_, err := c.GetHoldingStory(ctx, connect.NewRequest(&ntxv1.GetHoldingStoryRequest{Symbol: "MEN"}))
 				return err
 			},
+			"MarkMonthExecuted": func() error {
+				_, err := c.MarkMonthExecuted(ctx, connect.NewRequest(&ntxv1.MarkMonthExecutedRequest{}))
+				return err
+			},
 		}
 		for method, call := range calls {
 			err := call()
@@ -198,7 +209,8 @@ func TestOwnerReadsWeightsWithFundsInTheDenominator(t *testing.T) {
 		t.Errorf("close day %q, fund sector %q", men.GetCloseDay(), fund.GetSector())
 	}
 	if m.GetOpening() != "Rs 1.47 lakh across 1 position and 1 fund, at the 2026-10-16 close. "+
-		"Over cap: MEN 64.9% of the 25% hard cap, Hydropower 64.9% of the 40% sector cap." {
+		"Over cap: MEN 64.9% of the 25% hard cap, Hydropower 64.9% of the 40% sector cap."+
+		" Order sheet for Kartik: Rs 12,000; no index close recorded, so the budget stands." {
 		t.Errorf("opening = %q", m.GetOpening())
 	}
 }
@@ -214,7 +226,8 @@ func TestDeletingAHoldingDropsItsRows(t *testing.T) {
 	must(t, err)
 	if len(res.Msg.GetHoldings()) != 1 ||
 		res.Msg.GetOpening() != "Rs 95,731 across 1 position, at the 2026-10-16 close. "+
-			"Over cap: MEN 100.0% of the 25% hard cap, Hydropower 100.0% of the 40% sector cap." {
+			"Over cap: MEN 100.0% of the 25% hard cap, Hydropower 100.0% of the 40% sector cap."+
+			" Order sheet for Kartik: Rs 12,000; no index close recorded, so the budget stands." {
 		t.Errorf("after delete: %d holdings, opening %q", len(res.Msg.GetHoldings()), res.Msg.GetOpening())
 	}
 	// Re-adding the symbol starts from nothing: its transactions went with it.
@@ -343,7 +356,8 @@ func TestGatesAndCapsOnTheBook(t *testing.T) {
 	})
 	if m.GetOpening() != "Rs 1.54 lakh across 2 positions and 1 fund, at the 2026-10-16 close. "+
 		"1 gate triggered: MEN Weight above 20%. 1 gate needs data. "+
-		"Over cap: MEN 62.0% of the 25% hard cap, Hydropower 66.5% of the 40% sector cap, Gandaki basin: MEN and SAHAS." {
+		"Over cap: MEN 62.0% of the 25% hard cap, Hydropower 66.5% of the 40% sector cap, Gandaki basin: MEN and SAHAS."+
+		" Order sheet for Kartik: Rs 12,000; no index close recorded, so the budget stands." {
 		t.Errorf("opening = %q", m.GetOpening())
 	}
 	if m.GetRules().GetSoftCapPercent() != 20 || m.GetRules().GetMaxPositions() != 8 ||
@@ -381,7 +395,8 @@ func TestOverTheSoftCapReadsWatch(t *testing.T) {
 		"One hydro per basin: holds, no basin held twice",
 	})
 	if res.Msg.GetOpening() != "Rs 4.49 lakh across 1 position and 1 fund, at the 2026-10-16 close. "+
-		"Over cap: MEN 21.3% of the 20% soft cap, Mutual Fund 78.7% of the 40% sector cap." {
+		"Over cap: MEN 21.3% of the 20% soft cap, Mutual Fund 78.7% of the 40% sector cap."+
+		" Order sheet for Kartik: Rs 12,000; no index close recorded, so the budget stands." {
 		t.Errorf("opening = %q", res.Msg.GetOpening())
 	}
 }
@@ -484,5 +499,67 @@ func assertGates(t *testing.T, gates []*ntxv1.Gate, want []string) {
 	}
 	if !slices.Equal(got, want) {
 		t.Errorf("gates %q, want %q", got, want)
+	}
+}
+
+// With the index in the bottom quarter of its year the budget doubles; MEN, a Build
+// holding over the hard cap, is listed and gets nothing; the carry the owner confirms is written.
+func TestOrderSheetAndCalendarOnTheBook(t *testing.T) {
+	c, q := clientAndDB(t, testToken)
+	book(t, c)
+	ctx := context.Background()
+	for i, close := range []float64{2000, 2300, 2600, 2900, 3000, 2050} {
+		must(t, q.UpsertMarketDay(ctx, sqlc.UpsertMarketDayParams{
+			BusinessDate: time.Date(2026, time.June+time.Month(i), 1, 0, 0, 0, 0, time.UTC).Format(time.DateOnly),
+			IndexClose:   close,
+		}))
+	}
+	gate(t, c, &ntxv1.UpsertGateRequest{
+		Symbol: "MEN", Kind: ntxv1.GateKind_GATE_KIND_EVENT, Text: "Plant damage reported", CheckedOn: "2026-10-16",
+	})
+	res, err := c.GetPortfolio(
+		ctx,
+		connect.NewRequest(&ntxv1.GetPortfolioRequest{FundNavs: map[string]float64{"NIBLSF": 10.29}}),
+	)
+	must(t, err)
+	sh := res.Msg.GetOrderSheet()
+	if sh.GetMultiplier() != 2 || sh.GetBudgetRs() != 24000 || sh.GetMonth() != "Kartik" || len(sh.GetLines()) != 1 ||
+		sh.GetLines()[0].GetNote() != "over the soft cap" {
+		t.Errorf("sheet %v", sh)
+	}
+	want := "Order sheet for Kartik: Rs 24,000, 2x the Rs 12,000 budget with the index at 2050.00 on 2026-11-01, " +
+		"in the bottom quarter of its 52-week range of 2000.00 to 3000.00."
+	if sh.GetOpening() != want || !strings.HasSuffix(res.Msg.GetOpening(), want) {
+		t.Errorf("sheet opening %q\nlede %q", sh.GetOpening(), res.Msg.GetOpening())
+	}
+	var days []string
+	for _, e := range res.Msg.GetCalendar() {
+		days = append(days, e.GetDay()+" "+e.GetSymbol()+" "+e.GetWhat())
+	}
+	if !slices.Equal(
+		days,
+		[]string{"2026-11-16 MEN Q1 2083/84 filing due", "2027-01-16 MEN re-check: Plant damage reported"},
+	) {
+		t.Errorf("calendar %q", days)
+	}
+
+	_, err = c.MarkMonthExecuted(
+		ctx,
+		connect.NewRequest(&ntxv1.MarkMonthExecutedRequest{Carries: map[string]float64{"men": 2570}}),
+	)
+	must(t, err)
+	story, err := c.GetHoldingStory(ctx, connect.NewRequest(&ntxv1.GetHoldingStoryRequest{Symbol: "MEN"}))
+	must(t, err)
+	if story.Msg.GetHolding().GetCarryRs() != 2570 {
+		t.Errorf("carry %v", story.Msg.GetHolding().GetCarryRs())
+	}
+	for name, bad := range map[string]float64{"EBL": 10, "MEN": -1} {
+		_, err := c.MarkMonthExecuted(
+			ctx,
+			connect.NewRequest(&ntxv1.MarkMonthExecutedRequest{Carries: map[string]float64{name: bad}}),
+		)
+		if err == nil {
+			t.Errorf("%s accepted", name)
+		}
 	}
 }

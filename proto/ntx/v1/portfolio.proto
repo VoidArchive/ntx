@@ -18,6 +18,49 @@ service PortfolioService {
   rpc UpdateRules(UpdateRulesRequest) returns (UpdateRulesResponse);
   // GetHoldingStory is the "Your thesis" section of a held company's page.
   rpc GetHoldingStory(GetHoldingStoryRequest) returns (GetHoldingStoryResponse);
+  // MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
+  rpc MarkMonthExecuted(MarkMonthExecutedRequest) returns (MarkMonthExecutedResponse);
+}
+
+// OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
+message OrderLine {
+  string symbol = 1;
+  HoldingStatus status = 2;
+  double allocation_percent = 3;
+  double carry_rs = 4;
+  // allocation of the budget plus the carry; zero for a frozen or capped holding.
+  double available_rs = 5;
+  int32 lots = 6;
+  int64 shares = 7;
+  optional double close = 8;
+  double cost_rs = 9;
+  // What the owner would carry into next month after this purchase.
+  double new_carry_rs = 10;
+  // Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
+  string note = 11;
+  string review_date = 12;
+}
+
+message OrderSheet {
+  // Bikram Sambat month the sheet is for, "Mangsir".
+  string month = 1;
+  double budget_rs = 2;
+  double multiplier = 3;
+  optional double index_close = 4;
+  string index_day = 5;
+  double range_low = 6;
+  double range_median = 7;
+  double range_high = 8;
+  // The sheet's sentence: budget, index, range and multiplier (ADR 0001).
+  string opening = 9;
+  repeated OrderLine lines = 10;
+}
+
+// CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
+message CalendarEntry {
+  string day = 1;
+  string symbol = 2;
+  string what = 3;
 }
 
 enum GateKind {
@@ -163,6 +206,9 @@ message GetPortfolioResponse {
   // Sector cap, position count and one hydro per basin.
   repeated Cap caps = 6;
   Rules rules = 7;
+  OrderSheet order_sheet = 8;
+  // Soonest first.
+  repeated CalendarEntry calendar = 9;
 }
 
 message UpsertHoldingRequest {
@@ -235,3 +281,10 @@ message GetHoldingStoryResponse {
   // A bonus the exchange has published that no bonus transaction credits yet; empty otherwise.
   string bonus_hint = 2;
 }
+
+message MarkMonthExecutedRequest {
+  // New carry in rupees by symbol, as the owner confirmed or edited it.
+  map<string, double> carries = 1;
+}
+
+message MarkMonthExecutedResponse {}

@@ -50,3 +50,6 @@ RETURNING *;
 
 -- name: ListNotes :many
 SELECT * FROM holding_notes ORDER BY holding_id, day DESC, id DESC;
+
+-- name: UpdateHoldingCarry :exec
+UPDATE holdings SET carry_rs = ? WHERE symbol = ?;

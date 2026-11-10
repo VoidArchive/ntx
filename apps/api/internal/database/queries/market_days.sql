@@ -38,3 +38,9 @@ ON CONFLICT(business_date) DO UPDATE SET
 SELECT * FROM market_days
 ORDER BY business_date DESC
 LIMIT 1;
+
+-- name: ListIndexCloses :many
+-- The index's trailing range for the order sheet's multiplier.
+SELECT business_date, index_close FROM market_days
+WHERE business_date >= ?
+ORDER BY business_date;

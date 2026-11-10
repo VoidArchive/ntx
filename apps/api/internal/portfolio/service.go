@@ -18,6 +18,9 @@ import (
 	"github.com/voidarchive/ntx/internal/database/sqlc"
 )
 
+// now is the sheet's and calendar's clock; tests pin it.
+var now = time.Now
+
 // TokenHeader carries the owner token on every personal call.
 const TokenHeader = "Ntx-Owner-Token" //nolint:gosec // a header name, not a credential
 
@@ -107,8 +110,31 @@ func (s *Service) portfolio(ctx context.Context, navs map[string]float64) (*ntxv
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	res.Caps = caps(res, rules, plants)
+	index, err := s.indexYear(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	today := now()
+	res.OrderSheet = sheet(month(today), rules, index, holdings)
+	res.Calendar = calendar(today, holdings)
 	res.Opening = opening(res)
 	return res, nil
+}
+
+// indexYear is the index's trailing 52 weeks of closes, oldest first; nil without a market day.
+func (s *Service) indexYear(ctx context.Context) ([]sqlc.ListIndexClosesRow, error) {
+	latest, err := s.queries.GetLatestMarketDay(ctx)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	day, err := time.Parse(time.DateOnly, latest.BusinessDate)
+	if err != nil {
+		return nil, err
+	}
+	return s.queries.ListIndexCloses(ctx, day.AddDate(0, 0, -364).Format(time.DateOnly))
 }
 
 // opening is the lede: the value at its close, then what the owner's rules say.
@@ -149,6 +175,7 @@ func opening(p *ntxv1.GetPortfolioResponse) string {
 	if len(over) > 0 {
 		parts = append(parts, "Over cap: "+strings.Join(over, ", ")+".")
 	}
+	parts = append(parts, p.GetOrderSheet().GetOpening())
 	return strings.Join(parts, " ")
 }
 
@@ -431,4 +458,28 @@ func gatesToProto(symbol string, gates []sqlc.Gate) []*ntxv1.Gate {
 		out = append(out, pg)
 	}
 	return out
+}
+
+func (s *Service) MarkMonthExecuted(
+	ctx context.Context,
+	req *connect.Request[ntxv1.MarkMonthExecutedRequest],
+) (*connect.Response[ntxv1.MarkMonthExecutedResponse], error) {
+	for symbol, carry := range req.Msg.GetCarries() {
+		if carry < 0 {
+			return nil, connect.NewError(
+				connect.CodeInvalidArgument,
+				fmt.Errorf("%s: a carry cannot be negative", symbol),
+			)
+		}
+		if _, err := s.holding(ctx, symbol); err != nil {
+			return nil, err
+		}
+		if err := s.queries.UpdateHoldingCarry(
+			ctx,
+			sqlc.UpdateHoldingCarryParams{CarryRs: carry, Symbol: normSymbol(symbol)},
+		); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+	return connect.NewResponse(&ntxv1.MarkMonthExecutedResponse{}), nil
 }

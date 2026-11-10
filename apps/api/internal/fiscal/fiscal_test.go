@@ -246,3 +246,28 @@ func TestTableIsConsistent(t *testing.T) {
 		}
 	}
 }
+
+func TestQuarterEnd(t *testing.T) {
+	for _, tc := range []struct {
+		year Year
+		q    Quarter
+		want time.Time
+	}{
+		{2082, Q1, day(2025, time.October, 17)},
+		{2082, Q2, day(2026, time.January, 14)},
+		{2082, Q3, day(2026, time.April, 13)},
+		{2082, Q4, day(2026, time.July, 16)},
+		{2083, Q1, day(2026, time.October, 17)},
+	} {
+		got, err := QuarterEnd(tc.year, tc.q)
+		if err != nil || !got.Equal(tc.want) {
+			t.Errorf("QuarterEnd(%s, %s) = %v, %v; want %v", tc.year, tc.q, got, err, tc.want)
+		}
+	}
+	if _, err := QuarterEnd(2090, Q1); !errors.Is(err, ErrOutOfTable) {
+		t.Errorf("want ErrOutOfTable, got %v", err)
+	}
+	if _, err := QuarterEnd(2083, Annual); err == nil {
+		t.Error("Annual has no quarter end")
+	}
+}

@@ -72,6 +72,41 @@ func (q *Queries) GetLatestMarketDay(ctx context.Context) (MarketDay, error) {
 	return i, err
 }
 
+const listIndexCloses = `-- name: ListIndexCloses :many
+SELECT business_date, index_close FROM market_days
+WHERE business_date >= ?
+ORDER BY business_date
+`
+
+type ListIndexClosesRow struct {
+	BusinessDate string  `json:"business_date"`
+	IndexClose   float64 `json:"index_close"`
+}
+
+// The index's trailing range for the order sheet's multiplier.
+func (q *Queries) ListIndexCloses(ctx context.Context, businessDate string) ([]ListIndexClosesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listIndexCloses, businessDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListIndexClosesRow
+	for rows.Next() {
+		var i ListIndexClosesRow
+		if err := rows.Scan(&i.BusinessDate, &i.IndexClose); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertMarketDay = `-- name: UpsertMarketDay :exec
 INSERT INTO market_days (
     business_date, index_close, index_change, index_change_percent,

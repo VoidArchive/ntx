@@ -11,6 +11,178 @@ import type { Message } from "@bufbuild/protobuf";
 export declare const file_ntx_v1_portfolio: GenFile;
 
 /**
+ * OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
+ *
+ * @generated from message ntx.v1.OrderLine
+ */
+export declare type OrderLine = Message<"ntx.v1.OrderLine"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: ntx.v1.HoldingStatus status = 2;
+   */
+  status: HoldingStatus;
+
+  /**
+   * @generated from field: double allocation_percent = 3;
+   */
+  allocationPercent: number;
+
+  /**
+   * @generated from field: double carry_rs = 4;
+   */
+  carryRs: number;
+
+  /**
+   * allocation of the budget plus the carry; zero for a frozen or capped holding.
+   *
+   * @generated from field: double available_rs = 5;
+   */
+  availableRs: number;
+
+  /**
+   * @generated from field: int32 lots = 6;
+   */
+  lots: number;
+
+  /**
+   * @generated from field: int64 shares = 7;
+   */
+  shares: bigint;
+
+  /**
+   * @generated from field: optional double close = 8;
+   */
+  close?: number;
+
+  /**
+   * @generated from field: double cost_rs = 9;
+   */
+  costRs: number;
+
+  /**
+   * What the owner would carry into next month after this purchase.
+   *
+   * @generated from field: double new_carry_rs = 10;
+   */
+  newCarryRs: number;
+
+  /**
+   * Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
+   *
+   * @generated from field: string note = 11;
+   */
+  note: string;
+
+  /**
+   * @generated from field: string review_date = 12;
+   */
+  reviewDate: string;
+};
+
+/**
+ * Describes the message ntx.v1.OrderLine.
+ * Use `create(OrderLineSchema)` to create a new message.
+ */
+export declare const OrderLineSchema: GenMessage<OrderLine>;
+
+/**
+ * @generated from message ntx.v1.OrderSheet
+ */
+export declare type OrderSheet = Message<"ntx.v1.OrderSheet"> & {
+  /**
+   * Bikram Sambat month the sheet is for, "Mangsir".
+   *
+   * @generated from field: string month = 1;
+   */
+  month: string;
+
+  /**
+   * @generated from field: double budget_rs = 2;
+   */
+  budgetRs: number;
+
+  /**
+   * @generated from field: double multiplier = 3;
+   */
+  multiplier: number;
+
+  /**
+   * @generated from field: optional double index_close = 4;
+   */
+  indexClose?: number;
+
+  /**
+   * @generated from field: string index_day = 5;
+   */
+  indexDay: string;
+
+  /**
+   * @generated from field: double range_low = 6;
+   */
+  rangeLow: number;
+
+  /**
+   * @generated from field: double range_median = 7;
+   */
+  rangeMedian: number;
+
+  /**
+   * @generated from field: double range_high = 8;
+   */
+  rangeHigh: number;
+
+  /**
+   * The sheet's sentence: budget, index, range and multiplier (ADR 0001).
+   *
+   * @generated from field: string opening = 9;
+   */
+  opening: string;
+
+  /**
+   * @generated from field: repeated ntx.v1.OrderLine lines = 10;
+   */
+  lines: OrderLine[];
+};
+
+/**
+ * Describes the message ntx.v1.OrderSheet.
+ * Use `create(OrderSheetSchema)` to create a new message.
+ */
+export declare const OrderSheetSchema: GenMessage<OrderSheet>;
+
+/**
+ * CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
+ *
+ * @generated from message ntx.v1.CalendarEntry
+ */
+export declare type CalendarEntry = Message<"ntx.v1.CalendarEntry"> & {
+  /**
+   * @generated from field: string day = 1;
+   */
+  day: string;
+
+  /**
+   * @generated from field: string symbol = 2;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string what = 3;
+   */
+  what: string;
+};
+
+/**
+ * Describes the message ntx.v1.CalendarEntry.
+ * Use `create(CalendarEntrySchema)` to create a new message.
+ */
+export declare const CalendarEntrySchema: GenMessage<CalendarEntry>;
+
+/**
  * Gate is one of the owner's written break conditions with its verdict
  * (GLOSSARY: Gate; Triggered / Holds / Needs data). Every verdict names the
  * period it was evaluated against (ADR 0002).
@@ -470,6 +642,18 @@ export declare type GetPortfolioResponse = Message<"ntx.v1.GetPortfolioResponse"
    * @generated from field: ntx.v1.Rules rules = 7;
    */
   rules?: Rules;
+
+  /**
+   * @generated from field: ntx.v1.OrderSheet order_sheet = 8;
+   */
+  orderSheet?: OrderSheet;
+
+  /**
+   * Soonest first.
+   *
+   * @generated from field: repeated ntx.v1.CalendarEntry calendar = 9;
+   */
+  calendar: CalendarEntry[];
 };
 
 /**
@@ -853,6 +1037,36 @@ export declare type GetHoldingStoryResponse = Message<"ntx.v1.GetHoldingStoryRes
 export declare const GetHoldingStoryResponseSchema: GenMessage<GetHoldingStoryResponse>;
 
 /**
+ * @generated from message ntx.v1.MarkMonthExecutedRequest
+ */
+export declare type MarkMonthExecutedRequest = Message<"ntx.v1.MarkMonthExecutedRequest"> & {
+  /**
+   * New carry in rupees by symbol, as the owner confirmed or edited it.
+   *
+   * @generated from field: map<string, double> carries = 1;
+   */
+  carries: { [key: string]: number };
+};
+
+/**
+ * Describes the message ntx.v1.MarkMonthExecutedRequest.
+ * Use `create(MarkMonthExecutedRequestSchema)` to create a new message.
+ */
+export declare const MarkMonthExecutedRequestSchema: GenMessage<MarkMonthExecutedRequest>;
+
+/**
+ * @generated from message ntx.v1.MarkMonthExecutedResponse
+ */
+export declare type MarkMonthExecutedResponse = Message<"ntx.v1.MarkMonthExecutedResponse"> & {
+};
+
+/**
+ * Describes the message ntx.v1.MarkMonthExecutedResponse.
+ * Use `create(MarkMonthExecutedResponseSchema)` to create a new message.
+ */
+export declare const MarkMonthExecutedResponseSchema: GenMessage<MarkMonthExecutedResponse>;
+
+/**
  * @generated from enum ntx.v1.GateKind
  */
 export enum GateKind {
@@ -1065,6 +1279,16 @@ export declare const PortfolioService: GenService<{
     methodKind: "unary";
     input: typeof GetHoldingStoryRequestSchema;
     output: typeof GetHoldingStoryResponseSchema;
+  },
+  /**
+   * MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
+   *
+   * @generated from rpc ntx.v1.PortfolioService.MarkMonthExecuted
+   */
+  markMonthExecuted: {
+    methodKind: "unary";
+    input: typeof MarkMonthExecutedRequestSchema;
+    output: typeof MarkMonthExecutedResponseSchema;
   },
 }>;
 

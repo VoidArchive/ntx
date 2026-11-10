@@ -60,6 +60,9 @@ const (
 	// PortfolioServiceGetHoldingStoryProcedure is the fully-qualified name of the PortfolioService's
 	// GetHoldingStory RPC.
 	PortfolioServiceGetHoldingStoryProcedure = "/ntx.v1.PortfolioService/GetHoldingStory"
+	// PortfolioServiceMarkMonthExecutedProcedure is the fully-qualified name of the PortfolioService's
+	// MarkMonthExecuted RPC.
+	PortfolioServiceMarkMonthExecutedProcedure = "/ntx.v1.PortfolioService/MarkMonthExecuted"
 )
 
 // PortfolioServiceClient is a client for the ntx.v1.PortfolioService service.
@@ -74,6 +77,8 @@ type PortfolioServiceClient interface {
 	UpdateRules(context.Context, *connect.Request[v1.UpdateRulesRequest]) (*connect.Response[v1.UpdateRulesResponse], error)
 	// GetHoldingStory is the "Your thesis" section of a held company's page.
 	GetHoldingStory(context.Context, *connect.Request[v1.GetHoldingStoryRequest]) (*connect.Response[v1.GetHoldingStoryResponse], error)
+	// MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
+	MarkMonthExecuted(context.Context, *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error)
 }
 
 // NewPortfolioServiceClient constructs a client for the ntx.v1.PortfolioService service. By
@@ -141,20 +146,27 @@ func NewPortfolioServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(portfolioServiceMethods.ByName("GetHoldingStory")),
 			connect.WithClientOptions(opts...),
 		),
+		markMonthExecuted: connect.NewClient[v1.MarkMonthExecutedRequest, v1.MarkMonthExecutedResponse](
+			httpClient,
+			baseURL+PortfolioServiceMarkMonthExecutedProcedure,
+			connect.WithSchema(portfolioServiceMethods.ByName("MarkMonthExecuted")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // portfolioServiceClient implements PortfolioServiceClient.
 type portfolioServiceClient struct {
-	getPortfolio    *connect.Client[v1.GetPortfolioRequest, v1.GetPortfolioResponse]
-	upsertHolding   *connect.Client[v1.UpsertHoldingRequest, v1.UpsertHoldingResponse]
-	deleteHolding   *connect.Client[v1.DeleteHoldingRequest, v1.DeleteHoldingResponse]
-	addTransaction  *connect.Client[v1.AddTransactionRequest, v1.AddTransactionResponse]
-	addNote         *connect.Client[v1.AddNoteRequest, v1.AddNoteResponse]
-	upsertGate      *connect.Client[v1.UpsertGateRequest, v1.UpsertGateResponse]
-	deleteGate      *connect.Client[v1.DeleteGateRequest, v1.DeleteGateResponse]
-	updateRules     *connect.Client[v1.UpdateRulesRequest, v1.UpdateRulesResponse]
-	getHoldingStory *connect.Client[v1.GetHoldingStoryRequest, v1.GetHoldingStoryResponse]
+	getPortfolio      *connect.Client[v1.GetPortfolioRequest, v1.GetPortfolioResponse]
+	upsertHolding     *connect.Client[v1.UpsertHoldingRequest, v1.UpsertHoldingResponse]
+	deleteHolding     *connect.Client[v1.DeleteHoldingRequest, v1.DeleteHoldingResponse]
+	addTransaction    *connect.Client[v1.AddTransactionRequest, v1.AddTransactionResponse]
+	addNote           *connect.Client[v1.AddNoteRequest, v1.AddNoteResponse]
+	upsertGate        *connect.Client[v1.UpsertGateRequest, v1.UpsertGateResponse]
+	deleteGate        *connect.Client[v1.DeleteGateRequest, v1.DeleteGateResponse]
+	updateRules       *connect.Client[v1.UpdateRulesRequest, v1.UpdateRulesResponse]
+	getHoldingStory   *connect.Client[v1.GetHoldingStoryRequest, v1.GetHoldingStoryResponse]
+	markMonthExecuted *connect.Client[v1.MarkMonthExecutedRequest, v1.MarkMonthExecutedResponse]
 }
 
 // GetPortfolio calls ntx.v1.PortfolioService.GetPortfolio.
@@ -202,6 +214,11 @@ func (c *portfolioServiceClient) GetHoldingStory(ctx context.Context, req *conne
 	return c.getHoldingStory.CallUnary(ctx, req)
 }
 
+// MarkMonthExecuted calls ntx.v1.PortfolioService.MarkMonthExecuted.
+func (c *portfolioServiceClient) MarkMonthExecuted(ctx context.Context, req *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error) {
+	return c.markMonthExecuted.CallUnary(ctx, req)
+}
+
 // PortfolioServiceHandler is an implementation of the ntx.v1.PortfolioService service.
 type PortfolioServiceHandler interface {
 	GetPortfolio(context.Context, *connect.Request[v1.GetPortfolioRequest]) (*connect.Response[v1.GetPortfolioResponse], error)
@@ -214,6 +231,8 @@ type PortfolioServiceHandler interface {
 	UpdateRules(context.Context, *connect.Request[v1.UpdateRulesRequest]) (*connect.Response[v1.UpdateRulesResponse], error)
 	// GetHoldingStory is the "Your thesis" section of a held company's page.
 	GetHoldingStory(context.Context, *connect.Request[v1.GetHoldingStoryRequest]) (*connect.Response[v1.GetHoldingStoryResponse], error)
+	// MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
+	MarkMonthExecuted(context.Context, *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error)
 }
 
 // NewPortfolioServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -277,6 +296,12 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 		connect.WithSchema(portfolioServiceMethods.ByName("GetHoldingStory")),
 		connect.WithHandlerOptions(opts...),
 	)
+	portfolioServiceMarkMonthExecutedHandler := connect.NewUnaryHandler(
+		PortfolioServiceMarkMonthExecutedProcedure,
+		svc.MarkMonthExecuted,
+		connect.WithSchema(portfolioServiceMethods.ByName("MarkMonthExecuted")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.PortfolioService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PortfolioServiceGetPortfolioProcedure:
@@ -297,6 +322,8 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 			portfolioServiceUpdateRulesHandler.ServeHTTP(w, r)
 		case PortfolioServiceGetHoldingStoryProcedure:
 			portfolioServiceGetHoldingStoryHandler.ServeHTTP(w, r)
+		case PortfolioServiceMarkMonthExecutedProcedure:
+			portfolioServiceMarkMonthExecutedHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -340,4 +367,8 @@ func (UnimplementedPortfolioServiceHandler) UpdateRules(context.Context, *connec
 
 func (UnimplementedPortfolioServiceHandler) GetHoldingStory(context.Context, *connect.Request[v1.GetHoldingStoryRequest]) (*connect.Response[v1.GetHoldingStoryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.GetHoldingStory is not implemented"))
+}
+
+func (UnimplementedPortfolioServiceHandler) MarkMonthExecuted(context.Context, *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.MarkMonthExecuted is not implemented"))
 }
