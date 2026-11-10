@@ -501,15 +501,19 @@ func (x *OrderSheet) GetLines() []*OrderLine {
 // Candidate is a company the owner's rules admit (GLOSSARY: Candidates): a list
 // of what the rules admit, not a ranking of what to buy.
 type Candidate struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Symbol         string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	Name           string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Sector         string                 `protobuf:"bytes,3,opt,name=sector,proto3" json:"sector,omitempty"`
-	Rating         string                 `protobuf:"bytes,4,opt,name=rating,proto3" json:"rating,omitempty"`
-	Close          float64                `protobuf:"fixed64,5,opt,name=close,proto3" json:"close,omitempty"`
-	CloseDay       string                 `protobuf:"bytes,6,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
-	Pe             *float64               `protobuf:"fixed64,7,opt,name=pe,proto3,oneof" json:"pe,omitempty"`
-	SectorPeMedian *float64               `protobuf:"fixed64,8,opt,name=sector_pe_median,json=sectorPeMedian,proto3,oneof" json:"sector_pe_median,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Symbol   string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Name     string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Sector   string                 `protobuf:"bytes,3,opt,name=sector,proto3" json:"sector,omitempty"`
+	Rating   string                 `protobuf:"bytes,4,opt,name=rating,proto3" json:"rating,omitempty"`
+	Close    float64                `protobuf:"fixed64,5,opt,name=close,proto3" json:"close,omitempty"`
+	CloseDay string                 `protobuf:"bytes,6,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
+	// PE at the close over the EPS the period names: trailing four quarters where they
+	// exist, else the latest annualized filing (ADR 0002).
+	Pe       *float64 `protobuf:"fixed64,7,opt,name=pe,proto3,oneof" json:"pe,omitempty"`
+	PePeriod string   `protobuf:"bytes,14,opt,name=pe_period,json=pePeriod,proto3" json:"pe_period,omitempty"`
+	// Median PE of the sector's profitable companies, each at its own latest filing.
+	SectorPeMedian *float64 `protobuf:"fixed64,8,opt,name=sector_pe_median,json=sectorPeMedian,proto3,oneof" json:"sector_pe_median,omitempty"`
 	// Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
 	Basin string `protobuf:"bytes,9,opt,name=basin,proto3" json:"basin,omitempty"`
 	// The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
@@ -598,6 +602,13 @@ func (x *Candidate) GetPe() float64 {
 		return *x.Pe
 	}
 	return 0
+}
+
+func (x *Candidate) GetPePeriod() string {
+	if x != nil {
+		return x.PePeriod
+	}
+	return ""
 }
 
 func (x *Candidate) GetSectorPeMedian() float64 {
@@ -2614,7 +2625,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\aopening\x18\t \x01(\tR\aopening\x12'\n" +
 	"\x05lines\x18\n" +
 	" \x03(\v2\x11.ntx.v1.OrderLineR\x05linesB\x0e\n" +
-	"\f_index_close\"\xed\x02\n" +
+	"\f_index_close\"\x8a\x03\n" +
 	"\tCandidate\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -2622,7 +2633,8 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x06rating\x18\x04 \x01(\tR\x06rating\x12\x14\n" +
 	"\x05close\x18\x05 \x01(\x01R\x05close\x12\x1b\n" +
 	"\tclose_day\x18\x06 \x01(\tR\bcloseDay\x12\x13\n" +
-	"\x02pe\x18\a \x01(\x01H\x00R\x02pe\x88\x01\x01\x12-\n" +
+	"\x02pe\x18\a \x01(\x01H\x00R\x02pe\x88\x01\x01\x12\x1b\n" +
+	"\tpe_period\x18\x0e \x01(\tR\bpePeriod\x12-\n" +
 	"\x10sector_pe_median\x18\b \x01(\x01H\x01R\x0esectorPeMedian\x88\x01\x01\x12\x14\n" +
 	"\x05basin\x18\t \x01(\tR\x05basin\x12\x16\n" +
 	"\x06shares\x18\n" +

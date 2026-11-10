@@ -339,7 +339,7 @@
 							<th class="py-2 text-right font-normal">Close</th>
 							<th class="py-2 text-left font-normal">As of</th>
 							<th class="py-2 text-right font-normal">PE</th>
-							<th class="py-2 text-right font-normal">Sector median</th>
+							<th class="py-2 text-right font-normal">Sector median PE</th>
 							<th class="py-2 text-left font-normal">Basin</th>
 							<th class="py-2 text-right font-normal">Entry</th>
 							<th class="py-2 text-right font-normal">Cost</th>
@@ -357,11 +357,16 @@
 								<td class="py-1.5">{c.rating}</td>
 								<td class="py-1.5 text-right">{rs(c.close)}</td>
 								<td class="py-1.5 text-xs text-muted-foreground">{c.closeDay || 'not recorded'}</td>
-								<td class="py-1.5 text-right">{c.pe === undefined ? '—' : `${rs(c.pe, 1)}x`}</td>
+								<td class="py-1.5 text-right">
+									{#if c.pe === undefined}not recorded{:else}{rs(c.pe, 1)}x
+										<span class="block text-xs text-muted-foreground">{c.pePeriod}</span>{/if}
+								</td>
 								<td class="py-1.5 text-right text-muted-foreground"
-									>{c.sectorPeMedian === undefined ? '—' : `${rs(c.sectorPeMedian, 1)}x`}</td
+									>{c.sectorPeMedian === undefined
+										? 'not recorded'
+										: `${rs(c.sectorPeMedian, 1)}x`}</td
 								>
-								<td class="py-1.5 text-xs text-muted-foreground">{c.basin || c.note || '—'}</td>
+								<td class="py-1.5 text-xs text-muted-foreground">{c.basin || c.note}</td>
 								<td class="py-1.5 text-right">{n(c.shares)}</td>
 								<td class="py-1.5 text-right">{rs(c.costRs, 0)}</td>
 								<td class="py-1.5 text-right">{rs(c.months, 1)}</td>

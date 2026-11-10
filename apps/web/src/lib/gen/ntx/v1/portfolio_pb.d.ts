@@ -197,11 +197,21 @@ export declare type Candidate = Message<"ntx.v1.Candidate"> & {
   closeDay: string;
 
   /**
+   * PE at the close over the EPS the period names: trailing four quarters where they
+   * exist, else the latest annualized filing (ADR 0002).
+   *
    * @generated from field: optional double pe = 7;
    */
   pe?: number;
 
   /**
+   * @generated from field: string pe_period = 14;
+   */
+  pePeriod: string;
+
+  /**
+   * Median PE of the sector's profitable companies, each at its own latest filing.
+   *
    * @generated from field: optional double sector_pe_median = 8;
    */
   sectorPeMedian?: number;

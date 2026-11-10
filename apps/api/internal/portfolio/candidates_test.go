@@ -25,7 +25,9 @@ func plant(symbol, basin string) sqlc.HydroPlant {
 
 // The owner holds MEN (Gandaki) and NIBLSF; the screener offers hydros in and out of
 // that basin, one with no plant row, a bank without the dividend record and a C.
-func TestCandidatesFollowTheOwnersRules(t *testing.T) {
+// ownersBook is the fixture: MEN and NIBLSF held, a screener with hydros in and out
+// of MEN's basin, one with no plant row, a bank without the dividend record and a C.
+func ownersBook() (*ntxv1.GetPortfolioResponse, []sqlc.ListScreenerRow, map[int64]priced, []sqlc.HydroPlant, sqlc.Rule) {
 	held := &ntxv1.GetPortfolioResponse{
 		TotalValue: 150000, Positions: 1,
 		Holdings: []*ntxv1.Holding{
@@ -44,12 +46,17 @@ func TestCandidatesFollowTheOwnersRules(t *testing.T) {
 		listed(8, "SCB", "Commercial Banks", "B", "holds", 0),
 		listed(9, "KBL", "Commercial Banks", "", "", 200),
 	}
-	pes := map[int64]float64{3: 21.6, 4: 30, 5: 17.9}
+	pes := map[int64]priced{3: {21.6, "4Q to Q1 2083/84"}, 4: {30, "Q1 2083/84"}, 5: {17.9, "4Q to Q1 2083/84"}}
 	plants := []sqlc.HydroPlant{plant("MEN", "Gandaki"), plant("SAHAS", "Gandaki"), plant("API", "Mahakali")}
 	rules := defaults
 	rules.OneHydroPerBasin, rules.CandidateDividendRecord, rules.CandidateMinRating = 1, 1, "B"
 	rules.SectorCapPercent = 70
 
+	return held, rows, pes, plants, rules
+}
+
+func TestCandidatesFollowTheOwnersRules(t *testing.T) {
+	held, rows, pes, plants, rules := ownersBook()
 	got := candidates(rows, pes, held, rules, plants)
 	var names []string
 	for _, c := range got {
@@ -68,18 +75,39 @@ func TestCandidatesFollowTheOwnersRules(t *testing.T) {
 	if api.GetBasin() != "Mahakali" || api.GetNote() != "" || upper.GetNote() != "basin not recorded" {
 		t.Errorf("basins: API %q %q, UPPER %q", api.GetBasin(), api.GetNote(), upper.GetNote())
 	}
-	if api.GetPe() != 21.6 || api.GetSectorPeMedian() != 25.8 || api.GetCloseDay() != "2026-11-09" {
+	if api.GetPe() != 21.6 || api.GetPePeriod() != "4Q to Q1 2083/84" || api.GetSectorPeMedian() != 25.8 ||
+		api.GetCloseDay() != "2026-11-09" {
 		t.Errorf("API pricing %v", api)
 	}
+}
 
-	// Hydropower already at 63% of the book: at a 40% cap no hydro has headroom.
+// Hydropower already at 63% of the book: at a 40% cap no hydro has headroom. The
+// check uses the lot's real cost; NTC's Rs 18,200 lot leaves Others well under 40%.
+func TestCandidatesNeedSectorHeadroom(t *testing.T) {
+	held, rows, pes, plants, rules := ownersBook()
 	rules.SectorCapPercent = 40
-	names = names[:0]
+	var names []string
 	for _, c := range candidates(rows, pes, held, rules, plants) {
 		names = append(names, c.GetSymbol())
 	}
 	if want := []string{"NTC"}; !slices.Equal(names, want) {
 		t.Errorf("under the sector cap: %v, want %v", names, want)
+	}
+}
+
+// A watched hydro (no shares) is no candidate itself but does not occupy its basin.
+func TestWatchedHydroDoesNotBlockItsBasin(t *testing.T) {
+	watched := &ntxv1.GetPortfolioResponse{Holdings: []*ntxv1.Holding{{Symbol: "SAHAS", Sector: "Hydro Power"}}}
+	rows := []sqlc.ListScreenerRow{
+		listed(2, "SAHAS", "Hydro Power", "A", "holds", 685),
+		listed(1, "MEN", "Hydro Power", "A", "holds", 664.80),
+	}
+	plants := []sqlc.HydroPlant{plant("MEN", "Gandaki"), plant("SAHAS", "Gandaki")}
+	rules := defaults
+	rules.OneHydroPerBasin = 1
+	got := candidates(rows, nil, watched, rules, plants)
+	if len(got) != 1 || got[0].GetSymbol() != "MEN" || got[0].GetBasin() != "Gandaki" {
+		t.Errorf("candidates %v", got)
 	}
 }
 

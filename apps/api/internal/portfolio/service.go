@@ -143,14 +143,11 @@ func (s *Service) candidates(
 	if err != nil {
 		return nil, err
 	}
-	quarterly := map[int64][]sqlc.Fundamental{}
-	for _, e := range earningsRows {
-		quarterly[e.Fundamental.CompanyID] = append(quarterly[e.Fundamental.CompanyID], e.Fundamental)
-	}
-	pes := map[int64]float64{}
+	quarterly := story.ByCompany(earningsRows)
+	pes := map[int64]priced{}
 	for _, row := range rows {
 		if e, ok := story.LatestEarnings(quarterly[row.ID]); ok && e.EPS > 0 && row.ClosePrice.Valid {
-			pes[row.ID] = row.ClosePrice.Float64 / e.EPS
+			pes[row.ID] = priced{row.ClosePrice.Float64 / e.EPS, e.Period}
 		}
 	}
 	return candidates(rows, pes, res, rules, plants), nil

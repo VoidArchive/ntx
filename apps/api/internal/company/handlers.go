@@ -295,10 +295,7 @@ func (s *CompanyService) ListScreener(
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	quarterly := map[int64][]sqlc.Fundamental{}
-	for _, e := range earningsRows {
-		quarterly[e.Fundamental.CompanyID] = append(quarterly[e.Fundamental.CompanyID], e.Fundamental)
-	}
+	quarterly := story.ByCompany(earningsRows)
 	res := &ntxv1.ListScreenerResponse{Rows: make([]*ntxv1.ScreenerRow, 0, len(rows))}
 	for _, r := range rows {
 		res.Rows = append(res.Rows, screenerRow(r, quarterly[r.ID]))

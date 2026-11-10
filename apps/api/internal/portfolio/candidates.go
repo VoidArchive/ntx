@@ -15,6 +15,12 @@ import (
 // isHydro reads the sector string loosely: the exchange writes "Hydro Power", fixtures "Hydropower".
 func isHydro(sector string) bool { return strings.Contains(strings.ToLower(sector), "hydro") }
 
+// priced is a company's PE with the period its EPS names, as the screener prices it.
+type priced struct {
+	PE     float64
+	Period string
+}
+
 // letterRank orders ratings; an unrated company ("") never qualifies.
 var letterRank = map[string]int{"A": 0, "B": 1, "C": 2, "D": 3}
 
@@ -27,14 +33,14 @@ type rulebook struct {
 	basins      map[string][]string // by symbol, from the plant table
 	total       float64
 	medians     map[string]float64 // sector PE medians
-	pes         map[int64]float64
+	pes         map[int64]priced
 	rules       sqlc.Rule
 	minRank     int
 }
 
 func bookOf(
 	rows []sqlc.ListScreenerRow,
-	pes map[int64]float64,
+	pes map[int64]priced,
 	p *ntxv1.GetPortfolioResponse,
 	r sqlc.Rule,
 	plants []sqlc.HydroPlant,
@@ -43,17 +49,21 @@ func bookOf(
 		held: map[string]bool{}, sectorValue: map[string]float64{}, heldBasins: map[string]bool{},
 		basins: map[string][]string{}, total: p.GetTotalValue(), medians: sectorMedians(rows, pes), pes: pes, rules: r,
 	}
+	// A watched symbol is already tracked, so it is no candidate; only shares held
+	// count toward a sector or occupy a basin.
+	withShares := map[string]bool{}
 	for _, h := range p.GetHoldings() {
 		b.held[h.GetSymbol()] = true
 		if h.GetQuantity() > 0 {
 			b.sectorValue[h.GetSector()] += h.GetValue()
+			withShares[h.GetSymbol()] = true
 		}
 	}
 	for _, pl := range plants {
 		if !slices.Contains(b.basins[pl.Symbol], pl.Basin) {
 			b.basins[pl.Symbol] = append(b.basins[pl.Symbol], pl.Basin)
 		}
-		if b.held[pl.Symbol] {
+		if withShares[pl.Symbol] {
 			b.heldBasins[pl.Basin] = true
 		}
 	}
@@ -71,7 +81,7 @@ func bookOf(
 // owner already holds. pes are each company's PE by id, as the screener prices it.
 func candidates(
 	rows []sqlc.ListScreenerRow,
-	pes map[int64]float64,
+	pes map[int64]priced,
 	p *ntxv1.GetPortfolioResponse,
 	r sqlc.Rule,
 	plants []sqlc.HydroPlant,
@@ -83,28 +93,32 @@ func candidates(
 			out = append(out, c)
 		}
 	}
-	slices.SortStableFunc(out, func(a, b *ntxv1.Candidate) int {
-		if d := cmp.Compare(letterRank[a.GetRating()], letterRank[b.GetRating()]); d != 0 {
+	slices.SortStableFunc(out, func(x, y *ntxv1.Candidate) int {
+		if d := cmp.Compare(letterRank[x.GetRating()], letterRank[y.GetRating()]); d != 0 {
 			return d
 		}
-		return cmp.Compare(againstSector(a), againstSector(b))
+		return cmp.Compare(againstSector(x), againstSector(y))
 	})
 	return out
 }
 
-// turnedAway applies the rules that need no figure of the company's own: held,
-// unrated or rated too low, unpriced, no dividend record, no sector headroom.
+// turnedAway applies the rules that need no entry size: held, unrated or rated
+// too low, unpriced, or without the dividend record.
 func (b rulebook) turnedAway(row sqlc.ListScreenerRow) bool {
-	r := b.rules
 	rank, rated := letterRank[row.Rating.String]
 	if b.held[row.Symbol] || !rated || rank > b.minRank || !row.ClosePrice.Valid || row.ClosePrice.Float64 <= 0 {
 		return true
 	}
-	if r.CandidateDividendRecord != 0 && row.DividendRecord.String != story.Holds {
+	return b.rules.CandidateDividendRecord != 0 && row.DividendRecord.String != story.Holds
+}
+
+// headroom is whether the sector stays under its cap once the entry's real cost is
+// in the book. An empty book has no sector to cap.
+func (b rulebook) headroom(sector string, cost float64) bool {
+	if b.total <= 0 {
 		return true
 	}
-	// An empty book has no sector to cap.
-	return b.total > 0 && (b.sectorValue[row.Sector]+r.MinEntryRs)*100/(b.total+r.MinEntryRs) > r.SectorCapPercent
+	return (b.sectorValue[sector]+cost)*100/(b.total+cost) < b.rules.SectorCapPercent
 }
 
 // admit is one company against the rules; nil when any rule turns it away.
@@ -127,7 +141,7 @@ func (b rulebook) admit(row sqlc.ListScreenerRow) *ntxv1.Candidate {
 		c.Note = "basin not recorded"
 	}
 	if pe, ok := b.pes[row.ID]; ok {
-		c.Pe = &pe
+		c.Pe, c.PePeriod = &pe.PE, pe.Period
 	}
 	if m, ok := b.medians[row.Sector]; ok {
 		c.SectorPeMedian = &m
@@ -135,6 +149,9 @@ func (b rulebook) admit(row sqlc.ListScreenerRow) *ntxv1.Candidate {
 	// The smallest whole lot that reaches the minimum entry, and the months of budget it costs.
 	c.Shares = int64(math.Ceil(r.MinEntryRs/c.Close/lot)) * lot
 	c.CostRs = float64(c.Shares) * c.Close
+	if !b.headroom(row.Sector, c.CostRs) {
+		return nil
+	}
 	if r.MonthlyBudgetRs > 0 {
 		c.Months = c.CostRs / r.MonthlyBudgetRs
 	}
@@ -150,11 +167,11 @@ func againstSector(c *ntxv1.Candidate) float64 {
 }
 
 // sectorMedians is the median PE of each sector's priced, profitable companies.
-func sectorMedians(rows []sqlc.ListScreenerRow, pes map[int64]float64) map[string]float64 {
+func sectorMedians(rows []sqlc.ListScreenerRow, pes map[int64]priced) map[string]float64 {
 	bySector := map[string][]float64{}
 	for _, row := range rows {
-		if pe, ok := pes[row.ID]; ok && pe > 0 {
-			bySector[row.Sector] = append(bySector[row.Sector], pe)
+		if pe, ok := pes[row.ID]; ok && pe.PE > 0 {
+			bySector[row.Sector] = append(bySector[row.Sector], pe.PE)
 		}
 	}
 	out := map[string]float64{}

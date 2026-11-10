@@ -43,7 +43,7 @@ var rules = []struct {
 	{"PE against its own history", "PE is below its own three-year median.", AxisValue, peOwn},
 	{"PB against the sector", "PB is below the sector median.", AxisValue, pbSector},
 	{
-		"Dividend record",
+		DividendRecordCheck,
 		"A cash or bonus dividend was paid in each of the last 3 fiscal years.",
 		AxisDividend,
 		dividendRecord,

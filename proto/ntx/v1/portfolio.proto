@@ -66,7 +66,11 @@ message Candidate {
   string rating = 4;
   double close = 5;
   string close_day = 6;
+  // PE at the close over the EPS the period names: trailing four quarters where they
+  // exist, else the latest annualized filing (ADR 0002).
   optional double pe = 7;
+  string pe_period = 14;
+  // Median PE of the sector's profitable companies, each at its own latest filing.
   optional double sector_pe_median = 8;
   // Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
   string basin = 9;
