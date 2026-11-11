@@ -1154,6 +1154,13 @@ export declare type GetHoldingStoryResponse = Message<"ntx.v1.GetHoldingStoryRes
    * @generated from field: string bonus_hint = 2;
    */
   bonusHint: string;
+
+  /**
+   * The owner's bank figures for this company, oldest first; empty for a non-bank.
+   *
+   * @generated from field: repeated ntx.v1.BankMetric bank_metrics = 3;
+   */
+  bankMetrics: BankMetric[];
 };
 
 /**
@@ -1161,6 +1168,101 @@ export declare type GetHoldingStoryResponse = Message<"ntx.v1.GetHoldingStoryRes
  * Use `create(GetHoldingStoryResponseSchema)` to create a new message.
  */
 export declare const GetHoldingStoryResponseSchema: GenMessage<GetHoldingStoryResponse>;
+
+/**
+ * BankMetric is one quarter of owner-entered bank figures with its provenance. An
+ * unset figure was not recorded, never a zero.
+ *
+ * @generated from message ntx.v1.BankMetric
+ */
+export declare type BankMetric = Message<"ntx.v1.BankMetric"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * "2082/83"
+   *
+   * @generated from field: string fiscal_year = 2;
+   */
+  fiscalYear: string;
+
+  /**
+   * "Q1".."Q4"
+   *
+   * @generated from field: string quarter = 3;
+   */
+  quarter: string;
+
+  /**
+   * @generated from field: optional double npl_percent = 4;
+   */
+  nplPercent?: number;
+
+  /**
+   * @generated from field: optional double car_percent = 5;
+   */
+  carPercent?: number;
+
+  /**
+   * @generated from field: optional double loan_growth_percent = 6;
+   */
+  loanGrowthPercent?: number;
+
+  /**
+   * @generated from field: optional double distributable_profit = 7;
+   */
+  distributableProfit?: number;
+
+  /**
+   * @generated from field: string published_date = 8;
+   */
+  publishedDate: string;
+
+  /**
+   * @generated from field: string source_url = 9;
+   */
+  sourceUrl: string;
+};
+
+/**
+ * Describes the message ntx.v1.BankMetric.
+ * Use `create(BankMetricSchema)` to create a new message.
+ */
+export declare const BankMetricSchema: GenMessage<BankMetric>;
+
+/**
+ * @generated from message ntx.v1.UpsertBankMetricRequest
+ */
+export declare type UpsertBankMetricRequest = Message<"ntx.v1.UpsertBankMetricRequest"> & {
+  /**
+   * @generated from field: ntx.v1.BankMetric metric = 1;
+   */
+  metric?: BankMetric;
+};
+
+/**
+ * Describes the message ntx.v1.UpsertBankMetricRequest.
+ * Use `create(UpsertBankMetricRequestSchema)` to create a new message.
+ */
+export declare const UpsertBankMetricRequestSchema: GenMessage<UpsertBankMetricRequest>;
+
+/**
+ * @generated from message ntx.v1.UpsertBankMetricResponse
+ */
+export declare type UpsertBankMetricResponse = Message<"ntx.v1.UpsertBankMetricResponse"> & {
+  /**
+   * @generated from field: ntx.v1.BankMetric metric = 1;
+   */
+  metric?: BankMetric;
+};
+
+/**
+ * Describes the message ntx.v1.UpsertBankMetricResponse.
+ * Use `create(UpsertBankMetricResponseSchema)` to create a new message.
+ */
+export declare const UpsertBankMetricResponseSchema: GenMessage<UpsertBankMetricResponse>;
 
 /**
  * @generated from message ntx.v1.MarkMonthExecutedRequest
@@ -1415,6 +1517,17 @@ export declare const PortfolioService: GenService<{
     methodKind: "unary";
     input: typeof MarkMonthExecutedRequestSchema;
     output: typeof MarkMonthExecutedResponseSchema;
+  },
+  /**
+   * UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
+   * filing date and source (ADR 0002).
+   *
+   * @generated from rpc ntx.v1.PortfolioService.UpsertBankMetric
+   */
+  upsertBankMetric: {
+    methodKind: "unary";
+    input: typeof UpsertBankMetricRequestSchema;
+    output: typeof UpsertBankMetricResponseSchema;
   },
 }>;
 

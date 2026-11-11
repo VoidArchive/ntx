@@ -17,9 +17,11 @@ const (
 )
 
 // point is one figure of a metric's series with its provenance; series run oldest first.
+// Missing marks a period the owner has yet to enter a figure for.
 type point struct {
 	Value          float64
 	Period, Source string
+	Missing        bool
 }
 
 type verdict struct {
@@ -78,7 +80,10 @@ func evaluate(direction string, threshold float64, periods int, series []point) 
 		return v
 	}
 	last := series[len(series)-1]
-	v.Value, v.Period, v.Source = &last.Value, last.Period, last.Source
+	v.Period, v.Source = last.Period, last.Source
+	if !last.Missing {
+		v.Value = &last.Value
+	}
 	if len(series) >= 2 && isPrior(direction) {
 		v.Prior = &series[len(series)-2].Value
 	}
@@ -87,7 +92,7 @@ func evaluate(direction string, threshold float64, periods int, series []point) 
 	}
 	v.Verdict = Triggered
 	for i := len(series) - periods; i < len(series); i++ {
-		if series[i].Period == "" {
+		if series[i].Period == "" || series[i].Missing {
 			v.Verdict = NeedsData
 			return v
 		}

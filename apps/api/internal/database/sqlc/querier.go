@@ -39,6 +39,7 @@ type Querier interface {
 	InsertNote(ctx context.Context, arg InsertNoteParams) (HoldingNote, error)
 	InsertTransaction(ctx context.Context, arg InsertTransactionParams) (Transaction, error)
 	ListAllHydroPlants(ctx context.Context) ([]HydroPlant, error)
+	ListBankMetricsByCompany(ctx context.Context, companyID int64) ([]BankMetric, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
 	ListCorporateActionsByCompany(ctx context.Context, companyID int64) ([]CorporateAction, error)
@@ -97,6 +98,7 @@ type Querier interface {
 	UpdateGate(ctx context.Context, arg UpdateGateParams) (Gate, error)
 	UpdateHoldingCarry(ctx context.Context, arg UpdateHoldingCarryParams) error
 	UpdateRules(ctx context.Context, arg UpdateRulesParams) (Rule, error)
+	UpsertBankMetric(ctx context.Context, arg UpsertBankMetricParams) (BankMetric, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRatingParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error

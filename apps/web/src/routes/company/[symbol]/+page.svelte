@@ -31,6 +31,12 @@
 	let plants = $derived(data.plants ?? []);
 	let thesis = $derived(data.thesis);
 	const field = 'h-8 rounded-md border border-input bg-background px-2 text-sm';
+	const bankColumns = [
+		['nplPercent', 'NPL %'],
+		['carPercent', 'CAR %'],
+		['loanGrowthPercent', 'Loan growth %'],
+		['distributableProfit', 'Distributable profit Rs']
+	] as const;
 	const today = new Date().toISOString().slice(0, 10);
 	let lastFiling = $derived(
 		story?.lastFiling ? `Last filing: ${story.lastFiling}.` : 'No filings recorded.'
@@ -286,6 +292,96 @@
 						</form>
 					</div>
 				</div>
+				<!-- Bank figures the exchange does not publish; the owner types each with its filing (ADR 0002) -->
+				{#if /bank/i.test(h.sector) || thesis.bankMetrics.length}
+					<div class="mt-6">
+						<h3 class="text-xs text-muted-foreground">Bank figures, as filed</h3>
+						<div class="mt-1 overflow-x-auto">
+							<table class="w-full text-sm">
+								<thead class="text-xs text-muted-foreground">
+									<tr>
+										<th class="py-1 text-left font-normal">Period</th>
+										{#each bankColumns as [, label] (label)}
+											<th class="py-1 text-right font-normal">{label}</th>
+										{/each}
+										<th class="py-1 text-left font-normal">Published</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each thesis.bankMetrics as m (m.fiscalYear + m.quarter)}
+										<tr class="border-t border-border/60">
+											<td class="py-1">{m.quarter} {m.fiscalYear}</td>
+											{#each bankColumns as [key] (key)}
+												<td class="py-1 text-right tabular-nums">
+													{m[key] === undefined ? 'not recorded' : m[key].toLocaleString('en-IN')}
+												</td>
+											{/each}
+											<td class="py-1">
+												<a href={m.sourceUrl} class="underline" rel="noreferrer"
+													>{m.publishedDate}</a
+												>
+											</td>
+										</tr>
+									{:else}
+										<tr
+											><td colspan="6" class="py-1 text-muted-foreground">No figures entered.</td
+											></tr
+										>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+						<form
+							method="POST"
+							action="?/bankMetric"
+							use:enhance
+							class="mt-3 flex flex-wrap items-end gap-2 text-sm"
+						>
+							<input type="hidden" name="symbol" value={h.symbol} />
+							<input
+								type="text"
+								name="fiscal_year"
+								placeholder="2083/84"
+								required
+								aria-label="Fiscal year"
+								class="{field} w-24"
+							/>
+							<select name="quarter" aria-label="Quarter" class={field}>
+								{#each ['Q1', 'Q2', 'Q3', 'Q4'] as q (q)}<option>{q}</option>{/each}
+							</select>
+							{#each bankColumns as [key, label] (key)}
+								<input
+									type="number"
+									step="any"
+									name={key}
+									placeholder={label}
+									aria-label={label}
+									class="{field} w-36"
+								/>
+							{/each}
+							<input
+								type="date"
+								name="published_date"
+								required
+								aria-label="Published date"
+								class={field}
+							/>
+							<input
+								type="url"
+								name="source_url"
+								placeholder="https://… filing"
+								required
+								aria-label="Source URL"
+								class="{field} min-w-64 flex-1"
+							/>
+							<button
+								type="submit"
+								class="h-8 rounded-md border border-input bg-background px-3 text-sm hover:bg-accent"
+								>Save quarter</button
+							>
+						</form>
+					</div>
+				{/if}
 			</section>
 		{/if}
 

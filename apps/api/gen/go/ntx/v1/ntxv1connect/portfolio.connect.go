@@ -63,6 +63,9 @@ const (
 	// PortfolioServiceMarkMonthExecutedProcedure is the fully-qualified name of the PortfolioService's
 	// MarkMonthExecuted RPC.
 	PortfolioServiceMarkMonthExecutedProcedure = "/ntx.v1.PortfolioService/MarkMonthExecuted"
+	// PortfolioServiceUpsertBankMetricProcedure is the fully-qualified name of the PortfolioService's
+	// UpsertBankMetric RPC.
+	PortfolioServiceUpsertBankMetricProcedure = "/ntx.v1.PortfolioService/UpsertBankMetric"
 )
 
 // PortfolioServiceClient is a client for the ntx.v1.PortfolioService service.
@@ -79,6 +82,9 @@ type PortfolioServiceClient interface {
 	GetHoldingStory(context.Context, *connect.Request[v1.GetHoldingStoryRequest]) (*connect.Response[v1.GetHoldingStoryResponse], error)
 	// MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
 	MarkMonthExecuted(context.Context, *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error)
+	// UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
+	// filing date and source (ADR 0002).
+	UpsertBankMetric(context.Context, *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error)
 }
 
 // NewPortfolioServiceClient constructs a client for the ntx.v1.PortfolioService service. By
@@ -152,6 +158,12 @@ func NewPortfolioServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(portfolioServiceMethods.ByName("MarkMonthExecuted")),
 			connect.WithClientOptions(opts...),
 		),
+		upsertBankMetric: connect.NewClient[v1.UpsertBankMetricRequest, v1.UpsertBankMetricResponse](
+			httpClient,
+			baseURL+PortfolioServiceUpsertBankMetricProcedure,
+			connect.WithSchema(portfolioServiceMethods.ByName("UpsertBankMetric")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -167,6 +179,7 @@ type portfolioServiceClient struct {
 	updateRules       *connect.Client[v1.UpdateRulesRequest, v1.UpdateRulesResponse]
 	getHoldingStory   *connect.Client[v1.GetHoldingStoryRequest, v1.GetHoldingStoryResponse]
 	markMonthExecuted *connect.Client[v1.MarkMonthExecutedRequest, v1.MarkMonthExecutedResponse]
+	upsertBankMetric  *connect.Client[v1.UpsertBankMetricRequest, v1.UpsertBankMetricResponse]
 }
 
 // GetPortfolio calls ntx.v1.PortfolioService.GetPortfolio.
@@ -219,6 +232,11 @@ func (c *portfolioServiceClient) MarkMonthExecuted(ctx context.Context, req *con
 	return c.markMonthExecuted.CallUnary(ctx, req)
 }
 
+// UpsertBankMetric calls ntx.v1.PortfolioService.UpsertBankMetric.
+func (c *portfolioServiceClient) UpsertBankMetric(ctx context.Context, req *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error) {
+	return c.upsertBankMetric.CallUnary(ctx, req)
+}
+
 // PortfolioServiceHandler is an implementation of the ntx.v1.PortfolioService service.
 type PortfolioServiceHandler interface {
 	GetPortfolio(context.Context, *connect.Request[v1.GetPortfolioRequest]) (*connect.Response[v1.GetPortfolioResponse], error)
@@ -233,6 +251,9 @@ type PortfolioServiceHandler interface {
 	GetHoldingStory(context.Context, *connect.Request[v1.GetHoldingStoryRequest]) (*connect.Response[v1.GetHoldingStoryResponse], error)
 	// MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
 	MarkMonthExecuted(context.Context, *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error)
+	// UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
+	// filing date and source (ADR 0002).
+	UpsertBankMetric(context.Context, *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error)
 }
 
 // NewPortfolioServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -302,6 +323,12 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 		connect.WithSchema(portfolioServiceMethods.ByName("MarkMonthExecuted")),
 		connect.WithHandlerOptions(opts...),
 	)
+	portfolioServiceUpsertBankMetricHandler := connect.NewUnaryHandler(
+		PortfolioServiceUpsertBankMetricProcedure,
+		svc.UpsertBankMetric,
+		connect.WithSchema(portfolioServiceMethods.ByName("UpsertBankMetric")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.PortfolioService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PortfolioServiceGetPortfolioProcedure:
@@ -324,6 +351,8 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 			portfolioServiceGetHoldingStoryHandler.ServeHTTP(w, r)
 		case PortfolioServiceMarkMonthExecutedProcedure:
 			portfolioServiceMarkMonthExecutedHandler.ServeHTTP(w, r)
+		case PortfolioServiceUpsertBankMetricProcedure:
+			portfolioServiceUpsertBankMetricHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -371,4 +400,8 @@ func (UnimplementedPortfolioServiceHandler) GetHoldingStory(context.Context, *co
 
 func (UnimplementedPortfolioServiceHandler) MarkMonthExecuted(context.Context, *connect.Request[v1.MarkMonthExecutedRequest]) (*connect.Response[v1.MarkMonthExecutedResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.MarkMonthExecuted is not implemented"))
+}
+
+func (UnimplementedPortfolioServiceHandler) UpsertBankMetric(context.Context, *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.UpsertBankMetric is not implemented"))
 }

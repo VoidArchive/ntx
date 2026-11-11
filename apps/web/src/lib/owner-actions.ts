@@ -6,6 +6,9 @@ import { OWNER_COOKIE } from '#lib/owner.js';
 
 export const str = (form: FormData, key: string) => String(form.get(key) ?? '').trim();
 export const num = (form: FormData, key: string) => Number(form.get(key) ?? 0) || 0;
+// An empty field is not recorded, never a zero (ADR 0002).
+export const opt = (form: FormData, key: string) =>
+	str(form, key) === '' ? undefined : num(form, key);
 
 // Each action forwards one RPC; the API validates and the message comes back verbatim.
 export async function forward(
@@ -62,5 +65,23 @@ export const holdingActions = {
 	deleteGate: async ({ request, cookies }: { request: Request; cookies: Cookies }) => {
 		const form = await request.formData();
 		return forward(cookies, (api) => api.deleteGate({ id: BigInt(Math.trunc(num(form, 'id'))) }));
+	},
+	bankMetric: async ({ request, cookies }: { request: Request; cookies: Cookies }) => {
+		const form = await request.formData();
+		return forward(cookies, (api) =>
+			api.upsertBankMetric({
+				metric: {
+					symbol: str(form, 'symbol'),
+					fiscalYear: str(form, 'fiscal_year'),
+					quarter: str(form, 'quarter'),
+					nplPercent: opt(form, 'npl_percent'),
+					carPercent: opt(form, 'car_percent'),
+					loanGrowthPercent: opt(form, 'loan_growth_percent'),
+					distributableProfit: opt(form, 'distributable_profit'),
+					publishedDate: str(form, 'published_date'),
+					sourceUrl: str(form, 'source_url')
+				}
+			})
+		);
 	}
 };

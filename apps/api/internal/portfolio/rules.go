@@ -24,6 +24,7 @@ type rows struct {
 	fundamentals []sqlc.Fundamental
 	actions      []sqlc.CorporateAction // newest first
 	ownership    []sqlc.OwnershipHistory
+	bank         []sqlc.BankMetric // the owner's rows (issue #61)
 }
 
 // judge evaluates every metric gate of every company holding against the latest rows.
@@ -44,6 +45,9 @@ func (s *Service) judge(ctx context.Context, holdings []*ntxv1.Holding) error {
 			return err
 		}
 		if r.ownership, err = s.queries.ListOwnershipHistory(ctx, c.ID); err != nil {
+			return err
+		}
+		if r.bank, err = s.queries.ListBankMetricsByCompany(ctx, c.ID); err != nil {
 			return err
 		}
 		for _, g := range h.GetGates() {
@@ -67,11 +71,12 @@ func (s *Service) judge(ctx context.Context, holdings []*ntxv1.Holding) error {
 }
 
 // series is a metric's figures oldest first, each with the period it was filed for.
-// Bank metrics have no rows until the owner's table arrives, so they read Needs data.
 func series(metric string, h *ntxv1.Holding, r rows) []point {
 	switch metric {
 	case "eps", "pe", "roe":
 		return quarterly(r.fundamentals, metric)
+	case "npl_percent", "car_percent", "loan_growth_percent", "distributable_profit":
+		return bankSeries(r.fundamentals, r.bank, metric)
 	case "book_value":
 		return yearly(r.fundamentals)
 	case "cash_dividend_percent", "bonus_percent":
@@ -80,18 +85,18 @@ func series(metric string, h *ntxv1.Holding, r rows) []point {
 		var out []point
 		for _, o := range r.ownership {
 			if o.PromoterPercent.Valid {
-				out = append(out, point{o.PromoterPercent.Float64, o.AsOf, ""})
+				out = append(out, point{Value: o.PromoterPercent.Float64, Period: o.AsOf, Source: ""})
 			}
 		}
 		return out
 	case "weight_percent":
 		if h.GetQuantity() > 0 && h.Close != nil {
-			return []point{{h.GetWeightPercent(), h.GetCloseDay(), ""}}
+			return []point{{Value: h.GetWeightPercent(), Period: h.GetCloseDay()}}
 		}
 	case "drawdown_percent":
 		// Against the bonus-adjusted WAC.
 		if h.GetQuantity() > 0 && h.GetWac() > 0 && h.Close != nil {
-			return []point{{(h.GetWac() - h.GetClose()) / h.GetWac() * 100, h.GetCloseDay(), ""}}
+			return []point{{Value: (h.GetWac() - h.GetClose()) / h.GetWac() * 100, Period: h.GetCloseDay()}}
 		}
 	}
 	return nil
@@ -140,7 +145,14 @@ func quarterly(rows []sqlc.Fundamental, metric string) []point {
 			}
 		}
 		if v.Valid {
-			out = append(out, point{v.Float64, f.quarter.String() + " " + f.year.String(), f.row.SourceUrl.String})
+			out = append(
+				out,
+				point{
+					Value:  v.Float64,
+					Period: f.quarter.String() + " " + f.year.String(),
+					Source: f.row.SourceUrl.String,
+				},
+			)
 		}
 	}
 	return out
@@ -161,7 +173,10 @@ func yearly(rows []sqlc.Fundamental) []point {
 	var out []point
 	for _, y := range slices.Sorted(maps.Keys(byYear)) {
 		if f := byYear[y]; f.row.BookValue.Valid {
-			out = append(out, point{f.row.BookValue.Float64, "FY " + y.String(), f.row.SourceUrl.String})
+			out = append(
+				out,
+				point{Value: f.row.BookValue.Float64, Period: "FY " + y.String(), Source: f.row.SourceUrl.String},
+			)
 		}
 	}
 	return out
@@ -188,7 +203,7 @@ func notices(actions []sqlc.CorporateAction, metric string) []point {
 		}
 		// A notice silent on this figure is not a zero.
 		if v.Valid {
-			out = append(out, point{v.Float64, "FY " + y.String(), a.NoticeUrl.String})
+			out = append(out, point{Value: v.Float64, Period: "FY " + y.String(), Source: a.NoticeUrl.String})
 		}
 	}
 	return out
@@ -470,6 +485,9 @@ func (s *Service) GetHoldingStory(
 	h := p.GetHoldings()[i]
 	res := &ntxv1.GetHoldingStoryResponse{Holding: h}
 	if res.BonusHint, err = s.bonusHint(ctx, h); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	if res.BankMetrics, err = s.bankRows(ctx, h); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return connect.NewResponse(res), nil

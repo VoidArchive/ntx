@@ -123,6 +123,10 @@ func TestEveryMethodRefusesWithoutTheToken(t *testing.T) {
 				_, err := c.MarkMonthExecuted(ctx, connect.NewRequest(&ntxv1.MarkMonthExecutedRequest{}))
 				return err
 			},
+			"UpsertBankMetric": func() error {
+				_, err := c.UpsertBankMetric(ctx, connect.NewRequest(&ntxv1.UpsertBankMetricRequest{}))
+				return err
+			},
 		}
 		for method, call := range calls {
 			err := call()
@@ -292,7 +296,7 @@ func gate(t *testing.T, c ntxv1connect.PortfolioServiceClient, g *ntxv1.UpsertGa
 }
 
 // MEN at 62% is over every cap, Hydropower is over the sector cap and both hydro
-// holdings share the Gandaki basin; the bank metric has no rows yet.
+// holdings share the Gandaki basin; the bank metric has no owner row for Q1.
 func TestGatesAndCapsOnTheBook(t *testing.T) {
 	c, q := clientAndDB(t, testToken)
 	seedFilings(t, q)
@@ -332,7 +336,7 @@ func TestGatesAndCapsOnTheBook(t *testing.T) {
 		"holds Q1 2083/84 EPS below Rs 15 for 2 quarters",
 		"triggered 2026-10-16 Weight above 20%",
 		"holds 2026-10-16 Drawdown above 15%",
-		"needs data  NPL above 5%",
+		"needs data Q1 2083/84 NPL above 5%",
 		"  Plant damage reported",
 	})
 	// SAHAS switched the drawdown gate off, so its gate is not run rather than short of data.
