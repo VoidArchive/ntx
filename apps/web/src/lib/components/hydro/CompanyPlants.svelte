@@ -6,7 +6,7 @@
 	let { plants }: { plants: Plant[] } = $props();
 </script>
 
-<div class="overflow-x-auto">
+<div class="table-scroll">
 	<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 		<thead class="text-xs text-muted-foreground">
 			<tr class="border-b border-border">

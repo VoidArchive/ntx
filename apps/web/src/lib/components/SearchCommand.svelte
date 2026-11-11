@@ -141,8 +141,10 @@
 	<!-- Results dropdown -->
 	{#if isOpen && results.length > 0}
 		<div
-			class="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
-			class:min-w-[400px]={variant === 'compact'}
+			class="absolute top-full z-50 mt-2 w-full overflow-hidden rounded-xl border border-border bg-card shadow-2xl {variant ===
+			'compact'
+				? 'sm:min-w-[400px]'
+				: ''}"
 		>
 			<div class="max-h-[400px] overflow-y-auto">
 				{#each results as result, i (result.symbol)}

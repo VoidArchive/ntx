@@ -20,7 +20,7 @@
 
 <!-- One plant and its weather. Hover shows it; a click on the dot or the row pins it. -->
 <div
-	class="w-72 rounded-md border border-border bg-popover p-3 text-xs text-popover-foreground shadow-md"
+	class="w-full rounded-md border border-border bg-popover p-3 text-xs text-popover-foreground shadow-md lg:w-72"
 >
 	<div class="flex items-start justify-between gap-2">
 		<div class="min-w-0">

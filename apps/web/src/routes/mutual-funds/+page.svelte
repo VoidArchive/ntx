@@ -76,58 +76,62 @@
 				{/each}
 			</div>
 		{:else}
-			<section class="mt-6 card-report overflow-x-auto">
-				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
-					<thead class="text-xs text-muted-foreground">
-						<tr class="border-b border-border">
-							<th class="py-2 text-left font-normal">Fund</th>
-							<th class="py-2 text-left font-normal">Name</th>
-							<th class="py-2 text-right font-normal">NAV</th>
-							<th class="py-2 text-right font-normal">From par</th>
-							<th class="py-2 text-right font-normal">Net assets</th>
-							<th class="py-2 text-left font-normal">Holdings</th>
-							<th class="py-2 text-left font-normal">Report</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each data.funds as fund (fund.symbol)}
-							{@const fromPar = ((fund.nav_per_unit - 10) / 10) * 100}
-							<tr class="border-b border-border/50 hover:bg-accent/40">
-								<td class="py-1.5">
-									<a href="/mutual-funds/{fund.symbol}" class="font-medium hover:underline"
-										>{fund.symbol}</a
-									>
-								</td>
-								<td class="max-w-56 truncate py-1.5 text-muted-foreground" title={fund.fund_name}
-									>{fund.fund_name}</td
-								>
-								<td class="py-1.5 text-right">{fund.nav_per_unit.toFixed(2)}</td>
-								<!-- Sign and glyph carry direction, so colour is never the only signal. -->
-								<td
-									class="py-1.5 text-right {fromPar > 0
-										? 'text-positive'
-										: fromPar < 0
-											? 'text-negative'
-											: 'text-muted-foreground'}"
-								>
-									{fromPar > 0 ? '▲' : fromPar < 0 ? '▼' : '■'}
-									{Math.abs(fromPar).toFixed(1)}%
-								</td>
-								<td class="py-1.5 text-right">{formatLarge(fund.net_assets)}</td>
-								<td class="py-1.5 text-muted-foreground">
-									{#if fund.holdings_disclosure === 'full'}
-										itemised
-									{:else if fund.holdings_disclosure === 'top10'}
-										top 10 only
-									{:else}
-										not published
-									{/if}
-								</td>
-								<td class="py-1.5 text-xs text-muted-foreground">{fund.report_date_nepali}</td>
+			<section class="mt-6 card-report">
+				<div class="table-scroll">
+					<table
+						class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3"
+					>
+						<thead class="text-xs text-muted-foreground">
+							<tr class="border-b border-border">
+								<th class="py-2 text-left font-normal">Fund</th>
+								<th class="py-2 text-left font-normal">Name</th>
+								<th class="py-2 text-right font-normal">NAV</th>
+								<th class="py-2 text-right font-normal">From par</th>
+								<th class="py-2 text-right font-normal">Net assets</th>
+								<th class="py-2 text-left font-normal">Holdings</th>
+								<th class="py-2 text-left font-normal">Report</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{#each data.funds as fund (fund.symbol)}
+								{@const fromPar = ((fund.nav_per_unit - 10) / 10) * 100}
+								<tr class="border-b border-border/50 hover:bg-accent/40">
+									<td class="py-1.5">
+										<a href="/mutual-funds/{fund.symbol}" class="font-medium hover:underline"
+											>{fund.symbol}</a
+										>
+									</td>
+									<td class="max-w-56 truncate py-1.5 text-muted-foreground" title={fund.fund_name}
+										>{fund.fund_name}</td
+									>
+									<td class="py-1.5 text-right">{fund.nav_per_unit.toFixed(2)}</td>
+									<!-- Sign and glyph carry direction, so colour is never the only signal. -->
+									<td
+										class="py-1.5 text-right {fromPar > 0
+											? 'text-positive'
+											: fromPar < 0
+												? 'text-negative'
+												: 'text-muted-foreground'}"
+									>
+										{fromPar > 0 ? '▲' : fromPar < 0 ? '▼' : '■'}
+										{Math.abs(fromPar).toFixed(1)}%
+									</td>
+									<td class="py-1.5 text-right">{formatLarge(fund.net_assets)}</td>
+									<td class="py-1.5 text-muted-foreground">
+										{#if fund.holdings_disclosure === 'full'}
+											itemised
+										{:else if fund.holdings_disclosure === 'top10'}
+											top 10 only
+										{:else}
+											not published
+										{/if}
+									</td>
+									<td class="py-1.5 text-xs text-muted-foreground">{fund.report_date_nepali}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 			</section>
 		{/if}
 	</main>

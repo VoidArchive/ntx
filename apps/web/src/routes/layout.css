@@ -191,13 +191,39 @@
 
 /* The report card every page section sits in (DESIGN.md: Report card). */
 @utility card-report {
-	scroll-margin-top: --spacing(6);
+	/* Anchors clear the phone's 3rem top bar */
+	scroll-margin-top: calc(3rem + --spacing(6));
+	@variant lg {
+		scroll-margin-top: --spacing(6);
+	}
 	border-radius: var(--radius-lg);
 	background: var(--card);
 	padding: --spacing(6);
 	box-shadow: var(--shadow-card);
 	@variant sm {
 		padding: --spacing(8);
+	}
+}
+
+/* A wide table on a phone: bleeds to the card's edge, scrolls sideways, and keeps its first
+   column in view so a row never loses its name. Above lg the whole table fits. */
+@utility table-scroll {
+	overflow-x: auto;
+	@variant max-sm {
+		margin-inline: calc(-1 * --spacing(6));
+		& tr > :first-child {
+			padding-left: --spacing(6);
+		}
+		& tr > :last-child {
+			padding-right: --spacing(6);
+		}
+	}
+	@variant max-lg {
+		& tr > :first-child {
+			position: sticky;
+			left: 0;
+			background: var(--card);
+		}
 	}
 }
 

@@ -123,7 +123,7 @@
 				Your written conditions against the latest filings, then the portfolio caps. Each verdict
 				names the period it read.
 			</p>
-			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+			<div class="table-scroll mt-3">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<thead class="text-xs text-muted-foreground">
 						<tr class="border-b border-border">
@@ -178,7 +178,7 @@
 
 		<section class="mt-6 card-report" aria-label="Holdings">
 			<h2 class="font-serif text-xl">Holdings</h2>
-			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+			<div class="table-scroll mt-3">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<thead class="text-xs text-muted-foreground">
 						<tr class="border-b border-border">
@@ -255,12 +255,7 @@
 					A proposal, never an order placed: Build holdings under their caps, whole lots of ten at
 					the latest close, the remainder carried. Edit a carry before marking the month executed.
 				</p>
-				<form
-					method="POST"
-					action="?/executed"
-					use:enhance
-					class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0"
-				>
+				<form method="POST" action="?/executed" use:enhance class="table-scroll mt-3">
 					<table
 						class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3"
 					>
@@ -329,7 +324,7 @@
 				minimum, the dividend record holding, sector headroom after a minimum entry, and no second
 				hydro in a basin you hold. Entry is the smallest whole lot that reaches the minimum.
 			</p>
-			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+			<div class="table-scroll mt-3">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<thead class="text-xs text-muted-foreground">
 						<tr class="border-b border-border">

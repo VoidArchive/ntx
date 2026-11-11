@@ -35,7 +35,7 @@
 	</h4>
 
 	{#if rows.length > 0}
-		<div class="overflow-x-auto">
+		<div class="table-scroll">
 			<table class="w-full text-sm whitespace-nowrap [&_td+td]:pl-4 [&_th+th]:pl-4">
 				<thead>
 					<tr class="border-b border-border text-left text-xs text-muted-foreground">

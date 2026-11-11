@@ -329,7 +329,7 @@
 					{/if}
 				</p>
 			{/if}
-			<div class="-mx-6 mt-5 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+			<div class="table-scroll mt-5">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums">
 					<thead class="text-left text-xs text-muted-foreground">
 						<tr class="border-b border-border">

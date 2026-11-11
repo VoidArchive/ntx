@@ -290,7 +290,7 @@
 			{rows.length} of {data.rows.length} companies
 		</p>
 
-		<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+		<div class="table-scroll mt-3">
 			<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 				<thead class="text-xs text-muted-foreground">
 					<tr class="border-b border-border">

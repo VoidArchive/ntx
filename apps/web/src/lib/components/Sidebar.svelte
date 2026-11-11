@@ -1,5 +1,9 @@
 <script lang="ts">
 	import Menu from '@lucide/svelte/icons/menu';
+	import House from '@lucide/svelte/icons/house';
+	import SlidersHorizontal from '@lucide/svelte/icons/sliders-horizontal';
+	import Droplets from '@lucide/svelte/icons/droplets';
+	import ChartPie from '@lucide/svelte/icons/chart-pie';
 	import { page } from '$app/state';
 	import { SvelteSet } from 'svelte/reactivity';
 	import * as Dialog from '#lib/components/ui/dialog/index.js';
@@ -15,13 +19,14 @@
 	let { companies = [], owner = false }: Props = $props();
 
 	// Portfolio is the owner's page; without the token it is not offered (ADR 0006).
-	let links = $derived([
-		{ href: '/', label: 'Home' },
-		{ href: '/screener', label: 'Screener' },
-		{ href: '/hydro', label: 'Hydro' },
-		{ href: '/mutual-funds', label: 'Mutual funds' },
-		...(owner ? [{ href: '/portfolio', label: 'Portfolio' }] : [])
-	]);
+	// The first four are the phone's tabs; short is the label under the tab icon.
+	const tabs = [
+		{ href: '/', label: 'Home', short: 'Home', icon: House },
+		{ href: '/screener', label: 'Screener', short: 'Screener', icon: SlidersHorizontal },
+		{ href: '/hydro', label: 'Hydro', short: 'Hydro', icon: Droplets },
+		{ href: '/mutual-funds', label: 'Mutual funds', short: 'Funds', icon: ChartPie }
+	];
+	let links = $derived([...tabs, ...(owner ? [{ href: '/portfolio', label: 'Portfolio' }] : [])]);
 
 	// Saved views of the company list; each is a URL the screener already understands.
 	const lists = [
@@ -91,25 +96,27 @@
 	});
 </script>
 
-{#snippet nav()}
-	<ul class="space-y-0.5 text-sm">
-		{#each links as link (link.href)}
-			<li>
-				<a
-					href={link.href}
-					aria-current={isCurrent(link.href) ? 'page' : undefined}
-					onclick={() => (menuOpen = false)}
-					class="block rounded px-2 py-1.5 transition-colors hover:bg-sidebar-accent {isCurrent(
-						link.href
-					)
-						? 'font-medium text-sidebar-foreground'
-						: 'text-muted-foreground'}"
-				>
-					{link.label}
-				</a>
-			</li>
-		{/each}
-	</ul>
+{#snippet nav(items: typeof links)}
+	{#if items.length > 0}
+		<ul class="space-y-0.5 text-sm">
+			{#each items as link (link.href)}
+				<li>
+					<a
+						href={link.href}
+						aria-current={isCurrent(link.href) ? 'page' : undefined}
+						onclick={() => (menuOpen = false)}
+						class="block rounded px-2 py-1.5 transition-colors hover:bg-sidebar-accent {isCurrent(
+							link.href
+						)
+							? 'font-medium text-sidebar-foreground'
+							: 'text-muted-foreground'}"
+					>
+						{link.label}
+					</a>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 
 	{#if !onCompanyPage}
 		<p class="mt-6 mb-1 px-2 text-xs text-muted-foreground">Lists</p>
@@ -165,33 +172,69 @@
 		</div>
 	{/if}
 	<nav class="mt-4 flex-1 overflow-y-auto" aria-label="Site">
-		{@render nav()}
+		{@render nav(links)}
 	</nav>
 	<div class="flex justify-end">
 		<ThemeToggle />
 	</div>
 </aside>
 
-<!-- Phone: slim bar, menu opens the same list -->
+<!-- Phone: wordmark and search on top, tabs along the bottom, the long lists in a sheet -->
 <header
-	class="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:hidden"
+	class="sticky top-0 z-40 flex h-12 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:hidden"
 >
 	<a href="/" class="font-serif text-lg tracking-tight">NTX</a>
-	<Dialog.Root bind:open={menuOpen}>
-		<Dialog.Trigger class="rounded p-1.5 hover:bg-muted" aria-label="Open menu">
-			<Menu class="size-5" />
-		</Dialog.Trigger>
-		<Dialog.Content class="top-0 left-0 h-full max-w-xs translate-x-0 translate-y-0 content-start">
-			<Dialog.Title class="font-serif text-lg">NTX</Dialog.Title>
-			{#if companies.length > 0}
-				<SearchCommand {companies} variant="compact" placeholder="Search stocks..." />
-			{/if}
-			<nav aria-label="Site">
-				{@render nav()}
-			</nav>
-			<div class="flex justify-end">
-				<ThemeToggle />
-			</div>
-		</Dialog.Content>
-	</Dialog.Root>
+	{#if companies.length > 0}
+		<div class="ml-auto w-full max-w-xs">
+			<SearchCommand {companies} variant="compact" placeholder="Search stocks..." />
+		</div>
+	{/if}
 </header>
+<nav
+	aria-label="Site"
+	class="fixed inset-x-0 bottom-0 z-40 border-t border-sidebar-border bg-sidebar pb-[env(safe-area-inset-bottom)] lg:hidden"
+>
+	<ul class="flex h-14 items-stretch">
+		{#each tabs as tab (tab.href)}
+			<li class="flex-1">
+				<a
+					href={tab.href}
+					aria-current={isCurrent(tab.href) ? 'page' : undefined}
+					class="flex h-full flex-col items-center justify-center gap-1 text-[11px] leading-none {isCurrent(
+						tab.href
+					)
+						? 'text-primary'
+						: 'text-muted-foreground'}"
+				>
+					<tab.icon class="size-5" aria-hidden="true" />
+					{tab.short}
+				</a>
+			</li>
+		{/each}
+		<li class="flex-1">
+			<Dialog.Root bind:open={menuOpen}>
+				<Dialog.Trigger
+					class="flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] leading-none {menuOpen
+						? 'text-primary'
+						: 'text-muted-foreground'}"
+				>
+					<Menu class="size-5" aria-hidden="true" />
+					Menu
+				</Dialog.Trigger>
+				<Dialog.Content
+					class="top-auto bottom-0 max-h-[85dvh] max-w-none translate-x-[-50%] translate-y-0 content-start overflow-y-auto rounded-t-xl border-b-0 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom"
+				>
+					<Dialog.Title class="font-serif text-lg">Menu</Dialog.Title>
+					<!-- The tabs are already in the bar; the sheet holds what did not fit. -->
+					<nav aria-label="Site">
+						{@render nav(links.slice(tabs.length))}
+					</nav>
+					<div class="flex items-center justify-between border-t border-border pt-4 text-sm">
+						<span class="text-muted-foreground">Theme</span>
+						<ThemeToggle />
+					</div>
+				</Dialog.Content>
+			</Dialog.Root>
+		</li>
+	</ul>
+</nav>

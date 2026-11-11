@@ -162,32 +162,31 @@
 	</header>
 
 	<div class="mt-6 flex flex-col gap-6">
-		<!-- 2. Map: desktop above the list with hover; phone below it, read-only. -->
-		<section class="order-3 card-report lg:order-1" aria-label="Map">
-			<div class="hidden lg:block">
-				<HydroMap
-					plants={data.plants}
-					basins={data.basins}
-					{basinFilter}
-					{selected}
-					{hovered}
-					onBasin={(name) => setParams({ basin: name })}
-					onHover={(p) => (hovered = p)}
-					onSelect={select}
-					{card}
-				/>
-				<p class="mt-2 text-sm text-muted-foreground">
-					Hover a dot for the plant and its weather; click it, or a plant in the list, to keep the
-					card open. Click a river to filter the list by its basin.
-				</p>
-			</div>
-			<div class="lg:hidden">
-				<HydroMap plants={data.plants} basins={data.basins} {basinFilter} {selected} compact />
-			</div>
+		<!-- 2. Map: above the list; hover on a desktop, tap on a phone, where a basin pick is also the zoom. -->
+		<section class="card-report" aria-label="Map">
+			<HydroMap
+				plants={data.plants}
+				basins={data.basins}
+				{basinFilter}
+				{selected}
+				{hovered}
+				onBasin={(name) => setParams({ basin: name })}
+				onHover={(p) => (hovered = p)}
+				onSelect={select}
+				{card}
+			/>
+			<p class="mt-2 hidden text-sm text-muted-foreground lg:block">
+				Hover a dot for the plant and its weather; click it, or a plant in the list, to keep the
+				card open. Click a river to filter the list by its basin.
+			</p>
+			<p class="mt-2 text-sm text-muted-foreground lg:hidden">
+				Tap a dot for the plant and its weather. Tap a river, or a basin above, to zoom to it and
+				filter the list; tap it again to zoom out.
+			</p>
 		</section>
 
-		<!-- 3. Plant list: the phone and keyboard surface. -->
-		<section class="order-2 card-report" aria-label="Plants">
+		<!-- 3. Plant list: the keyboard surface. -->
+		<section class="card-report" aria-label="Plants">
 			<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
 				<label class="flex items-center gap-1">
 					Status
@@ -226,12 +225,13 @@
 				>
 			</div>
 
-			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+			<div class="table-scroll mt-3">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<!-- The header stays while 141 rows scroll; the plant stays while a phone scrolls sideways. -->
-					<thead class="sticky top-12 z-10 bg-background text-xs text-muted-foreground lg:top-0">
+					<!-- Sticky against the scrolling wrapper, so top is 0 on every screen. -->
+					<thead class="sticky top-0 z-10 bg-card text-xs text-muted-foreground">
 						<tr class="border-b border-border">
-							<th class="{thClass} sticky left-0 bg-card text-left">Plant</th>
+							<th class="{thClass} text-left">Plant</th>
 							<th class="{thClass} text-left">Symbol</th>
 							<th class="{thClass} text-left">River</th>
 							{#each columns as col (col.key)}
@@ -272,14 +272,17 @@
 								{@const b = data.basins.find((x) => x.name === p.basin)}
 								<!-- Sorted by basin, each basin opens with its state and count, the same line as its chip. -->
 								<tr class="border-b border-border bg-muted/30">
-									<th colspan="11" class="sticky left-0 py-1.5 text-left text-xs font-medium">
-										{p.basin}
-										{#if b}
-											<span class="font-normal text-muted-foreground">
-												· {b.plantCount} plants
-												<span class="ml-3"><StateMark state={b.state} /></span>
-											</span>
-										{/if}
+									<!-- A full-width cell cannot stick, so its label does, at the Plant column's edge. -->
+									<th colspan="11" class="py-1.5 text-left text-xs font-medium">
+										<span class="sticky left-6 inline-block sm:left-0">
+											{p.basin}
+											{#if b}
+												<span class="font-normal text-muted-foreground">
+													· {b.plantCount} plants
+													<span class="ml-3"><StateMark state={b.state} /></span>
+												</span>
+											{/if}
+										</span>
 									</th>
 								</tr>
 							{/if}
@@ -290,11 +293,7 @@
 								onmouseenter={() => (hovered = p)}
 								onmouseleave={() => (hovered = undefined)}
 							>
-								<td
-									class="sticky left-0 py-1.5 font-medium {active?.id === p.id
-										? 'bg-muted'
-										: 'bg-background'}"
-								>
+								<td class="py-1.5 font-medium {active?.id === p.id ? 'bg-muted' : 'bg-background'}">
 									<button
 										onclick={() => toggle(p)}
 										aria-expanded={open.has(p.id)}

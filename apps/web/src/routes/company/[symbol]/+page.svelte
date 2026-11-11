@@ -296,7 +296,7 @@
 				{#if /bank|finance/i.test(h.sector) || thesis.bankMetrics.length}
 					<div class="mt-6">
 						<h3 class="text-xs text-muted-foreground">Bank figures, as filed</h3>
-						<div class="mt-1 overflow-x-auto">
+						<div class="table-scroll mt-1">
 							<table class="w-full text-sm">
 								<thead class="text-xs text-muted-foreground">
 									<tr>

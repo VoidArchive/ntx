@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { MediaQuery } from 'svelte/reactivity';
 	import type { Basin, Plant } from '#lib/gen/ntx/v1/hydro_pb.js';
 	import { PlantState } from '#lib/gen/ntx/v1/hydro_pb.js';
 	import map from '#lib/data/hydro_map.json';
@@ -17,7 +18,6 @@
 		// The card beside the active dot; the page owns its data.
 		card?: Snippet<[Plant, boolean]>;
 		hovered?: Plant;
-		compact?: boolean; // phone: read-only, no hover
 	}
 
 	let {
@@ -29,9 +29,11 @@
 		selected,
 		onSelect,
 		card,
-		hovered,
-		compact = false
+		hovered
 	}: Props = $props();
+
+	// Tailwind's lg: the sidebar's breakpoint, and the map's hover-or-tap one.
+	const desktop = new MediaQuery('(min-width: 64rem)');
 
 	// The same Mercator the build script used, so dots land on the rivers it drew (ADR 0004).
 	const { k, lon0, lat0, tx, ty, width, height } = map.projection;
@@ -51,9 +53,29 @@
 	const dim = (basin: string) => (basinFilter && basinFilter !== basin ? 0.25 : 1);
 	const stateColor = (s: PlantState) => STATE[s].color;
 	const dots = $derived([...plants].sort((a, b) => b.mw - a.mw));
-	let active = $derived(selected ?? hovered);
+	// A tap leaves a phone's emulated hover behind, so only a mouse's hover counts there.
+	let active = $derived(selected ?? (desktop.current ? hovered : undefined));
 	const dotOpacity = (p: Plant) =>
 		Math.min(dim(p.basin), selected && selected.id !== p.id ? 0.35 : 1);
+	// The tap target: a finger needs more than a 5 MW dot, a mouse in a cluster needs less.
+	const hit = (mw: number) => Math.max(radius(mw), desktop.current ? 5 : 12);
+
+	// On a phone the basin pick is also the zoom: the view box closes on the basin's plants.
+	let view = $derived.by(() => {
+		const inBasin = desktop.current ? [] : plants.filter((p) => p.basin === basinFilter);
+		if (inBasin.length === 0) return `0 0 ${width} ${height}`;
+		const pts = inBasin.map((p) => project(p.lon, p.lat));
+		const pad = 40;
+		const x0 = Math.min(...pts.map(([x]) => x)) - pad;
+		const y0 = Math.min(...pts.map(([, y]) => y)) - pad;
+		let w = Math.max(...pts.map(([x]) => x)) + pad - x0;
+		let h = Math.max(...pts.map(([, y]) => y)) + pad - y0;
+		// Keep the map's aspect so the box fills the width without letterboxing.
+		const [bw, bh] = [w, h];
+		if (w / h > width / height) h = (w * height) / width;
+		else w = (h * width) / height;
+		return `${x0 - (w - bw) / 2} ${y0 - (h - bh) / 2} ${w} ${h}`;
+	});
 
 	function pick(basin: string) {
 		onBasin?.(basinFilter === basin ? '' : basin);
@@ -71,13 +93,9 @@
 <svelte:window onkeydown={(e) => e.key === 'Escape' && selected && onSelect?.(undefined)} />
 
 <figure class="w-full" aria-label="Map of Nepal's rivers and listed hydro plants">
-	<div id="hydro-map" class="relative">
-		<svg
-			viewBox="0 0 {width} {height}"
-			class="h-auto w-full {compact ? 'max-h-56' : ''}"
-			role="img"
-			aria-describedby="hydro-map-legend"
-		>
+	<!-- Bleeds to the card's edge on a phone, as the tables do. -->
+	<div id="hydro-map" class="relative -mx-6 sm:mx-0">
+		<svg viewBox={view} class="h-auto w-full" role="img" aria-describedby="hydro-map-legend">
 			<path
 				d={map.outline}
 				fill="var(--color-muted)"
@@ -88,16 +106,17 @@
 			{#each Object.entries(rivers) as [basin, reaches] (basin)}
 				<!-- Handlers sit on the basin group, not on each of its reaches: a click anywhere on a river is a basin pick. -->
 				<g
-					role={compact ? undefined : 'button'}
+					role="button"
+					tabindex="0"
 					aria-label="Filter by {basin}"
 					opacity={dim(basin)}
 					stroke={stateColor(basinState.get(basin) ?? PlantState.UNSPECIFIED)}
 					fill="none"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-					onclick={() => !compact && pick(basin)}
-					onkeydown={(e) => e.key === 'Enter' && !compact && pick(basin)}
-					class={compact ? '' : 'cursor-pointer'}
+					onclick={() => pick(basin)}
+					onkeydown={(e) => e.key === 'Enter' && pick(basin)}
+					class="cursor-pointer"
 				>
 					{#each reaches ?? [] as r, i (i)}
 						<path d={r.d} stroke-width={strokeWidth(r.order)} vector-effect="non-scaling-stroke" />
@@ -107,8 +126,6 @@
 			{#each dots as p (p.id)}
 				{@const [x, y] = project(p.lon, p.lat)}
 				{@const operating = p.status === 'operating'}
-				<!-- The role is button whenever the dot is focusable; the checker cannot see the conditional. -->
-				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<circle
 					cx={x}
 					cy={y}
@@ -118,17 +135,28 @@
 					stroke-width={operating ? 0.8 : 1.5}
 					opacity={dotOpacity(p)}
 					vector-effect="non-scaling-stroke"
-					class={compact ? '' : 'cursor-pointer focus:outline-none'}
-					role={compact ? undefined : 'button'}
-					tabindex={compact ? undefined : 0}
+					pointer-events="none"
+				/>
+			{/each}
+			<!-- The targets sit above every dot, smallest plant last so it wins its cluster. -->
+			{#each dots as p (p.id)}
+				{@const [x, y] = project(p.lon, p.lat)}
+				<circle
+					cx={x}
+					cy={y}
+					r={hit(p.mw)}
+					fill="transparent"
+					class="cursor-pointer focus:outline-none"
+					role="button"
+					tabindex="0"
 					aria-label="{p.plant}, {p.symbol}, {p.mw} MW, {STATE[p.state].label}"
-					aria-pressed={compact ? undefined : selected?.id === p.id}
-					onmouseenter={() => !compact && onHover?.(p)}
-					onmouseleave={() => !compact && onHover?.(undefined)}
-					onfocus={() => !compact && onHover?.(p)}
-					onblur={() => !compact && onHover?.(undefined)}
-					onclick={() => !compact && onSelect?.(selected?.id === p.id ? undefined : p)}
-					onkeydown={(e) => e.key === 'Enter' && !compact && onSelect?.(p)}
+					aria-pressed={selected?.id === p.id}
+					onmouseenter={() => onHover?.(p)}
+					onmouseleave={() => onHover?.(undefined)}
+					onfocus={() => onHover?.(p)}
+					onblur={() => onHover?.(undefined)}
+					onclick={() => onSelect?.(selected?.id === p.id ? undefined : p)}
+					onkeydown={(e) => e.key === 'Enter' && onSelect?.(p)}
 				/>
 			{/each}
 			{#if active}
@@ -146,9 +174,9 @@
 				/>
 			{/if}
 		</svg>
-		{#if active && card && !compact}
+		{#if active && card}
 			<div
-				class="absolute z-10 {selected ? '' : 'pointer-events-none'}"
+				class="absolute z-10 hidden lg:block {selected ? '' : 'pointer-events-none'}"
 				style={cardStyle(active)}
 				aria-live="polite"
 			>
@@ -156,6 +184,12 @@
 			</div>
 		{/if}
 	</div>
+	<!-- A phone has no hover, so only the pinned plant shows, as a block under the map. -->
+	{#if selected && card}
+		<div class="mt-3 lg:hidden" aria-live="polite">
+			{@render card(selected, true)}
+		</div>
+	{/if}
 	<figcaption
 		id="hydro-map-legend"
 		class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground"

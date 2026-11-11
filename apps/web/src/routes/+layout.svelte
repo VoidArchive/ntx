@@ -53,7 +53,8 @@
 <ModeWatcher defaultMode="dark" />
 <div class="lg:flex">
 	<Sidebar companies={data.search} owner={data.owner} />
-	<div class="min-w-0 flex-1">
+	<!-- Room for the phone's bottom tab bar -->
+	<div class="min-w-0 flex-1 pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
 		{@render children()}
 
 		<footer class="mt-20 border-t border-border/50 bg-background/50 py-12 backdrop-blur-sm">
