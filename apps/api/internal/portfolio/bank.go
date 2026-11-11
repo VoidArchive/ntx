@@ -1,7 +1,6 @@
 package portfolio
 
 import (
-	"cmp"
 	"context"
 	"database/sql"
 	"errors"
@@ -48,15 +47,16 @@ func bankSeries(fundamentals []sqlc.Fundamental, bank []sqlc.BankMetric, metric 
 		if err != nil || q == fiscal.Annual {
 			continue
 		}
-		p := point{Period: q.String() + " " + y.String(), Source: m.SourceUrl, Missing: true}
+		f := filing{year: y, quarter: q}
+		p := point{Period: f.period(), Source: m.SourceUrl, Missing: true}
 		if v := bankFigure(m, metric); v.Valid {
 			p.Value, p.Missing = v.Float64, false
 		}
-		byRank[filing{year: y, quarter: q}.rank()] = p
+		byRank[f.rank()] = p
 	}
 	for _, f := range filings(fundamentals) {
 		if _, ok := byRank[f.rank()]; !ok && f.quarter != fiscal.Annual {
-			byRank[f.rank()] = point{Period: f.quarter.String() + " " + f.year.String(), Missing: true}
+			byRank[f.rank()] = point{Period: f.period(), Missing: true}
 		}
 	}
 	var out []point
@@ -147,7 +147,8 @@ func bankToProto(symbol string, m sqlc.BankMetric) *ntxv1.BankMetric {
 	}
 }
 
-// bankRows is a holding's owner-entered bank figures for the story, oldest first.
+// bankRows is a holding's owner-entered bank figures for the story, oldest first
+// (the canonical "2082/83" and "Q1" strings sort in the query).
 func (s *Service) bankRows(ctx context.Context, h *ntxv1.Holding) ([]*ntxv1.BankMetric, error) {
 	if h.GetIsFund() {
 		return nil, nil
@@ -160,9 +161,6 @@ func (s *Service) bankRows(ctx context.Context, h *ntxv1.Holding) ([]*ntxv1.Bank
 	if err != nil {
 		return nil, err
 	}
-	slices.SortFunc(rows, func(a, b sqlc.BankMetric) int {
-		return cmp.Or(cmp.Compare(a.FiscalYear, b.FiscalYear), cmp.Compare(a.Quarter, b.Quarter))
-	})
 	var out []*ntxv1.BankMetric
 	for _, r := range rows {
 		out = append(out, bankToProto(c.Symbol, r))

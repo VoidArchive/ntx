@@ -24,7 +24,7 @@ type rows struct {
 	fundamentals []sqlc.Fundamental
 	actions      []sqlc.CorporateAction // newest first
 	ownership    []sqlc.OwnershipHistory
-	bank         []sqlc.BankMetric // the owner's rows (issue #61)
+	bank         []sqlc.BankMetric // owner-entered; the exchange publishes none
 }
 
 // judge evaluates every metric gate of every company holding against the latest rows.
@@ -85,7 +85,7 @@ func series(metric string, h *ntxv1.Holding, r rows) []point {
 		var out []point
 		for _, o := range r.ownership {
 			if o.PromoterPercent.Valid {
-				out = append(out, point{Value: o.PromoterPercent.Float64, Period: o.AsOf, Source: ""})
+				out = append(out, point{Value: o.PromoterPercent.Float64, Period: o.AsOf})
 			}
 		}
 		return out
@@ -109,6 +109,9 @@ type filing struct {
 }
 
 func (f filing) rank() int { return int(f.year)*10 + int(f.quarter) }
+
+// period is the quarter as a verdict names it: "Q1 2083/84".
+func (f filing) period() string { return f.quarter.String() + " " + f.year.String() }
 
 func filings(rows []sqlc.Fundamental) []filing {
 	var out []filing
@@ -149,7 +152,7 @@ func quarterly(rows []sqlc.Fundamental, metric string) []point {
 				out,
 				point{
 					Value:  v.Float64,
-					Period: f.quarter.String() + " " + f.year.String(),
+					Period: f.period(),
 					Source: f.row.SourceUrl.String,
 				},
 			)

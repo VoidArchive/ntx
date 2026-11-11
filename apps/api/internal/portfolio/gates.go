@@ -84,15 +84,15 @@ func evaluate(direction string, threshold float64, periods int, series []point) 
 	if !last.Missing {
 		v.Value = &last.Value
 	}
-	if len(series) >= 2 && isPrior(direction) {
-		v.Prior = &series[len(series)-2].Value
+	if prior := len(series) - 2; prior >= 0 && isPrior(direction) && !series[prior].Missing {
+		v.Prior = &series[prior].Value
 	}
 	if len(series) < need {
 		return v
 	}
 	v.Verdict = Triggered
 	for i := len(series) - periods; i < len(series); i++ {
-		if series[i].Period == "" || series[i].Missing {
+		if unread(series, i, direction) {
 			v.Verdict = NeedsData
 			return v
 		}
@@ -112,6 +112,13 @@ func evaluate(direction string, threshold float64, periods int, series []point) 
 		}
 	}
 	return v
+}
+
+// unread is a row the gate cannot judge: no provenance, a quarter the owner has
+// not entered, or for a ratchet a missing prior quarter to ratchet against.
+func unread(series []point, i int, direction string) bool {
+	p := series[i]
+	return p.Period == "" || p.Missing || (isPrior(direction) && series[i-1].Missing)
 }
 
 // label words a metric gate once, for the lede and the table: "NPL above 5% for 2 quarters".

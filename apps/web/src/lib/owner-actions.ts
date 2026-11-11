@@ -74,10 +74,10 @@ export const holdingActions = {
 					symbol: str(form, 'symbol'),
 					fiscalYear: str(form, 'fiscal_year'),
 					quarter: str(form, 'quarter'),
-					nplPercent: opt(form, 'npl_percent'),
-					carPercent: opt(form, 'car_percent'),
-					loanGrowthPercent: opt(form, 'loan_growth_percent'),
-					distributableProfit: opt(form, 'distributable_profit'),
+					nplPercent: opt(form, 'nplPercent'),
+					carPercent: opt(form, 'carPercent'),
+					loanGrowthPercent: opt(form, 'loanGrowthPercent'),
+					distributableProfit: opt(form, 'distributableProfit'),
 					publishedDate: str(form, 'published_date'),
 					sourceUrl: str(form, 'source_url')
 				}

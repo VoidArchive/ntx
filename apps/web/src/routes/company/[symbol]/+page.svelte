@@ -293,7 +293,7 @@
 					</div>
 				</div>
 				<!-- Bank figures the exchange does not publish; the owner types each with its filing (ADR 0002) -->
-				{#if /bank/i.test(h.sector) || thesis.bankMetrics.length}
+				{#if /bank|finance/i.test(h.sector) || thesis.bankMetrics.length}
 					<div class="mt-6">
 						<h3 class="text-xs text-muted-foreground">Bank figures, as filed</h3>
 						<div class="mt-1 overflow-x-auto">

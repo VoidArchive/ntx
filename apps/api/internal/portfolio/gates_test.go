@@ -27,6 +27,11 @@ func TestMetricGatesOnTheOwnersFixtures(t *testing.T) {
 		{"ratchet triggers at Q2 on 4.73", ratchet, 0, 1, []point{q4, q1, {Value: 4.73, Period: "Q2 2083/84", Source: "x"}}, Triggered, "Q2 2083/84"},
 		{"ratchet holds at Q2 on 4.72", ratchet, 0, 1, []point{q4, q1, {Value: 4.72, Period: "Q2 2083/84", Source: "x"}}, Holds, "Q2 2083/84"},
 		{"ratchet with no prior needs data", ratchet, 0, 1, []point{q4}, NeedsData, "Q4 2082/83"},
+		{
+			"ratchet with a missing prior needs data", ratchet, 0, 1,
+			[]point{{Period: "Q4 2082/83", Missing: true}, q1},
+			NeedsData, "Q1 2083/84",
+		},
 		{"two periods, one good quarter holds", above, 5, 2, []point{{Value: 4.9, Period: "Q1", Source: "x"}, {Value: 5.2, Period: "Q2", Source: "x"}}, Holds, "Q2"},
 		{"two periods, both over triggers", above, 5, 2, []point{{Value: 5.1, Period: "Q1", Source: "x"}, {Value: 5.2, Period: "Q2", Source: "x"}}, Triggered, "Q2"},
 		{"fewer rows than periods needs data", above, 5, 2, []point{{Value: 5.1, Period: "Q1", Source: "x"}}, NeedsData, "Q1"},
