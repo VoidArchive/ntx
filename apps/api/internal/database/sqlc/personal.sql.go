@@ -29,6 +29,50 @@ func (q *Queries) DeleteAllHoldings(ctx context.Context) error {
 	return err
 }
 
+const exportHoldings = `-- name: ExportHoldings :many
+
+SELECT id, symbol, status, target_shares, allocation_percent, carry_rs, drawdown_gate, thesis, frozen_reason, review_date, created_at FROM holdings ORDER BY id
+`
+
+// The owner's personal tables as one file (issue #62). Rows are exported and
+// imported with their ids so holding_id references survive; bank rows travel by
+// symbol, since company ids are the exchange's.
+// The table as stored, unlike ListHoldings which prices each row.
+func (q *Queries) ExportHoldings(ctx context.Context) ([]Holding, error) {
+	rows, err := q.db.QueryContext(ctx, exportHoldings)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Holding
+	for rows.Next() {
+		var i Holding
+		if err := rows.Scan(
+			&i.ID,
+			&i.Symbol,
+			&i.Status,
+			&i.TargetShares,
+			&i.AllocationPercent,
+			&i.CarryRs,
+			&i.DrawdownGate,
+			&i.Thesis,
+			&i.FrozenReason,
+			&i.ReviewDate,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const importBankMetric = `-- name: ImportBankMetric :exec
 INSERT INTO bank_metrics (id, company_id, fiscal_year, quarter, npl_percent, car_percent, loan_growth_percent, distributable_profit, published_date, source_url)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -216,49 +260,6 @@ func (q *Queries) ListBankMetrics(ctx context.Context) ([]ListBankMetricsRow, er
 			&i.PublishedDate,
 			&i.SourceUrl,
 			&i.Symbol,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listHoldingRows = `-- name: ListHoldingRows :many
-
-SELECT id, symbol, status, target_shares, allocation_percent, carry_rs, drawdown_gate, thesis, frozen_reason, review_date, created_at FROM holdings ORDER BY id
-`
-
-// The owner's personal tables as one file (issue #62). Rows are exported and
-// imported with their ids so holding_id references survive; bank rows travel by
-// symbol, since company ids are the exchange's.
-func (q *Queries) ListHoldingRows(ctx context.Context) ([]Holding, error) {
-	rows, err := q.db.QueryContext(ctx, listHoldingRows)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Holding
-	for rows.Next() {
-		var i Holding
-		if err := rows.Scan(
-			&i.ID,
-			&i.Symbol,
-			&i.Status,
-			&i.TargetShares,
-			&i.AllocationPercent,
-			&i.CarryRs,
-			&i.DrawdownGate,
-			&i.Thesis,
-			&i.FrozenReason,
-			&i.ReviewDate,
-			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}

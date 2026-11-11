@@ -2,7 +2,8 @@
 -- imported with their ids so holding_id references survive; bank rows travel by
 -- symbol, since company ids are the exchange's.
 
--- name: ListHoldingRows :many
+-- name: ExportHoldings :many
+-- The table as stored, unlike ListHoldings which prices each row.
 SELECT * FROM holdings ORDER BY id;
 
 -- name: ListBankMetrics :many

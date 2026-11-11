@@ -3,6 +3,7 @@ package portfolio
 import (
 	"bytes"
 	"context"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -65,6 +66,10 @@ func TestExportThenImportRoundTrips(t *testing.T) {
 
 	_, err = c.DeleteHolding(ctx, connect.NewRequest(&ntxv1.DeleteHoldingRequest{Symbol: "MEN"}))
 	must(t, err)
+	_, err = c.UpdateRules(ctx, connect.NewRequest(&ntxv1.UpdateRulesRequest{Rules: &ntxv1.Rules{
+		SoftCapPercent: 20, HardCapPercent: 25, MaxPositions: 8,
+	}}))
+	must(t, err)
 	must(t, importFile(c, file))
 	if after := readBook(t, c); !proto.Equal(before, after) {
 		t.Errorf("after import:\n%v\nbefore:\n%v", after, before)
@@ -74,6 +79,12 @@ func TestExportThenImportRoundTrips(t *testing.T) {
 	}
 }
 
+// table is the exported file with one table's rows replaced.
+func table(file []byte, name, rows string) string {
+	re := regexp.MustCompile(`"` + name + `": \[[^\]]*\]`)
+	return re.ReplaceAllString(string(file), `"`+name+`": [`+rows+`]`)
+}
+
 // A file the import cannot take leaves every table as it was.
 func TestBadImportChangesNothing(t *testing.T) {
 	c, _ := clientAndDB(t, testToken)
@@ -81,10 +92,14 @@ func TestBadImportChangesNothing(t *testing.T) {
 	file := export(t, c)
 	for name, bad := range map[string]string{
 		"not json":       "not json",
-		"wrong version":  `{"version": 7}`,
-		"unknown field":  `{"version": 1, "watchlist": []}`,
-		"orphan row":     `{"version": 1, "holdings": [], "transactions": [{"id": 1, "holding_id": 99, "day": "2026-01-01", "kind": "buy", "quantity": 10, "price": 100}]}`,
-		"unknown bank":   `{"version": 1, "bank_metrics": [{"id": 1, "symbol": "NOPE", "fiscal_year": "2082/83", "quarter": "Q4", "published_date": "2026-08-20", "source_url": "https://x.com/a"}]}`,
+		"wrong version":  strings.Replace(string(file), `"version": 1`, `"version": 7`, 1),
+		"unknown field":  strings.Replace(string(file), `"holdings": [`, `"watchlist": [], "holdings": [`, 1),
+		"version only":   `{"version": 1}`,
+		"no rules":       strings.Replace(string(file), `"rules": {`, `"rules": null, "x": {`, 1),
+		"zero rules":     strings.Replace(string(file), `"soft_cap_percent": 20`, `"soft_cap_percent": 0`, 1),
+		"orphan row":     table(file, "transactions", `{"id": 1, "holding_id": 99, "day": "2026-01-01", "kind": "buy", "quantity": 10, "price": 100}`),
+		"unknown bank":   table(file, "bank_metrics", `{"id": 1, "symbol": "NOPE", "fiscal_year": "2082/83", "quarter": "Q4", "npl_percent": 3, "published_date": "2026-08-20", "source_url": "https://x.com/a"}`),
+		"no provenance":  table(file, "bank_metrics", `{"id": 1, "symbol": "MEN", "fiscal_year": "2082/83", "quarter": "Q4", "npl_percent": 3, "published_date": "", "source_url": ""}`),
 		"double holding": strings.Replace(string(file), `"holdings": [`, `"holdings": [{"id": 9, "symbol": "MEN"},`, 1),
 	} {
 		if err := importFile(c, []byte(bad)); connect.CodeOf(err) != connect.CodeInvalidArgument {

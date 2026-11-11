@@ -19,14 +19,14 @@ const personalVersion = 1
 
 // personal is the file ExportPersonal writes and ImportPersonal reads: every
 // personal table, rows with their ids so holding_id references survive.
-type personal struct {
+type personalFile struct {
 	Version      int                `json:"version"`
 	ExportedAt   string             `json:"exported_at"`
 	Holdings     []sqlc.Holding     `json:"holdings"`
 	Transactions []sqlc.Transaction `json:"transactions"`
 	Notes        []sqlc.HoldingNote `json:"holding_notes"`
 	Gates        []sqlc.Gate        `json:"gates"`
-	Rules        sqlc.Rule          `json:"rules"`
+	Rules        *sqlc.Rule         `json:"rules"`
 	BankMetrics  []bankFile         `json:"bank_metrics"`
 }
 
@@ -60,15 +60,15 @@ func (s *Service) ExportPersonal(
 	return connect.NewResponse(&ntxv1.ExportPersonalResponse{Json: b}), nil
 }
 
-func (s *Service) exportFile(ctx context.Context) (personal, error) {
+func (s *Service) exportFile(ctx context.Context) (personalFile, error) {
 	q := s.queries
-	f := personal{
+	f := personalFile{
 		Version: personalVersion, ExportedAt: now().UTC().Format(time.RFC3339),
 		Holdings: []sqlc.Holding{}, Transactions: []sqlc.Transaction{}, Notes: []sqlc.HoldingNote{},
 		Gates: []sqlc.Gate{}, BankMetrics: []bankFile{},
 	}
 	var err error
-	if f.Holdings, err = q.ListHoldingRows(ctx); err != nil {
+	if f.Holdings, err = q.ExportHoldings(ctx); err != nil {
 		return f, err
 	}
 	if f.Transactions, err = q.ListTransactions(ctx); err != nil {
@@ -80,9 +80,11 @@ func (s *Service) exportFile(ctx context.Context) (personal, error) {
 	if f.Gates, err = q.ListGates(ctx); err != nil {
 		return f, err
 	}
-	if f.Rules, err = q.GetRules(ctx); err != nil {
+	rules, err := q.GetRules(ctx)
+	if err != nil {
 		return f, err
 	}
+	f.Rules = &rules
 	bank, err := q.ListBankMetrics(ctx)
 	if err != nil {
 		return f, err
@@ -104,17 +106,14 @@ func (s *Service) ImportPersonal(
 	ctx context.Context,
 	req *connect.Request[ntxv1.ImportPersonalRequest],
 ) (*connect.Response[ntxv1.ImportPersonalResponse], error) {
-	var f personal
+	var f personalFile
 	dec := json.NewDecoder(bytes.NewReader(req.Msg.GetJson()))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(&f); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("not an NTX personal file: %w", err))
 	}
-	if f.Version != personalVersion {
-		return nil, connect.NewError(
-			connect.CodeInvalidArgument,
-			fmt.Errorf("file version %d; this NTX writes version %d", f.Version, personalVersion),
-		)
+	if err := f.complete(); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -130,10 +129,45 @@ func (s *Service) ImportPersonal(
 	return connect.NewResponse(&ntxv1.ImportPersonalResponse{}), nil
 }
 
+// complete refuses a file missing any table, so a truncated or hand-edited file
+// cannot wipe the book by omission, and a bank row or rules row the forms would refuse.
+func (f personalFile) complete() error {
+	if f.Version != personalVersion {
+		return fmt.Errorf("file version %d; this NTX writes version %d", f.Version, personalVersion)
+	}
+	for name, missing := range map[string]bool{
+		"holdings": f.Holdings == nil, "transactions": f.Transactions == nil, "holding_notes": f.Notes == nil,
+		"gates": f.Gates == nil, "rules": f.Rules == nil, "bank_metrics": f.BankMetrics == nil,
+	} {
+		if missing {
+			return fmt.Errorf("the file has no %q", name)
+		}
+	}
+	if err := validRules(f.Rules.SoftCapPercent, f.Rules.HardCapPercent, f.Rules.MaxPositions); err != nil {
+		return err
+	}
+	for _, b := range f.BankMetrics {
+		if _, _, err := validBankMetric(b.proto()); err != nil {
+			return fmt.Errorf("bank row %d: %w", b.ID, err)
+		}
+	}
+	return nil
+}
+
+// proto is the row as the form sends it, so the import runs the same checks.
+func (b bankFile) proto() *ntxv1.BankMetric {
+	return &ntxv1.BankMetric{
+		Symbol: b.Symbol, FiscalYear: b.FiscalYear, Quarter: b.Quarter,
+		NplPercent: b.NplPercent, CarPercent: b.CarPercent,
+		LoanGrowthPercent: b.LoanGrowthPercent, DistributableProfit: b.DistributableProfit,
+		PublishedDate: b.PublishedDate, SourceUrl: b.SourceURL,
+	}
+}
+
 // importAll wipes and refills inside the caller's transaction. Deleting holdings
 // cascades to transactions, notes and gates; a row naming a holding the file lacks
 // fails the foreign key and the whole import with it.
-func importAll(ctx context.Context, q *sqlc.Queries, f personal) error {
+func importAll(ctx context.Context, q *sqlc.Queries, f personalFile) error {
 	if err := errors.Join(q.DeleteAllHoldings(ctx), q.DeleteAllBankMetrics(ctx)); err != nil {
 		return err
 	}
@@ -171,7 +205,7 @@ func importAll(ctx context.Context, q *sqlc.Queries, f personal) error {
 			return fmt.Errorf("bank row %d: %w", b.ID, err)
 		}
 	}
-	r := f.Rules
+	r := *f.Rules
 	_, err := q.UpdateRules(ctx, sqlc.UpdateRulesParams{
 		SoftCapPercent: r.SoftCapPercent, HardCapPercent: r.HardCapPercent, SectorCapPercent: r.SectorCapPercent,
 		MaxPositions: r.MaxPositions, MinEntryRs: r.MinEntryRs, OneHydroPerBasin: r.OneHydroPerBasin,

@@ -20,6 +20,11 @@ type Querier interface {
 	DeleteAllHoldings(ctx context.Context) error
 	DeleteGate(ctx context.Context, id int64) error
 	DeleteHolding(ctx context.Context, symbol string) error
+	// The owner's personal tables as one file (issue #62). Rows are exported and
+	// imported with their ids so holding_id references survive; bank rows travel by
+	// symbol, since company ids are the exchange's.
+	// The table as stored, unlike ListHoldings which prices each row.
+	ExportHoldings(ctx context.Context) ([]Holding, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetHolding(ctx context.Context, symbol string) (Holding, error)
@@ -69,10 +74,6 @@ type Querier interface {
 	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
 	ListGates(ctx context.Context) ([]Gate, error)
-	// The owner's personal tables as one file (issue #62). Rows are exported and
-	// imported with their ids so holding_id references survive; bank rows travel by
-	// symbol, since company ids are the exchange's.
-	ListHoldingRows(ctx context.Context) ([]Holding, error)
 	// A holding without a company row is a mutual fund, priced by the caller.
 	ListHoldings(ctx context.Context) ([]ListHoldingsRow, error)
 	// Every plant with its company's latest close, latest quarterly EPS (for PE, divided
