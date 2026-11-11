@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"path/filepath"
 	"testing"
 
@@ -8,7 +9,10 @@ import (
 )
 
 // OpenTestDB gives a test its own migrated SQLite file, so tests never touch the real market.db.
-func OpenTestDB(t testing.TB) *sqlc.Queries {
+func OpenTestDB(t testing.TB) *sqlc.Queries { return sqlc.New(OpenTestSQL(t)) }
+
+// OpenTestSQL is OpenTestDB's handle, for a service that opens transactions.
+func OpenTestSQL(t testing.TB) *sql.DB {
 	t.Helper()
 	db, err := OpenDB(filepath.Join(t.TempDir(), "test.db"))
 	if err != nil {
@@ -18,5 +22,5 @@ func OpenTestDB(t testing.TB) *sqlc.Queries {
 	if err := AutoMigrate(db); err != nil {
 		t.Fatalf("migrate test db: %v", err)
 	}
-	return sqlc.New(db)
+	return db
 }

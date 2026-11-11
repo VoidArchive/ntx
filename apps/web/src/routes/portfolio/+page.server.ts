@@ -96,6 +96,13 @@ export const actions: Actions = {
 		}
 		return forward(cookies, (api) => api.markMonthExecuted({ carries }));
 	},
+	import: async ({ request, cookies }) => {
+		const file = (await request.formData()).get('file');
+		if (!(file instanceof File) || !file.size)
+			return fail(400, { message: 'Choose the file to import.' });
+		const json = new Uint8Array(await file.arrayBuffer());
+		return forward(cookies, (api) => api.importPersonal({ json }));
+	},
 	rules: async ({ request, cookies }) => {
 		const form = await request.formData();
 		return forward(cookies, (api) =>

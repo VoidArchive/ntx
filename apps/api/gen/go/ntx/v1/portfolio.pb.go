@@ -2792,6 +2792,166 @@ func (*MarkMonthExecutedResponse) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{32}
 }
 
+type ExportPersonalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportPersonalRequest) Reset() {
+	*x = ExportPersonalRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportPersonalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportPersonalRequest) ProtoMessage() {}
+
+func (x *ExportPersonalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportPersonalRequest.ProtoReflect.Descriptor instead.
+func (*ExportPersonalRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{33}
+}
+
+type ExportPersonalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Json          []byte                 `protobuf:"bytes,1,opt,name=json,proto3" json:"json,omitempty"` // the file, as the import takes it
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportPersonalResponse) Reset() {
+	*x = ExportPersonalResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportPersonalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportPersonalResponse) ProtoMessage() {}
+
+func (x *ExportPersonalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportPersonalResponse.ProtoReflect.Descriptor instead.
+func (*ExportPersonalResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *ExportPersonalResponse) GetJson() []byte {
+	if x != nil {
+		return x.Json
+	}
+	return nil
+}
+
+type ImportPersonalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Json          []byte                 `protobuf:"bytes,1,opt,name=json,proto3" json:"json,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ImportPersonalRequest) Reset() {
+	*x = ImportPersonalRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportPersonalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportPersonalRequest) ProtoMessage() {}
+
+func (x *ImportPersonalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ImportPersonalRequest.ProtoReflect.Descriptor instead.
+func (*ImportPersonalRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *ImportPersonalRequest) GetJson() []byte {
+	if x != nil {
+		return x.Json
+	}
+	return nil
+}
+
+type ImportPersonalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ImportPersonalResponse) Reset() {
+	*x = ImportPersonalResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportPersonalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportPersonalResponse) ProtoMessage() {}
+
+func (x *ImportPersonalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ImportPersonalResponse.ProtoReflect.Descriptor instead.
+func (*ImportPersonalResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{36}
+}
+
 var File_ntx_v1_portfolio_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_portfolio_proto_rawDesc = "" +
@@ -3045,7 +3205,13 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\fCarriesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\x1b\n" +
-	"\x19MarkMonthExecutedResponse*P\n" +
+	"\x19MarkMonthExecutedResponse\"\x17\n" +
+	"\x15ExportPersonalRequest\",\n" +
+	"\x16ExportPersonalResponse\x12\x12\n" +
+	"\x04json\x18\x01 \x01(\fR\x04json\"+\n" +
+	"\x15ImportPersonalRequest\x12\x12\n" +
+	"\x04json\x18\x01 \x01(\fR\x04json\"\x18\n" +
+	"\x16ImportPersonalResponse*P\n" +
 	"\bGateKind\x12\x19\n" +
 	"\x15GATE_KIND_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10GATE_KIND_METRIC\x10\x01\x12\x13\n" +
@@ -3067,7 +3233,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x15TRANSACTION_KIND_SELL\x10\x02\x12\x1a\n" +
 	"\x16TRANSACTION_KIND_BONUS\x10\x03\x12\x1b\n" +
 	"\x17TRANSACTION_KIND_RIGHTS\x10\x04\x12\x18\n" +
-	"\x14TRANSACTION_KIND_IPO\x10\x052\xdd\x06\n" +
+	"\x14TRANSACTION_KIND_IPO\x10\x052\xff\a\n" +
 	"\x10PortfolioService\x12I\n" +
 	"\fGetPortfolio\x12\x1b.ntx.v1.GetPortfolioRequest\x1a\x1c.ntx.v1.GetPortfolioResponse\x12L\n" +
 	"\rUpsertHolding\x12\x1c.ntx.v1.UpsertHoldingRequest\x1a\x1d.ntx.v1.UpsertHoldingResponse\x12L\n" +
@@ -3081,7 +3247,9 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\vUpdateRules\x12\x1a.ntx.v1.UpdateRulesRequest\x1a\x1b.ntx.v1.UpdateRulesResponse\x12R\n" +
 	"\x0fGetHoldingStory\x12\x1e.ntx.v1.GetHoldingStoryRequest\x1a\x1f.ntx.v1.GetHoldingStoryResponse\x12X\n" +
 	"\x11MarkMonthExecuted\x12 .ntx.v1.MarkMonthExecutedRequest\x1a!.ntx.v1.MarkMonthExecutedResponse\x12U\n" +
-	"\x10UpsertBankMetric\x12\x1f.ntx.v1.UpsertBankMetricRequest\x1a .ntx.v1.UpsertBankMetricResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\x10UpsertBankMetric\x12\x1f.ntx.v1.UpsertBankMetricRequest\x1a .ntx.v1.UpsertBankMetricResponse\x12O\n" +
+	"\x0eExportPersonal\x12\x1d.ntx.v1.ExportPersonalRequest\x1a\x1e.ntx.v1.ExportPersonalResponse\x12O\n" +
+	"\x0eImportPersonal\x12\x1d.ntx.v1.ImportPersonalRequest\x1a\x1e.ntx.v1.ImportPersonalResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_portfolio_proto_rawDescOnce sync.Once
@@ -3096,7 +3264,7 @@ func file_ntx_v1_portfolio_proto_rawDescGZIP() []byte {
 }
 
 var file_ntx_v1_portfolio_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
+var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
 var file_ntx_v1_portfolio_proto_goTypes = []any{
 	(GateKind)(0),                     // 0: ntx.v1.GateKind
 	(GateDirection)(0),                // 1: ntx.v1.GateDirection
@@ -3135,9 +3303,13 @@ var file_ntx_v1_portfolio_proto_goTypes = []any{
 	(*UpsertBankMetricResponse)(nil),  // 34: ntx.v1.UpsertBankMetricResponse
 	(*MarkMonthExecutedRequest)(nil),  // 35: ntx.v1.MarkMonthExecutedRequest
 	(*MarkMonthExecutedResponse)(nil), // 36: ntx.v1.MarkMonthExecutedResponse
-	nil,                               // 37: ntx.v1.GetPortfolioRequest.FundNavsEntry
-	nil,                               // 38: ntx.v1.GetHoldingStoryRequest.FundNavsEntry
-	nil,                               // 39: ntx.v1.MarkMonthExecutedRequest.CarriesEntry
+	(*ExportPersonalRequest)(nil),     // 37: ntx.v1.ExportPersonalRequest
+	(*ExportPersonalResponse)(nil),    // 38: ntx.v1.ExportPersonalResponse
+	(*ImportPersonalRequest)(nil),     // 39: ntx.v1.ImportPersonalRequest
+	(*ImportPersonalResponse)(nil),    // 40: ntx.v1.ImportPersonalResponse
+	nil,                               // 41: ntx.v1.GetPortfolioRequest.FundNavsEntry
+	nil,                               // 42: ntx.v1.GetHoldingStoryRequest.FundNavsEntry
+	nil,                               // 43: ntx.v1.MarkMonthExecutedRequest.CarriesEntry
 }
 var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	2,  // 0: ntx.v1.OrderLine.status:type_name -> ntx.v1.HoldingStatus
@@ -3149,7 +3321,7 @@ var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	11, // 6: ntx.v1.Holding.transactions:type_name -> ntx.v1.Transaction
 	12, // 7: ntx.v1.Holding.notes:type_name -> ntx.v1.Note
 	8,  // 8: ntx.v1.Holding.gates:type_name -> ntx.v1.Gate
-	37, // 9: ntx.v1.GetPortfolioRequest.fund_navs:type_name -> ntx.v1.GetPortfolioRequest.FundNavsEntry
+	41, // 9: ntx.v1.GetPortfolioRequest.fund_navs:type_name -> ntx.v1.GetPortfolioRequest.FundNavsEntry
 	13, // 10: ntx.v1.GetPortfolioResponse.holdings:type_name -> ntx.v1.Holding
 	9,  // 11: ntx.v1.GetPortfolioResponse.caps:type_name -> ntx.v1.Cap
 	10, // 12: ntx.v1.GetPortfolioResponse.rules:type_name -> ntx.v1.Rules
@@ -3166,12 +3338,12 @@ var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	8,  // 23: ntx.v1.UpsertGateResponse.gate:type_name -> ntx.v1.Gate
 	10, // 24: ntx.v1.UpdateRulesRequest.rules:type_name -> ntx.v1.Rules
 	10, // 25: ntx.v1.UpdateRulesResponse.rules:type_name -> ntx.v1.Rules
-	38, // 26: ntx.v1.GetHoldingStoryRequest.fund_navs:type_name -> ntx.v1.GetHoldingStoryRequest.FundNavsEntry
+	42, // 26: ntx.v1.GetHoldingStoryRequest.fund_navs:type_name -> ntx.v1.GetHoldingStoryRequest.FundNavsEntry
 	13, // 27: ntx.v1.GetHoldingStoryResponse.holding:type_name -> ntx.v1.Holding
 	32, // 28: ntx.v1.GetHoldingStoryResponse.bank_metrics:type_name -> ntx.v1.BankMetric
 	32, // 29: ntx.v1.UpsertBankMetricRequest.metric:type_name -> ntx.v1.BankMetric
 	32, // 30: ntx.v1.UpsertBankMetricResponse.metric:type_name -> ntx.v1.BankMetric
-	39, // 31: ntx.v1.MarkMonthExecutedRequest.carries:type_name -> ntx.v1.MarkMonthExecutedRequest.CarriesEntry
+	43, // 31: ntx.v1.MarkMonthExecutedRequest.carries:type_name -> ntx.v1.MarkMonthExecutedRequest.CarriesEntry
 	14, // 32: ntx.v1.PortfolioService.GetPortfolio:input_type -> ntx.v1.GetPortfolioRequest
 	16, // 33: ntx.v1.PortfolioService.UpsertHolding:input_type -> ntx.v1.UpsertHoldingRequest
 	18, // 34: ntx.v1.PortfolioService.DeleteHolding:input_type -> ntx.v1.DeleteHoldingRequest
@@ -3183,19 +3355,23 @@ var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	30, // 40: ntx.v1.PortfolioService.GetHoldingStory:input_type -> ntx.v1.GetHoldingStoryRequest
 	35, // 41: ntx.v1.PortfolioService.MarkMonthExecuted:input_type -> ntx.v1.MarkMonthExecutedRequest
 	33, // 42: ntx.v1.PortfolioService.UpsertBankMetric:input_type -> ntx.v1.UpsertBankMetricRequest
-	15, // 43: ntx.v1.PortfolioService.GetPortfolio:output_type -> ntx.v1.GetPortfolioResponse
-	17, // 44: ntx.v1.PortfolioService.UpsertHolding:output_type -> ntx.v1.UpsertHoldingResponse
-	19, // 45: ntx.v1.PortfolioService.DeleteHolding:output_type -> ntx.v1.DeleteHoldingResponse
-	21, // 46: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
-	23, // 47: ntx.v1.PortfolioService.AddNote:output_type -> ntx.v1.AddNoteResponse
-	25, // 48: ntx.v1.PortfolioService.UpsertGate:output_type -> ntx.v1.UpsertGateResponse
-	27, // 49: ntx.v1.PortfolioService.DeleteGate:output_type -> ntx.v1.DeleteGateResponse
-	29, // 50: ntx.v1.PortfolioService.UpdateRules:output_type -> ntx.v1.UpdateRulesResponse
-	31, // 51: ntx.v1.PortfolioService.GetHoldingStory:output_type -> ntx.v1.GetHoldingStoryResponse
-	36, // 52: ntx.v1.PortfolioService.MarkMonthExecuted:output_type -> ntx.v1.MarkMonthExecutedResponse
-	34, // 53: ntx.v1.PortfolioService.UpsertBankMetric:output_type -> ntx.v1.UpsertBankMetricResponse
-	43, // [43:54] is the sub-list for method output_type
-	32, // [32:43] is the sub-list for method input_type
+	37, // 43: ntx.v1.PortfolioService.ExportPersonal:input_type -> ntx.v1.ExportPersonalRequest
+	39, // 44: ntx.v1.PortfolioService.ImportPersonal:input_type -> ntx.v1.ImportPersonalRequest
+	15, // 45: ntx.v1.PortfolioService.GetPortfolio:output_type -> ntx.v1.GetPortfolioResponse
+	17, // 46: ntx.v1.PortfolioService.UpsertHolding:output_type -> ntx.v1.UpsertHoldingResponse
+	19, // 47: ntx.v1.PortfolioService.DeleteHolding:output_type -> ntx.v1.DeleteHoldingResponse
+	21, // 48: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
+	23, // 49: ntx.v1.PortfolioService.AddNote:output_type -> ntx.v1.AddNoteResponse
+	25, // 50: ntx.v1.PortfolioService.UpsertGate:output_type -> ntx.v1.UpsertGateResponse
+	27, // 51: ntx.v1.PortfolioService.DeleteGate:output_type -> ntx.v1.DeleteGateResponse
+	29, // 52: ntx.v1.PortfolioService.UpdateRules:output_type -> ntx.v1.UpdateRulesResponse
+	31, // 53: ntx.v1.PortfolioService.GetHoldingStory:output_type -> ntx.v1.GetHoldingStoryResponse
+	36, // 54: ntx.v1.PortfolioService.MarkMonthExecuted:output_type -> ntx.v1.MarkMonthExecutedResponse
+	34, // 55: ntx.v1.PortfolioService.UpsertBankMetric:output_type -> ntx.v1.UpsertBankMetricResponse
+	38, // 56: ntx.v1.PortfolioService.ExportPersonal:output_type -> ntx.v1.ExportPersonalResponse
+	40, // 57: ntx.v1.PortfolioService.ImportPersonal:output_type -> ntx.v1.ImportPersonalResponse
+	45, // [45:58] is the sub-list for method output_type
+	32, // [32:45] is the sub-list for method input_type
 	32, // [32:32] is the sub-list for extension type_name
 	32, // [32:32] is the sub-list for extension extendee
 	0,  // [0:32] is the sub-list for field type_name
@@ -3219,7 +3395,7 @@ func file_ntx_v1_portfolio_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_portfolio_proto_rawDesc), len(file_ntx_v1_portfolio_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   36,
+			NumMessages:   40,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

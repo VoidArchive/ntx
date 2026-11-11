@@ -66,6 +66,12 @@ const (
 	// PortfolioServiceUpsertBankMetricProcedure is the fully-qualified name of the PortfolioService's
 	// UpsertBankMetric RPC.
 	PortfolioServiceUpsertBankMetricProcedure = "/ntx.v1.PortfolioService/UpsertBankMetric"
+	// PortfolioServiceExportPersonalProcedure is the fully-qualified name of the PortfolioService's
+	// ExportPersonal RPC.
+	PortfolioServiceExportPersonalProcedure = "/ntx.v1.PortfolioService/ExportPersonal"
+	// PortfolioServiceImportPersonalProcedure is the fully-qualified name of the PortfolioService's
+	// ImportPersonal RPC.
+	PortfolioServiceImportPersonalProcedure = "/ntx.v1.PortfolioService/ImportPersonal"
 )
 
 // PortfolioServiceClient is a client for the ntx.v1.PortfolioService service.
@@ -85,6 +91,10 @@ type PortfolioServiceClient interface {
 	// UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
 	// filing date and source (ADR 0002).
 	UpsertBankMetric(context.Context, *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error)
+	// ExportPersonal is every personal table as one JSON file; ImportPersonal replaces
+	// them all with such a file in one transaction, or changes nothing.
+	ExportPersonal(context.Context, *connect.Request[v1.ExportPersonalRequest]) (*connect.Response[v1.ExportPersonalResponse], error)
+	ImportPersonal(context.Context, *connect.Request[v1.ImportPersonalRequest]) (*connect.Response[v1.ImportPersonalResponse], error)
 }
 
 // NewPortfolioServiceClient constructs a client for the ntx.v1.PortfolioService service. By
@@ -164,6 +174,18 @@ func NewPortfolioServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(portfolioServiceMethods.ByName("UpsertBankMetric")),
 			connect.WithClientOptions(opts...),
 		),
+		exportPersonal: connect.NewClient[v1.ExportPersonalRequest, v1.ExportPersonalResponse](
+			httpClient,
+			baseURL+PortfolioServiceExportPersonalProcedure,
+			connect.WithSchema(portfolioServiceMethods.ByName("ExportPersonal")),
+			connect.WithClientOptions(opts...),
+		),
+		importPersonal: connect.NewClient[v1.ImportPersonalRequest, v1.ImportPersonalResponse](
+			httpClient,
+			baseURL+PortfolioServiceImportPersonalProcedure,
+			connect.WithSchema(portfolioServiceMethods.ByName("ImportPersonal")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -180,6 +202,8 @@ type portfolioServiceClient struct {
 	getHoldingStory   *connect.Client[v1.GetHoldingStoryRequest, v1.GetHoldingStoryResponse]
 	markMonthExecuted *connect.Client[v1.MarkMonthExecutedRequest, v1.MarkMonthExecutedResponse]
 	upsertBankMetric  *connect.Client[v1.UpsertBankMetricRequest, v1.UpsertBankMetricResponse]
+	exportPersonal    *connect.Client[v1.ExportPersonalRequest, v1.ExportPersonalResponse]
+	importPersonal    *connect.Client[v1.ImportPersonalRequest, v1.ImportPersonalResponse]
 }
 
 // GetPortfolio calls ntx.v1.PortfolioService.GetPortfolio.
@@ -237,6 +261,16 @@ func (c *portfolioServiceClient) UpsertBankMetric(ctx context.Context, req *conn
 	return c.upsertBankMetric.CallUnary(ctx, req)
 }
 
+// ExportPersonal calls ntx.v1.PortfolioService.ExportPersonal.
+func (c *portfolioServiceClient) ExportPersonal(ctx context.Context, req *connect.Request[v1.ExportPersonalRequest]) (*connect.Response[v1.ExportPersonalResponse], error) {
+	return c.exportPersonal.CallUnary(ctx, req)
+}
+
+// ImportPersonal calls ntx.v1.PortfolioService.ImportPersonal.
+func (c *portfolioServiceClient) ImportPersonal(ctx context.Context, req *connect.Request[v1.ImportPersonalRequest]) (*connect.Response[v1.ImportPersonalResponse], error) {
+	return c.importPersonal.CallUnary(ctx, req)
+}
+
 // PortfolioServiceHandler is an implementation of the ntx.v1.PortfolioService service.
 type PortfolioServiceHandler interface {
 	GetPortfolio(context.Context, *connect.Request[v1.GetPortfolioRequest]) (*connect.Response[v1.GetPortfolioResponse], error)
@@ -254,6 +288,10 @@ type PortfolioServiceHandler interface {
 	// UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
 	// filing date and source (ADR 0002).
 	UpsertBankMetric(context.Context, *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error)
+	// ExportPersonal is every personal table as one JSON file; ImportPersonal replaces
+	// them all with such a file in one transaction, or changes nothing.
+	ExportPersonal(context.Context, *connect.Request[v1.ExportPersonalRequest]) (*connect.Response[v1.ExportPersonalResponse], error)
+	ImportPersonal(context.Context, *connect.Request[v1.ImportPersonalRequest]) (*connect.Response[v1.ImportPersonalResponse], error)
 }
 
 // NewPortfolioServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -329,6 +367,18 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 		connect.WithSchema(portfolioServiceMethods.ByName("UpsertBankMetric")),
 		connect.WithHandlerOptions(opts...),
 	)
+	portfolioServiceExportPersonalHandler := connect.NewUnaryHandler(
+		PortfolioServiceExportPersonalProcedure,
+		svc.ExportPersonal,
+		connect.WithSchema(portfolioServiceMethods.ByName("ExportPersonal")),
+		connect.WithHandlerOptions(opts...),
+	)
+	portfolioServiceImportPersonalHandler := connect.NewUnaryHandler(
+		PortfolioServiceImportPersonalProcedure,
+		svc.ImportPersonal,
+		connect.WithSchema(portfolioServiceMethods.ByName("ImportPersonal")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/ntx.v1.PortfolioService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PortfolioServiceGetPortfolioProcedure:
@@ -353,6 +403,10 @@ func NewPortfolioServiceHandler(svc PortfolioServiceHandler, opts ...connect.Han
 			portfolioServiceMarkMonthExecutedHandler.ServeHTTP(w, r)
 		case PortfolioServiceUpsertBankMetricProcedure:
 			portfolioServiceUpsertBankMetricHandler.ServeHTTP(w, r)
+		case PortfolioServiceExportPersonalProcedure:
+			portfolioServiceExportPersonalHandler.ServeHTTP(w, r)
+		case PortfolioServiceImportPersonalProcedure:
+			portfolioServiceImportPersonalHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -404,4 +458,12 @@ func (UnimplementedPortfolioServiceHandler) MarkMonthExecuted(context.Context, *
 
 func (UnimplementedPortfolioServiceHandler) UpsertBankMetric(context.Context, *connect.Request[v1.UpsertBankMetricRequest]) (*connect.Response[v1.UpsertBankMetricResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.UpsertBankMetric is not implemented"))
+}
+
+func (UnimplementedPortfolioServiceHandler) ExportPersonal(context.Context, *connect.Request[v1.ExportPersonalRequest]) (*connect.Response[v1.ExportPersonalResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.ExportPersonal is not implemented"))
+}
+
+func (UnimplementedPortfolioServiceHandler) ImportPersonal(context.Context, *connect.Request[v1.ImportPersonalRequest]) (*connect.Response[v1.ImportPersonalResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("ntx.v1.PortfolioService.ImportPersonal is not implemented"))
 }

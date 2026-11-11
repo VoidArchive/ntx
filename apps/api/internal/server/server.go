@@ -3,6 +3,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 	"net/http"
 	"os"
@@ -21,9 +22,9 @@ type Server struct {
 	*http.Server
 }
 
-func NewServer(queries *sqlc.Queries) *Server {
+func NewServer(db *sql.DB, queries *sqlc.Queries) *Server {
 	mux := http.NewServeMux()
-	registerRoutes(mux, queries)
+	registerRoutes(mux, db, queries)
 
 	port := os.Getenv("PORT")
 	if port == "" {

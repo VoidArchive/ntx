@@ -343,16 +343,21 @@ func flag(b bool) int64 {
 	return 0
 }
 
+// validRules is the one guard on the rules row, for the form and the import alike.
+func validRules(soft, hard float64, positions int64) error {
+	if soft <= 0 || hard < soft || positions < 1 {
+		return errors.New("the soft cap must be positive, the hard cap at least the soft cap, and positions at least 1")
+	}
+	return nil
+}
+
 func (s *Service) UpdateRules(
 	ctx context.Context,
 	req *connect.Request[ntxv1.UpdateRulesRequest],
 ) (*connect.Response[ntxv1.UpdateRulesResponse], error) {
 	r := req.Msg.GetRules()
-	if r.GetSoftCapPercent() <= 0 || r.GetHardCapPercent() < r.GetSoftCapPercent() || r.GetMaxPositions() < 1 {
-		return nil, connect.NewError(
-			connect.CodeInvalidArgument,
-			errors.New("the soft cap must be positive, the hard cap at least the soft cap, and positions at least 1"),
-		)
+	if err := validRules(r.GetSoftCapPercent(), r.GetHardCapPercent(), int64(r.GetMaxPositions())); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 	row, err := s.queries.UpdateRules(ctx, sqlc.UpdateRulesParams{
 		SoftCapPercent:          r.GetSoftCapPercent(),

@@ -27,13 +27,14 @@ const TokenHeader = "Ntx-Owner-Token" //nolint:gosec // a header name, not a cre
 
 type Service struct {
 	ntxv1connect.UnimplementedPortfolioServiceHandler
+	db      *sql.DB // for the import's one transaction
 	queries *sqlc.Queries
 }
 
 // Handler mounts the service behind the token; an empty token refuses everyone.
-func Handler(queries *sqlc.Queries, token string) (string, http.Handler) {
+func Handler(db *sql.DB, token string) (string, http.Handler) {
 	return ntxv1connect.NewPortfolioServiceHandler(
-		&Service{queries: queries},
+		&Service{db: db, queries: sqlc.New(db)},
 		connect.WithInterceptors(ownerOnly(token)),
 	)
 }

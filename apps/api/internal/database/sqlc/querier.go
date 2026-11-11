@@ -16,8 +16,15 @@ type Querier interface {
 	// Listed companies without a rating from the current rule set: every one after a
 	// deploy that changed the rules, the remainder after a sync that stopped part-way.
 	CountUnratedCompanies(ctx context.Context, version int64) (int64, error)
+	DeleteAllBankMetrics(ctx context.Context) error
+	DeleteAllHoldings(ctx context.Context) error
 	DeleteGate(ctx context.Context, id int64) error
 	DeleteHolding(ctx context.Context, symbol string) error
+	// The owner's personal tables as one file (issue #62). Rows are exported and
+	// imported with their ids so holding_id references survive; bank rows travel by
+	// symbol, since company ids are the exchange's.
+	// The table as stored, unlike ListHoldings which prices each row.
+	ExportHoldings(ctx context.Context) ([]Holding, error)
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
 	GetHolding(ctx context.Context, symbol string) (Holding, error)
@@ -35,10 +42,16 @@ type Querier interface {
 	// Stored profit is year-to-date, so a quarter's YTD is comparable with the same quarter's YTD a year earlier.
 	GetSectorProfitYoY(ctx context.Context, sector string) (GetSectorProfitYoYRow, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
+	ImportBankMetric(ctx context.Context, arg ImportBankMetricParams) error
+	ImportGate(ctx context.Context, arg ImportGateParams) error
+	ImportHolding(ctx context.Context, arg ImportHoldingParams) error
+	ImportNote(ctx context.Context, arg ImportNoteParams) error
+	ImportTransaction(ctx context.Context, arg ImportTransactionParams) error
 	InsertGate(ctx context.Context, arg InsertGateParams) (Gate, error)
 	InsertNote(ctx context.Context, arg InsertNoteParams) (HoldingNote, error)
 	InsertTransaction(ctx context.Context, arg InsertTransactionParams) (Transaction, error)
 	ListAllHydroPlants(ctx context.Context) ([]HydroPlant, error)
+	ListBankMetrics(ctx context.Context) ([]ListBankMetricsRow, error)
 	ListBankMetricsByCompany(ctx context.Context, companyID int64) ([]BankMetric, error)
 	ListCompanies(ctx context.Context, arg ListCompaniesParams) ([]ListCompaniesRow, error)
 	ListCompaniesBySector(ctx context.Context, arg ListCompaniesBySectorParams) ([]Company, error)
