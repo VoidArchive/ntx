@@ -118,7 +118,13 @@ export const actions: Actions = {
 					candidateDividendRecord: form.get('candidate_dividend_record') === 'on',
 					monthlyBudgetRs: num(form, 'monthly_budget_rs'),
 					multiplierBelowMedian: num(form, 'multiplier_below_median'),
-					multiplierBottomQuarter: num(form, 'multiplier_bottom_quarter')
+					multiplierBottomQuarter: num(form, 'multiplier_bottom_quarter'),
+					goalRs: num(form, 'goal_rs'),
+					fundSipRs: num(form, 'fund_sip_rs'),
+					nplCeilingPercent: num(form, 'npl_ceiling_percent'),
+					carFloorPercent: num(form, 'car_floor_percent'),
+					distributableAboveZero: form.get('distributable_above_zero') === 'on',
+					maxPeToSectorMedian: num(form, 'max_pe_to_sector_median')
 				}
 			})
 		);

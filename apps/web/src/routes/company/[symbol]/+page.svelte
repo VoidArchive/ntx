@@ -20,6 +20,7 @@
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import CircleDashed from '@lucide/svelte/icons/circle-dashed';
 	import type { Claim, Check } from '#lib/gen/ntx/v1/story_pb.js';
+	import BankMetricForm from '#lib/components/portfolio/BankMetricForm.svelte';
 
 	let { data } = $props();
 
@@ -331,55 +332,7 @@
 								</tbody>
 							</table>
 						</div>
-						<form
-							method="POST"
-							action="?/bankMetric"
-							use:enhance
-							class="mt-3 flex flex-wrap items-end gap-2 text-sm"
-						>
-							<input type="hidden" name="symbol" value={h.symbol} />
-							<input
-								type="text"
-								name="fiscal_year"
-								placeholder="2083/84"
-								required
-								aria-label="Fiscal year"
-								class="{field} w-24"
-							/>
-							<select name="quarter" aria-label="Quarter" class={field}>
-								{#each ['Q1', 'Q2', 'Q3', 'Q4'] as q (q)}<option>{q}</option>{/each}
-							</select>
-							{#each bankColumns as [key, label] (key)}
-								<input
-									type="number"
-									step="any"
-									name={key}
-									placeholder={label}
-									aria-label={label}
-									class="{field} w-36"
-								/>
-							{/each}
-							<input
-								type="date"
-								name="published_date"
-								required
-								aria-label="Published date"
-								class={field}
-							/>
-							<input
-								type="url"
-								name="source_url"
-								placeholder="https://… filing"
-								required
-								aria-label="Source URL"
-								class="{field} min-w-64 flex-1"
-							/>
-							<button
-								type="submit"
-								class="h-8 rounded-md border border-input bg-background px-3 text-sm hover:bg-accent"
-								>Save quarter</button
-							>
-						</form>
+						<BankMetricForm symbol={h.symbol} />
 					</div>
 				{/if}
 			</section>
