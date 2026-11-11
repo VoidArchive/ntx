@@ -123,7 +123,7 @@ func runServer() {
 		}
 	}()
 
-	srv := server.NewServer(queries)
+	srv := server.NewServer(db, queries)
 	if err := srv.Start(); err != nil {
 		slog.Error("server error", "error", err)
 		os.Exit(1)

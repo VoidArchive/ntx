@@ -23,6 +23,10 @@ service PortfolioService {
   // UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
   // filing date and source (ADR 0002).
   rpc UpsertBankMetric(UpsertBankMetricRequest) returns (UpsertBankMetricResponse);
+  // ExportPersonal is every personal table as one JSON file; ImportPersonal replaces
+  // them all with such a file in one transaction, or changes nothing.
+  rpc ExportPersonal(ExportPersonalRequest) returns (ExportPersonalResponse);
+  rpc ImportPersonal(ImportPersonalRequest) returns (ImportPersonalResponse);
 }
 
 // OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
@@ -344,3 +348,15 @@ message MarkMonthExecutedRequest {
 }
 
 message MarkMonthExecutedResponse {}
+
+message ExportPersonalRequest {}
+
+message ExportPersonalResponse {
+  bytes json = 1; // the file, as the import takes it
+}
+
+message ImportPersonalRequest {
+  bytes json = 1;
+}
+
+message ImportPersonalResponse {}

@@ -1295,6 +1295,64 @@ export declare type MarkMonthExecutedResponse = Message<"ntx.v1.MarkMonthExecute
 export declare const MarkMonthExecutedResponseSchema: GenMessage<MarkMonthExecutedResponse>;
 
 /**
+ * @generated from message ntx.v1.ExportPersonalRequest
+ */
+export declare type ExportPersonalRequest = Message<"ntx.v1.ExportPersonalRequest"> & {
+};
+
+/**
+ * Describes the message ntx.v1.ExportPersonalRequest.
+ * Use `create(ExportPersonalRequestSchema)` to create a new message.
+ */
+export declare const ExportPersonalRequestSchema: GenMessage<ExportPersonalRequest>;
+
+/**
+ * @generated from message ntx.v1.ExportPersonalResponse
+ */
+export declare type ExportPersonalResponse = Message<"ntx.v1.ExportPersonalResponse"> & {
+  /**
+   * the file, as the import takes it
+   *
+   * @generated from field: bytes json = 1;
+   */
+  json: Uint8Array;
+};
+
+/**
+ * Describes the message ntx.v1.ExportPersonalResponse.
+ * Use `create(ExportPersonalResponseSchema)` to create a new message.
+ */
+export declare const ExportPersonalResponseSchema: GenMessage<ExportPersonalResponse>;
+
+/**
+ * @generated from message ntx.v1.ImportPersonalRequest
+ */
+export declare type ImportPersonalRequest = Message<"ntx.v1.ImportPersonalRequest"> & {
+  /**
+   * @generated from field: bytes json = 1;
+   */
+  json: Uint8Array;
+};
+
+/**
+ * Describes the message ntx.v1.ImportPersonalRequest.
+ * Use `create(ImportPersonalRequestSchema)` to create a new message.
+ */
+export declare const ImportPersonalRequestSchema: GenMessage<ImportPersonalRequest>;
+
+/**
+ * @generated from message ntx.v1.ImportPersonalResponse
+ */
+export declare type ImportPersonalResponse = Message<"ntx.v1.ImportPersonalResponse"> & {
+};
+
+/**
+ * Describes the message ntx.v1.ImportPersonalResponse.
+ * Use `create(ImportPersonalResponseSchema)` to create a new message.
+ */
+export declare const ImportPersonalResponseSchema: GenMessage<ImportPersonalResponse>;
+
+/**
  * @generated from enum ntx.v1.GateKind
  */
 export enum GateKind {
@@ -1528,6 +1586,25 @@ export declare const PortfolioService: GenService<{
     methodKind: "unary";
     input: typeof UpsertBankMetricRequestSchema;
     output: typeof UpsertBankMetricResponseSchema;
+  },
+  /**
+   * ExportPersonal is every personal table as one JSON file; ImportPersonal replaces
+   * them all with such a file in one transaction, or changes nothing.
+   *
+   * @generated from rpc ntx.v1.PortfolioService.ExportPersonal
+   */
+  exportPersonal: {
+    methodKind: "unary";
+    input: typeof ExportPersonalRequestSchema;
+    output: typeof ExportPersonalResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.ImportPersonal
+   */
+  importPersonal: {
+    methodKind: "unary";
+    input: typeof ImportPersonalRequestSchema;
+    output: typeof ImportPersonalResponseSchema;
   },
 }>;
 

@@ -41,7 +41,8 @@ func client(t *testing.T, header string) ntxv1connect.PortfolioServiceClient {
 func clientAndDB(t *testing.T, header string) (ntxv1connect.PortfolioServiceClient, *sqlc.Queries) {
 	t.Helper()
 	ctx := context.Background()
-	q := database.OpenTestDB(t)
+	db := database.OpenTestSQL(t)
+	q := sqlc.New(db)
 	for _, c := range []struct {
 		id            int64
 		name, symbol  string
@@ -64,7 +65,7 @@ func clientAndDB(t *testing.T, header string) (ntxv1connect.PortfolioServiceClie
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle(Handler(q, testToken))
+	mux.Handle(Handler(db, testToken))
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 
@@ -125,6 +126,14 @@ func TestEveryMethodRefusesWithoutTheToken(t *testing.T) {
 			},
 			"UpsertBankMetric": func() error {
 				_, err := c.UpsertBankMetric(ctx, connect.NewRequest(&ntxv1.UpsertBankMetricRequest{}))
+				return err
+			},
+			"ExportPersonal": func() error {
+				_, err := c.ExportPersonal(ctx, connect.NewRequest(&ntxv1.ExportPersonalRequest{}))
+				return err
+			},
+			"ImportPersonal": func() error {
+				_, err := c.ImportPersonal(ctx, connect.NewRequest(&ntxv1.ImportPersonalRequest{}))
 				return err
 			},
 		}

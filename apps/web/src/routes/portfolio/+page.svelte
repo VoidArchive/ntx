@@ -656,5 +656,30 @@
 				</form>
 			</section>
 		{/if}
+
+		<section class="mt-6 card-report" aria-label="Export and import">
+			<h2 class="font-serif text-xl">Export and import</h2>
+			<p class="mt-1 text-sm text-muted-foreground">
+				One JSON file of every holding, transaction, note, gate, rule and bank figure. Importing a
+				file replaces them all; nothing is kept back. No scheduled backup: download one when the
+				book changes.
+			</p>
+			<div class="mt-3 flex flex-wrap items-center gap-3 text-sm">
+				<a href="/portfolio/export" download class="{button} inline-flex items-center"
+					>Download the file</a
+				>
+				<form
+					method="POST"
+					action="?/import"
+					enctype="multipart/form-data"
+					use:enhance
+					class="flex flex-wrap items-center gap-2"
+				>
+					<input type="file" name="file" accept="application/json,.json" required class={field} />
+					<button type="submit" class={button}>Replace with this file</button>
+				</form>
+			</div>
+			{#if form?.message}<p class="mt-2 text-sm text-destructive">{form.message}</p>{/if}
+		</section>
 	{/if}
 </div>
