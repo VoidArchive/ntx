@@ -9,6 +9,19 @@ import (
 	"time"
 )
 
+type BankMetric struct {
+	ID                  int64           `json:"id"`
+	CompanyID           int64           `json:"company_id"`
+	FiscalYear          string          `json:"fiscal_year"`
+	Quarter             string          `json:"quarter"`
+	NplPercent          sql.NullFloat64 `json:"npl_percent"`
+	CarPercent          sql.NullFloat64 `json:"car_percent"`
+	LoanGrowthPercent   sql.NullFloat64 `json:"loan_growth_percent"`
+	DistributableProfit sql.NullFloat64 `json:"distributable_profit"`
+	PublishedDate       string          `json:"published_date"`
+	SourceUrl           string          `json:"source_url"`
+}
+
 type Company struct {
 	ID             int64          `json:"id"`
 	Name           string         `json:"name"`

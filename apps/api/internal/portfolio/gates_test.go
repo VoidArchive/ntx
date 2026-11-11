@@ -11,8 +11,8 @@ import (
 func TestMetricGatesOnTheOwnersFixtures(t *testing.T) {
 	above := directionOf(ntxv1.GateDirection_GATE_DIRECTION_ABOVE)
 	ratchet := directionOf(ntxv1.GateDirection_GATE_DIRECTION_NOT_BELOW_PRIOR)
-	q4 := point{4.77, "Q4 2082/83", "https://nepalstock.com/mnbbl-q4"}
-	q1 := point{4.73, "Q1 2083/84", "https://nepalstock.com/mnbbl-q1"}
+	q4 := point{Value: 4.77, Period: "Q4 2082/83", Source: "https://nepalstock.com/mnbbl-q4"}
+	q1 := point{Value: 4.73, Period: "Q1 2083/84", Source: "https://nepalstock.com/mnbbl-q1"}
 	for _, tc := range []struct {
 		name, direction string
 		threshold       float64
@@ -21,17 +21,22 @@ func TestMetricGatesOnTheOwnersFixtures(t *testing.T) {
 		want, period    string
 	}{
 		{"MNBBL 4.77 against 5 holds", above, 5, 1, []point{q4}, Holds, "Q4 2082/83"},
-		{"NMB 4.91 against 4.5 triggers", above, 4.5, 1, []point{{4.91, "Q4 2082/83", "x"}}, Triggered, "Q4 2082/83"},
+		{"NMB 4.91 against 4.5 triggers", above, 4.5, 1, []point{{Value: 4.91, Period: "Q4 2082/83", Source: "x"}}, Triggered, "Q4 2082/83"},
 		{"MNBBL 4.73 at Q1 against 4.77 holds", above, 4.77, 1, []point{q4, q1}, Holds, "Q1 2083/84"},
 		{"ratchet holds at Q1 against Q4", ratchet, 0, 1, []point{q4, q1}, Holds, "Q1 2083/84"},
-		{"ratchet triggers at Q2 on 4.73", ratchet, 0, 1, []point{q4, q1, {4.73, "Q2 2083/84", "x"}}, Triggered, "Q2 2083/84"},
-		{"ratchet holds at Q2 on 4.72", ratchet, 0, 1, []point{q4, q1, {4.72, "Q2 2083/84", "x"}}, Holds, "Q2 2083/84"},
+		{"ratchet triggers at Q2 on 4.73", ratchet, 0, 1, []point{q4, q1, {Value: 4.73, Period: "Q2 2083/84", Source: "x"}}, Triggered, "Q2 2083/84"},
+		{"ratchet holds at Q2 on 4.72", ratchet, 0, 1, []point{q4, q1, {Value: 4.72, Period: "Q2 2083/84", Source: "x"}}, Holds, "Q2 2083/84"},
 		{"ratchet with no prior needs data", ratchet, 0, 1, []point{q4}, NeedsData, "Q4 2082/83"},
-		{"two periods, one good quarter holds", above, 5, 2, []point{{4.9, "Q1", "x"}, {5.2, "Q2", "x"}}, Holds, "Q2"},
-		{"two periods, both over triggers", above, 5, 2, []point{{5.1, "Q1", "x"}, {5.2, "Q2", "x"}}, Triggered, "Q2"},
-		{"fewer rows than periods needs data", above, 5, 2, []point{{5.1, "Q1", "x"}}, NeedsData, "Q1"},
+		{
+			"ratchet with a missing prior needs data", ratchet, 0, 1,
+			[]point{{Period: "Q4 2082/83", Missing: true}, q1},
+			NeedsData, "Q1 2083/84",
+		},
+		{"two periods, one good quarter holds", above, 5, 2, []point{{Value: 4.9, Period: "Q1", Source: "x"}, {Value: 5.2, Period: "Q2", Source: "x"}}, Holds, "Q2"},
+		{"two periods, both over triggers", above, 5, 2, []point{{Value: 5.1, Period: "Q1", Source: "x"}, {Value: 5.2, Period: "Q2", Source: "x"}}, Triggered, "Q2"},
+		{"fewer rows than periods needs data", above, 5, 2, []point{{Value: 5.1, Period: "Q1", Source: "x"}}, NeedsData, "Q1"},
 		{"no rows needs data", above, 5, 1, nil, NeedsData, ""},
-		{"a row without a period needs data", above, 5, 1, []point{{5.1, "", ""}}, NeedsData, ""},
+		{"a row without a period needs data", above, 5, 1, []point{{Value: 5.1, Period: "", Source: ""}}, NeedsData, ""},
 	} {
 		got := evaluate(tc.direction, tc.threshold, tc.periods, tc.series)
 		if got.Verdict != tc.want || got.Period != tc.period {
@@ -42,7 +47,12 @@ func TestMetricGatesOnTheOwnersFixtures(t *testing.T) {
 
 func TestRatchetReportsThePriorFigure(t *testing.T) {
 	ratchet := directionOf(ntxv1.GateDirection_GATE_DIRECTION_NOT_BELOW_PRIOR)
-	got := evaluate(ratchet, 0, 1, []point{{4.77, "Q4 2082/83", "x"}, {4.73, "Q1 2083/84", "x"}})
+	got := evaluate(
+		ratchet,
+		0,
+		1,
+		[]point{{Value: 4.77, Period: "Q4 2082/83", Source: "x"}, {Value: 4.73, Period: "Q1 2083/84", Source: "x"}},
+	)
 	if got.Prior == nil || *got.Prior != 4.77 || got.Value == nil || *got.Value != 4.73 || got.Source != "x" {
 		t.Errorf("got %+v", got)
 	}

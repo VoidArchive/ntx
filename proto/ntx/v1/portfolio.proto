@@ -20,6 +20,9 @@ service PortfolioService {
   rpc GetHoldingStory(GetHoldingStoryRequest) returns (GetHoldingStoryResponse);
   // MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
   rpc MarkMonthExecuted(MarkMonthExecutedRequest) returns (MarkMonthExecutedResponse);
+  // UpsertBankMetric writes one quarter of a bank's figures; every row needs its period,
+  // filing date and source (ADR 0002).
+  rpc UpsertBankMetric(UpsertBankMetricRequest) returns (UpsertBankMetricResponse);
 }
 
 // OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
@@ -313,7 +316,27 @@ message GetHoldingStoryResponse {
   Holding holding = 1;
   // A bonus the exchange has published that no bonus transaction credits yet; empty otherwise.
   string bonus_hint = 2;
+  // The owner's bank figures for this company, oldest first; empty for a non-bank.
+  repeated BankMetric bank_metrics = 3;
 }
+
+// BankMetric is one quarter of owner-entered bank figures with its provenance. An
+// unset figure was not recorded, never a zero.
+message BankMetric {
+  string symbol = 1;
+  string fiscal_year = 2; // "2082/83"
+  string quarter = 3; // "Q1".."Q4"
+  optional double npl_percent = 4;
+  optional double car_percent = 5;
+  optional double loan_growth_percent = 6;
+  optional double distributable_profit = 7;
+  string published_date = 8;
+  string source_url = 9;
+}
+
+message UpsertBankMetricRequest { BankMetric metric = 1; }
+
+message UpsertBankMetricResponse { BankMetric metric = 1; }
 
 message MarkMonthExecutedRequest {
   // New carry in rupees by symbol, as the owner confirmed or edited it.
