@@ -16,6 +16,7 @@ type Querier interface {
 	// Listed companies without a rating from the current rule set: every one after a
 	// deploy that changed the rules, the remainder after a sync that stopped part-way.
 	CountUnratedCompanies(ctx context.Context, version int64) (int64, error)
+	DeleteGate(ctx context.Context, id int64) error
 	DeleteHolding(ctx context.Context, symbol string) error
 	GetCompany(ctx context.Context, symbol string) (Company, error)
 	GetCorporateActionsBySymbol(ctx context.Context, symbol string) ([]CorporateAction, error)
@@ -30,9 +31,11 @@ type Querier interface {
 	GetLatestPriceBySymbol(ctx context.Context, symbol string) (GetLatestPriceBySymbolRow, error)
 	GetOwnership(ctx context.Context, companyID int64) (Ownership, error)
 	GetOwnershipBySymbol(ctx context.Context, symbol string) (Ownership, error)
+	GetRules(ctx context.Context) (Rule, error)
 	// Stored profit is year-to-date, so a quarter's YTD is comparable with the same quarter's YTD a year earlier.
 	GetSectorProfitYoY(ctx context.Context, sector string) (GetSectorProfitYoYRow, error)
 	GetSectorStats(ctx context.Context, sector string) (GetSectorStatsRow, error)
+	InsertGate(ctx context.Context, arg InsertGateParams) (Gate, error)
 	InsertNote(ctx context.Context, arg InsertNoteParams) (HoldingNote, error)
 	InsertTransaction(ctx context.Context, arg InsertTransactionParams) (Transaction, error)
 	ListAllHydroPlants(ctx context.Context) ([]HydroPlant, error)
@@ -56,6 +59,7 @@ type Querier interface {
 	// The first backfill set every created_at to one day, so every unpublished row reads "seen" on that day.
 	ListFiledRecently(ctx context.Context, limit int64) ([]ListFiledRecentlyRow, error)
 	ListFundamentalsByCompany(ctx context.Context, companyID int64) ([]Fundamental, error)
+	ListGates(ctx context.Context) ([]Gate, error)
 	// A holding without a company row is a mutual fund, priced by the caller.
 	ListHoldings(ctx context.Context) ([]ListHoldingsRow, error)
 	// Every plant with its company's latest close, latest quarterly EPS (for PE, divided
@@ -64,6 +68,8 @@ type Querier interface {
 	ListHydroPlantsBySymbol(ctx context.Context, symbol string) ([]HydroPlant, error)
 	// A symbol DoED spells differently from NEPSE would list a plant with no company.
 	ListHydroPlantsWithoutCompany(ctx context.Context) ([]ListHydroPlantsWithoutCompanyRow, error)
+	// The index's trailing range for the order sheet's multiplier.
+	ListIndexCloses(ctx context.Context, businessDate string) ([]ListIndexClosesRow, error)
 	ListLatestPrices(ctx context.Context) ([]Price, error)
 	// Newest day per plant, the reading the state is computed from. The GROUP BY
 	// walks the (plant_id, day) index once; a correlated MAX scanned every row.
@@ -88,6 +94,9 @@ type Querier interface {
 	// Companies that stop arriving in the NEPSE feed keep their row (and history) but leave every list.
 	MarkCompaniesDelistedExcept(ctx context.Context, ids []int64) error
 	SearchCompanies(ctx context.Context, arg SearchCompaniesParams) ([]Company, error)
+	UpdateGate(ctx context.Context, arg UpdateGateParams) (Gate, error)
+	UpdateHoldingCarry(ctx context.Context, arg UpdateHoldingCarryParams) error
+	UpdateRules(ctx context.Context, arg UpdateRulesParams) (Rule, error)
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) error
 	UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRatingParams) error
 	UpsertCorporateAction(ctx context.Context, arg UpsertCorporateActionParams) error

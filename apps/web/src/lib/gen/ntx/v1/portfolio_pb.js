@@ -8,104 +8,249 @@ import { enumDesc, fileDesc, messageDesc, serviceDesc, tsEnum } from "@bufbuild/
  * Describes the file ntx/v1/portfolio.proto.
  */
 export const file_ntx_v1_portfolio = /*@__PURE__*/
-  fileDesc("ChZudHgvdjEvcG9ydGZvbGlvLnByb3RvEgZudHgudjEibgoLVHJhbnNhY3Rpb24SCgoCaWQYASABKAMSCwoDZGF5GAIgASgJEiUKBGtpbmQYAyABKA4yFy5udHgudjEuVHJhbnNhY3Rpb25LaW5kEhAKCHF1YW50aXR5GAQgASgDEg0KBXByaWNlGAUgASgBIi0KBE5vdGUSCgoCaWQYASABKAMSCwoDZGF5GAIgASgJEgwKBHRleHQYAyABKAkixgMKB0hvbGRpbmcSDgoGc3ltYm9sGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc2VjdG9yGAMgASgJEiUKBnN0YXR1cxgEIAEoDjIVLm50eC52MS5Ib2xkaW5nU3RhdHVzEhUKDXRhcmdldF9zaGFyZXMYBSABKAMSGgoSYWxsb2NhdGlvbl9wZXJjZW50GAYgASgBEhAKCGNhcnJ5X3JzGAcgASgBEhUKDWRyYXdkb3duX2dhdGUYCCABKAgSDgoGdGhlc2lzGAkgASgJEhUKDWZyb3plbl9yZWFzb24YCiABKAkSEwoLcmV2aWV3X2RhdGUYCyABKAkSEAoIcXVhbnRpdHkYDCABKAMSCwoDd2FjGA0gASgBEhIKBWNsb3NlGA4gASgBSACIAQESDQoFdmFsdWUYDyABKAESFgoOd2VpZ2h0X3BlcmNlbnQYECABKAESDwoHaXNfZnVuZBgRIAEoCBIpCgx0cmFuc2FjdGlvbnMYEiADKAsyEy5udHgudjEuVHJhbnNhY3Rpb24SGwoFbm90ZXMYEyADKAsyDC5udHgudjEuTm90ZRIRCgljbG9zZV9kYXkYFCABKAlCCAoGX2Nsb3NlIoQBChNHZXRQb3J0Zm9saW9SZXF1ZXN0EjwKCWZ1bmRfbmF2cxgBIAMoCzIpLm50eC52MS5HZXRQb3J0Zm9saW9SZXF1ZXN0LkZ1bmROYXZzRW50cnkaLwoNRnVuZE5hdnNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAE6AjgBIoEBChRHZXRQb3J0Zm9saW9SZXNwb25zZRIhCghob2xkaW5ncxgBIAMoCzIPLm50eC52MS5Ib2xkaW5nEhMKC3RvdGFsX3ZhbHVlGAIgASgBEhEKCXBvc2l0aW9ucxgDIAEoBRINCgVmdW5kcxgEIAEoBRIPCgdvcGVuaW5nGAUgASgJIuUBChRVcHNlcnRIb2xkaW5nUmVxdWVzdBIOCgZzeW1ib2wYASABKAkSJQoGc3RhdHVzGAIgASgOMhUubnR4LnYxLkhvbGRpbmdTdGF0dXMSFQoNdGFyZ2V0X3NoYXJlcxgDIAEoAxIaChJhbGxvY2F0aW9uX3BlcmNlbnQYBCABKAESEAoIY2FycnlfcnMYBSABKAESFQoNZHJhd2Rvd25fZ2F0ZRgGIAEoCBIOCgZ0aGVzaXMYByABKAkSFQoNZnJvemVuX3JlYXNvbhgIIAEoCRITCgtyZXZpZXdfZGF0ZRgJIAEoCSI5ChVVcHNlcnRIb2xkaW5nUmVzcG9uc2USIAoHaG9sZGluZxgBIAEoCzIPLm50eC52MS5Ib2xkaW5nIiYKFERlbGV0ZUhvbGRpbmdSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCSIXChVEZWxldGVIb2xkaW5nUmVzcG9uc2UifAoVQWRkVHJhbnNhY3Rpb25SZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRILCgNkYXkYAiABKAkSJQoEa2luZBgDIAEoDjIXLm50eC52MS5UcmFuc2FjdGlvbktpbmQSEAoIcXVhbnRpdHkYBCABKAMSDQoFcHJpY2UYBSABKAEiQgoWQWRkVHJhbnNhY3Rpb25SZXNwb25zZRIoCgt0cmFuc2FjdGlvbhgBIAEoCzITLm50eC52MS5UcmFuc2FjdGlvbiI7Cg5BZGROb3RlUmVxdWVzdBIOCgZzeW1ib2wYASABKAkSCwoDZGF5GAIgASgJEgwKBHRleHQYAyABKAkiLQoPQWRkTm90ZVJlc3BvbnNlEhoKBG5vdGUYASABKAsyDC5udHgudjEuTm90ZSp9Cg1Ib2xkaW5nU3RhdHVzEh4KGkhPTERJTkdfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGAoUSE9MRElOR19TVEFUVVNfQlVJTEQQARIXChNIT0xESU5HX1NUQVRVU19IT0xEEAISGQoVSE9MRElOR19TVEFUVVNfRlJPWkVOEAMquwEKD1RyYW5zYWN0aW9uS2luZBIgChxUUkFOU0FDVElPTl9LSU5EX1VOU1BFQ0lGSUVEEAASGAoUVFJBTlNBQ1RJT05fS0lORF9CVVkQARIZChVUUkFOU0FDVElPTl9LSU5EX1NFTEwQAhIaChZUUkFOU0FDVElPTl9LSU5EX0JPTlVTEAMSGwoXVFJBTlNBQ1RJT05fS0lORF9SSUdIVFMQBBIYChRUUkFOU0FDVElPTl9LSU5EX0lQTxAFMoYDChBQb3J0Zm9saW9TZXJ2aWNlEkkKDEdldFBvcnRmb2xpbxIbLm50eC52MS5HZXRQb3J0Zm9saW9SZXF1ZXN0GhwubnR4LnYxLkdldFBvcnRmb2xpb1Jlc3BvbnNlEkwKDVVwc2VydEhvbGRpbmcSHC5udHgudjEuVXBzZXJ0SG9sZGluZ1JlcXVlc3QaHS5udHgudjEuVXBzZXJ0SG9sZGluZ1Jlc3BvbnNlEkwKDURlbGV0ZUhvbGRpbmcSHC5udHgudjEuRGVsZXRlSG9sZGluZ1JlcXVlc3QaHS5udHgudjEuRGVsZXRlSG9sZGluZ1Jlc3BvbnNlEk8KDkFkZFRyYW5zYWN0aW9uEh0ubnR4LnYxLkFkZFRyYW5zYWN0aW9uUmVxdWVzdBoeLm50eC52MS5BZGRUcmFuc2FjdGlvblJlc3BvbnNlEjoKB0FkZE5vdGUSFi5udHgudjEuQWRkTm90ZVJlcXVlc3QaFy5udHgudjEuQWRkTm90ZVJlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw");
+  fileDesc("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B0hvbGRpbmcSDgoGc3ltYm9sGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc2VjdG9yGAMgASgJEiUKBnN0YXR1cxgEIAEoDjIVLm50eC52MS5Ib2xkaW5nU3RhdHVzEhUKDXRhcmdldF9zaGFyZXMYBSABKAMSGgoSYWxsb2NhdGlvbl9wZXJjZW50GAYgASgBEhAKCGNhcnJ5X3JzGAcgASgBEhUKDWRyYXdkb3duX2dhdGUYCCABKAgSDgoGdGhlc2lzGAkgASgJEhUKDWZyb3plbl9yZWFzb24YCiABKAkSEwoLcmV2aWV3X2RhdGUYCyABKAkSEAoIcXVhbnRpdHkYDCABKAMSCwoDd2FjGA0gASgBEhIKBWNsb3NlGA4gASgBSACIAQESDQoFdmFsdWUYDyABKAESFgoOd2VpZ2h0X3BlcmNlbnQYECABKAESDwoHaXNfZnVuZBgRIAEoCBIpCgx0cmFuc2FjdGlvbnMYEiADKAsyEy5udHgudjEuVHJhbnNhY3Rpb24SGwoFbm90ZXMYEyADKAsyDC5udHgudjEuTm90ZRIRCgljbG9zZV9kYXkYFCABKAkSGwoFZ2F0ZXMYFSADKAsyDC5udHgudjEuR2F0ZRITCgtjYXBfdmVyZGljdBgWIAEoCUIICgZfY2xvc2UihAEKE0dldFBvcnRmb2xpb1JlcXVlc3QSPAoJZnVuZF9uYXZzGAEgAygLMikubnR4LnYxLkdldFBvcnRmb2xpb1JlcXVlc3QuRnVuZE5hdnNFbnRyeRovCg1GdW5kTmF2c0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoAToCOAEi6QIKFEdldFBvcnRmb2xpb1Jlc3BvbnNlEiEKCGhvbGRpbmdzGAEgAygLMg8ubnR4LnYxLkhvbGRpbmcSEwoLdG90YWxfdmFsdWUYAiABKAESEQoJcG9zaXRpb25zGAMgASgFEg0KBWZ1bmRzGAQgASgFEg8KB29wZW5pbmcYBSABKAkSGQoEY2FwcxgGIAMoCzILLm50eC52MS5DYXASHAoFcnVsZXMYByABKAsyDS5udHgudjEuUnVsZXMSJwoLb3JkZXJfc2hlZXQYCCABKAsyEi5udHgudjEuT3JkZXJTaGVldBInCghjYWxlbmRhchgJIAMoCzIVLm50eC52MS5DYWxlbmRhckVudHJ5EhgKEGNhbGVuZGFyX29wZW5pbmcYCiABKAkSJQoKY2FuZGlkYXRlcxgLIAMoCzIRLm50eC52MS5DYW5kaWRhdGUSGgoSY2FuZGlkYXRlc19vcGVuaW5nGAwgASgJIvwBChRVcHNlcnRIb2xkaW5nUmVxdWVzdBIOCgZzeW1ib2wYASABKAkSJQoGc3RhdHVzGAIgASgOMhUubnR4LnYxLkhvbGRpbmdTdGF0dXMSFQoNdGFyZ2V0X3NoYXJlcxgDIAEoAxIaChJhbGxvY2F0aW9uX3BlcmNlbnQYBCABKAESEAoIY2FycnlfcnMYBSABKAESGgoNZHJhd2Rvd25fZ2F0ZRgGIAEoCEgAiAEBEg4KBnRoZXNpcxgHIAEoCRIVCg1mcm96ZW5fcmVhc29uGAggASgJEhMKC3Jldmlld19kYXRlGAkgASgJQhAKDl9kcmF3ZG93bl9nYXRlIjkKFVVwc2VydEhvbGRpbmdSZXNwb25zZRIgCgdob2xkaW5nGAEgASgLMg8ubnR4LnYxLkhvbGRpbmciJgoURGVsZXRlSG9sZGluZ1JlcXVlc3QSDgoGc3ltYm9sGAEgASgJIhcKFURlbGV0ZUhvbGRpbmdSZXNwb25zZSJ8ChVBZGRUcmFuc2FjdGlvblJlcXVlc3QSDgoGc3ltYm9sGAEgASgJEgsKA2RheRgCIAEoCRIlCgRraW5kGAMgASgOMhcubnR4LnYxLlRyYW5zYWN0aW9uS2luZBIQCghxdWFudGl0eRgEIAEoAxINCgVwcmljZRgFIAEoASJCChZBZGRUcmFuc2FjdGlvblJlc3BvbnNlEigKC3RyYW5zYWN0aW9uGAEgASgLMhMubnR4LnYxLlRyYW5zYWN0aW9uIjsKDkFkZE5vdGVSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRILCgNkYXkYAiABKAkSDAoEdGV4dBgDIAEoCSItCg9BZGROb3RlUmVzcG9uc2USGgoEbm90ZRgBIAEoCzIMLm50eC52MS5Ob3RlIs8BChFVcHNlcnRHYXRlUmVxdWVzdBIKCgJpZBgBIAEoAxIOCgZzeW1ib2wYAiABKAkSHgoEa2luZBgDIAEoDjIQLm50eC52MS5HYXRlS2luZBIOCgZtZXRyaWMYBCABKAkSKAoJZGlyZWN0aW9uGAUgASgOMhUubnR4LnYxLkdhdGVEaXJlY3Rpb24SEQoJdGhyZXNob2xkGAYgASgBEg8KB3BlcmlvZHMYByABKAUSDAoEdGV4dBgIIAEoCRISCgpjaGVja2VkX29uGAkgASgJIjAKElVwc2VydEdhdGVSZXNwb25zZRIaCgRnYXRlGAEgASgLMgwubnR4LnYxLkdhdGUiHwoRRGVsZXRlR2F0ZVJlcXVlc3QSCgoCaWQYASABKAMiFAoSRGVsZXRlR2F0ZVJlc3BvbnNlIjIKElVwZGF0ZVJ1bGVzUmVxdWVzdBIcCgVydWxlcxgBIAEoCzINLm50eC52MS5SdWxlcyIzChNVcGRhdGVSdWxlc1Jlc3BvbnNlEhwKBXJ1bGVzGAEgASgLMg0ubnR4LnYxLlJ1bGVzIpoBChZHZXRIb2xkaW5nU3RvcnlSZXF1ZXN0Eg4KBnN5bWJvbBgBIAEoCRI/CglmdW5kX25hdnMYAiADKAsyLC5udHgudjEuR2V0SG9sZGluZ1N0b3J5UmVxdWVzdC5GdW5kTmF2c0VudHJ5Gi8KDUZ1bmROYXZzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgBOgI4ASJPChdHZXRIb2xkaW5nU3RvcnlSZXNwb25zZRIgCgdob2xkaW5nGAEgASgLMg8ubnR4LnYxLkhvbGRpbmcSEgoKYm9udXNfaGludBgCIAEoCSKKAQoYTWFya01vbnRoRXhlY3V0ZWRSZXF1ZXN0Ej4KB2NhcnJpZXMYASADKAsyLS5udHgudjEuTWFya01vbnRoRXhlY3V0ZWRSZXF1ZXN0LkNhcnJpZXNFbnRyeRouCgxDYXJyaWVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgBOgI4ASIbChlNYXJrTW9udGhFeGVjdXRlZFJlc3BvbnNlKlAKCEdhdGVLaW5kEhkKFUdBVEVfS0lORF9VTlNQRUNJRklFRBAAEhQKEEdBVEVfS0lORF9NRVRSSUMQARITCg9HQVRFX0tJTkRfRVZFTlQQAiqrAQoNR2F0ZURpcmVjdGlvbhIeChpHQVRFX0RJUkVDVElPTl9VTlNQRUNJRklFRBAAEhgKFEdBVEVfRElSRUNUSU9OX0FCT1ZFEAESGAoUR0FURV9ESVJFQ1RJT05fQkVMT1cQAhIiCh5HQVRFX0RJUkVDVElPTl9OT1RfQkVMT1dfUFJJT1IQAxIiCh5HQVRFX0RJUkVDVElPTl9OT1RfQUJPVkVfUFJJT1IQBCp9Cg1Ib2xkaW5nU3RhdHVzEh4KGkhPTERJTkdfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGAoUSE9MRElOR19TVEFUVVNfQlVJTEQQARIXChNIT0xESU5HX1NUQVRVU19IT0xEEAISGQoVSE9MRElOR19TVEFUVVNfRlJPWkVOEAMquwEKD1RyYW5zYWN0aW9uS2luZBIgChxUUkFOU0FDVElPTl9LSU5EX1VOU1BFQ0lGSUVEEAASGAoUVFJBTlNBQ1RJT05fS0lORF9CVVkQARIZChVUUkFOU0FDVElPTl9LSU5EX1NFTEwQAhIaChZUUkFOU0FDVElPTl9LSU5EX0JPTlVTEAMSGwoXVFJBTlNBQ1RJT05fS0lORF9SSUdIVFMQBBIYChRUUkFOU0FDVElPTl9LSU5EX0lQTxAFMoYGChBQb3J0Zm9saW9TZXJ2aWNlEkkKDEdldFBvcnRmb2xpbxIbLm50eC52MS5HZXRQb3J0Zm9saW9SZXF1ZXN0GhwubnR4LnYxLkdldFBvcnRmb2xpb1Jlc3BvbnNlEkwKDVVwc2VydEhvbGRpbmcSHC5udHgudjEuVXBzZXJ0SG9sZGluZ1JlcXVlc3QaHS5udHgudjEuVXBzZXJ0SG9sZGluZ1Jlc3BvbnNlEkwKDURlbGV0ZUhvbGRpbmcSHC5udHgudjEuRGVsZXRlSG9sZGluZ1JlcXVlc3QaHS5udHgudjEuRGVsZXRlSG9sZGluZ1Jlc3BvbnNlEk8KDkFkZFRyYW5zYWN0aW9uEh0ubnR4LnYxLkFkZFRyYW5zYWN0aW9uUmVxdWVzdBoeLm50eC52MS5BZGRUcmFuc2FjdGlvblJlc3BvbnNlEjoKB0FkZE5vdGUSFi5udHgudjEuQWRkTm90ZVJlcXVlc3QaFy5udHgudjEuQWRkTm90ZVJlc3BvbnNlEkMKClVwc2VydEdhdGUSGS5udHgudjEuVXBzZXJ0R2F0ZVJlcXVlc3QaGi5udHgudjEuVXBzZXJ0R2F0ZVJlc3BvbnNlEkMKCkRlbGV0ZUdhdGUSGS5udHgudjEuRGVsZXRlR2F0ZVJlcXVlc3QaGi5udHgudjEuRGVsZXRlR2F0ZVJlc3BvbnNlEkYKC1VwZGF0ZVJ1bGVzEhoubnR4LnYxLlVwZGF0ZVJ1bGVzUmVxdWVzdBobLm50eC52MS5VcGRhdGVSdWxlc1Jlc3BvbnNlElIKD0dldEhvbGRpbmdTdG9yeRIeLm50eC52MS5HZXRIb2xkaW5nU3RvcnlSZXF1ZXN0Gh8ubnR4LnYxLkdldEhvbGRpbmdTdG9yeVJlc3BvbnNlElgKEU1hcmtNb250aEV4ZWN1dGVkEiAubnR4LnYxLk1hcmtNb250aEV4ZWN1dGVkUmVxdWVzdBohLm50eC52MS5NYXJrTW9udGhFeGVjdXRlZFJlc3BvbnNlQjBaLmdpdGh1Yi5jb20vdm9pZGFyY2hpdmUvbnR4L2dlbi9nby9udHgvdjE7bnR4djFiBnByb3RvMw");
+
+/**
+ * Describes the message ntx.v1.OrderLine.
+ * Use `create(OrderLineSchema)` to create a new message.
+ */
+export const OrderLineSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 0);
+
+/**
+ * Describes the message ntx.v1.OrderSheet.
+ * Use `create(OrderSheetSchema)` to create a new message.
+ */
+export const OrderSheetSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 1);
+
+/**
+ * Describes the message ntx.v1.Candidate.
+ * Use `create(CandidateSchema)` to create a new message.
+ */
+export const CandidateSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 2);
+
+/**
+ * Describes the message ntx.v1.CalendarEntry.
+ * Use `create(CalendarEntrySchema)` to create a new message.
+ */
+export const CalendarEntrySchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 3);
+
+/**
+ * Describes the message ntx.v1.Gate.
+ * Use `create(GateSchema)` to create a new message.
+ */
+export const GateSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 4);
+
+/**
+ * Describes the message ntx.v1.Cap.
+ * Use `create(CapSchema)` to create a new message.
+ */
+export const CapSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 5);
+
+/**
+ * Describes the message ntx.v1.Rules.
+ * Use `create(RulesSchema)` to create a new message.
+ */
+export const RulesSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 6);
 
 /**
  * Describes the message ntx.v1.Transaction.
  * Use `create(TransactionSchema)` to create a new message.
  */
 export const TransactionSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 0);
+  messageDesc(file_ntx_v1_portfolio, 7);
 
 /**
  * Describes the message ntx.v1.Note.
  * Use `create(NoteSchema)` to create a new message.
  */
 export const NoteSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 1);
+  messageDesc(file_ntx_v1_portfolio, 8);
 
 /**
  * Describes the message ntx.v1.Holding.
  * Use `create(HoldingSchema)` to create a new message.
  */
 export const HoldingSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 2);
+  messageDesc(file_ntx_v1_portfolio, 9);
 
 /**
  * Describes the message ntx.v1.GetPortfolioRequest.
  * Use `create(GetPortfolioRequestSchema)` to create a new message.
  */
 export const GetPortfolioRequestSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 3);
+  messageDesc(file_ntx_v1_portfolio, 10);
 
 /**
  * Describes the message ntx.v1.GetPortfolioResponse.
  * Use `create(GetPortfolioResponseSchema)` to create a new message.
  */
 export const GetPortfolioResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 4);
+  messageDesc(file_ntx_v1_portfolio, 11);
 
 /**
  * Describes the message ntx.v1.UpsertHoldingRequest.
  * Use `create(UpsertHoldingRequestSchema)` to create a new message.
  */
 export const UpsertHoldingRequestSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 5);
+  messageDesc(file_ntx_v1_portfolio, 12);
 
 /**
  * Describes the message ntx.v1.UpsertHoldingResponse.
  * Use `create(UpsertHoldingResponseSchema)` to create a new message.
  */
 export const UpsertHoldingResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 6);
+  messageDesc(file_ntx_v1_portfolio, 13);
 
 /**
  * Describes the message ntx.v1.DeleteHoldingRequest.
  * Use `create(DeleteHoldingRequestSchema)` to create a new message.
  */
 export const DeleteHoldingRequestSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 7);
+  messageDesc(file_ntx_v1_portfolio, 14);
 
 /**
  * Describes the message ntx.v1.DeleteHoldingResponse.
  * Use `create(DeleteHoldingResponseSchema)` to create a new message.
  */
 export const DeleteHoldingResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 8);
+  messageDesc(file_ntx_v1_portfolio, 15);
 
 /**
  * Describes the message ntx.v1.AddTransactionRequest.
  * Use `create(AddTransactionRequestSchema)` to create a new message.
  */
 export const AddTransactionRequestSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 9);
+  messageDesc(file_ntx_v1_portfolio, 16);
 
 /**
  * Describes the message ntx.v1.AddTransactionResponse.
  * Use `create(AddTransactionResponseSchema)` to create a new message.
  */
 export const AddTransactionResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 10);
+  messageDesc(file_ntx_v1_portfolio, 17);
 
 /**
  * Describes the message ntx.v1.AddNoteRequest.
  * Use `create(AddNoteRequestSchema)` to create a new message.
  */
 export const AddNoteRequestSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 11);
+  messageDesc(file_ntx_v1_portfolio, 18);
 
 /**
  * Describes the message ntx.v1.AddNoteResponse.
  * Use `create(AddNoteResponseSchema)` to create a new message.
  */
 export const AddNoteResponseSchema = /*@__PURE__*/
-  messageDesc(file_ntx_v1_portfolio, 12);
+  messageDesc(file_ntx_v1_portfolio, 19);
+
+/**
+ * Describes the message ntx.v1.UpsertGateRequest.
+ * Use `create(UpsertGateRequestSchema)` to create a new message.
+ */
+export const UpsertGateRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 20);
+
+/**
+ * Describes the message ntx.v1.UpsertGateResponse.
+ * Use `create(UpsertGateResponseSchema)` to create a new message.
+ */
+export const UpsertGateResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 21);
+
+/**
+ * Describes the message ntx.v1.DeleteGateRequest.
+ * Use `create(DeleteGateRequestSchema)` to create a new message.
+ */
+export const DeleteGateRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 22);
+
+/**
+ * Describes the message ntx.v1.DeleteGateResponse.
+ * Use `create(DeleteGateResponseSchema)` to create a new message.
+ */
+export const DeleteGateResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 23);
+
+/**
+ * Describes the message ntx.v1.UpdateRulesRequest.
+ * Use `create(UpdateRulesRequestSchema)` to create a new message.
+ */
+export const UpdateRulesRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 24);
+
+/**
+ * Describes the message ntx.v1.UpdateRulesResponse.
+ * Use `create(UpdateRulesResponseSchema)` to create a new message.
+ */
+export const UpdateRulesResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 25);
+
+/**
+ * Describes the message ntx.v1.GetHoldingStoryRequest.
+ * Use `create(GetHoldingStoryRequestSchema)` to create a new message.
+ */
+export const GetHoldingStoryRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 26);
+
+/**
+ * Describes the message ntx.v1.GetHoldingStoryResponse.
+ * Use `create(GetHoldingStoryResponseSchema)` to create a new message.
+ */
+export const GetHoldingStoryResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 27);
+
+/**
+ * Describes the message ntx.v1.MarkMonthExecutedRequest.
+ * Use `create(MarkMonthExecutedRequestSchema)` to create a new message.
+ */
+export const MarkMonthExecutedRequestSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 28);
+
+/**
+ * Describes the message ntx.v1.MarkMonthExecutedResponse.
+ * Use `create(MarkMonthExecutedResponseSchema)` to create a new message.
+ */
+export const MarkMonthExecutedResponseSchema = /*@__PURE__*/
+  messageDesc(file_ntx_v1_portfolio, 29);
+
+/**
+ * Describes the enum ntx.v1.GateKind.
+ */
+export const GateKindSchema = /*@__PURE__*/
+  enumDesc(file_ntx_v1_portfolio, 0);
+
+/**
+ * @generated from enum ntx.v1.GateKind
+ */
+export const GateKind = /*@__PURE__*/
+  tsEnum(GateKindSchema);
+
+/**
+ * Describes the enum ntx.v1.GateDirection.
+ */
+export const GateDirectionSchema = /*@__PURE__*/
+  enumDesc(file_ntx_v1_portfolio, 1);
+
+/**
+ * The prior directions are ratchets: the threshold is the previous period's own figure.
+ *
+ * @generated from enum ntx.v1.GateDirection
+ */
+export const GateDirection = /*@__PURE__*/
+  tsEnum(GateDirectionSchema);
 
 /**
  * Describes the enum ntx.v1.HoldingStatus.
  */
 export const HoldingStatusSchema = /*@__PURE__*/
-  enumDesc(file_ntx_v1_portfolio, 0);
+  enumDesc(file_ntx_v1_portfolio, 2);
 
 /**
  * @generated from enum ntx.v1.HoldingStatus
@@ -117,7 +262,7 @@ export const HoldingStatus = /*@__PURE__*/
  * Describes the enum ntx.v1.TransactionKind.
  */
 export const TransactionKindSchema = /*@__PURE__*/
-  enumDesc(file_ntx_v1_portfolio, 1);
+  enumDesc(file_ntx_v1_portfolio, 3);
 
 /**
  * @generated from enum ntx.v1.TransactionKind

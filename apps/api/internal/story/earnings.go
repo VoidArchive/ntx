@@ -83,6 +83,16 @@ func SectorPE(rows []sqlc.ListEarningsRowsRow) []float64 {
 
 // Quarterly groups earnings rows by company, with each company's latest close
 // (0 without one) and the companies in row order.
+// ByCompany groups the quarterly rows by company for pricing, as the screener and
+// the owner's Candidates both do.
+func ByCompany(rows []sqlc.ListEarningsRowsRow) map[int64][]sqlc.Fundamental {
+	out := map[int64][]sqlc.Fundamental{}
+	for _, e := range rows {
+		out[e.Fundamental.CompanyID] = append(out[e.Fundamental.CompanyID], e.Fundamental)
+	}
+	return out
+}
+
 func Quarterly(rows []sqlc.ListEarningsRowsRow) (map[int64][]sqlc.Fundamental, map[int64]float64, []int64) {
 	byCompany := map[int64][]sqlc.Fundamental{}
 	closes := map[int64]float64{}

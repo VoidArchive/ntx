@@ -23,13 +23,14 @@ type Company struct {
 }
 
 type CompanyRating struct {
-	CompanyID  int64     `json:"company_id"`
-	Letter     string    `json:"letter"`
-	Holds      int64     `json:"holds"`
-	Evaluated  int64     `json:"evaluated"`
-	ComputedAt time.Time `json:"computed_at"`
-	Total      int64     `json:"total"`
-	Version    int64     `json:"version"`
+	CompanyID      int64     `json:"company_id"`
+	Letter         string    `json:"letter"`
+	Holds          int64     `json:"holds"`
+	Evaluated      int64     `json:"evaluated"`
+	ComputedAt     time.Time `json:"computed_at"`
+	Total          int64     `json:"total"`
+	Version        int64     `json:"version"`
+	DividendRecord string    `json:"dividend_record"`
 }
 
 type CorporateAction struct {
@@ -60,6 +61,18 @@ type Fundamental struct {
 	PublishedAt   sql.NullString  `json:"published_at"`
 	SourceUrl     sql.NullString  `json:"source_url"`
 	FiscalYearNp  sql.NullString  `json:"fiscal_year_np"`
+}
+
+type Gate struct {
+	ID        int64   `json:"id"`
+	HoldingID int64   `json:"holding_id"`
+	Kind      string  `json:"kind"`
+	Metric    string  `json:"metric"`
+	Direction string  `json:"direction"`
+	Threshold float64 `json:"threshold"`
+	Periods   int64   `json:"periods"`
+	Text      string  `json:"text"`
+	CheckedOn string  `json:"checked_on"`
 }
 
 type Holding struct {
@@ -160,6 +173,21 @@ type Price struct {
 	Turnover        sql.NullFloat64 `json:"turnover"`
 	Trades          sql.NullInt64   `json:"trades"`
 	CreatedAt       time.Time       `json:"created_at"`
+}
+
+type Rule struct {
+	ID                      int64   `json:"id"`
+	SoftCapPercent          float64 `json:"soft_cap_percent"`
+	HardCapPercent          float64 `json:"hard_cap_percent"`
+	SectorCapPercent        float64 `json:"sector_cap_percent"`
+	MaxPositions            int64   `json:"max_positions"`
+	MinEntryRs              float64 `json:"min_entry_rs"`
+	OneHydroPerBasin        int64   `json:"one_hydro_per_basin"`
+	CandidateMinRating      string  `json:"candidate_min_rating"`
+	CandidateDividendRecord int64   `json:"candidate_dividend_record"`
+	MonthlyBudgetRs         float64 `json:"monthly_budget_rs"`
+	MultiplierBelowMedian   float64 `json:"multiplier_below_median"`
+	MultiplierBottomQuarter float64 `json:"multiplier_bottom_quarter"`
 }
 
 type Transaction struct {

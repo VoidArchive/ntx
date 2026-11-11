@@ -32,7 +32,7 @@ SELECT c.id, c.symbol, c.name, c.sector,
   prev.close_price AS prev_close,
   f.eps, f.book_value,
   ca.cash_dividend,
-  r.letter AS rating, r.holds, r.evaluated, r.total,
+  r.letter AS rating, r.holds, r.evaluated, r.total, r.dividend_record,
   f.fiscal_year, f.quarter, f.fiscal_year_np, p.business_date
 FROM companies c
 LEFT JOIN ownership o ON o.company_id = c.id
@@ -65,25 +65,26 @@ ORDER BY c.symbol
 `
 
 type ListScreenerRow struct {
-	ID           int64           `json:"id"`
-	Symbol       string          `json:"symbol"`
-	Name         string          `json:"name"`
-	Sector       string          `json:"sector"`
-	ListedShares sql.NullInt64   `json:"listed_shares"`
-	ClosePrice   sql.NullFloat64 `json:"close_price"`
-	Turnover     sql.NullFloat64 `json:"turnover"`
-	PrevClose    sql.NullFloat64 `json:"prev_close"`
-	Eps          sql.NullFloat64 `json:"eps"`
-	BookValue    sql.NullFloat64 `json:"book_value"`
-	CashDividend sql.NullFloat64 `json:"cash_dividend"`
-	Rating       sql.NullString  `json:"rating"`
-	Holds        sql.NullInt64   `json:"holds"`
-	Evaluated    sql.NullInt64   `json:"evaluated"`
-	Total        sql.NullInt64   `json:"total"`
-	FiscalYear   sql.NullString  `json:"fiscal_year"`
-	Quarter      sql.NullString  `json:"quarter"`
-	FiscalYearNp sql.NullString  `json:"fiscal_year_np"`
-	BusinessDate sql.NullString  `json:"business_date"`
+	ID             int64           `json:"id"`
+	Symbol         string          `json:"symbol"`
+	Name           string          `json:"name"`
+	Sector         string          `json:"sector"`
+	ListedShares   sql.NullInt64   `json:"listed_shares"`
+	ClosePrice     sql.NullFloat64 `json:"close_price"`
+	Turnover       sql.NullFloat64 `json:"turnover"`
+	PrevClose      sql.NullFloat64 `json:"prev_close"`
+	Eps            sql.NullFloat64 `json:"eps"`
+	BookValue      sql.NullFloat64 `json:"book_value"`
+	CashDividend   sql.NullFloat64 `json:"cash_dividend"`
+	Rating         sql.NullString  `json:"rating"`
+	Holds          sql.NullInt64   `json:"holds"`
+	Evaluated      sql.NullInt64   `json:"evaluated"`
+	Total          sql.NullInt64   `json:"total"`
+	DividendRecord sql.NullString  `json:"dividend_record"`
+	FiscalYear     sql.NullString  `json:"fiscal_year"`
+	Quarter        sql.NullString  `json:"quarter"`
+	FiscalYearNp   sql.NullString  `json:"fiscal_year_np"`
+	BusinessDate   sql.NullString  `json:"business_date"`
 }
 
 // One row per listed company with the inputs of the screener columns; ratios
@@ -115,6 +116,7 @@ func (q *Queries) ListScreener(ctx context.Context, version int64) ([]ListScreen
 			&i.Holds,
 			&i.Evaluated,
 			&i.Total,
+			&i.DividendRecord,
 			&i.FiscalYear,
 			&i.Quarter,
 			&i.FiscalYearNp,
@@ -134,24 +136,26 @@ func (q *Queries) ListScreener(ctx context.Context, version int64) ([]ListScreen
 }
 
 const upsertCompanyRating = `-- name: UpsertCompanyRating :exec
-INSERT INTO company_ratings (company_id, letter, holds, evaluated, total, version, computed_at)
-VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+INSERT INTO company_ratings (company_id, letter, holds, evaluated, total, version, dividend_record, computed_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 ON CONFLICT(company_id) DO UPDATE SET
   letter = excluded.letter,
   holds = excluded.holds,
   evaluated = excluded.evaluated,
   total = excluded.total,
   version = excluded.version,
+  dividend_record = excluded.dividend_record,
   computed_at = excluded.computed_at
 `
 
 type UpsertCompanyRatingParams struct {
-	CompanyID int64  `json:"company_id"`
-	Letter    string `json:"letter"`
-	Holds     int64  `json:"holds"`
-	Evaluated int64  `json:"evaluated"`
-	Total     int64  `json:"total"`
-	Version   int64  `json:"version"`
+	CompanyID      int64  `json:"company_id"`
+	Letter         string `json:"letter"`
+	Holds          int64  `json:"holds"`
+	Evaluated      int64  `json:"evaluated"`
+	Total          int64  `json:"total"`
+	Version        int64  `json:"version"`
+	DividendRecord string `json:"dividend_record"`
 }
 
 func (q *Queries) UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRatingParams) error {
@@ -162,6 +166,7 @@ func (q *Queries) UpsertCompanyRating(ctx context.Context, arg UpsertCompanyRati
 		arg.Evaluated,
 		arg.Total,
 		arg.Version,
+		arg.DividendRecord,
 	)
 	return err
 }

@@ -190,3 +190,26 @@ func ParseQuarter(s string) (Quarter, error) {
 	}
 	return 0, fmt.Errorf("fiscal: %q is not a quarter", s)
 }
+
+// QuarterEnd is the last calendar day of a fiscal quarter, at UTC midnight:
+// Ashwin, Poush and Chaitra end, or Ashadh end for Q4.
+func QuarterEnd(y Year, q Quarter) (time.Time, error) {
+	if q < Q1 || q > Q4 {
+		return time.Time{}, fmt.Errorf("fiscal: %s has no quarter end", q)
+	}
+	start, err := y.Start()
+	if err != nil {
+		return time.Time{}, err
+	}
+	i := int(y) - firstYear
+	days := 0
+	// Months run Shrawan (index 3) onward; the last quarter crosses into the next BS year.
+	for k := range 3 * int(q) {
+		m, yr := (3+k)%12, i
+		if k >= 9 {
+			yr++
+		}
+		days += years[yr].months[m]
+	}
+	return start.AddDate(0, 0, days-1), nil
+}

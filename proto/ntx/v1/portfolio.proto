@@ -13,6 +13,147 @@ service PortfolioService {
   rpc DeleteHolding(DeleteHoldingRequest) returns (DeleteHoldingResponse);
   rpc AddTransaction(AddTransactionRequest) returns (AddTransactionResponse);
   rpc AddNote(AddNoteRequest) returns (AddNoteResponse);
+  rpc UpsertGate(UpsertGateRequest) returns (UpsertGateResponse);
+  rpc DeleteGate(DeleteGateRequest) returns (DeleteGateResponse);
+  rpc UpdateRules(UpdateRulesRequest) returns (UpdateRulesResponse);
+  // GetHoldingStory is the "Your thesis" section of a held company's page.
+  rpc GetHoldingStory(GetHoldingStoryRequest) returns (GetHoldingStoryResponse);
+  // MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
+  rpc MarkMonthExecuted(MarkMonthExecutedRequest) returns (MarkMonthExecutedResponse);
+}
+
+// OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
+message OrderLine {
+  string symbol = 1;
+  HoldingStatus status = 2;
+  double allocation_percent = 3;
+  double carry_rs = 4;
+  // allocation of the budget plus the carry; zero for a frozen or capped holding.
+  double available_rs = 5;
+  int32 lots = 6;
+  int64 shares = 7;
+  optional double close = 8;
+  double cost_rs = 9;
+  // What the owner would carry into next month after this purchase.
+  double new_carry_rs = 10;
+  // Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
+  string note = 11;
+  string review_date = 12;
+  string close_day = 13;
+}
+
+message OrderSheet {
+  // Bikram Sambat month the sheet is for, "Mangsir".
+  string month = 1;
+  double budget_rs = 2;
+  double multiplier = 3;
+  optional double index_close = 4;
+  string index_day = 5;
+  double range_low = 6;
+  double range_median = 7;
+  double range_high = 8;
+  // The sheet's sentence: budget, index, range and multiplier (ADR 0001).
+  string opening = 9;
+  repeated OrderLine lines = 10;
+}
+
+// Candidate is a company the owner's rules admit (GLOSSARY: Candidates): a list
+// of what the rules admit, not a ranking of what to buy.
+message Candidate {
+  string symbol = 1;
+  string name = 2;
+  string sector = 3;
+  string rating = 4;
+  double close = 5;
+  string close_day = 6;
+  // PE at the close over the EPS the period names: trailing four quarters where they
+  // exist, else the latest annualized filing (ADR 0002).
+  optional double pe = 7;
+  string pe_period = 14;
+  // Median PE of the sector's profitable companies, each at its own latest filing.
+  optional double sector_pe_median = 8;
+  // Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
+  string basin = 9;
+  // The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
+  int64 shares = 10;
+  double cost_rs = 11;
+  double months = 12;
+  string note = 13;
+}
+
+// CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
+message CalendarEntry {
+  string day = 1;
+  string symbol = 2;
+  string what = 3;
+  // The day has passed without a tick, review or filing recorded against it.
+  bool overdue = 4;
+}
+
+enum GateKind {
+  GATE_KIND_UNSPECIFIED = 0;
+  GATE_KIND_METRIC = 1;
+  GATE_KIND_EVENT = 2;
+}
+
+// The prior directions are ratchets: the threshold is the previous period's own figure.
+enum GateDirection {
+  GATE_DIRECTION_UNSPECIFIED = 0;
+  GATE_DIRECTION_ABOVE = 1;
+  GATE_DIRECTION_BELOW = 2;
+  GATE_DIRECTION_NOT_BELOW_PRIOR = 3;
+  GATE_DIRECTION_NOT_ABOVE_PRIOR = 4;
+}
+
+// Gate is one of the owner's written break conditions with its verdict
+// (GLOSSARY: Gate; Triggered / Holds / Needs data). Every verdict names the
+// period it was evaluated against (ADR 0002).
+message Gate {
+  int64 id = 1;
+  string symbol = 2;
+  GateKind kind = 3;
+  // Metric gates: one of eps, pe, cash_dividend_percent, bonus_percent, book_value, roe,
+  // promoter_percent, weight_percent, drawdown_percent, npl_percent, car_percent,
+  // loan_growth_percent, distributable_profit.
+  string metric = 4;
+  GateDirection direction = 5;
+  double threshold = 6;
+  int32 periods = 7;
+  // Event gates: the condition in the owner's words and the day it was last ticked.
+  string text = 8;
+  string checked_on = 9;
+  // Computed: "triggered", "holds" or "needs data"; empty for an event gate.
+  string verdict = 10;
+  // The gate in words, "NPL above 5% for 1 quarter"; the lede and the table share it.
+  string label = 11;
+  optional double value = 12;
+  // For a prior direction, the previous period's figure the value was held against.
+  optional double prior = 13;
+  string period = 14;
+  string source = 15;
+  // How value and prior print: "%", "x" or "Rs".
+  string unit = 16;
+}
+
+// Cap is one portfolio rule's verdict: "holds", "watch" or "triggered", with the figures.
+message Cap {
+  string rule = 1;
+  string verdict = 2;
+  string detail = 3;
+}
+
+message Rules {
+  double soft_cap_percent = 1;
+  double hard_cap_percent = 2;
+  double sector_cap_percent = 3;
+  int32 max_positions = 4;
+  double min_entry_rs = 5;
+  bool one_hydro_per_basin = 6;
+  string candidate_min_rating = 7;
+  bool candidate_dividend_record = 8;
+  double monthly_budget_rs = 9;
+  double multiplier_below_median = 10;
+  double multiplier_bottom_quarter = 11;
 }
 
 enum HoldingStatus {
@@ -71,6 +212,9 @@ message Holding {
   repeated Note notes = 19;
   // Business date of the close; empty for a fund, whose NAV date the caller knows.
   string close_day = 20;
+  repeated Gate gates = 21;
+  // The holding against the soft and hard caps: "holds", "watch", "triggered"; empty without shares.
+  string cap_verdict = 22;
 }
 
 message GetPortfolioRequest {
@@ -86,6 +230,18 @@ message GetPortfolioResponse {
   int32 funds = 4;
   // The page's opening sentence, computed here (ADR 0001).
   string opening = 5;
+  // Sector cap, position count and one hydro per basin.
+  repeated Cap caps = 6;
+  Rules rules = 7;
+  OrderSheet order_sheet = 8;
+  // Soonest first.
+  repeated CalendarEntry calendar = 9;
+  // The Calendar section's sentence: what is next, and how many dates have passed.
+  string calendar_opening = 10;
+  // Sorted by rating, then PE against the sector.
+  repeated Candidate candidates = 11;
+  // The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+  string candidates_opening = 12;
 }
 
 message UpsertHoldingRequest {
@@ -94,7 +250,8 @@ message UpsertHoldingRequest {
   int64 target_shares = 3;
   double allocation_percent = 4;
   double carry_rs = 5;
-  bool drawdown_gate = 6;
+  // Unset on a new holding means the sector's default: on for hydropower, off elsewhere.
+  optional bool drawdown_gate = 6;
   string thesis = 7;
   string frozen_reason = 8;
   string review_date = 9;
@@ -123,3 +280,44 @@ message AddNoteRequest {
 }
 
 message AddNoteResponse { Note note = 1; }
+
+message UpsertGateRequest {
+  // Zero inserts; an existing id updates.
+  int64 id = 1;
+  string symbol = 2;
+  GateKind kind = 3;
+  string metric = 4;
+  GateDirection direction = 5;
+  double threshold = 6;
+  int32 periods = 7;
+  string text = 8;
+  string checked_on = 9;
+}
+
+message UpsertGateResponse { Gate gate = 1; }
+
+message DeleteGateRequest { int64 id = 1; }
+
+message DeleteGateResponse {}
+
+message UpdateRulesRequest { Rules rules = 1; }
+
+message UpdateRulesResponse { Rules rules = 1; }
+
+message GetHoldingStoryRequest {
+  string symbol = 1;
+  map<string, double> fund_navs = 2;
+}
+
+message GetHoldingStoryResponse {
+  Holding holding = 1;
+  // A bonus the exchange has published that no bonus transaction credits yet; empty otherwise.
+  string bonus_hint = 2;
+}
+
+message MarkMonthExecutedRequest {
+  // New carry in rupees by symbol, as the owner confirmed or edited it.
+  map<string, double> carries = 1;
+}
+
+message MarkMonthExecutedResponse {}

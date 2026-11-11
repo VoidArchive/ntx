@@ -16,7 +16,11 @@ import (
 	ntxv1 "github.com/voidarchive/ntx/gen/go/ntx/v1"
 	"github.com/voidarchive/ntx/gen/go/ntx/v1/ntxv1connect"
 	"github.com/voidarchive/ntx/internal/database/sqlc"
+	"github.com/voidarchive/ntx/internal/story"
 )
+
+// now is the sheet's and calendar's clock; tests pin it.
+var now = time.Now
 
 // TokenHeader carries the owner token on every personal call.
 const TokenHeader = "Ntx-Owner-Token" //nolint:gosec // a header name, not a credential
@@ -64,7 +68,16 @@ func (s *Service) GetPortfolio(
 	ctx context.Context,
 	req *connect.Request[ntxv1.GetPortfolioRequest],
 ) (*connect.Response[ntxv1.GetPortfolioResponse], error) {
-	holdings, err := s.load(ctx, req.Msg.GetFundNavs())
+	res, err := s.portfolio(ctx, req.Msg.GetFundNavs())
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(res), nil
+}
+
+// portfolio is the whole page: holdings with weights, gate verdicts, caps and the lede.
+func (s *Service) portfolio(ctx context.Context, navs map[string]float64) (*ntxv1.GetPortfolioResponse, error) {
+	holdings, err := s.load(ctx, navs)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -85,15 +98,121 @@ func (s *Service) GetPortfolio(
 			h.WeightPercent = 100 * h.GetValue() / res.TotalValue
 		}
 	}
+	rules, err := s.queries.GetRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.Rules = rulesToProto(rules)
+	if err := s.judge(ctx, holdings); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	plants, err := s.queries.ListAllHydroPlants(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.Caps = caps(res, rules, plants)
+	index, err := s.indexYear(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	today := now()
+	res.OrderSheet = sheet(month(today), rules, index, holdings)
+	res.Calendar = calendar(today, holdings)
+	res.CalendarOpening = calendarOpening(res.Calendar)
+	if res.Candidates, err = s.candidates(ctx, res, rules, plants); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.CandidatesOpening = candidatesOpening(len(res.Candidates), res, rules)
 	res.Opening = opening(res)
-	return connect.NewResponse(res), nil
+	return res, nil
 }
 
-// opening names the newest close the total rests on; fund rows carry their own NAV date.
+// candidates prices the screener as the screener page does and filters it by the rules.
+// shortcut: every company's quarterly rows are parsed per request, as ListScreener does; store the trailing PE beside the rating when the page feels slow.
+func (s *Service) candidates(
+	ctx context.Context,
+	res *ntxv1.GetPortfolioResponse,
+	rules sqlc.Rule,
+	plants []sqlc.HydroPlant,
+) ([]*ntxv1.Candidate, error) {
+	rows, err := s.queries.ListScreener(ctx, story.RatingVersion)
+	if err != nil {
+		return nil, err
+	}
+	earningsRows, err := s.queries.ListEarningsRows(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	quarterly := story.ByCompany(earningsRows)
+	pes := map[int64]priced{}
+	for _, row := range rows {
+		if e, ok := story.LatestEarnings(quarterly[row.ID]); ok && e.EPS > 0 && row.ClosePrice.Valid {
+			pes[row.ID] = priced{row.ClosePrice.Float64 / e.EPS, e.Period}
+		}
+	}
+	return candidates(rows, pes, res, rules, plants), nil
+}
+
+// indexYear is the index's trailing 52 weeks of closes, oldest first; nil without a market day.
+func (s *Service) indexYear(ctx context.Context) ([]sqlc.ListIndexClosesRow, error) {
+	latest, err := s.queries.GetLatestMarketDay(ctx)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	day, err := time.Parse(time.DateOnly, latest.BusinessDate)
+	if err != nil {
+		return nil, err
+	}
+	return s.queries.ListIndexCloses(ctx, day.AddDate(0, 0, -364).Format(time.DateOnly))
+}
+
+// opening is the lede: the value at its close, then what the owner's rules say.
 func opening(p *ntxv1.GetPortfolioResponse) string {
 	if len(p.GetHoldings()) == 0 {
 		return "No holdings recorded."
 	}
+	parts := []string{value(p)}
+	var triggered []string
+	needs := 0
+	for _, h := range p.GetHoldings() {
+		for _, g := range h.GetGates() {
+			switch g.GetVerdict() {
+			case Triggered:
+				triggered = append(triggered, h.GetSymbol()+" "+g.GetLabel())
+			case NeedsData:
+				needs++
+			}
+		}
+	}
+	if len(triggered) > 0 {
+		parts = append(
+			parts,
+			fmt.Sprintf("%s triggered: %s.", plural(len(triggered), "gate"), strings.Join(triggered, ", ")),
+		)
+	}
+	if needs == 1 {
+		parts = append(parts, "1 gate needs data.")
+	} else if needs > 1 {
+		parts = append(parts, fmt.Sprintf("%d gates need data.", needs))
+	}
+	var over []string
+	for _, c := range p.GetCaps() {
+		if c.GetVerdict() != Holds {
+			over = append(over, c.GetDetail())
+		}
+	}
+	if len(over) > 0 {
+		parts = append(parts, "Over cap: "+strings.Join(over, ", ")+".")
+	}
+	parts = append(parts, p.GetOrderSheet().GetOpening())
+	return strings.Join(parts, " ")
+}
+
+// value names the newest close the total rests on; fund rows carry their own NAV date.
+func value(p *ntxv1.GetPortfolioResponse) string {
 	across := plural(int(p.GetPositions()), "position")
 	if p.GetFunds() > 0 {
 		across += " and " + plural(int(p.GetFunds()), "fund")
@@ -150,6 +269,14 @@ func (s *Service) load(ctx context.Context, navs map[string]float64) ([]*ntxv1.H
 	for _, n := range notes {
 		notesBy[n.HoldingID] = append(notesBy[n.HoldingID], n)
 	}
+	gates, err := s.queries.ListGates(ctx)
+	if err != nil {
+		return nil, err
+	}
+	gatesBy := map[int64][]sqlc.Gate{}
+	for _, g := range gates {
+		gatesBy[g.HoldingID] = append(gatesBy[g.HoldingID], g)
+	}
 
 	out := make([]*ntxv1.Holding, 0, len(rows))
 	for _, r := range rows {
@@ -189,6 +316,7 @@ func (s *Service) load(ctx context.Context, navs map[string]float64) ([]*ntxv1.H
 		for _, n := range notesBy[r.ID] {
 			h.Notes = append(h.Notes, &ntxv1.Note{Id: n.ID, Day: n.Day, Text: n.Text})
 		}
+		h.Gates = gatesToProto(r.Symbol, gatesBy[r.ID])
 		out = append(out, h)
 	}
 	return out, nil
@@ -208,9 +336,9 @@ func (s *Service) UpsertHolding(
 			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
 	}
-	gate := int64(0)
-	if m.GetDrawdownGate() {
-		gate = 1
+	gate, err := s.drawdownDefault(ctx, symbol, m.DrawdownGate)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	if _, err := s.queries.UpsertHolding(ctx, sqlc.UpsertHoldingParams{
 		Symbol:            symbol,
@@ -225,16 +353,35 @@ func (s *Service) UpsertHolding(
 	}); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	holdings, err := s.load(ctx, nil)
+	p, err := s.portfolio(ctx, nil)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+		return nil, err
 	}
-	for _, h := range holdings {
+	for _, h := range p.GetHoldings() {
 		if h.GetSymbol() == symbol {
 			return connect.NewResponse(&ntxv1.UpsertHoldingResponse{Holding: h}), nil
 		}
 	}
 	return nil, connect.NewError(connect.CodeInternal, errors.New("holding vanished after upsert"))
+}
+
+// drawdownDefault keeps an explicit choice, else an existing row's, else the
+// sector's: on for hydropower, whose plants carry the flood and GLOF risk.
+func (s *Service) drawdownDefault(ctx context.Context, symbol string, chosen *bool) (int64, error) {
+	if chosen != nil {
+		return flag(*chosen), nil
+	}
+	if h, err := s.queries.GetHolding(ctx, symbol); err == nil {
+		return h.DrawdownGate, nil
+	}
+	c, err := s.queries.GetCompany(ctx, symbol)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, nil
+	}
+	if err != nil {
+		return 0, err
+	}
+	return flag(isHydro(c.Sector)), nil
 }
 
 func (s *Service) DeleteHolding(
@@ -319,4 +466,52 @@ func (s *Service) AddNote(
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 	return connect.NewResponse(&ntxv1.AddNoteResponse{Note: &ntxv1.Note{Id: n.ID, Day: n.Day, Text: n.Text}}), nil
+}
+
+// gatesToProto carries the stored rule; judge fills the verdict.
+func gatesToProto(symbol string, gates []sqlc.Gate) []*ntxv1.Gate {
+	out := make([]*ntxv1.Gate, 0, len(gates))
+	for _, g := range gates {
+		pg := &ntxv1.Gate{
+			Id:        g.ID,
+			Symbol:    symbol,
+			Kind:      gateKindFrom(g.Kind),
+			Metric:    g.Metric,
+			Direction: directionFrom(g.Direction),
+			Threshold: g.Threshold,
+			Periods:   int32(min(g.Periods, 1<<31-1)), //nolint:gosec // clamped
+			Text:      g.Text,
+			CheckedOn: g.CheckedOn,
+			Label:     g.Text,
+		}
+		if pg.Kind == ntxv1.GateKind_GATE_KIND_METRIC {
+			pg.Label, pg.Unit = label(g.Metric, g.Direction, g.Threshold, int(g.Periods)), metrics[g.Metric].unit
+		}
+		out = append(out, pg)
+	}
+	return out
+}
+
+func (s *Service) MarkMonthExecuted(
+	ctx context.Context,
+	req *connect.Request[ntxv1.MarkMonthExecutedRequest],
+) (*connect.Response[ntxv1.MarkMonthExecutedResponse], error) {
+	for symbol, carry := range req.Msg.GetCarries() {
+		if carry < 0 {
+			return nil, connect.NewError(
+				connect.CodeInvalidArgument,
+				fmt.Errorf("%s: a carry cannot be negative", symbol),
+			)
+		}
+		if _, err := s.holding(ctx, symbol); err != nil {
+			return nil, err
+		}
+		if err := s.queries.UpdateHoldingCarry(
+			ctx,
+			sqlc.UpdateHoldingCarryParams{CarryRs: carry, Symbol: normSymbol(symbol)},
+		); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+	return connect.NewResponse(&ntxv1.MarkMonthExecutedResponse{}), nil
 }

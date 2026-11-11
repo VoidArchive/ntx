@@ -11,6 +11,486 @@ import type { Message } from "@bufbuild/protobuf";
 export declare const file_ntx_v1_portfolio: GenFile;
 
 /**
+ * OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
+ *
+ * @generated from message ntx.v1.OrderLine
+ */
+export declare type OrderLine = Message<"ntx.v1.OrderLine"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: ntx.v1.HoldingStatus status = 2;
+   */
+  status: HoldingStatus;
+
+  /**
+   * @generated from field: double allocation_percent = 3;
+   */
+  allocationPercent: number;
+
+  /**
+   * @generated from field: double carry_rs = 4;
+   */
+  carryRs: number;
+
+  /**
+   * allocation of the budget plus the carry; zero for a frozen or capped holding.
+   *
+   * @generated from field: double available_rs = 5;
+   */
+  availableRs: number;
+
+  /**
+   * @generated from field: int32 lots = 6;
+   */
+  lots: number;
+
+  /**
+   * @generated from field: int64 shares = 7;
+   */
+  shares: bigint;
+
+  /**
+   * @generated from field: optional double close = 8;
+   */
+  close?: number;
+
+  /**
+   * @generated from field: double cost_rs = 9;
+   */
+  costRs: number;
+
+  /**
+   * What the owner would carry into next month after this purchase.
+   *
+   * @generated from field: double new_carry_rs = 10;
+   */
+  newCarryRs: number;
+
+  /**
+   * Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
+   *
+   * @generated from field: string note = 11;
+   */
+  note: string;
+
+  /**
+   * @generated from field: string review_date = 12;
+   */
+  reviewDate: string;
+
+  /**
+   * @generated from field: string close_day = 13;
+   */
+  closeDay: string;
+};
+
+/**
+ * Describes the message ntx.v1.OrderLine.
+ * Use `create(OrderLineSchema)` to create a new message.
+ */
+export declare const OrderLineSchema: GenMessage<OrderLine>;
+
+/**
+ * @generated from message ntx.v1.OrderSheet
+ */
+export declare type OrderSheet = Message<"ntx.v1.OrderSheet"> & {
+  /**
+   * Bikram Sambat month the sheet is for, "Mangsir".
+   *
+   * @generated from field: string month = 1;
+   */
+  month: string;
+
+  /**
+   * @generated from field: double budget_rs = 2;
+   */
+  budgetRs: number;
+
+  /**
+   * @generated from field: double multiplier = 3;
+   */
+  multiplier: number;
+
+  /**
+   * @generated from field: optional double index_close = 4;
+   */
+  indexClose?: number;
+
+  /**
+   * @generated from field: string index_day = 5;
+   */
+  indexDay: string;
+
+  /**
+   * @generated from field: double range_low = 6;
+   */
+  rangeLow: number;
+
+  /**
+   * @generated from field: double range_median = 7;
+   */
+  rangeMedian: number;
+
+  /**
+   * @generated from field: double range_high = 8;
+   */
+  rangeHigh: number;
+
+  /**
+   * The sheet's sentence: budget, index, range and multiplier (ADR 0001).
+   *
+   * @generated from field: string opening = 9;
+   */
+  opening: string;
+
+  /**
+   * @generated from field: repeated ntx.v1.OrderLine lines = 10;
+   */
+  lines: OrderLine[];
+};
+
+/**
+ * Describes the message ntx.v1.OrderSheet.
+ * Use `create(OrderSheetSchema)` to create a new message.
+ */
+export declare const OrderSheetSchema: GenMessage<OrderSheet>;
+
+/**
+ * Candidate is a company the owner's rules admit (GLOSSARY: Candidates): a list
+ * of what the rules admit, not a ranking of what to buy.
+ *
+ * @generated from message ntx.v1.Candidate
+ */
+export declare type Candidate = Message<"ntx.v1.Candidate"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string sector = 3;
+   */
+  sector: string;
+
+  /**
+   * @generated from field: string rating = 4;
+   */
+  rating: string;
+
+  /**
+   * @generated from field: double close = 5;
+   */
+  close: number;
+
+  /**
+   * @generated from field: string close_day = 6;
+   */
+  closeDay: string;
+
+  /**
+   * PE at the close over the EPS the period names: trailing four quarters where they
+   * exist, else the latest annualized filing (ADR 0002).
+   *
+   * @generated from field: optional double pe = 7;
+   */
+  pe?: number;
+
+  /**
+   * @generated from field: string pe_period = 14;
+   */
+  pePeriod: string;
+
+  /**
+   * Median PE of the sector's profitable companies, each at its own latest filing.
+   *
+   * @generated from field: optional double sector_pe_median = 8;
+   */
+  sectorPeMedian?: number;
+
+  /**
+   * Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
+   *
+   * @generated from field: string basin = 9;
+   */
+  basin: string;
+
+  /**
+   * The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
+   *
+   * @generated from field: int64 shares = 10;
+   */
+  shares: bigint;
+
+  /**
+   * @generated from field: double cost_rs = 11;
+   */
+  costRs: number;
+
+  /**
+   * @generated from field: double months = 12;
+   */
+  months: number;
+
+  /**
+   * @generated from field: string note = 13;
+   */
+  note: string;
+};
+
+/**
+ * Describes the message ntx.v1.Candidate.
+ * Use `create(CandidateSchema)` to create a new message.
+ */
+export declare const CandidateSchema: GenMessage<Candidate>;
+
+/**
+ * CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
+ *
+ * @generated from message ntx.v1.CalendarEntry
+ */
+export declare type CalendarEntry = Message<"ntx.v1.CalendarEntry"> & {
+  /**
+   * @generated from field: string day = 1;
+   */
+  day: string;
+
+  /**
+   * @generated from field: string symbol = 2;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: string what = 3;
+   */
+  what: string;
+
+  /**
+   * The day has passed without a tick, review or filing recorded against it.
+   *
+   * @generated from field: bool overdue = 4;
+   */
+  overdue: boolean;
+};
+
+/**
+ * Describes the message ntx.v1.CalendarEntry.
+ * Use `create(CalendarEntrySchema)` to create a new message.
+ */
+export declare const CalendarEntrySchema: GenMessage<CalendarEntry>;
+
+/**
+ * Gate is one of the owner's written break conditions with its verdict
+ * (GLOSSARY: Gate; Triggered / Holds / Needs data). Every verdict names the
+ * period it was evaluated against (ADR 0002).
+ *
+ * @generated from message ntx.v1.Gate
+ */
+export declare type Gate = Message<"ntx.v1.Gate"> & {
+  /**
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+
+  /**
+   * @generated from field: string symbol = 2;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: ntx.v1.GateKind kind = 3;
+   */
+  kind: GateKind;
+
+  /**
+   * Metric gates: one of eps, pe, cash_dividend_percent, bonus_percent, book_value, roe,
+   * promoter_percent, weight_percent, drawdown_percent, npl_percent, car_percent,
+   * loan_growth_percent, distributable_profit.
+   *
+   * @generated from field: string metric = 4;
+   */
+  metric: string;
+
+  /**
+   * @generated from field: ntx.v1.GateDirection direction = 5;
+   */
+  direction: GateDirection;
+
+  /**
+   * @generated from field: double threshold = 6;
+   */
+  threshold: number;
+
+  /**
+   * @generated from field: int32 periods = 7;
+   */
+  periods: number;
+
+  /**
+   * Event gates: the condition in the owner's words and the day it was last ticked.
+   *
+   * @generated from field: string text = 8;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string checked_on = 9;
+   */
+  checkedOn: string;
+
+  /**
+   * Computed: "triggered", "holds" or "needs data"; empty for an event gate.
+   *
+   * @generated from field: string verdict = 10;
+   */
+  verdict: string;
+
+  /**
+   * The gate in words, "NPL above 5% for 1 quarter"; the lede and the table share it.
+   *
+   * @generated from field: string label = 11;
+   */
+  label: string;
+
+  /**
+   * @generated from field: optional double value = 12;
+   */
+  value?: number;
+
+  /**
+   * For a prior direction, the previous period's figure the value was held against.
+   *
+   * @generated from field: optional double prior = 13;
+   */
+  prior?: number;
+
+  /**
+   * @generated from field: string period = 14;
+   */
+  period: string;
+
+  /**
+   * @generated from field: string source = 15;
+   */
+  source: string;
+
+  /**
+   * How value and prior print: "%", "x" or "Rs".
+   *
+   * @generated from field: string unit = 16;
+   */
+  unit: string;
+};
+
+/**
+ * Describes the message ntx.v1.Gate.
+ * Use `create(GateSchema)` to create a new message.
+ */
+export declare const GateSchema: GenMessage<Gate>;
+
+/**
+ * Cap is one portfolio rule's verdict: "holds", "watch" or "triggered", with the figures.
+ *
+ * @generated from message ntx.v1.Cap
+ */
+export declare type Cap = Message<"ntx.v1.Cap"> & {
+  /**
+   * @generated from field: string rule = 1;
+   */
+  rule: string;
+
+  /**
+   * @generated from field: string verdict = 2;
+   */
+  verdict: string;
+
+  /**
+   * @generated from field: string detail = 3;
+   */
+  detail: string;
+};
+
+/**
+ * Describes the message ntx.v1.Cap.
+ * Use `create(CapSchema)` to create a new message.
+ */
+export declare const CapSchema: GenMessage<Cap>;
+
+/**
+ * @generated from message ntx.v1.Rules
+ */
+export declare type Rules = Message<"ntx.v1.Rules"> & {
+  /**
+   * @generated from field: double soft_cap_percent = 1;
+   */
+  softCapPercent: number;
+
+  /**
+   * @generated from field: double hard_cap_percent = 2;
+   */
+  hardCapPercent: number;
+
+  /**
+   * @generated from field: double sector_cap_percent = 3;
+   */
+  sectorCapPercent: number;
+
+  /**
+   * @generated from field: int32 max_positions = 4;
+   */
+  maxPositions: number;
+
+  /**
+   * @generated from field: double min_entry_rs = 5;
+   */
+  minEntryRs: number;
+
+  /**
+   * @generated from field: bool one_hydro_per_basin = 6;
+   */
+  oneHydroPerBasin: boolean;
+
+  /**
+   * @generated from field: string candidate_min_rating = 7;
+   */
+  candidateMinRating: string;
+
+  /**
+   * @generated from field: bool candidate_dividend_record = 8;
+   */
+  candidateDividendRecord: boolean;
+
+  /**
+   * @generated from field: double monthly_budget_rs = 9;
+   */
+  monthlyBudgetRs: number;
+
+  /**
+   * @generated from field: double multiplier_below_median = 10;
+   */
+  multiplierBelowMedian: number;
+
+  /**
+   * @generated from field: double multiplier_bottom_quarter = 11;
+   */
+  multiplierBottomQuarter: number;
+};
+
+/**
+ * Describes the message ntx.v1.Rules.
+ * Use `create(RulesSchema)` to create a new message.
+ */
+export declare const RulesSchema: GenMessage<Rules>;
+
+/**
  * @generated from message ntx.v1.Transaction
  */
 export declare type Transaction = Message<"ntx.v1.Transaction"> & {
@@ -185,6 +665,18 @@ export declare type Holding = Message<"ntx.v1.Holding"> & {
    * @generated from field: string close_day = 20;
    */
   closeDay: string;
+
+  /**
+   * @generated from field: repeated ntx.v1.Gate gates = 21;
+   */
+  gates: Gate[];
+
+  /**
+   * The holding against the soft and hard caps: "holds", "watch", "triggered"; empty without shares.
+   *
+   * @generated from field: string cap_verdict = 22;
+   */
+  capVerdict: string;
 };
 
 /**
@@ -243,6 +735,51 @@ export declare type GetPortfolioResponse = Message<"ntx.v1.GetPortfolioResponse"
    * @generated from field: string opening = 5;
    */
   opening: string;
+
+  /**
+   * Sector cap, position count and one hydro per basin.
+   *
+   * @generated from field: repeated ntx.v1.Cap caps = 6;
+   */
+  caps: Cap[];
+
+  /**
+   * @generated from field: ntx.v1.Rules rules = 7;
+   */
+  rules?: Rules;
+
+  /**
+   * @generated from field: ntx.v1.OrderSheet order_sheet = 8;
+   */
+  orderSheet?: OrderSheet;
+
+  /**
+   * Soonest first.
+   *
+   * @generated from field: repeated ntx.v1.CalendarEntry calendar = 9;
+   */
+  calendar: CalendarEntry[];
+
+  /**
+   * The Calendar section's sentence: what is next, and how many dates have passed.
+   *
+   * @generated from field: string calendar_opening = 10;
+   */
+  calendarOpening: string;
+
+  /**
+   * Sorted by rating, then PE against the sector.
+   *
+   * @generated from field: repeated ntx.v1.Candidate candidates = 11;
+   */
+  candidates: Candidate[];
+
+  /**
+   * The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+   *
+   * @generated from field: string candidates_opening = 12;
+   */
+  candidatesOpening: string;
 };
 
 /**
@@ -281,9 +818,11 @@ export declare type UpsertHoldingRequest = Message<"ntx.v1.UpsertHoldingRequest"
   carryRs: number;
 
   /**
-   * @generated from field: bool drawdown_gate = 6;
+   * Unset on a new holding means the sector's default: on for hydropower, off elsewhere.
+   *
+   * @generated from field: optional bool drawdown_gate = 6;
    */
-  drawdownGate: boolean;
+  drawdownGate?: boolean;
 
   /**
    * @generated from field: string thesis = 7;
@@ -446,6 +985,276 @@ export declare type AddNoteResponse = Message<"ntx.v1.AddNoteResponse"> & {
 export declare const AddNoteResponseSchema: GenMessage<AddNoteResponse>;
 
 /**
+ * @generated from message ntx.v1.UpsertGateRequest
+ */
+export declare type UpsertGateRequest = Message<"ntx.v1.UpsertGateRequest"> & {
+  /**
+   * Zero inserts; an existing id updates.
+   *
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+
+  /**
+   * @generated from field: string symbol = 2;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: ntx.v1.GateKind kind = 3;
+   */
+  kind: GateKind;
+
+  /**
+   * @generated from field: string metric = 4;
+   */
+  metric: string;
+
+  /**
+   * @generated from field: ntx.v1.GateDirection direction = 5;
+   */
+  direction: GateDirection;
+
+  /**
+   * @generated from field: double threshold = 6;
+   */
+  threshold: number;
+
+  /**
+   * @generated from field: int32 periods = 7;
+   */
+  periods: number;
+
+  /**
+   * @generated from field: string text = 8;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string checked_on = 9;
+   */
+  checkedOn: string;
+};
+
+/**
+ * Describes the message ntx.v1.UpsertGateRequest.
+ * Use `create(UpsertGateRequestSchema)` to create a new message.
+ */
+export declare const UpsertGateRequestSchema: GenMessage<UpsertGateRequest>;
+
+/**
+ * @generated from message ntx.v1.UpsertGateResponse
+ */
+export declare type UpsertGateResponse = Message<"ntx.v1.UpsertGateResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Gate gate = 1;
+   */
+  gate?: Gate;
+};
+
+/**
+ * Describes the message ntx.v1.UpsertGateResponse.
+ * Use `create(UpsertGateResponseSchema)` to create a new message.
+ */
+export declare const UpsertGateResponseSchema: GenMessage<UpsertGateResponse>;
+
+/**
+ * @generated from message ntx.v1.DeleteGateRequest
+ */
+export declare type DeleteGateRequest = Message<"ntx.v1.DeleteGateRequest"> & {
+  /**
+   * @generated from field: int64 id = 1;
+   */
+  id: bigint;
+};
+
+/**
+ * Describes the message ntx.v1.DeleteGateRequest.
+ * Use `create(DeleteGateRequestSchema)` to create a new message.
+ */
+export declare const DeleteGateRequestSchema: GenMessage<DeleteGateRequest>;
+
+/**
+ * @generated from message ntx.v1.DeleteGateResponse
+ */
+export declare type DeleteGateResponse = Message<"ntx.v1.DeleteGateResponse"> & {
+};
+
+/**
+ * Describes the message ntx.v1.DeleteGateResponse.
+ * Use `create(DeleteGateResponseSchema)` to create a new message.
+ */
+export declare const DeleteGateResponseSchema: GenMessage<DeleteGateResponse>;
+
+/**
+ * @generated from message ntx.v1.UpdateRulesRequest
+ */
+export declare type UpdateRulesRequest = Message<"ntx.v1.UpdateRulesRequest"> & {
+  /**
+   * @generated from field: ntx.v1.Rules rules = 1;
+   */
+  rules?: Rules;
+};
+
+/**
+ * Describes the message ntx.v1.UpdateRulesRequest.
+ * Use `create(UpdateRulesRequestSchema)` to create a new message.
+ */
+export declare const UpdateRulesRequestSchema: GenMessage<UpdateRulesRequest>;
+
+/**
+ * @generated from message ntx.v1.UpdateRulesResponse
+ */
+export declare type UpdateRulesResponse = Message<"ntx.v1.UpdateRulesResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Rules rules = 1;
+   */
+  rules?: Rules;
+};
+
+/**
+ * Describes the message ntx.v1.UpdateRulesResponse.
+ * Use `create(UpdateRulesResponseSchema)` to create a new message.
+ */
+export declare const UpdateRulesResponseSchema: GenMessage<UpdateRulesResponse>;
+
+/**
+ * @generated from message ntx.v1.GetHoldingStoryRequest
+ */
+export declare type GetHoldingStoryRequest = Message<"ntx.v1.GetHoldingStoryRequest"> & {
+  /**
+   * @generated from field: string symbol = 1;
+   */
+  symbol: string;
+
+  /**
+   * @generated from field: map<string, double> fund_navs = 2;
+   */
+  fundNavs: { [key: string]: number };
+};
+
+/**
+ * Describes the message ntx.v1.GetHoldingStoryRequest.
+ * Use `create(GetHoldingStoryRequestSchema)` to create a new message.
+ */
+export declare const GetHoldingStoryRequestSchema: GenMessage<GetHoldingStoryRequest>;
+
+/**
+ * @generated from message ntx.v1.GetHoldingStoryResponse
+ */
+export declare type GetHoldingStoryResponse = Message<"ntx.v1.GetHoldingStoryResponse"> & {
+  /**
+   * @generated from field: ntx.v1.Holding holding = 1;
+   */
+  holding?: Holding;
+
+  /**
+   * A bonus the exchange has published that no bonus transaction credits yet; empty otherwise.
+   *
+   * @generated from field: string bonus_hint = 2;
+   */
+  bonusHint: string;
+};
+
+/**
+ * Describes the message ntx.v1.GetHoldingStoryResponse.
+ * Use `create(GetHoldingStoryResponseSchema)` to create a new message.
+ */
+export declare const GetHoldingStoryResponseSchema: GenMessage<GetHoldingStoryResponse>;
+
+/**
+ * @generated from message ntx.v1.MarkMonthExecutedRequest
+ */
+export declare type MarkMonthExecutedRequest = Message<"ntx.v1.MarkMonthExecutedRequest"> & {
+  /**
+   * New carry in rupees by symbol, as the owner confirmed or edited it.
+   *
+   * @generated from field: map<string, double> carries = 1;
+   */
+  carries: { [key: string]: number };
+};
+
+/**
+ * Describes the message ntx.v1.MarkMonthExecutedRequest.
+ * Use `create(MarkMonthExecutedRequestSchema)` to create a new message.
+ */
+export declare const MarkMonthExecutedRequestSchema: GenMessage<MarkMonthExecutedRequest>;
+
+/**
+ * @generated from message ntx.v1.MarkMonthExecutedResponse
+ */
+export declare type MarkMonthExecutedResponse = Message<"ntx.v1.MarkMonthExecutedResponse"> & {
+};
+
+/**
+ * Describes the message ntx.v1.MarkMonthExecutedResponse.
+ * Use `create(MarkMonthExecutedResponseSchema)` to create a new message.
+ */
+export declare const MarkMonthExecutedResponseSchema: GenMessage<MarkMonthExecutedResponse>;
+
+/**
+ * @generated from enum ntx.v1.GateKind
+ */
+export enum GateKind {
+  /**
+   * @generated from enum value: GATE_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: GATE_KIND_METRIC = 1;
+   */
+  METRIC = 1,
+
+  /**
+   * @generated from enum value: GATE_KIND_EVENT = 2;
+   */
+  EVENT = 2,
+}
+
+/**
+ * Describes the enum ntx.v1.GateKind.
+ */
+export declare const GateKindSchema: GenEnum<GateKind>;
+
+/**
+ * The prior directions are ratchets: the threshold is the previous period's own figure.
+ *
+ * @generated from enum ntx.v1.GateDirection
+ */
+export enum GateDirection {
+  /**
+   * @generated from enum value: GATE_DIRECTION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_ABOVE = 1;
+   */
+  ABOVE = 1,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_BELOW = 2;
+   */
+  BELOW = 2,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_NOT_BELOW_PRIOR = 3;
+   */
+  NOT_BELOW_PRIOR = 3,
+
+  /**
+   * @generated from enum value: GATE_DIRECTION_NOT_ABOVE_PRIOR = 4;
+   */
+  NOT_ABOVE_PRIOR = 4,
+}
+
+/**
+ * Describes the enum ntx.v1.GateDirection.
+ */
+export declare const GateDirectionSchema: GenEnum<GateDirection>;
+
+/**
  * @generated from enum ntx.v1.HoldingStatus
  */
 export enum HoldingStatus {
@@ -562,6 +1371,50 @@ export declare const PortfolioService: GenService<{
     methodKind: "unary";
     input: typeof AddNoteRequestSchema;
     output: typeof AddNoteResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.UpsertGate
+   */
+  upsertGate: {
+    methodKind: "unary";
+    input: typeof UpsertGateRequestSchema;
+    output: typeof UpsertGateResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.DeleteGate
+   */
+  deleteGate: {
+    methodKind: "unary";
+    input: typeof DeleteGateRequestSchema;
+    output: typeof DeleteGateResponseSchema;
+  },
+  /**
+   * @generated from rpc ntx.v1.PortfolioService.UpdateRules
+   */
+  updateRules: {
+    methodKind: "unary";
+    input: typeof UpdateRulesRequestSchema;
+    output: typeof UpdateRulesResponseSchema;
+  },
+  /**
+   * GetHoldingStory is the "Your thesis" section of a held company's page.
+   *
+   * @generated from rpc ntx.v1.PortfolioService.GetHoldingStory
+   */
+  getHoldingStory: {
+    methodKind: "unary";
+    input: typeof GetHoldingStoryRequestSchema;
+    output: typeof GetHoldingStoryResponseSchema;
+  },
+  /**
+   * MarkMonthExecuted writes the carries the owner confirmed from the order sheet.
+   *
+   * @generated from rpc ntx.v1.PortfolioService.MarkMonthExecuted
+   */
+  markMonthExecuted: {
+    methodKind: "unary";
+    input: typeof MarkMonthExecutedRequestSchema;
+    output: typeof MarkMonthExecutedResponseSchema;
   },
 }>;
 

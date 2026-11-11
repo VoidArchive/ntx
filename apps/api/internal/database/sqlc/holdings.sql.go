@@ -272,6 +272,20 @@ func (q *Queries) ListTransactionsByHolding(ctx context.Context, holdingID int64
 	return items, nil
 }
 
+const updateHoldingCarry = `-- name: UpdateHoldingCarry :exec
+UPDATE holdings SET carry_rs = ? WHERE symbol = ?
+`
+
+type UpdateHoldingCarryParams struct {
+	CarryRs float64 `json:"carry_rs"`
+	Symbol  string  `json:"symbol"`
+}
+
+func (q *Queries) UpdateHoldingCarry(ctx context.Context, arg UpdateHoldingCarryParams) error {
+	_, err := q.db.ExecContext(ctx, updateHoldingCarry, arg.CarryRs, arg.Symbol)
+	return err
+}
+
 const upsertHolding = `-- name: UpsertHolding :one
 INSERT INTO holdings (
     symbol, status, target_shares, allocation_percent, carry_rs,

@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { Holding } from '#lib/gen/ntx/v1/portfolio_pb.js';
+	import type { Gate, Holding } from '#lib/gen/ntx/v1/portfolio_pb.js';
 	import { HoldingStatus, TransactionKind } from '#lib/gen/ntx/v1/portfolio_pb.js';
+	import Gates from '#lib/components/portfolio/Gates.svelte';
+	import {
+		VERDICT,
+		byVerdict,
+		figure,
+		isEvent,
+		verdictOf
+	} from '#lib/components/portfolio/gates.js';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -41,6 +49,32 @@
 
 	let editing = $state<string | undefined>();
 	let selected = $derived(data.portfolio?.holdings.find((h) => h.symbol === editing));
+	// Every gate across holdings, Triggered and Needs data first; event gates last with their tick date.
+	let gates = $derived(
+		(data.portfolio?.holdings ?? []).flatMap((h) => h.gates).sort(byVerdict) as Gate[]
+	);
+	let caps = $derived([...(data.portfolio?.caps ?? [])].sort(byVerdict));
+	let rules = $derived(data.portfolio?.rules);
+	let sheet = $derived(data.portfolio?.orderSheet);
+	let calendar = $derived(data.portfolio?.calendar ?? []);
+	let numberRules = $derived<[string, string, number][]>(
+		rules
+			? [
+					['soft_cap_percent', 'Soft cap %', rules.softCapPercent],
+					['hard_cap_percent', 'Hard cap %', rules.hardCapPercent],
+					['sector_cap_percent', 'Sector cap %', rules.sectorCapPercent],
+					['max_positions', 'Max positions', rules.maxPositions],
+					['min_entry_rs', 'Minimum entry (Rs)', rules.minEntryRs],
+					['monthly_budget_rs', 'Monthly budget (Rs)', rules.monthlyBudgetRs],
+					['multiplier_below_median', 'Multiplier below the median', rules.multiplierBelowMedian],
+					[
+						'multiplier_bottom_quarter',
+						'Multiplier in the bottom quarter',
+						rules.multiplierBottomQuarter
+					]
+				]
+			: []
+	);
 </script>
 
 <svelte:head>
@@ -83,6 +117,65 @@
 			{#if form?.message}<p class="mt-2 text-sm text-destructive">{form.message}</p>{/if}
 		</header>
 
+		<section class="mt-6 card-report" aria-label="Gates">
+			<h2 class="font-serif text-xl">Gates</h2>
+			<p class="mt-1 text-sm text-muted-foreground">
+				Your written conditions against the latest filings, then the portfolio caps. Each verdict
+				names the period it read.
+			</p>
+			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+					<thead class="text-xs text-muted-foreground">
+						<tr class="border-b border-border">
+							<th class="py-2 text-left font-normal">Holding</th>
+							<th class="py-2 text-left font-normal">Gate</th>
+							<th class="py-2 text-right font-normal">Value</th>
+							<th class="py-2 text-left font-normal">Period</th>
+							<th class="py-2 text-left font-normal">Verdict</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each gates as g (g.id)}
+							<tr class="border-b border-border/50">
+								<td class="py-1.5 font-medium">{g.symbol}</td>
+								<td class="py-1.5">{g.label}</td>
+								<td class="py-1.5 text-right">
+									{#if !isEvent(g)}
+										{figure(g.value, g.unit)}{#if g.prior !== undefined}
+											<span class="text-xs text-muted-foreground">
+												vs {figure(g.prior, g.unit)}</span
+											>{/if}
+									{/if}
+								</td>
+								<td class="py-1.5 text-xs text-muted-foreground">
+									{#if isEvent(g)}
+										checked {g.checkedOn || 'never'}
+									{:else if g.source}<a href={g.source} class="underline" rel="noreferrer"
+											>{g.period}</a
+										>{:else}{g.period || 'no period'}{/if}
+								</td>
+								<td class="py-1.5 font-medium">{verdictOf(g)}</td>
+							</tr>
+						{:else}
+							<tr
+								><td colspan="5" class="py-3 text-muted-foreground"
+									>No gates written. Open a holding below to write one.</td
+								></tr
+							>
+						{/each}
+						{#each caps as c (c.rule + c.detail)}
+							<tr class="border-b border-border/50">
+								<td class="py-1.5 text-muted-foreground">Cap</td>
+								<td class="py-1.5">{c.rule}</td>
+								<td colspan="2" class="py-1.5 text-xs text-muted-foreground">{c.detail}</td>
+								<td class="py-1.5 font-medium">{VERDICT[c.verdict] ?? c.verdict}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
 		<section class="mt-6 card-report" aria-label="Holdings">
 			<h2 class="font-serif text-xl">Holdings</h2>
 			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
@@ -98,6 +191,7 @@
 							<th class="py-2 text-left font-normal">As of</th>
 							<th class="py-2 text-right font-normal">Value</th>
 							<th class="py-2 text-right font-normal">Weight</th>
+							<th class="py-2 text-left font-normal">Cap</th>
 							<th class="py-2 text-right font-normal">To build</th>
 							<th class="py-2"></th>
 						</tr>
@@ -128,6 +222,7 @@
 								<td class="py-1.5 text-right"
 									>{h.close === undefined ? '—' : `${rs(h.weightPercent, 1)}%`}</td
 								>
+								<td class="py-1.5 text-xs">{VERDICT[h.capVerdict] ?? '—'}</td>
 								<td class="py-1.5 text-right text-muted-foreground">
 									{h.targetShares > 0n ? n(h.targetShares) : '—'}
 								</td>
@@ -142,7 +237,7 @@
 							</tr>
 						{:else}
 							<tr
-								><td colspan="11" class="py-12 text-center text-muted-foreground"
+								><td colspan="12" class="py-12 text-center text-muted-foreground"
 									>No holdings yet. Add one below.</td
 								></tr
 							>
@@ -150,6 +245,162 @@
 					</tbody>
 				</table>
 			</div>
+		</section>
+
+		{#if sheet}
+			<section class="mt-6 card-report" aria-label="Order sheet">
+				<h2 class="font-serif text-xl">Order sheet</h2>
+				<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{sheet.opening}</p>
+				<p class="mt-1 text-sm text-muted-foreground">
+					A proposal, never an order placed: Build holdings under their caps, whole lots of ten at
+					the latest close, the remainder carried. Edit a carry before marking the month executed.
+				</p>
+				<form
+					method="POST"
+					action="?/executed"
+					use:enhance
+					class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0"
+				>
+					<table
+						class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3"
+					>
+						<thead class="text-xs text-muted-foreground">
+							<tr class="border-b border-border">
+								<th class="py-2 text-left font-normal">Symbol</th>
+								<th class="py-2 text-right font-normal">Allocation</th>
+								<th class="py-2 text-right font-normal">Carry in</th>
+								<th class="py-2 text-right font-normal">Available</th>
+								<th class="py-2 text-right font-normal">Close</th>
+								<th class="py-2 text-left font-normal">As of</th>
+								<th class="py-2 text-right font-normal">Shares</th>
+								<th class="py-2 text-right font-normal">Cost</th>
+								<th class="py-2 text-right font-normal">Carry out</th>
+								<th class="py-2 text-left font-normal">Note</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each sheet.lines as l (l.symbol)}
+								<tr class="border-b border-border/50">
+									<td class="py-1.5 font-medium">{l.symbol}</td>
+									<td class="py-1.5 text-right"
+										>{l.allocationPercent ? `${rs(l.allocationPercent, 0)}%` : '—'}</td
+									>
+									<td class="py-1.5 text-right">{rs(l.carryRs, 0)}</td>
+									<td class="py-1.5 text-right">{l.availableRs ? rs(l.availableRs, 0) : '—'}</td>
+									<td class="py-1.5 text-right"
+										>{l.close === undefined ? 'not recorded' : rs(l.close)}</td
+									>
+									<td class="py-1.5 text-right">{l.shares ? n(l.shares) : '—'}</td>
+									<td class="py-1.5 text-right">{l.costRs ? rs(l.costRs, 0) : '—'}</td>
+									<td class="py-1.5 text-right">
+										<input
+											type="number"
+											name="carry:{l.symbol}"
+											min="0"
+											step="1"
+											value={Math.round(l.newCarryRs)}
+											aria-label="{l.symbol} carry out"
+											class="{field} w-24 text-right"
+										/>
+									</td>
+									<td class="py-1.5 text-xs text-muted-foreground">{l.note}</td>
+								</tr>
+							{:else}
+								<tr
+									><td colspan="10" class="py-3 text-muted-foreground"
+										>No Build or Frozen holding: nothing to propose this month.</td
+									></tr
+								>
+							{/each}
+						</tbody>
+					</table>
+					{#if sheet.lines.length > 0}
+						<button type="submit" class="{button} mt-3">Mark {sheet.month} executed</button>
+					{/if}
+				</form>
+			</section>
+		{/if}
+
+		<section class="mt-6 card-report" aria-label="Candidates">
+			<h2 class="font-serif text-xl">Candidates</h2>
+			<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{p.candidatesOpening}</p>
+			<p class="mt-1 text-sm text-muted-foreground">
+				What your rules admit from the screener, not a ranking: not held, rated at least the
+				minimum, the dividend record holding, sector headroom after a minimum entry, and no second
+				hydro in a basin you hold. Entry is the smallest whole lot that reaches the minimum.
+			</p>
+			<div class="-mx-6 mt-3 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
+					<thead class="text-xs text-muted-foreground">
+						<tr class="border-b border-border">
+							<th class="py-2 text-left font-normal">Symbol</th>
+							<th class="py-2 text-left font-normal">Sector</th>
+							<th class="py-2 text-left font-normal">Rating</th>
+							<th class="py-2 text-right font-normal">Close</th>
+							<th class="py-2 text-left font-normal">As of</th>
+							<th class="py-2 text-right font-normal">PE</th>
+							<th class="py-2 text-right font-normal">Sector median PE</th>
+							<th class="py-2 text-left font-normal">Basin</th>
+							<th class="py-2 text-right font-normal">Entry</th>
+							<th class="py-2 text-right font-normal">Cost</th>
+							<th class="py-2 text-right font-normal">Months</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each p.candidates as c (c.symbol)}
+							<tr class="border-b border-border/50 hover:bg-accent/40">
+								<td class="py-1.5">
+									<a href="/company/{c.symbol}" class="font-medium hover:underline">{c.symbol}</a>
+									<span class="ml-2 text-muted-foreground">{c.name}</span>
+								</td>
+								<td class="py-1.5 text-muted-foreground">{c.sector}</td>
+								<td class="py-1.5">{c.rating}</td>
+								<td class="py-1.5 text-right">{rs(c.close)}</td>
+								<td class="py-1.5 text-xs text-muted-foreground">{c.closeDay || 'not recorded'}</td>
+								<td class="py-1.5 text-right">
+									{#if c.pe === undefined}not recorded{:else}{rs(c.pe, 1)}x
+										<span class="block text-xs text-muted-foreground">{c.pePeriod}</span>{/if}
+								</td>
+								<td class="py-1.5 text-right text-muted-foreground"
+									>{c.sectorPeMedian === undefined
+										? 'not recorded'
+										: `${rs(c.sectorPeMedian, 1)}x`}</td
+								>
+								<td class="py-1.5 text-xs text-muted-foreground">{c.basin || c.note}</td>
+								<td class="py-1.5 text-right">{n(c.shares)}</td>
+								<td class="py-1.5 text-right">{rs(c.costRs, 0)}</td>
+								<td class="py-1.5 text-right">{rs(c.months, 1)}</td>
+							</tr>
+						{:else}
+							<tr
+								><td colspan="11" class="py-3 text-muted-foreground"
+									>No company passes the rules at the latest close.</td
+								></tr
+							>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="mt-6 card-report" aria-label="Calendar">
+			<h2 class="font-serif text-xl">Calendar</h2>
+			<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{p.calendarOpening}</p>
+			<p class="mt-1 text-sm text-muted-foreground">
+				Filing due dates (quarter end plus thirty days), review dates and event gates due a
+				re-check. No notices.
+			</p>
+			<ul class="mt-3 space-y-1 text-sm tabular-nums">
+				{#each calendar as e (e.day + e.symbol + e.what)}
+					<li class="flex gap-3 {e.overdue ? 'text-destructive' : ''}">
+						<span class="w-24 shrink-0">{e.day}</span>
+						<span class="w-16 shrink-0 font-medium">{e.symbol}</span>
+						<span class="text-muted-foreground">{e.what}</span>
+					</li>
+				{:else}
+					<li class="text-muted-foreground">Nothing dated.</li>
+				{/each}
+			</ul>
 		</section>
 
 		{#if selected}
@@ -245,6 +496,12 @@
 					</div>
 				</div>
 
+				{#if !selected.isFund}
+					<div class="mt-6">
+						<Gates symbol={selected.symbol} gates={selected.gates} />
+					</div>
+				{/if}
+
 				<form method="POST" action="?/delete" use:enhance class="mt-6">
 					<input type="hidden" name="symbol" value={selected.symbol} />
 					<button type="submit" class="text-xs text-destructive underline underline-offset-2"
@@ -338,15 +595,66 @@
 							>{selected?.thesis ?? ''}</textarea
 						>
 					</label>
-					<label class="flex items-center gap-2">
-						<input type="checkbox" name="drawdown_gate" checked={selected?.drawdownGate ?? false} />
-						Drawdown gate applies
-					</label>
+					{#if selected}
+						<label class="flex items-center gap-2">
+							<input type="hidden" name="drawdown_gate_known" value="1" />
+							<input type="checkbox" name="drawdown_gate" checked={selected.drawdownGate} />
+							Drawdown gate applies
+						</label>
+					{:else}
+						<p class="self-center text-xs text-muted-foreground">
+							The drawdown gate starts on for hydropower and off elsewhere; edit after adding.
+						</p>
+					{/if}
 					<div class="flex items-end">
 						<button type="submit" class={button}>{selected ? 'Save' : 'Add'}</button>
 					</div>
 				</form>
 			{/key}
 		</section>
+
+		{#if rules}
+			<section class="mt-6 card-report" aria-label="Rules">
+				<h2 class="font-serif text-xl">Rules</h2>
+				<p class="mt-1 text-sm text-muted-foreground">
+					The caps and the monthly budget the sections above read. One row, yours to edit.
+				</p>
+				<form
+					method="POST"
+					action="?/rules"
+					use:enhance
+					class="mt-3 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4"
+				>
+					{#each numberRules as [name, text, value] (name)}
+						<label class="flex flex-col gap-1">
+							{text}
+							<input type="number" {name} step="any" min="0" {value} class={field} />
+						</label>
+					{/each}
+					<label class="flex flex-col gap-1">
+						Candidate rating at least
+						<select name="candidate_min_rating" value={rules.candidateMinRating} class={field}>
+							{#each ['A', 'B', 'C', 'D'] as letter (letter)}<option value={letter}>{letter}</option
+								>{/each}
+						</select>
+					</label>
+					<label class="flex items-center gap-2">
+						<input type="checkbox" name="one_hydro_per_basin" checked={rules.oneHydroPerBasin} />
+						One hydro per basin
+					</label>
+					<label class="flex items-center gap-2">
+						<input
+							type="checkbox"
+							name="candidate_dividend_record"
+							checked={rules.candidateDividendRecord}
+						/>
+						Candidates need the dividend record
+					</label>
+					<div class="flex items-end">
+						<button type="submit" class={button}>Save rules</button>
+					</div>
+				</form>
+			</section>
+		{/if}
 	{/if}
 </div>

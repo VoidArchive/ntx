@@ -1,12 +1,13 @@
 -- name: UpsertCompanyRating :exec
-INSERT INTO company_ratings (company_id, letter, holds, evaluated, total, version, computed_at)
-VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+INSERT INTO company_ratings (company_id, letter, holds, evaluated, total, version, dividend_record, computed_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 ON CONFLICT(company_id) DO UPDATE SET
   letter = excluded.letter,
   holds = excluded.holds,
   evaluated = excluded.evaluated,
   total = excluded.total,
   version = excluded.version,
+  dividend_record = excluded.dividend_record,
   computed_at = excluded.computed_at;
 
 -- One row per listed company with the inputs of the screener columns; ratios
@@ -20,7 +21,7 @@ SELECT c.id, c.symbol, c.name, c.sector,
   prev.close_price AS prev_close,
   f.eps, f.book_value,
   ca.cash_dividend,
-  r.letter AS rating, r.holds, r.evaluated, r.total,
+  r.letter AS rating, r.holds, r.evaluated, r.total, r.dividend_record,
   f.fiscal_year, f.quarter, f.fiscal_year_np, p.business_date
 FROM companies c
 LEFT JOIN ownership o ON o.company_id = c.id

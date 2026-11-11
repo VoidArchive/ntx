@@ -21,6 +21,111 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type GateKind int32
+
+const (
+	GateKind_GATE_KIND_UNSPECIFIED GateKind = 0
+	GateKind_GATE_KIND_METRIC      GateKind = 1
+	GateKind_GATE_KIND_EVENT       GateKind = 2
+)
+
+// Enum value maps for GateKind.
+var (
+	GateKind_name = map[int32]string{
+		0: "GATE_KIND_UNSPECIFIED",
+		1: "GATE_KIND_METRIC",
+		2: "GATE_KIND_EVENT",
+	}
+	GateKind_value = map[string]int32{
+		"GATE_KIND_UNSPECIFIED": 0,
+		"GATE_KIND_METRIC":      1,
+		"GATE_KIND_EVENT":       2,
+	}
+)
+
+func (x GateKind) Enum() *GateKind {
+	p := new(GateKind)
+	*p = x
+	return p
+}
+
+func (x GateKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GateKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_ntx_v1_portfolio_proto_enumTypes[0].Descriptor()
+}
+
+func (GateKind) Type() protoreflect.EnumType {
+	return &file_ntx_v1_portfolio_proto_enumTypes[0]
+}
+
+func (x GateKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GateKind.Descriptor instead.
+func (GateKind) EnumDescriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{0}
+}
+
+// The prior directions are ratchets: the threshold is the previous period's own figure.
+type GateDirection int32
+
+const (
+	GateDirection_GATE_DIRECTION_UNSPECIFIED     GateDirection = 0
+	GateDirection_GATE_DIRECTION_ABOVE           GateDirection = 1
+	GateDirection_GATE_DIRECTION_BELOW           GateDirection = 2
+	GateDirection_GATE_DIRECTION_NOT_BELOW_PRIOR GateDirection = 3
+	GateDirection_GATE_DIRECTION_NOT_ABOVE_PRIOR GateDirection = 4
+)
+
+// Enum value maps for GateDirection.
+var (
+	GateDirection_name = map[int32]string{
+		0: "GATE_DIRECTION_UNSPECIFIED",
+		1: "GATE_DIRECTION_ABOVE",
+		2: "GATE_DIRECTION_BELOW",
+		3: "GATE_DIRECTION_NOT_BELOW_PRIOR",
+		4: "GATE_DIRECTION_NOT_ABOVE_PRIOR",
+	}
+	GateDirection_value = map[string]int32{
+		"GATE_DIRECTION_UNSPECIFIED":     0,
+		"GATE_DIRECTION_ABOVE":           1,
+		"GATE_DIRECTION_BELOW":           2,
+		"GATE_DIRECTION_NOT_BELOW_PRIOR": 3,
+		"GATE_DIRECTION_NOT_ABOVE_PRIOR": 4,
+	}
+)
+
+func (x GateDirection) Enum() *GateDirection {
+	p := new(GateDirection)
+	*p = x
+	return p
+}
+
+func (x GateDirection) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GateDirection) Descriptor() protoreflect.EnumDescriptor {
+	return file_ntx_v1_portfolio_proto_enumTypes[1].Descriptor()
+}
+
+func (GateDirection) Type() protoreflect.EnumType {
+	return &file_ntx_v1_portfolio_proto_enumTypes[1]
+}
+
+func (x GateDirection) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GateDirection.Descriptor instead.
+func (GateDirection) EnumDescriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{1}
+}
+
 type HoldingStatus int32
 
 const (
@@ -57,11 +162,11 @@ func (x HoldingStatus) String() string {
 }
 
 func (HoldingStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_ntx_v1_portfolio_proto_enumTypes[0].Descriptor()
+	return file_ntx_v1_portfolio_proto_enumTypes[2].Descriptor()
 }
 
 func (HoldingStatus) Type() protoreflect.EnumType {
-	return &file_ntx_v1_portfolio_proto_enumTypes[0]
+	return &file_ntx_v1_portfolio_proto_enumTypes[2]
 }
 
 func (x HoldingStatus) Number() protoreflect.EnumNumber {
@@ -70,7 +175,7 @@ func (x HoldingStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HoldingStatus.Descriptor instead.
 func (HoldingStatus) EnumDescriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{0}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{2}
 }
 
 type TransactionKind int32
@@ -115,11 +220,11 @@ func (x TransactionKind) String() string {
 }
 
 func (TransactionKind) Descriptor() protoreflect.EnumDescriptor {
-	return file_ntx_v1_portfolio_proto_enumTypes[1].Descriptor()
+	return file_ntx_v1_portfolio_proto_enumTypes[3].Descriptor()
 }
 
 func (TransactionKind) Type() protoreflect.EnumType {
-	return &file_ntx_v1_portfolio_proto_enumTypes[1]
+	return &file_ntx_v1_portfolio_proto_enumTypes[3]
 }
 
 func (x TransactionKind) Number() protoreflect.EnumNumber {
@@ -128,7 +233,854 @@ func (x TransactionKind) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TransactionKind.Descriptor instead.
 func (TransactionKind) EnumDescriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{3}
+}
+
+// OrderLine is one holding's row of the month's Order sheet (GLOSSARY: Order sheet).
+type OrderLine struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Symbol            string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Status            HoldingStatus          `protobuf:"varint,2,opt,name=status,proto3,enum=ntx.v1.HoldingStatus" json:"status,omitempty"`
+	AllocationPercent float64                `protobuf:"fixed64,3,opt,name=allocation_percent,json=allocationPercent,proto3" json:"allocation_percent,omitempty"`
+	CarryRs           float64                `protobuf:"fixed64,4,opt,name=carry_rs,json=carryRs,proto3" json:"carry_rs,omitempty"`
+	// allocation of the budget plus the carry; zero for a frozen or capped holding.
+	AvailableRs float64  `protobuf:"fixed64,5,opt,name=available_rs,json=availableRs,proto3" json:"available_rs,omitempty"`
+	Lots        int32    `protobuf:"varint,6,opt,name=lots,proto3" json:"lots,omitempty"`
+	Shares      int64    `protobuf:"varint,7,opt,name=shares,proto3" json:"shares,omitempty"`
+	Close       *float64 `protobuf:"fixed64,8,opt,name=close,proto3,oneof" json:"close,omitempty"`
+	CostRs      float64  `protobuf:"fixed64,9,opt,name=cost_rs,json=costRs,proto3" json:"cost_rs,omitempty"`
+	// What the owner would carry into next month after this purchase.
+	NewCarryRs float64 `protobuf:"fixed64,10,opt,name=new_carry_rs,json=newCarryRs,proto3" json:"new_carry_rs,omitempty"`
+	// Why nothing is proposed: the frozen reason, "over the soft cap", "no close recorded".
+	Note          string `protobuf:"bytes,11,opt,name=note,proto3" json:"note,omitempty"`
+	ReviewDate    string `protobuf:"bytes,12,opt,name=review_date,json=reviewDate,proto3" json:"review_date,omitempty"`
+	CloseDay      string `protobuf:"bytes,13,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrderLine) Reset() {
+	*x = OrderLine{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrderLine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrderLine) ProtoMessage() {}
+
+func (x *OrderLine) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrderLine.ProtoReflect.Descriptor instead.
+func (*OrderLine) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *OrderLine) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *OrderLine) GetStatus() HoldingStatus {
+	if x != nil {
+		return x.Status
+	}
+	return HoldingStatus_HOLDING_STATUS_UNSPECIFIED
+}
+
+func (x *OrderLine) GetAllocationPercent() float64 {
+	if x != nil {
+		return x.AllocationPercent
+	}
+	return 0
+}
+
+func (x *OrderLine) GetCarryRs() float64 {
+	if x != nil {
+		return x.CarryRs
+	}
+	return 0
+}
+
+func (x *OrderLine) GetAvailableRs() float64 {
+	if x != nil {
+		return x.AvailableRs
+	}
+	return 0
+}
+
+func (x *OrderLine) GetLots() int32 {
+	if x != nil {
+		return x.Lots
+	}
+	return 0
+}
+
+func (x *OrderLine) GetShares() int64 {
+	if x != nil {
+		return x.Shares
+	}
+	return 0
+}
+
+func (x *OrderLine) GetClose() float64 {
+	if x != nil && x.Close != nil {
+		return *x.Close
+	}
+	return 0
+}
+
+func (x *OrderLine) GetCostRs() float64 {
+	if x != nil {
+		return x.CostRs
+	}
+	return 0
+}
+
+func (x *OrderLine) GetNewCarryRs() float64 {
+	if x != nil {
+		return x.NewCarryRs
+	}
+	return 0
+}
+
+func (x *OrderLine) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
+func (x *OrderLine) GetReviewDate() string {
+	if x != nil {
+		return x.ReviewDate
+	}
+	return ""
+}
+
+func (x *OrderLine) GetCloseDay() string {
+	if x != nil {
+		return x.CloseDay
+	}
+	return ""
+}
+
+type OrderSheet struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Bikram Sambat month the sheet is for, "Mangsir".
+	Month       string   `protobuf:"bytes,1,opt,name=month,proto3" json:"month,omitempty"`
+	BudgetRs    float64  `protobuf:"fixed64,2,opt,name=budget_rs,json=budgetRs,proto3" json:"budget_rs,omitempty"`
+	Multiplier  float64  `protobuf:"fixed64,3,opt,name=multiplier,proto3" json:"multiplier,omitempty"`
+	IndexClose  *float64 `protobuf:"fixed64,4,opt,name=index_close,json=indexClose,proto3,oneof" json:"index_close,omitempty"`
+	IndexDay    string   `protobuf:"bytes,5,opt,name=index_day,json=indexDay,proto3" json:"index_day,omitempty"`
+	RangeLow    float64  `protobuf:"fixed64,6,opt,name=range_low,json=rangeLow,proto3" json:"range_low,omitempty"`
+	RangeMedian float64  `protobuf:"fixed64,7,opt,name=range_median,json=rangeMedian,proto3" json:"range_median,omitempty"`
+	RangeHigh   float64  `protobuf:"fixed64,8,opt,name=range_high,json=rangeHigh,proto3" json:"range_high,omitempty"`
+	// The sheet's sentence: budget, index, range and multiplier (ADR 0001).
+	Opening       string       `protobuf:"bytes,9,opt,name=opening,proto3" json:"opening,omitempty"`
+	Lines         []*OrderLine `protobuf:"bytes,10,rep,name=lines,proto3" json:"lines,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OrderSheet) Reset() {
+	*x = OrderSheet{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OrderSheet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OrderSheet) ProtoMessage() {}
+
+func (x *OrderSheet) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OrderSheet.ProtoReflect.Descriptor instead.
+func (*OrderSheet) Descriptor() ([]byte, []int) {
 	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *OrderSheet) GetMonth() string {
+	if x != nil {
+		return x.Month
+	}
+	return ""
+}
+
+func (x *OrderSheet) GetBudgetRs() float64 {
+	if x != nil {
+		return x.BudgetRs
+	}
+	return 0
+}
+
+func (x *OrderSheet) GetMultiplier() float64 {
+	if x != nil {
+		return x.Multiplier
+	}
+	return 0
+}
+
+func (x *OrderSheet) GetIndexClose() float64 {
+	if x != nil && x.IndexClose != nil {
+		return *x.IndexClose
+	}
+	return 0
+}
+
+func (x *OrderSheet) GetIndexDay() string {
+	if x != nil {
+		return x.IndexDay
+	}
+	return ""
+}
+
+func (x *OrderSheet) GetRangeLow() float64 {
+	if x != nil {
+		return x.RangeLow
+	}
+	return 0
+}
+
+func (x *OrderSheet) GetRangeMedian() float64 {
+	if x != nil {
+		return x.RangeMedian
+	}
+	return 0
+}
+
+func (x *OrderSheet) GetRangeHigh() float64 {
+	if x != nil {
+		return x.RangeHigh
+	}
+	return 0
+}
+
+func (x *OrderSheet) GetOpening() string {
+	if x != nil {
+		return x.Opening
+	}
+	return ""
+}
+
+func (x *OrderSheet) GetLines() []*OrderLine {
+	if x != nil {
+		return x.Lines
+	}
+	return nil
+}
+
+// Candidate is a company the owner's rules admit (GLOSSARY: Candidates): a list
+// of what the rules admit, not a ranking of what to buy.
+type Candidate struct {
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Symbol   string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Name     string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Sector   string                 `protobuf:"bytes,3,opt,name=sector,proto3" json:"sector,omitempty"`
+	Rating   string                 `protobuf:"bytes,4,opt,name=rating,proto3" json:"rating,omitempty"`
+	Close    float64                `protobuf:"fixed64,5,opt,name=close,proto3" json:"close,omitempty"`
+	CloseDay string                 `protobuf:"bytes,6,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
+	// PE at the close over the EPS the period names: trailing four quarters where they
+	// exist, else the latest annualized filing (ADR 0002).
+	Pe       *float64 `protobuf:"fixed64,7,opt,name=pe,proto3,oneof" json:"pe,omitempty"`
+	PePeriod string   `protobuf:"bytes,14,opt,name=pe_period,json=pePeriod,proto3" json:"pe_period,omitempty"`
+	// Median PE of the sector's profitable companies, each at its own latest filing.
+	SectorPeMedian *float64 `protobuf:"fixed64,8,opt,name=sector_pe_median,json=sectorPeMedian,proto3,oneof" json:"sector_pe_median,omitempty"`
+	// Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
+	Basin string `protobuf:"bytes,9,opt,name=basin,proto3" json:"basin,omitempty"`
+	// The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
+	Shares        int64   `protobuf:"varint,10,opt,name=shares,proto3" json:"shares,omitempty"`
+	CostRs        float64 `protobuf:"fixed64,11,opt,name=cost_rs,json=costRs,proto3" json:"cost_rs,omitempty"`
+	Months        float64 `protobuf:"fixed64,12,opt,name=months,proto3" json:"months,omitempty"`
+	Note          string  `protobuf:"bytes,13,opt,name=note,proto3" json:"note,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Candidate) Reset() {
+	*x = Candidate{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Candidate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Candidate) ProtoMessage() {}
+
+func (x *Candidate) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Candidate.ProtoReflect.Descriptor instead.
+func (*Candidate) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Candidate) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *Candidate) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Candidate) GetSector() string {
+	if x != nil {
+		return x.Sector
+	}
+	return ""
+}
+
+func (x *Candidate) GetRating() string {
+	if x != nil {
+		return x.Rating
+	}
+	return ""
+}
+
+func (x *Candidate) GetClose() float64 {
+	if x != nil {
+		return x.Close
+	}
+	return 0
+}
+
+func (x *Candidate) GetCloseDay() string {
+	if x != nil {
+		return x.CloseDay
+	}
+	return ""
+}
+
+func (x *Candidate) GetPe() float64 {
+	if x != nil && x.Pe != nil {
+		return *x.Pe
+	}
+	return 0
+}
+
+func (x *Candidate) GetPePeriod() string {
+	if x != nil {
+		return x.PePeriod
+	}
+	return ""
+}
+
+func (x *Candidate) GetSectorPeMedian() float64 {
+	if x != nil && x.SectorPeMedian != nil {
+		return *x.SectorPeMedian
+	}
+	return 0
+}
+
+func (x *Candidate) GetBasin() string {
+	if x != nil {
+		return x.Basin
+	}
+	return ""
+}
+
+func (x *Candidate) GetShares() int64 {
+	if x != nil {
+		return x.Shares
+	}
+	return 0
+}
+
+func (x *Candidate) GetCostRs() float64 {
+	if x != nil {
+		return x.CostRs
+	}
+	return 0
+}
+
+func (x *Candidate) GetMonths() float64 {
+	if x != nil {
+		return x.Months
+	}
+	return 0
+}
+
+func (x *Candidate) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
+// CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
+type CalendarEntry struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Day    string                 `protobuf:"bytes,1,opt,name=day,proto3" json:"day,omitempty"`
+	Symbol string                 `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	What   string                 `protobuf:"bytes,3,opt,name=what,proto3" json:"what,omitempty"`
+	// The day has passed without a tick, review or filing recorded against it.
+	Overdue       bool `protobuf:"varint,4,opt,name=overdue,proto3" json:"overdue,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CalendarEntry) Reset() {
+	*x = CalendarEntry{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CalendarEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CalendarEntry) ProtoMessage() {}
+
+func (x *CalendarEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CalendarEntry.ProtoReflect.Descriptor instead.
+func (*CalendarEntry) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CalendarEntry) GetDay() string {
+	if x != nil {
+		return x.Day
+	}
+	return ""
+}
+
+func (x *CalendarEntry) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *CalendarEntry) GetWhat() string {
+	if x != nil {
+		return x.What
+	}
+	return ""
+}
+
+func (x *CalendarEntry) GetOverdue() bool {
+	if x != nil {
+		return x.Overdue
+	}
+	return false
+}
+
+// Gate is one of the owner's written break conditions with its verdict
+// (GLOSSARY: Gate; Triggered / Holds / Needs data). Every verdict names the
+// period it was evaluated against (ADR 0002).
+type Gate struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Id     int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Symbol string                 `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Kind   GateKind               `protobuf:"varint,3,opt,name=kind,proto3,enum=ntx.v1.GateKind" json:"kind,omitempty"`
+	// Metric gates: one of eps, pe, cash_dividend_percent, bonus_percent, book_value, roe,
+	// promoter_percent, weight_percent, drawdown_percent, npl_percent, car_percent,
+	// loan_growth_percent, distributable_profit.
+	Metric    string        `protobuf:"bytes,4,opt,name=metric,proto3" json:"metric,omitempty"`
+	Direction GateDirection `protobuf:"varint,5,opt,name=direction,proto3,enum=ntx.v1.GateDirection" json:"direction,omitempty"`
+	Threshold float64       `protobuf:"fixed64,6,opt,name=threshold,proto3" json:"threshold,omitempty"`
+	Periods   int32         `protobuf:"varint,7,opt,name=periods,proto3" json:"periods,omitempty"`
+	// Event gates: the condition in the owner's words and the day it was last ticked.
+	Text      string `protobuf:"bytes,8,opt,name=text,proto3" json:"text,omitempty"`
+	CheckedOn string `protobuf:"bytes,9,opt,name=checked_on,json=checkedOn,proto3" json:"checked_on,omitempty"`
+	// Computed: "triggered", "holds" or "needs data"; empty for an event gate.
+	Verdict string `protobuf:"bytes,10,opt,name=verdict,proto3" json:"verdict,omitempty"`
+	// The gate in words, "NPL above 5% for 1 quarter"; the lede and the table share it.
+	Label string   `protobuf:"bytes,11,opt,name=label,proto3" json:"label,omitempty"`
+	Value *float64 `protobuf:"fixed64,12,opt,name=value,proto3,oneof" json:"value,omitempty"`
+	// For a prior direction, the previous period's figure the value was held against.
+	Prior  *float64 `protobuf:"fixed64,13,opt,name=prior,proto3,oneof" json:"prior,omitempty"`
+	Period string   `protobuf:"bytes,14,opt,name=period,proto3" json:"period,omitempty"`
+	Source string   `protobuf:"bytes,15,opt,name=source,proto3" json:"source,omitempty"`
+	// How value and prior print: "%", "x" or "Rs".
+	Unit          string `protobuf:"bytes,16,opt,name=unit,proto3" json:"unit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Gate) Reset() {
+	*x = Gate{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Gate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Gate) ProtoMessage() {}
+
+func (x *Gate) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Gate.ProtoReflect.Descriptor instead.
+func (*Gate) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Gate) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Gate) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *Gate) GetKind() GateKind {
+	if x != nil {
+		return x.Kind
+	}
+	return GateKind_GATE_KIND_UNSPECIFIED
+}
+
+func (x *Gate) GetMetric() string {
+	if x != nil {
+		return x.Metric
+	}
+	return ""
+}
+
+func (x *Gate) GetDirection() GateDirection {
+	if x != nil {
+		return x.Direction
+	}
+	return GateDirection_GATE_DIRECTION_UNSPECIFIED
+}
+
+func (x *Gate) GetThreshold() float64 {
+	if x != nil {
+		return x.Threshold
+	}
+	return 0
+}
+
+func (x *Gate) GetPeriods() int32 {
+	if x != nil {
+		return x.Periods
+	}
+	return 0
+}
+
+func (x *Gate) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *Gate) GetCheckedOn() string {
+	if x != nil {
+		return x.CheckedOn
+	}
+	return ""
+}
+
+func (x *Gate) GetVerdict() string {
+	if x != nil {
+		return x.Verdict
+	}
+	return ""
+}
+
+func (x *Gate) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *Gate) GetValue() float64 {
+	if x != nil && x.Value != nil {
+		return *x.Value
+	}
+	return 0
+}
+
+func (x *Gate) GetPrior() float64 {
+	if x != nil && x.Prior != nil {
+		return *x.Prior
+	}
+	return 0
+}
+
+func (x *Gate) GetPeriod() string {
+	if x != nil {
+		return x.Period
+	}
+	return ""
+}
+
+func (x *Gate) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *Gate) GetUnit() string {
+	if x != nil {
+		return x.Unit
+	}
+	return ""
+}
+
+// Cap is one portfolio rule's verdict: "holds", "watch" or "triggered", with the figures.
+type Cap struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rule          string                 `protobuf:"bytes,1,opt,name=rule,proto3" json:"rule,omitempty"`
+	Verdict       string                 `protobuf:"bytes,2,opt,name=verdict,proto3" json:"verdict,omitempty"`
+	Detail        string                 `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Cap) Reset() {
+	*x = Cap{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Cap) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Cap) ProtoMessage() {}
+
+func (x *Cap) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Cap.ProtoReflect.Descriptor instead.
+func (*Cap) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *Cap) GetRule() string {
+	if x != nil {
+		return x.Rule
+	}
+	return ""
+}
+
+func (x *Cap) GetVerdict() string {
+	if x != nil {
+		return x.Verdict
+	}
+	return ""
+}
+
+func (x *Cap) GetDetail() string {
+	if x != nil {
+		return x.Detail
+	}
+	return ""
+}
+
+type Rules struct {
+	state                   protoimpl.MessageState `protogen:"open.v1"`
+	SoftCapPercent          float64                `protobuf:"fixed64,1,opt,name=soft_cap_percent,json=softCapPercent,proto3" json:"soft_cap_percent,omitempty"`
+	HardCapPercent          float64                `protobuf:"fixed64,2,opt,name=hard_cap_percent,json=hardCapPercent,proto3" json:"hard_cap_percent,omitempty"`
+	SectorCapPercent        float64                `protobuf:"fixed64,3,opt,name=sector_cap_percent,json=sectorCapPercent,proto3" json:"sector_cap_percent,omitempty"`
+	MaxPositions            int32                  `protobuf:"varint,4,opt,name=max_positions,json=maxPositions,proto3" json:"max_positions,omitempty"`
+	MinEntryRs              float64                `protobuf:"fixed64,5,opt,name=min_entry_rs,json=minEntryRs,proto3" json:"min_entry_rs,omitempty"`
+	OneHydroPerBasin        bool                   `protobuf:"varint,6,opt,name=one_hydro_per_basin,json=oneHydroPerBasin,proto3" json:"one_hydro_per_basin,omitempty"`
+	CandidateMinRating      string                 `protobuf:"bytes,7,opt,name=candidate_min_rating,json=candidateMinRating,proto3" json:"candidate_min_rating,omitempty"`
+	CandidateDividendRecord bool                   `protobuf:"varint,8,opt,name=candidate_dividend_record,json=candidateDividendRecord,proto3" json:"candidate_dividend_record,omitempty"`
+	MonthlyBudgetRs         float64                `protobuf:"fixed64,9,opt,name=monthly_budget_rs,json=monthlyBudgetRs,proto3" json:"monthly_budget_rs,omitempty"`
+	MultiplierBelowMedian   float64                `protobuf:"fixed64,10,opt,name=multiplier_below_median,json=multiplierBelowMedian,proto3" json:"multiplier_below_median,omitempty"`
+	MultiplierBottomQuarter float64                `protobuf:"fixed64,11,opt,name=multiplier_bottom_quarter,json=multiplierBottomQuarter,proto3" json:"multiplier_bottom_quarter,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *Rules) Reset() {
+	*x = Rules{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Rules) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Rules) ProtoMessage() {}
+
+func (x *Rules) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Rules.ProtoReflect.Descriptor instead.
+func (*Rules) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Rules) GetSoftCapPercent() float64 {
+	if x != nil {
+		return x.SoftCapPercent
+	}
+	return 0
+}
+
+func (x *Rules) GetHardCapPercent() float64 {
+	if x != nil {
+		return x.HardCapPercent
+	}
+	return 0
+}
+
+func (x *Rules) GetSectorCapPercent() float64 {
+	if x != nil {
+		return x.SectorCapPercent
+	}
+	return 0
+}
+
+func (x *Rules) GetMaxPositions() int32 {
+	if x != nil {
+		return x.MaxPositions
+	}
+	return 0
+}
+
+func (x *Rules) GetMinEntryRs() float64 {
+	if x != nil {
+		return x.MinEntryRs
+	}
+	return 0
+}
+
+func (x *Rules) GetOneHydroPerBasin() bool {
+	if x != nil {
+		return x.OneHydroPerBasin
+	}
+	return false
+}
+
+func (x *Rules) GetCandidateMinRating() string {
+	if x != nil {
+		return x.CandidateMinRating
+	}
+	return ""
+}
+
+func (x *Rules) GetCandidateDividendRecord() bool {
+	if x != nil {
+		return x.CandidateDividendRecord
+	}
+	return false
+}
+
+func (x *Rules) GetMonthlyBudgetRs() float64 {
+	if x != nil {
+		return x.MonthlyBudgetRs
+	}
+	return 0
+}
+
+func (x *Rules) GetMultiplierBelowMedian() float64 {
+	if x != nil {
+		return x.MultiplierBelowMedian
+	}
+	return 0
+}
+
+func (x *Rules) GetMultiplierBottomQuarter() float64 {
+	if x != nil {
+		return x.MultiplierBottomQuarter
+	}
+	return 0
 }
 
 type Transaction struct {
@@ -145,7 +1097,7 @@ type Transaction struct {
 
 func (x *Transaction) Reset() {
 	*x = Transaction{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[0]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -157,7 +1109,7 @@ func (x *Transaction) String() string {
 func (*Transaction) ProtoMessage() {}
 
 func (x *Transaction) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[0]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +1122,7 @@ func (x *Transaction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
 func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{0}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Transaction) GetId() int64 {
@@ -219,7 +1171,7 @@ type Note struct {
 
 func (x *Note) Reset() {
 	*x = Note{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[1]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -231,7 +1183,7 @@ func (x *Note) String() string {
 func (*Note) ProtoMessage() {}
 
 func (x *Note) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[1]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -244,7 +1196,7 @@ func (x *Note) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Note.ProtoReflect.Descriptor instead.
 func (*Note) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{1}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Note) GetId() int64 {
@@ -293,14 +1245,17 @@ type Holding struct {
 	Transactions []*Transaction `protobuf:"bytes,18,rep,name=transactions,proto3" json:"transactions,omitempty"`
 	Notes        []*Note        `protobuf:"bytes,19,rep,name=notes,proto3" json:"notes,omitempty"`
 	// Business date of the close; empty for a fund, whose NAV date the caller knows.
-	CloseDay      string `protobuf:"bytes,20,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
+	CloseDay string  `protobuf:"bytes,20,opt,name=close_day,json=closeDay,proto3" json:"close_day,omitempty"`
+	Gates    []*Gate `protobuf:"bytes,21,rep,name=gates,proto3" json:"gates,omitempty"`
+	// The holding against the soft and hard caps: "holds", "watch", "triggered"; empty without shares.
+	CapVerdict    string `protobuf:"bytes,22,opt,name=cap_verdict,json=capVerdict,proto3" json:"cap_verdict,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Holding) Reset() {
 	*x = Holding{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[2]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -312,7 +1267,7 @@ func (x *Holding) String() string {
 func (*Holding) ProtoMessage() {}
 
 func (x *Holding) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[2]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -325,7 +1280,7 @@ func (x *Holding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Holding.ProtoReflect.Descriptor instead.
 func (*Holding) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{2}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Holding) GetSymbol() string {
@@ -468,6 +1423,20 @@ func (x *Holding) GetCloseDay() string {
 	return ""
 }
 
+func (x *Holding) GetGates() []*Gate {
+	if x != nil {
+		return x.Gates
+	}
+	return nil
+}
+
+func (x *Holding) GetCapVerdict() string {
+	if x != nil {
+		return x.CapVerdict
+	}
+	return ""
+}
+
 type GetPortfolioRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// NAV per unit by fund symbol, from the web's nav.json snapshot.
@@ -478,7 +1447,7 @@ type GetPortfolioRequest struct {
 
 func (x *GetPortfolioRequest) Reset() {
 	*x = GetPortfolioRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -490,7 +1459,7 @@ func (x *GetPortfolioRequest) String() string {
 func (*GetPortfolioRequest) ProtoMessage() {}
 
 func (x *GetPortfolioRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -503,7 +1472,7 @@ func (x *GetPortfolioRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortfolioRequest.ProtoReflect.Descriptor instead.
 func (*GetPortfolioRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{3}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetPortfolioRequest) GetFundNavs() map[string]float64 {
@@ -521,14 +1490,26 @@ type GetPortfolioResponse struct {
 	Positions int32 `protobuf:"varint,3,opt,name=positions,proto3" json:"positions,omitempty"`
 	Funds     int32 `protobuf:"varint,4,opt,name=funds,proto3" json:"funds,omitempty"`
 	// The page's opening sentence, computed here (ADR 0001).
-	Opening       string `protobuf:"bytes,5,opt,name=opening,proto3" json:"opening,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Opening string `protobuf:"bytes,5,opt,name=opening,proto3" json:"opening,omitempty"`
+	// Sector cap, position count and one hydro per basin.
+	Caps       []*Cap      `protobuf:"bytes,6,rep,name=caps,proto3" json:"caps,omitempty"`
+	Rules      *Rules      `protobuf:"bytes,7,opt,name=rules,proto3" json:"rules,omitempty"`
+	OrderSheet *OrderSheet `protobuf:"bytes,8,opt,name=order_sheet,json=orderSheet,proto3" json:"order_sheet,omitempty"`
+	// Soonest first.
+	Calendar []*CalendarEntry `protobuf:"bytes,9,rep,name=calendar,proto3" json:"calendar,omitempty"`
+	// The Calendar section's sentence: what is next, and how many dates have passed.
+	CalendarOpening string `protobuf:"bytes,10,opt,name=calendar_opening,json=calendarOpening,proto3" json:"calendar_opening,omitempty"`
+	// Sorted by rating, then PE against the sector.
+	Candidates []*Candidate `protobuf:"bytes,11,rep,name=candidates,proto3" json:"candidates,omitempty"`
+	// The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+	CandidatesOpening string `protobuf:"bytes,12,opt,name=candidates_opening,json=candidatesOpening,proto3" json:"candidates_opening,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *GetPortfolioResponse) Reset() {
 	*x = GetPortfolioResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -540,7 +1521,7 @@ func (x *GetPortfolioResponse) String() string {
 func (*GetPortfolioResponse) ProtoMessage() {}
 
 func (x *GetPortfolioResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -553,7 +1534,7 @@ func (x *GetPortfolioResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortfolioResponse.ProtoReflect.Descriptor instead.
 func (*GetPortfolioResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{4}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetPortfolioResponse) GetHoldings() []*Holding {
@@ -591,6 +1572,55 @@ func (x *GetPortfolioResponse) GetOpening() string {
 	return ""
 }
 
+func (x *GetPortfolioResponse) GetCaps() []*Cap {
+	if x != nil {
+		return x.Caps
+	}
+	return nil
+}
+
+func (x *GetPortfolioResponse) GetRules() *Rules {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
+func (x *GetPortfolioResponse) GetOrderSheet() *OrderSheet {
+	if x != nil {
+		return x.OrderSheet
+	}
+	return nil
+}
+
+func (x *GetPortfolioResponse) GetCalendar() []*CalendarEntry {
+	if x != nil {
+		return x.Calendar
+	}
+	return nil
+}
+
+func (x *GetPortfolioResponse) GetCalendarOpening() string {
+	if x != nil {
+		return x.CalendarOpening
+	}
+	return ""
+}
+
+func (x *GetPortfolioResponse) GetCandidates() []*Candidate {
+	if x != nil {
+		return x.Candidates
+	}
+	return nil
+}
+
+func (x *GetPortfolioResponse) GetCandidatesOpening() string {
+	if x != nil {
+		return x.CandidatesOpening
+	}
+	return ""
+}
+
 type UpsertHoldingRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	Symbol            string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
@@ -598,17 +1628,18 @@ type UpsertHoldingRequest struct {
 	TargetShares      int64                  `protobuf:"varint,3,opt,name=target_shares,json=targetShares,proto3" json:"target_shares,omitempty"`
 	AllocationPercent float64                `protobuf:"fixed64,4,opt,name=allocation_percent,json=allocationPercent,proto3" json:"allocation_percent,omitempty"`
 	CarryRs           float64                `protobuf:"fixed64,5,opt,name=carry_rs,json=carryRs,proto3" json:"carry_rs,omitempty"`
-	DrawdownGate      bool                   `protobuf:"varint,6,opt,name=drawdown_gate,json=drawdownGate,proto3" json:"drawdown_gate,omitempty"`
-	Thesis            string                 `protobuf:"bytes,7,opt,name=thesis,proto3" json:"thesis,omitempty"`
-	FrozenReason      string                 `protobuf:"bytes,8,opt,name=frozen_reason,json=frozenReason,proto3" json:"frozen_reason,omitempty"`
-	ReviewDate        string                 `protobuf:"bytes,9,opt,name=review_date,json=reviewDate,proto3" json:"review_date,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Unset on a new holding means the sector's default: on for hydropower, off elsewhere.
+	DrawdownGate  *bool  `protobuf:"varint,6,opt,name=drawdown_gate,json=drawdownGate,proto3,oneof" json:"drawdown_gate,omitempty"`
+	Thesis        string `protobuf:"bytes,7,opt,name=thesis,proto3" json:"thesis,omitempty"`
+	FrozenReason  string `protobuf:"bytes,8,opt,name=frozen_reason,json=frozenReason,proto3" json:"frozen_reason,omitempty"`
+	ReviewDate    string `protobuf:"bytes,9,opt,name=review_date,json=reviewDate,proto3" json:"review_date,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpsertHoldingRequest) Reset() {
 	*x = UpsertHoldingRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -620,7 +1651,7 @@ func (x *UpsertHoldingRequest) String() string {
 func (*UpsertHoldingRequest) ProtoMessage() {}
 
 func (x *UpsertHoldingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -633,7 +1664,7 @@ func (x *UpsertHoldingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertHoldingRequest.ProtoReflect.Descriptor instead.
 func (*UpsertHoldingRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{5}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UpsertHoldingRequest) GetSymbol() string {
@@ -672,8 +1703,8 @@ func (x *UpsertHoldingRequest) GetCarryRs() float64 {
 }
 
 func (x *UpsertHoldingRequest) GetDrawdownGate() bool {
-	if x != nil {
-		return x.DrawdownGate
+	if x != nil && x.DrawdownGate != nil {
+		return *x.DrawdownGate
 	}
 	return false
 }
@@ -708,7 +1739,7 @@ type UpsertHoldingResponse struct {
 
 func (x *UpsertHoldingResponse) Reset() {
 	*x = UpsertHoldingResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -720,7 +1751,7 @@ func (x *UpsertHoldingResponse) String() string {
 func (*UpsertHoldingResponse) ProtoMessage() {}
 
 func (x *UpsertHoldingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -733,7 +1764,7 @@ func (x *UpsertHoldingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertHoldingResponse.ProtoReflect.Descriptor instead.
 func (*UpsertHoldingResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{6}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpsertHoldingResponse) GetHolding() *Holding {
@@ -752,7 +1783,7 @@ type DeleteHoldingRequest struct {
 
 func (x *DeleteHoldingRequest) Reset() {
 	*x = DeleteHoldingRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -764,7 +1795,7 @@ func (x *DeleteHoldingRequest) String() string {
 func (*DeleteHoldingRequest) ProtoMessage() {}
 
 func (x *DeleteHoldingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -777,7 +1808,7 @@ func (x *DeleteHoldingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHoldingRequest.ProtoReflect.Descriptor instead.
 func (*DeleteHoldingRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{7}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteHoldingRequest) GetSymbol() string {
@@ -795,7 +1826,7 @@ type DeleteHoldingResponse struct {
 
 func (x *DeleteHoldingResponse) Reset() {
 	*x = DeleteHoldingResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -807,7 +1838,7 @@ func (x *DeleteHoldingResponse) String() string {
 func (*DeleteHoldingResponse) ProtoMessage() {}
 
 func (x *DeleteHoldingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -820,7 +1851,7 @@ func (x *DeleteHoldingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHoldingResponse.ProtoReflect.Descriptor instead.
 func (*DeleteHoldingResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{8}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{15}
 }
 
 type AddTransactionRequest struct {
@@ -836,7 +1867,7 @@ type AddTransactionRequest struct {
 
 func (x *AddTransactionRequest) Reset() {
 	*x = AddTransactionRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -848,7 +1879,7 @@ func (x *AddTransactionRequest) String() string {
 func (*AddTransactionRequest) ProtoMessage() {}
 
 func (x *AddTransactionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -861,7 +1892,7 @@ func (x *AddTransactionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddTransactionRequest.ProtoReflect.Descriptor instead.
 func (*AddTransactionRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{9}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *AddTransactionRequest) GetSymbol() string {
@@ -908,7 +1939,7 @@ type AddTransactionResponse struct {
 
 func (x *AddTransactionResponse) Reset() {
 	*x = AddTransactionResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +1951,7 @@ func (x *AddTransactionResponse) String() string {
 func (*AddTransactionResponse) ProtoMessage() {}
 
 func (x *AddTransactionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +1964,7 @@ func (x *AddTransactionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddTransactionResponse.ProtoReflect.Descriptor instead.
 func (*AddTransactionResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{10}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *AddTransactionResponse) GetTransaction() *Transaction {
@@ -954,7 +1985,7 @@ type AddNoteRequest struct {
 
 func (x *AddNoteRequest) Reset() {
 	*x = AddNoteRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -966,7 +1997,7 @@ func (x *AddNoteRequest) String() string {
 func (*AddNoteRequest) ProtoMessage() {}
 
 func (x *AddNoteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +2010,7 @@ func (x *AddNoteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddNoteRequest.ProtoReflect.Descriptor instead.
 func (*AddNoteRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{11}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AddNoteRequest) GetSymbol() string {
@@ -1012,7 +2043,7 @@ type AddNoteResponse struct {
 
 func (x *AddNoteResponse) Reset() {
 	*x = AddNoteResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1024,7 +2055,7 @@ func (x *AddNoteResponse) String() string {
 func (*AddNoteResponse) ProtoMessage() {}
 
 func (x *AddNoteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1037,7 +2068,7 @@ func (x *AddNoteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddNoteResponse.ProtoReflect.Descriptor instead.
 func (*AddNoteResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{12}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *AddNoteResponse) GetNote() *Note {
@@ -1047,11 +2078,616 @@ func (x *AddNoteResponse) GetNote() *Note {
 	return nil
 }
 
+type UpsertGateRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Zero inserts; an existing id updates.
+	Id            int64         `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Symbol        string        `protobuf:"bytes,2,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Kind          GateKind      `protobuf:"varint,3,opt,name=kind,proto3,enum=ntx.v1.GateKind" json:"kind,omitempty"`
+	Metric        string        `protobuf:"bytes,4,opt,name=metric,proto3" json:"metric,omitempty"`
+	Direction     GateDirection `protobuf:"varint,5,opt,name=direction,proto3,enum=ntx.v1.GateDirection" json:"direction,omitempty"`
+	Threshold     float64       `protobuf:"fixed64,6,opt,name=threshold,proto3" json:"threshold,omitempty"`
+	Periods       int32         `protobuf:"varint,7,opt,name=periods,proto3" json:"periods,omitempty"`
+	Text          string        `protobuf:"bytes,8,opt,name=text,proto3" json:"text,omitempty"`
+	CheckedOn     string        `protobuf:"bytes,9,opt,name=checked_on,json=checkedOn,proto3" json:"checked_on,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpsertGateRequest) Reset() {
+	*x = UpsertGateRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpsertGateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpsertGateRequest) ProtoMessage() {}
+
+func (x *UpsertGateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpsertGateRequest.ProtoReflect.Descriptor instead.
+func (*UpsertGateRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpsertGateRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpsertGateRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *UpsertGateRequest) GetKind() GateKind {
+	if x != nil {
+		return x.Kind
+	}
+	return GateKind_GATE_KIND_UNSPECIFIED
+}
+
+func (x *UpsertGateRequest) GetMetric() string {
+	if x != nil {
+		return x.Metric
+	}
+	return ""
+}
+
+func (x *UpsertGateRequest) GetDirection() GateDirection {
+	if x != nil {
+		return x.Direction
+	}
+	return GateDirection_GATE_DIRECTION_UNSPECIFIED
+}
+
+func (x *UpsertGateRequest) GetThreshold() float64 {
+	if x != nil {
+		return x.Threshold
+	}
+	return 0
+}
+
+func (x *UpsertGateRequest) GetPeriods() int32 {
+	if x != nil {
+		return x.Periods
+	}
+	return 0
+}
+
+func (x *UpsertGateRequest) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *UpsertGateRequest) GetCheckedOn() string {
+	if x != nil {
+		return x.CheckedOn
+	}
+	return ""
+}
+
+type UpsertGateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Gate          *Gate                  `protobuf:"bytes,1,opt,name=gate,proto3" json:"gate,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpsertGateResponse) Reset() {
+	*x = UpsertGateResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpsertGateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpsertGateResponse) ProtoMessage() {}
+
+func (x *UpsertGateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpsertGateResponse.ProtoReflect.Descriptor instead.
+func (*UpsertGateResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *UpsertGateResponse) GetGate() *Gate {
+	if x != nil {
+		return x.Gate
+	}
+	return nil
+}
+
+type DeleteGateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteGateRequest) Reset() {
+	*x = DeleteGateRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteGateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteGateRequest) ProtoMessage() {}
+
+func (x *DeleteGateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteGateRequest.ProtoReflect.Descriptor instead.
+func (*DeleteGateRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *DeleteGateRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteGateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteGateResponse) Reset() {
+	*x = DeleteGateResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteGateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteGateResponse) ProtoMessage() {}
+
+func (x *DeleteGateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteGateResponse.ProtoReflect.Descriptor instead.
+func (*DeleteGateResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{23}
+}
+
+type UpdateRulesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rules         *Rules                 `protobuf:"bytes,1,opt,name=rules,proto3" json:"rules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRulesRequest) Reset() {
+	*x = UpdateRulesRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRulesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRulesRequest) ProtoMessage() {}
+
+func (x *UpdateRulesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRulesRequest.ProtoReflect.Descriptor instead.
+func (*UpdateRulesRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *UpdateRulesRequest) GetRules() *Rules {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
+type UpdateRulesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rules         *Rules                 `protobuf:"bytes,1,opt,name=rules,proto3" json:"rules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRulesResponse) Reset() {
+	*x = UpdateRulesResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRulesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRulesResponse) ProtoMessage() {}
+
+func (x *UpdateRulesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRulesResponse.ProtoReflect.Descriptor instead.
+func (*UpdateRulesResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *UpdateRulesResponse) GetRules() *Rules {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
+type GetHoldingStoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	FundNavs      map[string]float64     `protobuf:"bytes,2,rep,name=fund_navs,json=fundNavs,proto3" json:"fund_navs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHoldingStoryRequest) Reset() {
+	*x = GetHoldingStoryRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHoldingStoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHoldingStoryRequest) ProtoMessage() {}
+
+func (x *GetHoldingStoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetHoldingStoryRequest.ProtoReflect.Descriptor instead.
+func (*GetHoldingStoryRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *GetHoldingStoryRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *GetHoldingStoryRequest) GetFundNavs() map[string]float64 {
+	if x != nil {
+		return x.FundNavs
+	}
+	return nil
+}
+
+type GetHoldingStoryResponse struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Holding *Holding               `protobuf:"bytes,1,opt,name=holding,proto3" json:"holding,omitempty"`
+	// A bonus the exchange has published that no bonus transaction credits yet; empty otherwise.
+	BonusHint     string `protobuf:"bytes,2,opt,name=bonus_hint,json=bonusHint,proto3" json:"bonus_hint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHoldingStoryResponse) Reset() {
+	*x = GetHoldingStoryResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHoldingStoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHoldingStoryResponse) ProtoMessage() {}
+
+func (x *GetHoldingStoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetHoldingStoryResponse.ProtoReflect.Descriptor instead.
+func (*GetHoldingStoryResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *GetHoldingStoryResponse) GetHolding() *Holding {
+	if x != nil {
+		return x.Holding
+	}
+	return nil
+}
+
+func (x *GetHoldingStoryResponse) GetBonusHint() string {
+	if x != nil {
+		return x.BonusHint
+	}
+	return ""
+}
+
+type MarkMonthExecutedRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// New carry in rupees by symbol, as the owner confirmed or edited it.
+	Carries       map[string]float64 `protobuf:"bytes,1,rep,name=carries,proto3" json:"carries,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MarkMonthExecutedRequest) Reset() {
+	*x = MarkMonthExecutedRequest{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MarkMonthExecutedRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MarkMonthExecutedRequest) ProtoMessage() {}
+
+func (x *MarkMonthExecutedRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MarkMonthExecutedRequest.ProtoReflect.Descriptor instead.
+func (*MarkMonthExecutedRequest) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *MarkMonthExecutedRequest) GetCarries() map[string]float64 {
+	if x != nil {
+		return x.Carries
+	}
+	return nil
+}
+
+type MarkMonthExecutedResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MarkMonthExecutedResponse) Reset() {
+	*x = MarkMonthExecutedResponse{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MarkMonthExecutedResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MarkMonthExecutedResponse) ProtoMessage() {}
+
+func (x *MarkMonthExecutedResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MarkMonthExecutedResponse.ProtoReflect.Descriptor instead.
+func (*MarkMonthExecutedResponse) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{29}
+}
+
 var File_ntx_v1_portfolio_proto protoreflect.FileDescriptor
 
 const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\n" +
-	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\"\x8e\x01\n" +
+	"\x16ntx/v1/portfolio.proto\x12\x06ntx.v1\"\x9d\x03\n" +
+	"\tOrderLine\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12-\n" +
+	"\x06status\x18\x02 \x01(\x0e2\x15.ntx.v1.HoldingStatusR\x06status\x12-\n" +
+	"\x12allocation_percent\x18\x03 \x01(\x01R\x11allocationPercent\x12\x19\n" +
+	"\bcarry_rs\x18\x04 \x01(\x01R\acarryRs\x12!\n" +
+	"\favailable_rs\x18\x05 \x01(\x01R\vavailableRs\x12\x12\n" +
+	"\x04lots\x18\x06 \x01(\x05R\x04lots\x12\x16\n" +
+	"\x06shares\x18\a \x01(\x03R\x06shares\x12\x19\n" +
+	"\x05close\x18\b \x01(\x01H\x00R\x05close\x88\x01\x01\x12\x17\n" +
+	"\acost_rs\x18\t \x01(\x01R\x06costRs\x12 \n" +
+	"\fnew_carry_rs\x18\n" +
+	" \x01(\x01R\n" +
+	"newCarryRs\x12\x12\n" +
+	"\x04note\x18\v \x01(\tR\x04note\x12\x1f\n" +
+	"\vreview_date\x18\f \x01(\tR\n" +
+	"reviewDate\x12\x1b\n" +
+	"\tclose_day\x18\r \x01(\tR\bcloseDayB\b\n" +
+	"\x06_close\"\xd4\x02\n" +
+	"\n" +
+	"OrderSheet\x12\x14\n" +
+	"\x05month\x18\x01 \x01(\tR\x05month\x12\x1b\n" +
+	"\tbudget_rs\x18\x02 \x01(\x01R\bbudgetRs\x12\x1e\n" +
+	"\n" +
+	"multiplier\x18\x03 \x01(\x01R\n" +
+	"multiplier\x12$\n" +
+	"\vindex_close\x18\x04 \x01(\x01H\x00R\n" +
+	"indexClose\x88\x01\x01\x12\x1b\n" +
+	"\tindex_day\x18\x05 \x01(\tR\bindexDay\x12\x1b\n" +
+	"\trange_low\x18\x06 \x01(\x01R\brangeLow\x12!\n" +
+	"\frange_median\x18\a \x01(\x01R\vrangeMedian\x12\x1d\n" +
+	"\n" +
+	"range_high\x18\b \x01(\x01R\trangeHigh\x12\x18\n" +
+	"\aopening\x18\t \x01(\tR\aopening\x12'\n" +
+	"\x05lines\x18\n" +
+	" \x03(\v2\x11.ntx.v1.OrderLineR\x05linesB\x0e\n" +
+	"\f_index_close\"\x8a\x03\n" +
+	"\tCandidate\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
+	"\x06sector\x18\x03 \x01(\tR\x06sector\x12\x16\n" +
+	"\x06rating\x18\x04 \x01(\tR\x06rating\x12\x14\n" +
+	"\x05close\x18\x05 \x01(\x01R\x05close\x12\x1b\n" +
+	"\tclose_day\x18\x06 \x01(\tR\bcloseDay\x12\x13\n" +
+	"\x02pe\x18\a \x01(\x01H\x00R\x02pe\x88\x01\x01\x12\x1b\n" +
+	"\tpe_period\x18\x0e \x01(\tR\bpePeriod\x12-\n" +
+	"\x10sector_pe_median\x18\b \x01(\x01H\x01R\x0esectorPeMedian\x88\x01\x01\x12\x14\n" +
+	"\x05basin\x18\t \x01(\tR\x05basin\x12\x16\n" +
+	"\x06shares\x18\n" +
+	" \x01(\x03R\x06shares\x12\x17\n" +
+	"\acost_rs\x18\v \x01(\x01R\x06costRs\x12\x16\n" +
+	"\x06months\x18\f \x01(\x01R\x06months\x12\x12\n" +
+	"\x04note\x18\r \x01(\tR\x04noteB\x05\n" +
+	"\x03_peB\x13\n" +
+	"\x11_sector_pe_median\"g\n" +
+	"\rCalendarEntry\x12\x10\n" +
+	"\x03day\x18\x01 \x01(\tR\x03day\x12\x16\n" +
+	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12\x12\n" +
+	"\x04what\x18\x03 \x01(\tR\x04what\x12\x18\n" +
+	"\aoverdue\x18\x04 \x01(\bR\aoverdue\"\xca\x03\n" +
+	"\x04Gate\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
+	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12$\n" +
+	"\x04kind\x18\x03 \x01(\x0e2\x10.ntx.v1.GateKindR\x04kind\x12\x16\n" +
+	"\x06metric\x18\x04 \x01(\tR\x06metric\x123\n" +
+	"\tdirection\x18\x05 \x01(\x0e2\x15.ntx.v1.GateDirectionR\tdirection\x12\x1c\n" +
+	"\tthreshold\x18\x06 \x01(\x01R\tthreshold\x12\x18\n" +
+	"\aperiods\x18\a \x01(\x05R\aperiods\x12\x12\n" +
+	"\x04text\x18\b \x01(\tR\x04text\x12\x1d\n" +
+	"\n" +
+	"checked_on\x18\t \x01(\tR\tcheckedOn\x12\x18\n" +
+	"\averdict\x18\n" +
+	" \x01(\tR\averdict\x12\x14\n" +
+	"\x05label\x18\v \x01(\tR\x05label\x12\x19\n" +
+	"\x05value\x18\f \x01(\x01H\x00R\x05value\x88\x01\x01\x12\x19\n" +
+	"\x05prior\x18\r \x01(\x01H\x01R\x05prior\x88\x01\x01\x12\x16\n" +
+	"\x06period\x18\x0e \x01(\tR\x06period\x12\x16\n" +
+	"\x06source\x18\x0f \x01(\tR\x06source\x12\x12\n" +
+	"\x04unit\x18\x10 \x01(\tR\x04unitB\b\n" +
+	"\x06_valueB\b\n" +
+	"\x06_prior\"K\n" +
+	"\x03Cap\x12\x12\n" +
+	"\x04rule\x18\x01 \x01(\tR\x04rule\x12\x18\n" +
+	"\averdict\x18\x02 \x01(\tR\averdict\x12\x16\n" +
+	"\x06detail\x18\x03 \x01(\tR\x06detail\"\x8d\x04\n" +
+	"\x05Rules\x12(\n" +
+	"\x10soft_cap_percent\x18\x01 \x01(\x01R\x0esoftCapPercent\x12(\n" +
+	"\x10hard_cap_percent\x18\x02 \x01(\x01R\x0ehardCapPercent\x12,\n" +
+	"\x12sector_cap_percent\x18\x03 \x01(\x01R\x10sectorCapPercent\x12#\n" +
+	"\rmax_positions\x18\x04 \x01(\x05R\fmaxPositions\x12 \n" +
+	"\fmin_entry_rs\x18\x05 \x01(\x01R\n" +
+	"minEntryRs\x12-\n" +
+	"\x13one_hydro_per_basin\x18\x06 \x01(\bR\x10oneHydroPerBasin\x120\n" +
+	"\x14candidate_min_rating\x18\a \x01(\tR\x12candidateMinRating\x12:\n" +
+	"\x19candidate_dividend_record\x18\b \x01(\bR\x17candidateDividendRecord\x12*\n" +
+	"\x11monthly_budget_rs\x18\t \x01(\x01R\x0fmonthlyBudgetRs\x126\n" +
+	"\x17multiplier_below_median\x18\n" +
+	" \x01(\x01R\x15multiplierBelowMedian\x12:\n" +
+	"\x19multiplier_bottom_quarter\x18\v \x01(\x01R\x17multiplierBottomQuarter\"\x8e\x01\n" +
 	"\vTransaction\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
 	"\x03day\x18\x02 \x01(\tR\x03day\x12+\n" +
@@ -1061,7 +2697,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x04Note\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
 	"\x03day\x18\x02 \x01(\tR\x03day\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"\x91\x05\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\"\xd6\x05\n" +
 	"\aHolding\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -1084,31 +2720,46 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\ais_fund\x18\x11 \x01(\bR\x06isFund\x127\n" +
 	"\ftransactions\x18\x12 \x03(\v2\x13.ntx.v1.TransactionR\ftransactions\x12\"\n" +
 	"\x05notes\x18\x13 \x03(\v2\f.ntx.v1.NoteR\x05notes\x12\x1b\n" +
-	"\tclose_day\x18\x14 \x01(\tR\bcloseDayB\b\n" +
+	"\tclose_day\x18\x14 \x01(\tR\bcloseDay\x12\"\n" +
+	"\x05gates\x18\x15 \x03(\v2\f.ntx.v1.GateR\x05gates\x12\x1f\n" +
+	"\vcap_verdict\x18\x16 \x01(\tR\n" +
+	"capVerdictB\b\n" +
 	"\x06_close\"\x9a\x01\n" +
 	"\x13GetPortfolioRequest\x12F\n" +
 	"\tfund_navs\x18\x01 \x03(\v2).ntx.v1.GetPortfolioRequest.FundNavsEntryR\bfundNavs\x1a;\n" +
 	"\rFundNavsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xb2\x01\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xed\x03\n" +
 	"\x14GetPortfolioResponse\x12+\n" +
 	"\bholdings\x18\x01 \x03(\v2\x0f.ntx.v1.HoldingR\bholdings\x12\x1f\n" +
 	"\vtotal_value\x18\x02 \x01(\x01R\n" +
 	"totalValue\x12\x1c\n" +
 	"\tpositions\x18\x03 \x01(\x05R\tpositions\x12\x14\n" +
 	"\x05funds\x18\x04 \x01(\x05R\x05funds\x12\x18\n" +
-	"\aopening\x18\x05 \x01(\tR\aopening\"\xcf\x02\n" +
+	"\aopening\x18\x05 \x01(\tR\aopening\x12\x1f\n" +
+	"\x04caps\x18\x06 \x03(\v2\v.ntx.v1.CapR\x04caps\x12#\n" +
+	"\x05rules\x18\a \x01(\v2\r.ntx.v1.RulesR\x05rules\x123\n" +
+	"\vorder_sheet\x18\b \x01(\v2\x12.ntx.v1.OrderSheetR\n" +
+	"orderSheet\x121\n" +
+	"\bcalendar\x18\t \x03(\v2\x15.ntx.v1.CalendarEntryR\bcalendar\x12)\n" +
+	"\x10calendar_opening\x18\n" +
+	" \x01(\tR\x0fcalendarOpening\x121\n" +
+	"\n" +
+	"candidates\x18\v \x03(\v2\x11.ntx.v1.CandidateR\n" +
+	"candidates\x12-\n" +
+	"\x12candidates_opening\x18\f \x01(\tR\x11candidatesOpening\"\xe6\x02\n" +
 	"\x14UpsertHoldingRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12-\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x15.ntx.v1.HoldingStatusR\x06status\x12#\n" +
 	"\rtarget_shares\x18\x03 \x01(\x03R\ftargetShares\x12-\n" +
 	"\x12allocation_percent\x18\x04 \x01(\x01R\x11allocationPercent\x12\x19\n" +
-	"\bcarry_rs\x18\x05 \x01(\x01R\acarryRs\x12#\n" +
-	"\rdrawdown_gate\x18\x06 \x01(\bR\fdrawdownGate\x12\x16\n" +
+	"\bcarry_rs\x18\x05 \x01(\x01R\acarryRs\x12(\n" +
+	"\rdrawdown_gate\x18\x06 \x01(\bH\x00R\fdrawdownGate\x88\x01\x01\x12\x16\n" +
 	"\x06thesis\x18\a \x01(\tR\x06thesis\x12#\n" +
 	"\rfrozen_reason\x18\b \x01(\tR\ffrozenReason\x12\x1f\n" +
 	"\vreview_date\x18\t \x01(\tR\n" +
-	"reviewDate\"B\n" +
+	"reviewDateB\x10\n" +
+	"\x0e_drawdown_gate\"B\n" +
 	"\x15UpsertHoldingResponse\x12)\n" +
 	"\aholding\x18\x01 \x01(\v2\x0f.ntx.v1.HoldingR\aholding\".\n" +
 	"\x14DeleteHoldingRequest\x12\x16\n" +
@@ -1127,7 +2778,53 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x03day\x18\x02 \x01(\tR\x03day\x12\x12\n" +
 	"\x04text\x18\x03 \x01(\tR\x04text\"3\n" +
 	"\x0fAddNoteResponse\x12 \n" +
-	"\x04note\x18\x01 \x01(\v2\f.ntx.v1.NoteR\x04note*}\n" +
+	"\x04note\x18\x01 \x01(\v2\f.ntx.v1.NoteR\x04note\"\x99\x02\n" +
+	"\x11UpsertGateRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
+	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12$\n" +
+	"\x04kind\x18\x03 \x01(\x0e2\x10.ntx.v1.GateKindR\x04kind\x12\x16\n" +
+	"\x06metric\x18\x04 \x01(\tR\x06metric\x123\n" +
+	"\tdirection\x18\x05 \x01(\x0e2\x15.ntx.v1.GateDirectionR\tdirection\x12\x1c\n" +
+	"\tthreshold\x18\x06 \x01(\x01R\tthreshold\x12\x18\n" +
+	"\aperiods\x18\a \x01(\x05R\aperiods\x12\x12\n" +
+	"\x04text\x18\b \x01(\tR\x04text\x12\x1d\n" +
+	"\n" +
+	"checked_on\x18\t \x01(\tR\tcheckedOn\"6\n" +
+	"\x12UpsertGateResponse\x12 \n" +
+	"\x04gate\x18\x01 \x01(\v2\f.ntx.v1.GateR\x04gate\"#\n" +
+	"\x11DeleteGateRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\x14\n" +
+	"\x12DeleteGateResponse\"9\n" +
+	"\x12UpdateRulesRequest\x12#\n" +
+	"\x05rules\x18\x01 \x01(\v2\r.ntx.v1.RulesR\x05rules\":\n" +
+	"\x13UpdateRulesResponse\x12#\n" +
+	"\x05rules\x18\x01 \x01(\v2\r.ntx.v1.RulesR\x05rules\"\xb8\x01\n" +
+	"\x16GetHoldingStoryRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12I\n" +
+	"\tfund_navs\x18\x02 \x03(\v2,.ntx.v1.GetHoldingStoryRequest.FundNavsEntryR\bfundNavs\x1a;\n" +
+	"\rFundNavsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"c\n" +
+	"\x17GetHoldingStoryResponse\x12)\n" +
+	"\aholding\x18\x01 \x01(\v2\x0f.ntx.v1.HoldingR\aholding\x12\x1d\n" +
+	"\n" +
+	"bonus_hint\x18\x02 \x01(\tR\tbonusHint\"\x9f\x01\n" +
+	"\x18MarkMonthExecutedRequest\x12G\n" +
+	"\acarries\x18\x01 \x03(\v2-.ntx.v1.MarkMonthExecutedRequest.CarriesEntryR\acarries\x1a:\n" +
+	"\fCarriesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\x1b\n" +
+	"\x19MarkMonthExecutedResponse*P\n" +
+	"\bGateKind\x12\x19\n" +
+	"\x15GATE_KIND_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10GATE_KIND_METRIC\x10\x01\x12\x13\n" +
+	"\x0fGATE_KIND_EVENT\x10\x02*\xab\x01\n" +
+	"\rGateDirection\x12\x1e\n" +
+	"\x1aGATE_DIRECTION_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14GATE_DIRECTION_ABOVE\x10\x01\x12\x18\n" +
+	"\x14GATE_DIRECTION_BELOW\x10\x02\x12\"\n" +
+	"\x1eGATE_DIRECTION_NOT_BELOW_PRIOR\x10\x03\x12\"\n" +
+	"\x1eGATE_DIRECTION_NOT_ABOVE_PRIOR\x10\x04*}\n" +
 	"\rHoldingStatus\x12\x1e\n" +
 	"\x1aHOLDING_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14HOLDING_STATUS_BUILD\x10\x01\x12\x17\n" +
@@ -1139,13 +2836,20 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x15TRANSACTION_KIND_SELL\x10\x02\x12\x1a\n" +
 	"\x16TRANSACTION_KIND_BONUS\x10\x03\x12\x1b\n" +
 	"\x17TRANSACTION_KIND_RIGHTS\x10\x04\x12\x18\n" +
-	"\x14TRANSACTION_KIND_IPO\x10\x052\x86\x03\n" +
+	"\x14TRANSACTION_KIND_IPO\x10\x052\x86\x06\n" +
 	"\x10PortfolioService\x12I\n" +
 	"\fGetPortfolio\x12\x1b.ntx.v1.GetPortfolioRequest\x1a\x1c.ntx.v1.GetPortfolioResponse\x12L\n" +
 	"\rUpsertHolding\x12\x1c.ntx.v1.UpsertHoldingRequest\x1a\x1d.ntx.v1.UpsertHoldingResponse\x12L\n" +
 	"\rDeleteHolding\x12\x1c.ntx.v1.DeleteHoldingRequest\x1a\x1d.ntx.v1.DeleteHoldingResponse\x12O\n" +
 	"\x0eAddTransaction\x12\x1d.ntx.v1.AddTransactionRequest\x1a\x1e.ntx.v1.AddTransactionResponse\x12:\n" +
-	"\aAddNote\x12\x16.ntx.v1.AddNoteRequest\x1a\x17.ntx.v1.AddNoteResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
+	"\aAddNote\x12\x16.ntx.v1.AddNoteRequest\x1a\x17.ntx.v1.AddNoteResponse\x12C\n" +
+	"\n" +
+	"UpsertGate\x12\x19.ntx.v1.UpsertGateRequest\x1a\x1a.ntx.v1.UpsertGateResponse\x12C\n" +
+	"\n" +
+	"DeleteGate\x12\x19.ntx.v1.DeleteGateRequest\x1a\x1a.ntx.v1.DeleteGateResponse\x12F\n" +
+	"\vUpdateRules\x12\x1a.ntx.v1.UpdateRulesRequest\x1a\x1b.ntx.v1.UpdateRulesResponse\x12R\n" +
+	"\x0fGetHoldingStory\x12\x1e.ntx.v1.GetHoldingStoryRequest\x1a\x1f.ntx.v1.GetHoldingStoryResponse\x12X\n" +
+	"\x11MarkMonthExecuted\x12 .ntx.v1.MarkMonthExecutedRequest\x1a!.ntx.v1.MarkMonthExecutedResponseB0Z.github.com/voidarchive/ntx/gen/go/ntx/v1;ntxv1b\x06proto3"
 
 var (
 	file_ntx_v1_portfolio_proto_rawDescOnce sync.Once
@@ -1159,53 +2863,102 @@ func file_ntx_v1_portfolio_proto_rawDescGZIP() []byte {
 	return file_ntx_v1_portfolio_proto_rawDescData
 }
 
-var file_ntx_v1_portfolio_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_ntx_v1_portfolio_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_ntx_v1_portfolio_proto_goTypes = []any{
-	(HoldingStatus)(0),             // 0: ntx.v1.HoldingStatus
-	(TransactionKind)(0),           // 1: ntx.v1.TransactionKind
-	(*Transaction)(nil),            // 2: ntx.v1.Transaction
-	(*Note)(nil),                   // 3: ntx.v1.Note
-	(*Holding)(nil),                // 4: ntx.v1.Holding
-	(*GetPortfolioRequest)(nil),    // 5: ntx.v1.GetPortfolioRequest
-	(*GetPortfolioResponse)(nil),   // 6: ntx.v1.GetPortfolioResponse
-	(*UpsertHoldingRequest)(nil),   // 7: ntx.v1.UpsertHoldingRequest
-	(*UpsertHoldingResponse)(nil),  // 8: ntx.v1.UpsertHoldingResponse
-	(*DeleteHoldingRequest)(nil),   // 9: ntx.v1.DeleteHoldingRequest
-	(*DeleteHoldingResponse)(nil),  // 10: ntx.v1.DeleteHoldingResponse
-	(*AddTransactionRequest)(nil),  // 11: ntx.v1.AddTransactionRequest
-	(*AddTransactionResponse)(nil), // 12: ntx.v1.AddTransactionResponse
-	(*AddNoteRequest)(nil),         // 13: ntx.v1.AddNoteRequest
-	(*AddNoteResponse)(nil),        // 14: ntx.v1.AddNoteResponse
-	nil,                            // 15: ntx.v1.GetPortfolioRequest.FundNavsEntry
+	(GateKind)(0),                     // 0: ntx.v1.GateKind
+	(GateDirection)(0),                // 1: ntx.v1.GateDirection
+	(HoldingStatus)(0),                // 2: ntx.v1.HoldingStatus
+	(TransactionKind)(0),              // 3: ntx.v1.TransactionKind
+	(*OrderLine)(nil),                 // 4: ntx.v1.OrderLine
+	(*OrderSheet)(nil),                // 5: ntx.v1.OrderSheet
+	(*Candidate)(nil),                 // 6: ntx.v1.Candidate
+	(*CalendarEntry)(nil),             // 7: ntx.v1.CalendarEntry
+	(*Gate)(nil),                      // 8: ntx.v1.Gate
+	(*Cap)(nil),                       // 9: ntx.v1.Cap
+	(*Rules)(nil),                     // 10: ntx.v1.Rules
+	(*Transaction)(nil),               // 11: ntx.v1.Transaction
+	(*Note)(nil),                      // 12: ntx.v1.Note
+	(*Holding)(nil),                   // 13: ntx.v1.Holding
+	(*GetPortfolioRequest)(nil),       // 14: ntx.v1.GetPortfolioRequest
+	(*GetPortfolioResponse)(nil),      // 15: ntx.v1.GetPortfolioResponse
+	(*UpsertHoldingRequest)(nil),      // 16: ntx.v1.UpsertHoldingRequest
+	(*UpsertHoldingResponse)(nil),     // 17: ntx.v1.UpsertHoldingResponse
+	(*DeleteHoldingRequest)(nil),      // 18: ntx.v1.DeleteHoldingRequest
+	(*DeleteHoldingResponse)(nil),     // 19: ntx.v1.DeleteHoldingResponse
+	(*AddTransactionRequest)(nil),     // 20: ntx.v1.AddTransactionRequest
+	(*AddTransactionResponse)(nil),    // 21: ntx.v1.AddTransactionResponse
+	(*AddNoteRequest)(nil),            // 22: ntx.v1.AddNoteRequest
+	(*AddNoteResponse)(nil),           // 23: ntx.v1.AddNoteResponse
+	(*UpsertGateRequest)(nil),         // 24: ntx.v1.UpsertGateRequest
+	(*UpsertGateResponse)(nil),        // 25: ntx.v1.UpsertGateResponse
+	(*DeleteGateRequest)(nil),         // 26: ntx.v1.DeleteGateRequest
+	(*DeleteGateResponse)(nil),        // 27: ntx.v1.DeleteGateResponse
+	(*UpdateRulesRequest)(nil),        // 28: ntx.v1.UpdateRulesRequest
+	(*UpdateRulesResponse)(nil),       // 29: ntx.v1.UpdateRulesResponse
+	(*GetHoldingStoryRequest)(nil),    // 30: ntx.v1.GetHoldingStoryRequest
+	(*GetHoldingStoryResponse)(nil),   // 31: ntx.v1.GetHoldingStoryResponse
+	(*MarkMonthExecutedRequest)(nil),  // 32: ntx.v1.MarkMonthExecutedRequest
+	(*MarkMonthExecutedResponse)(nil), // 33: ntx.v1.MarkMonthExecutedResponse
+	nil,                               // 34: ntx.v1.GetPortfolioRequest.FundNavsEntry
+	nil,                               // 35: ntx.v1.GetHoldingStoryRequest.FundNavsEntry
+	nil,                               // 36: ntx.v1.MarkMonthExecutedRequest.CarriesEntry
 }
 var file_ntx_v1_portfolio_proto_depIdxs = []int32{
-	1,  // 0: ntx.v1.Transaction.kind:type_name -> ntx.v1.TransactionKind
-	0,  // 1: ntx.v1.Holding.status:type_name -> ntx.v1.HoldingStatus
-	2,  // 2: ntx.v1.Holding.transactions:type_name -> ntx.v1.Transaction
-	3,  // 3: ntx.v1.Holding.notes:type_name -> ntx.v1.Note
-	15, // 4: ntx.v1.GetPortfolioRequest.fund_navs:type_name -> ntx.v1.GetPortfolioRequest.FundNavsEntry
-	4,  // 5: ntx.v1.GetPortfolioResponse.holdings:type_name -> ntx.v1.Holding
-	0,  // 6: ntx.v1.UpsertHoldingRequest.status:type_name -> ntx.v1.HoldingStatus
-	4,  // 7: ntx.v1.UpsertHoldingResponse.holding:type_name -> ntx.v1.Holding
-	1,  // 8: ntx.v1.AddTransactionRequest.kind:type_name -> ntx.v1.TransactionKind
-	2,  // 9: ntx.v1.AddTransactionResponse.transaction:type_name -> ntx.v1.Transaction
-	3,  // 10: ntx.v1.AddNoteResponse.note:type_name -> ntx.v1.Note
-	5,  // 11: ntx.v1.PortfolioService.GetPortfolio:input_type -> ntx.v1.GetPortfolioRequest
-	7,  // 12: ntx.v1.PortfolioService.UpsertHolding:input_type -> ntx.v1.UpsertHoldingRequest
-	9,  // 13: ntx.v1.PortfolioService.DeleteHolding:input_type -> ntx.v1.DeleteHoldingRequest
-	11, // 14: ntx.v1.PortfolioService.AddTransaction:input_type -> ntx.v1.AddTransactionRequest
-	13, // 15: ntx.v1.PortfolioService.AddNote:input_type -> ntx.v1.AddNoteRequest
-	6,  // 16: ntx.v1.PortfolioService.GetPortfolio:output_type -> ntx.v1.GetPortfolioResponse
-	8,  // 17: ntx.v1.PortfolioService.UpsertHolding:output_type -> ntx.v1.UpsertHoldingResponse
-	10, // 18: ntx.v1.PortfolioService.DeleteHolding:output_type -> ntx.v1.DeleteHoldingResponse
-	12, // 19: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
-	14, // 20: ntx.v1.PortfolioService.AddNote:output_type -> ntx.v1.AddNoteResponse
-	16, // [16:21] is the sub-list for method output_type
-	11, // [11:16] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	2,  // 0: ntx.v1.OrderLine.status:type_name -> ntx.v1.HoldingStatus
+	4,  // 1: ntx.v1.OrderSheet.lines:type_name -> ntx.v1.OrderLine
+	0,  // 2: ntx.v1.Gate.kind:type_name -> ntx.v1.GateKind
+	1,  // 3: ntx.v1.Gate.direction:type_name -> ntx.v1.GateDirection
+	3,  // 4: ntx.v1.Transaction.kind:type_name -> ntx.v1.TransactionKind
+	2,  // 5: ntx.v1.Holding.status:type_name -> ntx.v1.HoldingStatus
+	11, // 6: ntx.v1.Holding.transactions:type_name -> ntx.v1.Transaction
+	12, // 7: ntx.v1.Holding.notes:type_name -> ntx.v1.Note
+	8,  // 8: ntx.v1.Holding.gates:type_name -> ntx.v1.Gate
+	34, // 9: ntx.v1.GetPortfolioRequest.fund_navs:type_name -> ntx.v1.GetPortfolioRequest.FundNavsEntry
+	13, // 10: ntx.v1.GetPortfolioResponse.holdings:type_name -> ntx.v1.Holding
+	9,  // 11: ntx.v1.GetPortfolioResponse.caps:type_name -> ntx.v1.Cap
+	10, // 12: ntx.v1.GetPortfolioResponse.rules:type_name -> ntx.v1.Rules
+	5,  // 13: ntx.v1.GetPortfolioResponse.order_sheet:type_name -> ntx.v1.OrderSheet
+	7,  // 14: ntx.v1.GetPortfolioResponse.calendar:type_name -> ntx.v1.CalendarEntry
+	6,  // 15: ntx.v1.GetPortfolioResponse.candidates:type_name -> ntx.v1.Candidate
+	2,  // 16: ntx.v1.UpsertHoldingRequest.status:type_name -> ntx.v1.HoldingStatus
+	13, // 17: ntx.v1.UpsertHoldingResponse.holding:type_name -> ntx.v1.Holding
+	3,  // 18: ntx.v1.AddTransactionRequest.kind:type_name -> ntx.v1.TransactionKind
+	11, // 19: ntx.v1.AddTransactionResponse.transaction:type_name -> ntx.v1.Transaction
+	12, // 20: ntx.v1.AddNoteResponse.note:type_name -> ntx.v1.Note
+	0,  // 21: ntx.v1.UpsertGateRequest.kind:type_name -> ntx.v1.GateKind
+	1,  // 22: ntx.v1.UpsertGateRequest.direction:type_name -> ntx.v1.GateDirection
+	8,  // 23: ntx.v1.UpsertGateResponse.gate:type_name -> ntx.v1.Gate
+	10, // 24: ntx.v1.UpdateRulesRequest.rules:type_name -> ntx.v1.Rules
+	10, // 25: ntx.v1.UpdateRulesResponse.rules:type_name -> ntx.v1.Rules
+	35, // 26: ntx.v1.GetHoldingStoryRequest.fund_navs:type_name -> ntx.v1.GetHoldingStoryRequest.FundNavsEntry
+	13, // 27: ntx.v1.GetHoldingStoryResponse.holding:type_name -> ntx.v1.Holding
+	36, // 28: ntx.v1.MarkMonthExecutedRequest.carries:type_name -> ntx.v1.MarkMonthExecutedRequest.CarriesEntry
+	14, // 29: ntx.v1.PortfolioService.GetPortfolio:input_type -> ntx.v1.GetPortfolioRequest
+	16, // 30: ntx.v1.PortfolioService.UpsertHolding:input_type -> ntx.v1.UpsertHoldingRequest
+	18, // 31: ntx.v1.PortfolioService.DeleteHolding:input_type -> ntx.v1.DeleteHoldingRequest
+	20, // 32: ntx.v1.PortfolioService.AddTransaction:input_type -> ntx.v1.AddTransactionRequest
+	22, // 33: ntx.v1.PortfolioService.AddNote:input_type -> ntx.v1.AddNoteRequest
+	24, // 34: ntx.v1.PortfolioService.UpsertGate:input_type -> ntx.v1.UpsertGateRequest
+	26, // 35: ntx.v1.PortfolioService.DeleteGate:input_type -> ntx.v1.DeleteGateRequest
+	28, // 36: ntx.v1.PortfolioService.UpdateRules:input_type -> ntx.v1.UpdateRulesRequest
+	30, // 37: ntx.v1.PortfolioService.GetHoldingStory:input_type -> ntx.v1.GetHoldingStoryRequest
+	32, // 38: ntx.v1.PortfolioService.MarkMonthExecuted:input_type -> ntx.v1.MarkMonthExecutedRequest
+	15, // 39: ntx.v1.PortfolioService.GetPortfolio:output_type -> ntx.v1.GetPortfolioResponse
+	17, // 40: ntx.v1.PortfolioService.UpsertHolding:output_type -> ntx.v1.UpsertHoldingResponse
+	19, // 41: ntx.v1.PortfolioService.DeleteHolding:output_type -> ntx.v1.DeleteHoldingResponse
+	21, // 42: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
+	23, // 43: ntx.v1.PortfolioService.AddNote:output_type -> ntx.v1.AddNoteResponse
+	25, // 44: ntx.v1.PortfolioService.UpsertGate:output_type -> ntx.v1.UpsertGateResponse
+	27, // 45: ntx.v1.PortfolioService.DeleteGate:output_type -> ntx.v1.DeleteGateResponse
+	29, // 46: ntx.v1.PortfolioService.UpdateRules:output_type -> ntx.v1.UpdateRulesResponse
+	31, // 47: ntx.v1.PortfolioService.GetHoldingStory:output_type -> ntx.v1.GetHoldingStoryResponse
+	33, // 48: ntx.v1.PortfolioService.MarkMonthExecuted:output_type -> ntx.v1.MarkMonthExecutedResponse
+	39, // [39:49] is the sub-list for method output_type
+	29, // [29:39] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_portfolio_proto_init() }
@@ -1213,14 +2966,19 @@ func file_ntx_v1_portfolio_proto_init() {
 	if File_ntx_v1_portfolio_proto != nil {
 		return
 	}
+	file_ntx_v1_portfolio_proto_msgTypes[0].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[1].OneofWrappers = []any{}
 	file_ntx_v1_portfolio_proto_msgTypes[2].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[4].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[9].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_portfolio_proto_rawDesc), len(file_ntx_v1_portfolio_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   14,
+			NumEnums:      4,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -14,6 +14,8 @@
 	import { checksFor, score, type AxisId } from '#lib/components/company/snowflake.js';
 	import { EarningsChart } from '#lib/components/charts/index.js';
 	import CompanyPlants from '#lib/components/hydro/CompanyPlants.svelte';
+	import Gates from '#lib/components/portfolio/Gates.svelte';
+	import { enhance } from '$app/forms';
 	import CircleCheck from '@lucide/svelte/icons/circle-check';
 	import TriangleAlert from '@lucide/svelte/icons/triangle-alert';
 	import CircleDashed from '@lucide/svelte/icons/circle-dashed';
@@ -27,6 +29,9 @@
 	let priceHistory = $derived(data.priceHistory ?? []);
 	let fundHoldings = $derived(data.fundHoldings ?? []);
 	let plants = $derived(data.plants ?? []);
+	let thesis = $derived(data.thesis);
+	const field = 'h-8 rounded-md border border-input bg-background px-2 text-sm';
+	const today = new Date().toISOString().slice(0, 10);
 	let lastFiling = $derived(
 		story?.lastFiling ? `Last filing: ${story.lastFiling}.` : 'No filings recorded.'
 	);
@@ -223,6 +228,66 @@
 				</div>
 			</div>
 		</section>
+
+		<!-- Your thesis: the owner's own rules for this holding, shown only with the token (ADR 0006) -->
+		{#if thesis?.holding}
+			{@const h = thesis.holding}
+			<section id="thesis" class="mt-6 card-report">
+				<div class="flex flex-wrap items-center justify-between gap-3">
+					<h2 class="font-serif text-2xl font-medium">Your thesis</h2>
+					<a href="/portfolio" class="text-xs text-muted-foreground underline underline-offset-2"
+						>Portfolio</a
+					>
+				</div>
+				<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">
+					{#if h.thesis}{h.thesis}{:else}<span class="text-muted-foreground"
+							>No thesis written. {h.quantity ? `${h.quantity} shares held.` : 'Watched.'}</span
+						>{/if}
+				</p>
+				{#if thesis.bonusHint}
+					<p class="mt-2 text-sm text-muted-foreground">{thesis.bonusHint}</p>
+				{/if}
+				<div class="mt-6 grid gap-6 lg:grid-cols-2">
+					<div>
+						<Gates symbol={h.symbol} gates={h.gates} />
+					</div>
+					<div>
+						<h3 class="text-xs text-muted-foreground">Notes</h3>
+						<ul class="mt-1 space-y-1 text-sm">
+							{#each h.notes as note (note.id)}
+								<li>
+									<span class="text-muted-foreground tabular-nums">{note.day}</span>
+									{note.text}
+								</li>
+							{:else}
+								<li class="text-muted-foreground">No notes yet.</li>
+							{/each}
+						</ul>
+						<form
+							method="POST"
+							action="?/note"
+							use:enhance
+							class="mt-3 flex flex-wrap gap-2 text-sm"
+						>
+							<input type="hidden" name="symbol" value={h.symbol} />
+							<input type="date" name="day" value={today} required class={field} />
+							<input
+								type="text"
+								name="text"
+								required
+								aria-label="Note"
+								class="{field} min-w-64 flex-1"
+							/>
+							<button
+								type="submit"
+								class="h-8 rounded-md border border-input bg-background px-3 text-sm hover:bg-accent"
+								>Add</button
+							>
+						</form>
+					</div>
+				</div>
+			</section>
+		{/if}
 
 		<!-- 1. Valuation: the four figures, then one chart per check -->
 		<section id="valuation" class="mt-6 card-report">
