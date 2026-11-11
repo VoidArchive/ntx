@@ -517,12 +517,27 @@ type Candidate struct {
 	// Basins of the company's plants, "" for a non-hydro; see note for a hydro with no plant row.
 	Basin string `protobuf:"bytes,9,opt,name=basin,proto3" json:"basin,omitempty"`
 	// The entry: shares to reach the minimum entry in a whole lot, their cost, and months of budget.
-	Shares        int64   `protobuf:"varint,10,opt,name=shares,proto3" json:"shares,omitempty"`
-	CostRs        float64 `protobuf:"fixed64,11,opt,name=cost_rs,json=costRs,proto3" json:"cost_rs,omitempty"`
-	Months        float64 `protobuf:"fixed64,12,opt,name=months,proto3" json:"months,omitempty"`
-	Note          string  `protobuf:"bytes,13,opt,name=note,proto3" json:"note,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Shares int64   `protobuf:"varint,10,opt,name=shares,proto3" json:"shares,omitempty"`
+	CostRs float64 `protobuf:"fixed64,11,opt,name=cost_rs,json=costRs,proto3" json:"cost_rs,omitempty"`
+	Months float64 `protobuf:"fixed64,12,opt,name=months,proto3" json:"months,omitempty"`
+	Note   string  `protobuf:"bytes,13,opt,name=note,proto3" json:"note,omitempty"`
+	// "passes", "needs data" or "turned away" (GLOSSARY: Candidates, Turned away).
+	Verdict string `protobuf:"bytes,15,opt,name=verdict,proto3" json:"verdict,omitempty"`
+	// The rule that turned the company away, or what a lender still needs, in one sentence.
+	Reason string `protobuf:"bytes,16,opt,name=reason,proto3" json:"reason,omitempty"`
+	// PE at the close over the latest filing's EPS as the exchange annualizes it, with that quarter.
+	AnnualizedPe     *float64 `protobuf:"fixed64,17,opt,name=annualized_pe,json=annualizedPe,proto3,oneof" json:"annualized_pe,omitempty"`
+	AnnualizedPeriod string   `protobuf:"bytes,18,opt,name=annualized_period,json=annualizedPeriod,proto3" json:"annualized_period,omitempty"`
+	// Set when the latest filing is older than the newest quarter the sector has filed (GLOSSARY: Behind).
+	Behind string `protobuf:"bytes,19,opt,name=behind,proto3" json:"behind,omitempty"`
+	// A lender's figures from the owner's bank row for its latest filed quarter, with provenance.
+	NplPercent          *float64 `protobuf:"fixed64,20,opt,name=npl_percent,json=nplPercent,proto3,oneof" json:"npl_percent,omitempty"`
+	CarPercent          *float64 `protobuf:"fixed64,21,opt,name=car_percent,json=carPercent,proto3,oneof" json:"car_percent,omitempty"`
+	DistributableProfit *float64 `protobuf:"fixed64,22,opt,name=distributable_profit,json=distributableProfit,proto3,oneof" json:"distributable_profit,omitempty"`
+	MetricsPeriod       string   `protobuf:"bytes,23,opt,name=metrics_period,json=metricsPeriod,proto3" json:"metrics_period,omitempty"`
+	MetricsSource       string   `protobuf:"bytes,24,opt,name=metrics_source,json=metricsSource,proto3" json:"metrics_source,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Candidate) Reset() {
@@ -653,6 +668,280 @@ func (x *Candidate) GetNote() string {
 	return ""
 }
 
+func (x *Candidate) GetVerdict() string {
+	if x != nil {
+		return x.Verdict
+	}
+	return ""
+}
+
+func (x *Candidate) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *Candidate) GetAnnualizedPe() float64 {
+	if x != nil && x.AnnualizedPe != nil {
+		return *x.AnnualizedPe
+	}
+	return 0
+}
+
+func (x *Candidate) GetAnnualizedPeriod() string {
+	if x != nil {
+		return x.AnnualizedPeriod
+	}
+	return ""
+}
+
+func (x *Candidate) GetBehind() string {
+	if x != nil {
+		return x.Behind
+	}
+	return ""
+}
+
+func (x *Candidate) GetNplPercent() float64 {
+	if x != nil && x.NplPercent != nil {
+		return *x.NplPercent
+	}
+	return 0
+}
+
+func (x *Candidate) GetCarPercent() float64 {
+	if x != nil && x.CarPercent != nil {
+		return *x.CarPercent
+	}
+	return 0
+}
+
+func (x *Candidate) GetDistributableProfit() float64 {
+	if x != nil && x.DistributableProfit != nil {
+		return *x.DistributableProfit
+	}
+	return 0
+}
+
+func (x *Candidate) GetMetricsPeriod() string {
+	if x != nil {
+		return x.MetricsPeriod
+	}
+	return ""
+}
+
+func (x *Candidate) GetMetricsSource() string {
+	if x != nil {
+		return x.MetricsSource
+	}
+	return ""
+}
+
+// GoalPoint is one month of the goal chart: the book's value and what was paid in to
+// date, or forward of today the two projections (GLOSSARY: Goal).
+type GoalPoint struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Month         string                 `protobuf:"bytes,1,opt,name=month,proto3" json:"month,omitempty"` // "2026-10"
+	ValueRs       float64                `protobuf:"fixed64,2,opt,name=value_rs,json=valueRs,proto3" json:"value_rs,omitempty"`
+	ContributedRs float64                `protobuf:"fixed64,3,opt,name=contributed_rs,json=contributedRs,proto3" json:"contributed_rs,omitempty"`
+	FlatRs        float64                `protobuf:"fixed64,4,opt,name=flat_rs,json=flatRs,proto3" json:"flat_rs,omitempty"`
+	WithReturnRs  float64                `protobuf:"fixed64,5,opt,name=with_return_rs,json=withReturnRs,proto3" json:"with_return_rs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoalPoint) Reset() {
+	*x = GoalPoint{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoalPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoalPoint) ProtoMessage() {}
+
+func (x *GoalPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoalPoint.ProtoReflect.Descriptor instead.
+func (*GoalPoint) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GoalPoint) GetMonth() string {
+	if x != nil {
+		return x.Month
+	}
+	return ""
+}
+
+func (x *GoalPoint) GetValueRs() float64 {
+	if x != nil {
+		return x.ValueRs
+	}
+	return 0
+}
+
+func (x *GoalPoint) GetContributedRs() float64 {
+	if x != nil {
+		return x.ContributedRs
+	}
+	return 0
+}
+
+func (x *GoalPoint) GetFlatRs() float64 {
+	if x != nil {
+		return x.FlatRs
+	}
+	return 0
+}
+
+func (x *GoalPoint) GetWithReturnRs() float64 {
+	if x != nil {
+		return x.WithReturnRs
+	}
+	return 0
+}
+
+// Goal is the book against the owner's goal: value, the monthly figure, the realised
+// return, the two projected months and the sentence (ADR 0001). Never a forecast.
+type Goal struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GoalRs        float64                `protobuf:"fixed64,1,opt,name=goal_rs,json=goalRs,proto3" json:"goal_rs,omitempty"`
+	ValueRs       float64                `protobuf:"fixed64,2,opt,name=value_rs,json=valueRs,proto3" json:"value_rs,omitempty"`
+	MonthlyRs     float64                `protobuf:"fixed64,3,opt,name=monthly_rs,json=monthlyRs,proto3" json:"monthly_rs,omitempty"`
+	ContributedRs float64                `protobuf:"fixed64,4,opt,name=contributed_rs,json=contributedRs,proto3" json:"contributed_rs,omitempty"`
+	ReturnPercent *float64               `protobuf:"fixed64,5,opt,name=return_percent,json=returnPercent,proto3,oneof" json:"return_percent,omitempty"`
+	Since         string                 `protobuf:"bytes,6,opt,name=since,proto3" json:"since,omitempty"`
+	FlatMonth     string                 `protobuf:"bytes,7,opt,name=flat_month,json=flatMonth,proto3" json:"flat_month,omitempty"`
+	ReturnMonth   string                 `protobuf:"bytes,8,opt,name=return_month,json=returnMonth,proto3" json:"return_month,omitempty"`
+	Opening       string                 `protobuf:"bytes,9,opt,name=opening,proto3" json:"opening,omitempty"`
+	Series        []*GoalPoint           `protobuf:"bytes,10,rep,name=series,proto3" json:"series,omitempty"`
+	Band          []*GoalPoint           `protobuf:"bytes,11,rep,name=band,proto3" json:"band,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Goal) Reset() {
+	*x = Goal{}
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Goal) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Goal) ProtoMessage() {}
+
+func (x *Goal) ProtoReflect() protoreflect.Message {
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Goal.ProtoReflect.Descriptor instead.
+func (*Goal) Descriptor() ([]byte, []int) {
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Goal) GetGoalRs() float64 {
+	if x != nil {
+		return x.GoalRs
+	}
+	return 0
+}
+
+func (x *Goal) GetValueRs() float64 {
+	if x != nil {
+		return x.ValueRs
+	}
+	return 0
+}
+
+func (x *Goal) GetMonthlyRs() float64 {
+	if x != nil {
+		return x.MonthlyRs
+	}
+	return 0
+}
+
+func (x *Goal) GetContributedRs() float64 {
+	if x != nil {
+		return x.ContributedRs
+	}
+	return 0
+}
+
+func (x *Goal) GetReturnPercent() float64 {
+	if x != nil && x.ReturnPercent != nil {
+		return *x.ReturnPercent
+	}
+	return 0
+}
+
+func (x *Goal) GetSince() string {
+	if x != nil {
+		return x.Since
+	}
+	return ""
+}
+
+func (x *Goal) GetFlatMonth() string {
+	if x != nil {
+		return x.FlatMonth
+	}
+	return ""
+}
+
+func (x *Goal) GetReturnMonth() string {
+	if x != nil {
+		return x.ReturnMonth
+	}
+	return ""
+}
+
+func (x *Goal) GetOpening() string {
+	if x != nil {
+		return x.Opening
+	}
+	return ""
+}
+
+func (x *Goal) GetSeries() []*GoalPoint {
+	if x != nil {
+		return x.Series
+	}
+	return nil
+}
+
+func (x *Goal) GetBand() []*GoalPoint {
+	if x != nil {
+		return x.Band
+	}
+	return nil
+}
+
 // CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
 type CalendarEntry struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
@@ -667,7 +956,7 @@ type CalendarEntry struct {
 
 func (x *CalendarEntry) Reset() {
 	*x = CalendarEntry{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -679,7 +968,7 @@ func (x *CalendarEntry) String() string {
 func (*CalendarEntry) ProtoMessage() {}
 
 func (x *CalendarEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[3]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -692,7 +981,7 @@ func (x *CalendarEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CalendarEntry.ProtoReflect.Descriptor instead.
 func (*CalendarEntry) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{3}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CalendarEntry) GetDay() string {
@@ -758,7 +1047,7 @@ type Gate struct {
 
 func (x *Gate) Reset() {
 	*x = Gate{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -770,7 +1059,7 @@ func (x *Gate) String() string {
 func (*Gate) ProtoMessage() {}
 
 func (x *Gate) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[4]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -783,7 +1072,7 @@ func (x *Gate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Gate.ProtoReflect.Descriptor instead.
 func (*Gate) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{4}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Gate) GetId() int64 {
@@ -910,7 +1199,7 @@ type Cap struct {
 
 func (x *Cap) Reset() {
 	*x = Cap{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -922,7 +1211,7 @@ func (x *Cap) String() string {
 func (*Cap) ProtoMessage() {}
 
 func (x *Cap) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[5]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -935,7 +1224,7 @@ func (x *Cap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cap.ProtoReflect.Descriptor instead.
 func (*Cap) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{5}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Cap) GetRule() string {
@@ -972,13 +1261,22 @@ type Rules struct {
 	MonthlyBudgetRs         float64                `protobuf:"fixed64,9,opt,name=monthly_budget_rs,json=monthlyBudgetRs,proto3" json:"monthly_budget_rs,omitempty"`
 	MultiplierBelowMedian   float64                `protobuf:"fixed64,10,opt,name=multiplier_below_median,json=multiplierBelowMedian,proto3" json:"multiplier_below_median,omitempty"`
 	MultiplierBottomQuarter float64                `protobuf:"fixed64,11,opt,name=multiplier_bottom_quarter,json=multiplierBottomQuarter,proto3" json:"multiplier_bottom_quarter,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// The goal the book is measured against, and the fund SIP paid in beside the budget.
+	GoalRs    float64 `protobuf:"fixed64,12,opt,name=goal_rs,json=goalRs,proto3" json:"goal_rs,omitempty"`
+	FundSipRs float64 `protobuf:"fixed64,13,opt,name=fund_sip_rs,json=fundSipRs,proto3" json:"fund_sip_rs,omitempty"`
+	// Lender rules for Candidates: NPL at most, CAR at least, distributable profit above zero.
+	NplCeilingPercent      float64 `protobuf:"fixed64,14,opt,name=npl_ceiling_percent,json=nplCeilingPercent,proto3" json:"npl_ceiling_percent,omitempty"`
+	CarFloorPercent        float64 `protobuf:"fixed64,15,opt,name=car_floor_percent,json=carFloorPercent,proto3" json:"car_floor_percent,omitempty"`
+	DistributableAboveZero bool    `protobuf:"varint,16,opt,name=distributable_above_zero,json=distributableAboveZero,proto3" json:"distributable_above_zero,omitempty"`
+	// A candidate's PE at most this many times its sector median; zero switches the rule off.
+	MaxPeToSectorMedian float64 `protobuf:"fixed64,17,opt,name=max_pe_to_sector_median,json=maxPeToSectorMedian,proto3" json:"max_pe_to_sector_median,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Rules) Reset() {
 	*x = Rules{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -990,7 +1288,7 @@ func (x *Rules) String() string {
 func (*Rules) ProtoMessage() {}
 
 func (x *Rules) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[6]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1003,7 +1301,7 @@ func (x *Rules) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Rules.ProtoReflect.Descriptor instead.
 func (*Rules) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{6}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Rules) GetSoftCapPercent() float64 {
@@ -1083,6 +1381,48 @@ func (x *Rules) GetMultiplierBottomQuarter() float64 {
 	return 0
 }
 
+func (x *Rules) GetGoalRs() float64 {
+	if x != nil {
+		return x.GoalRs
+	}
+	return 0
+}
+
+func (x *Rules) GetFundSipRs() float64 {
+	if x != nil {
+		return x.FundSipRs
+	}
+	return 0
+}
+
+func (x *Rules) GetNplCeilingPercent() float64 {
+	if x != nil {
+		return x.NplCeilingPercent
+	}
+	return 0
+}
+
+func (x *Rules) GetCarFloorPercent() float64 {
+	if x != nil {
+		return x.CarFloorPercent
+	}
+	return 0
+}
+
+func (x *Rules) GetDistributableAboveZero() bool {
+	if x != nil {
+		return x.DistributableAboveZero
+	}
+	return false
+}
+
+func (x *Rules) GetMaxPeToSectorMedian() float64 {
+	if x != nil {
+		return x.MaxPeToSectorMedian
+	}
+	return 0
+}
+
 type Transaction struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Id       int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -1097,7 +1437,7 @@ type Transaction struct {
 
 func (x *Transaction) Reset() {
 	*x = Transaction{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1109,7 +1449,7 @@ func (x *Transaction) String() string {
 func (*Transaction) ProtoMessage() {}
 
 func (x *Transaction) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[7]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1122,7 +1462,7 @@ func (x *Transaction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
 func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{7}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Transaction) GetId() int64 {
@@ -1171,7 +1511,7 @@ type Note struct {
 
 func (x *Note) Reset() {
 	*x = Note{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1183,7 +1523,7 @@ func (x *Note) String() string {
 func (*Note) ProtoMessage() {}
 
 func (x *Note) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[8]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1196,7 +1536,7 @@ func (x *Note) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Note.ProtoReflect.Descriptor instead.
 func (*Note) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{8}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Note) GetId() int64 {
@@ -1255,7 +1595,7 @@ type Holding struct {
 
 func (x *Holding) Reset() {
 	*x = Holding{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1267,7 +1607,7 @@ func (x *Holding) String() string {
 func (*Holding) ProtoMessage() {}
 
 func (x *Holding) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[9]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1280,7 +1620,7 @@ func (x *Holding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Holding.ProtoReflect.Descriptor instead.
 func (*Holding) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{9}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Holding) GetSymbol() string {
@@ -1447,7 +1787,7 @@ type GetPortfolioRequest struct {
 
 func (x *GetPortfolioRequest) Reset() {
 	*x = GetPortfolioRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1459,7 +1799,7 @@ func (x *GetPortfolioRequest) String() string {
 func (*GetPortfolioRequest) ProtoMessage() {}
 
 func (x *GetPortfolioRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[10]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1472,7 +1812,7 @@ func (x *GetPortfolioRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortfolioRequest.ProtoReflect.Descriptor instead.
 func (*GetPortfolioRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{10}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPortfolioRequest) GetFundNavs() map[string]float64 {
@@ -1499,17 +1839,19 @@ type GetPortfolioResponse struct {
 	Calendar []*CalendarEntry `protobuf:"bytes,9,rep,name=calendar,proto3" json:"calendar,omitempty"`
 	// The Calendar section's sentence: what is next, and how many dates have passed.
 	CalendarOpening string `protobuf:"bytes,10,opt,name=calendar_opening,json=calendarOpening,proto3" json:"calendar_opening,omitempty"`
-	// Sorted by rating, then PE against the sector.
+	// Every listed company once: passes first, then needs data, then turned away; within a
+	// group by rating, then PE against the sector.
 	Candidates []*Candidate `protobuf:"bytes,11,rep,name=candidates,proto3" json:"candidates,omitempty"`
-	// The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+	// The owner's standing rule, then the count of each verdict.
 	CandidatesOpening string `protobuf:"bytes,12,opt,name=candidates_opening,json=candidatesOpening,proto3" json:"candidates_opening,omitempty"`
+	Goal              *Goal  `protobuf:"bytes,13,opt,name=goal,proto3" json:"goal,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
 
 func (x *GetPortfolioResponse) Reset() {
 	*x = GetPortfolioResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1521,7 +1863,7 @@ func (x *GetPortfolioResponse) String() string {
 func (*GetPortfolioResponse) ProtoMessage() {}
 
 func (x *GetPortfolioResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[11]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1534,7 +1876,7 @@ func (x *GetPortfolioResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortfolioResponse.ProtoReflect.Descriptor instead.
 func (*GetPortfolioResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{11}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetPortfolioResponse) GetHoldings() []*Holding {
@@ -1621,6 +1963,13 @@ func (x *GetPortfolioResponse) GetCandidatesOpening() string {
 	return ""
 }
 
+func (x *GetPortfolioResponse) GetGoal() *Goal {
+	if x != nil {
+		return x.Goal
+	}
+	return nil
+}
+
 type UpsertHoldingRequest struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	Symbol            string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
@@ -1639,7 +1988,7 @@ type UpsertHoldingRequest struct {
 
 func (x *UpsertHoldingRequest) Reset() {
 	*x = UpsertHoldingRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1651,7 +2000,7 @@ func (x *UpsertHoldingRequest) String() string {
 func (*UpsertHoldingRequest) ProtoMessage() {}
 
 func (x *UpsertHoldingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[12]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1664,7 +2013,7 @@ func (x *UpsertHoldingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertHoldingRequest.ProtoReflect.Descriptor instead.
 func (*UpsertHoldingRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{12}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *UpsertHoldingRequest) GetSymbol() string {
@@ -1739,7 +2088,7 @@ type UpsertHoldingResponse struct {
 
 func (x *UpsertHoldingResponse) Reset() {
 	*x = UpsertHoldingResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[13]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1751,7 +2100,7 @@ func (x *UpsertHoldingResponse) String() string {
 func (*UpsertHoldingResponse) ProtoMessage() {}
 
 func (x *UpsertHoldingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[13]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1764,7 +2113,7 @@ func (x *UpsertHoldingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertHoldingResponse.ProtoReflect.Descriptor instead.
 func (*UpsertHoldingResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{13}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpsertHoldingResponse) GetHolding() *Holding {
@@ -1783,7 +2132,7 @@ type DeleteHoldingRequest struct {
 
 func (x *DeleteHoldingRequest) Reset() {
 	*x = DeleteHoldingRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1795,7 +2144,7 @@ func (x *DeleteHoldingRequest) String() string {
 func (*DeleteHoldingRequest) ProtoMessage() {}
 
 func (x *DeleteHoldingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[14]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1808,7 +2157,7 @@ func (x *DeleteHoldingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHoldingRequest.ProtoReflect.Descriptor instead.
 func (*DeleteHoldingRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{14}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *DeleteHoldingRequest) GetSymbol() string {
@@ -1826,7 +2175,7 @@ type DeleteHoldingResponse struct {
 
 func (x *DeleteHoldingResponse) Reset() {
 	*x = DeleteHoldingResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1838,7 +2187,7 @@ func (x *DeleteHoldingResponse) String() string {
 func (*DeleteHoldingResponse) ProtoMessage() {}
 
 func (x *DeleteHoldingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[15]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1851,7 +2200,7 @@ func (x *DeleteHoldingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHoldingResponse.ProtoReflect.Descriptor instead.
 func (*DeleteHoldingResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{15}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{17}
 }
 
 type AddTransactionRequest struct {
@@ -1867,7 +2216,7 @@ type AddTransactionRequest struct {
 
 func (x *AddTransactionRequest) Reset() {
 	*x = AddTransactionRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1879,7 +2228,7 @@ func (x *AddTransactionRequest) String() string {
 func (*AddTransactionRequest) ProtoMessage() {}
 
 func (x *AddTransactionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[16]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1892,7 +2241,7 @@ func (x *AddTransactionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddTransactionRequest.ProtoReflect.Descriptor instead.
 func (*AddTransactionRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{16}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AddTransactionRequest) GetSymbol() string {
@@ -1939,7 +2288,7 @@ type AddTransactionResponse struct {
 
 func (x *AddTransactionResponse) Reset() {
 	*x = AddTransactionResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[17]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1951,7 +2300,7 @@ func (x *AddTransactionResponse) String() string {
 func (*AddTransactionResponse) ProtoMessage() {}
 
 func (x *AddTransactionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[17]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1964,7 +2313,7 @@ func (x *AddTransactionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddTransactionResponse.ProtoReflect.Descriptor instead.
 func (*AddTransactionResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{17}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *AddTransactionResponse) GetTransaction() *Transaction {
@@ -1985,7 +2334,7 @@ type AddNoteRequest struct {
 
 func (x *AddNoteRequest) Reset() {
 	*x = AddNoteRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[18]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1997,7 +2346,7 @@ func (x *AddNoteRequest) String() string {
 func (*AddNoteRequest) ProtoMessage() {}
 
 func (x *AddNoteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[18]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2010,7 +2359,7 @@ func (x *AddNoteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddNoteRequest.ProtoReflect.Descriptor instead.
 func (*AddNoteRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{18}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *AddNoteRequest) GetSymbol() string {
@@ -2043,7 +2392,7 @@ type AddNoteResponse struct {
 
 func (x *AddNoteResponse) Reset() {
 	*x = AddNoteResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[19]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2055,7 +2404,7 @@ func (x *AddNoteResponse) String() string {
 func (*AddNoteResponse) ProtoMessage() {}
 
 func (x *AddNoteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[19]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2068,7 +2417,7 @@ func (x *AddNoteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddNoteResponse.ProtoReflect.Descriptor instead.
 func (*AddNoteResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{19}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *AddNoteResponse) GetNote() *Note {
@@ -2096,7 +2445,7 @@ type UpsertGateRequest struct {
 
 func (x *UpsertGateRequest) Reset() {
 	*x = UpsertGateRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[20]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2108,7 +2457,7 @@ func (x *UpsertGateRequest) String() string {
 func (*UpsertGateRequest) ProtoMessage() {}
 
 func (x *UpsertGateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[20]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2121,7 +2470,7 @@ func (x *UpsertGateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertGateRequest.ProtoReflect.Descriptor instead.
 func (*UpsertGateRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{20}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *UpsertGateRequest) GetId() int64 {
@@ -2196,7 +2545,7 @@ type UpsertGateResponse struct {
 
 func (x *UpsertGateResponse) Reset() {
 	*x = UpsertGateResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[21]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2208,7 +2557,7 @@ func (x *UpsertGateResponse) String() string {
 func (*UpsertGateResponse) ProtoMessage() {}
 
 func (x *UpsertGateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[21]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2221,7 +2570,7 @@ func (x *UpsertGateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertGateResponse.ProtoReflect.Descriptor instead.
 func (*UpsertGateResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{21}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *UpsertGateResponse) GetGate() *Gate {
@@ -2240,7 +2589,7 @@ type DeleteGateRequest struct {
 
 func (x *DeleteGateRequest) Reset() {
 	*x = DeleteGateRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[22]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2252,7 +2601,7 @@ func (x *DeleteGateRequest) String() string {
 func (*DeleteGateRequest) ProtoMessage() {}
 
 func (x *DeleteGateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[22]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2265,7 +2614,7 @@ func (x *DeleteGateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGateRequest.ProtoReflect.Descriptor instead.
 func (*DeleteGateRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{22}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *DeleteGateRequest) GetId() int64 {
@@ -2283,7 +2632,7 @@ type DeleteGateResponse struct {
 
 func (x *DeleteGateResponse) Reset() {
 	*x = DeleteGateResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[23]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2295,7 +2644,7 @@ func (x *DeleteGateResponse) String() string {
 func (*DeleteGateResponse) ProtoMessage() {}
 
 func (x *DeleteGateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[23]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2308,7 +2657,7 @@ func (x *DeleteGateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteGateResponse.ProtoReflect.Descriptor instead.
 func (*DeleteGateResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{23}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{25}
 }
 
 type UpdateRulesRequest struct {
@@ -2320,7 +2669,7 @@ type UpdateRulesRequest struct {
 
 func (x *UpdateRulesRequest) Reset() {
 	*x = UpdateRulesRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[24]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2332,7 +2681,7 @@ func (x *UpdateRulesRequest) String() string {
 func (*UpdateRulesRequest) ProtoMessage() {}
 
 func (x *UpdateRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[24]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2345,7 +2694,7 @@ func (x *UpdateRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRulesRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRulesRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{24}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *UpdateRulesRequest) GetRules() *Rules {
@@ -2364,7 +2713,7 @@ type UpdateRulesResponse struct {
 
 func (x *UpdateRulesResponse) Reset() {
 	*x = UpdateRulesResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[25]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2376,7 +2725,7 @@ func (x *UpdateRulesResponse) String() string {
 func (*UpdateRulesResponse) ProtoMessage() {}
 
 func (x *UpdateRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[25]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2389,7 +2738,7 @@ func (x *UpdateRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRulesResponse.ProtoReflect.Descriptor instead.
 func (*UpdateRulesResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{25}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *UpdateRulesResponse) GetRules() *Rules {
@@ -2409,7 +2758,7 @@ type GetHoldingStoryRequest struct {
 
 func (x *GetHoldingStoryRequest) Reset() {
 	*x = GetHoldingStoryRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[26]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2421,7 +2770,7 @@ func (x *GetHoldingStoryRequest) String() string {
 func (*GetHoldingStoryRequest) ProtoMessage() {}
 
 func (x *GetHoldingStoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[26]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2434,7 +2783,7 @@ func (x *GetHoldingStoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHoldingStoryRequest.ProtoReflect.Descriptor instead.
 func (*GetHoldingStoryRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{26}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetHoldingStoryRequest) GetSymbol() string {
@@ -2464,7 +2813,7 @@ type GetHoldingStoryResponse struct {
 
 func (x *GetHoldingStoryResponse) Reset() {
 	*x = GetHoldingStoryResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[27]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2476,7 +2825,7 @@ func (x *GetHoldingStoryResponse) String() string {
 func (*GetHoldingStoryResponse) ProtoMessage() {}
 
 func (x *GetHoldingStoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[27]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2489,7 +2838,7 @@ func (x *GetHoldingStoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHoldingStoryResponse.ProtoReflect.Descriptor instead.
 func (*GetHoldingStoryResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{27}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetHoldingStoryResponse) GetHolding() *Holding {
@@ -2532,7 +2881,7 @@ type BankMetric struct {
 
 func (x *BankMetric) Reset() {
 	*x = BankMetric{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[28]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2544,7 +2893,7 @@ func (x *BankMetric) String() string {
 func (*BankMetric) ProtoMessage() {}
 
 func (x *BankMetric) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[28]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2557,7 +2906,7 @@ func (x *BankMetric) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BankMetric.ProtoReflect.Descriptor instead.
 func (*BankMetric) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{28}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *BankMetric) GetSymbol() string {
@@ -2632,7 +2981,7 @@ type UpsertBankMetricRequest struct {
 
 func (x *UpsertBankMetricRequest) Reset() {
 	*x = UpsertBankMetricRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[29]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2644,7 +2993,7 @@ func (x *UpsertBankMetricRequest) String() string {
 func (*UpsertBankMetricRequest) ProtoMessage() {}
 
 func (x *UpsertBankMetricRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[29]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2657,7 +3006,7 @@ func (x *UpsertBankMetricRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertBankMetricRequest.ProtoReflect.Descriptor instead.
 func (*UpsertBankMetricRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{29}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *UpsertBankMetricRequest) GetMetric() *BankMetric {
@@ -2676,7 +3025,7 @@ type UpsertBankMetricResponse struct {
 
 func (x *UpsertBankMetricResponse) Reset() {
 	*x = UpsertBankMetricResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[30]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2688,7 +3037,7 @@ func (x *UpsertBankMetricResponse) String() string {
 func (*UpsertBankMetricResponse) ProtoMessage() {}
 
 func (x *UpsertBankMetricResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[30]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2701,7 +3050,7 @@ func (x *UpsertBankMetricResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpsertBankMetricResponse.ProtoReflect.Descriptor instead.
 func (*UpsertBankMetricResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{30}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *UpsertBankMetricResponse) GetMetric() *BankMetric {
@@ -2721,7 +3070,7 @@ type MarkMonthExecutedRequest struct {
 
 func (x *MarkMonthExecutedRequest) Reset() {
 	*x = MarkMonthExecutedRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[31]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2733,7 +3082,7 @@ func (x *MarkMonthExecutedRequest) String() string {
 func (*MarkMonthExecutedRequest) ProtoMessage() {}
 
 func (x *MarkMonthExecutedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[31]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2746,7 +3095,7 @@ func (x *MarkMonthExecutedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkMonthExecutedRequest.ProtoReflect.Descriptor instead.
 func (*MarkMonthExecutedRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{31}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *MarkMonthExecutedRequest) GetCarries() map[string]float64 {
@@ -2764,7 +3113,7 @@ type MarkMonthExecutedResponse struct {
 
 func (x *MarkMonthExecutedResponse) Reset() {
 	*x = MarkMonthExecutedResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[32]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2776,7 +3125,7 @@ func (x *MarkMonthExecutedResponse) String() string {
 func (*MarkMonthExecutedResponse) ProtoMessage() {}
 
 func (x *MarkMonthExecutedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[32]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2789,7 +3138,7 @@ func (x *MarkMonthExecutedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarkMonthExecutedResponse.ProtoReflect.Descriptor instead.
 func (*MarkMonthExecutedResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{32}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{34}
 }
 
 type ExportPersonalRequest struct {
@@ -2800,7 +3149,7 @@ type ExportPersonalRequest struct {
 
 func (x *ExportPersonalRequest) Reset() {
 	*x = ExportPersonalRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[33]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2812,7 +3161,7 @@ func (x *ExportPersonalRequest) String() string {
 func (*ExportPersonalRequest) ProtoMessage() {}
 
 func (x *ExportPersonalRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[33]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2825,7 +3174,7 @@ func (x *ExportPersonalRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportPersonalRequest.ProtoReflect.Descriptor instead.
 func (*ExportPersonalRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{33}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{35}
 }
 
 type ExportPersonalResponse struct {
@@ -2837,7 +3186,7 @@ type ExportPersonalResponse struct {
 
 func (x *ExportPersonalResponse) Reset() {
 	*x = ExportPersonalResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[34]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2849,7 +3198,7 @@ func (x *ExportPersonalResponse) String() string {
 func (*ExportPersonalResponse) ProtoMessage() {}
 
 func (x *ExportPersonalResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[34]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2862,7 +3211,7 @@ func (x *ExportPersonalResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportPersonalResponse.ProtoReflect.Descriptor instead.
 func (*ExportPersonalResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{34}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ExportPersonalResponse) GetJson() []byte {
@@ -2881,7 +3230,7 @@ type ImportPersonalRequest struct {
 
 func (x *ImportPersonalRequest) Reset() {
 	*x = ImportPersonalRequest{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[35]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2893,7 +3242,7 @@ func (x *ImportPersonalRequest) String() string {
 func (*ImportPersonalRequest) ProtoMessage() {}
 
 func (x *ImportPersonalRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[35]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2906,7 +3255,7 @@ func (x *ImportPersonalRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportPersonalRequest.ProtoReflect.Descriptor instead.
 func (*ImportPersonalRequest) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{35}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ImportPersonalRequest) GetJson() []byte {
@@ -2924,7 +3273,7 @@ type ImportPersonalResponse struct {
 
 func (x *ImportPersonalResponse) Reset() {
 	*x = ImportPersonalResponse{}
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[36]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2936,7 +3285,7 @@ func (x *ImportPersonalResponse) String() string {
 func (*ImportPersonalResponse) ProtoMessage() {}
 
 func (x *ImportPersonalResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ntx_v1_portfolio_proto_msgTypes[36]
+	mi := &file_ntx_v1_portfolio_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2949,7 +3298,7 @@ func (x *ImportPersonalResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportPersonalResponse.ProtoReflect.Descriptor instead.
 func (*ImportPersonalResponse) Descriptor() ([]byte, []int) {
-	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{36}
+	return file_ntx_v1_portfolio_proto_rawDescGZIP(), []int{38}
 }
 
 var File_ntx_v1_portfolio_proto protoreflect.FileDescriptor
@@ -2992,7 +3341,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\aopening\x18\t \x01(\tR\aopening\x12'\n" +
 	"\x05lines\x18\n" +
 	" \x03(\v2\x11.ntx.v1.OrderLineR\x05linesB\x0e\n" +
-	"\f_index_close\"\x8a\x03\n" +
+	"\f_index_close\"\xc8\x06\n" +
 	"\tCandidate\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -3008,9 +3357,47 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	" \x01(\x03R\x06shares\x12\x17\n" +
 	"\acost_rs\x18\v \x01(\x01R\x06costRs\x12\x16\n" +
 	"\x06months\x18\f \x01(\x01R\x06months\x12\x12\n" +
-	"\x04note\x18\r \x01(\tR\x04noteB\x05\n" +
+	"\x04note\x18\r \x01(\tR\x04note\x12\x18\n" +
+	"\averdict\x18\x0f \x01(\tR\averdict\x12\x16\n" +
+	"\x06reason\x18\x10 \x01(\tR\x06reason\x12(\n" +
+	"\rannualized_pe\x18\x11 \x01(\x01H\x02R\fannualizedPe\x88\x01\x01\x12+\n" +
+	"\x11annualized_period\x18\x12 \x01(\tR\x10annualizedPeriod\x12\x16\n" +
+	"\x06behind\x18\x13 \x01(\tR\x06behind\x12$\n" +
+	"\vnpl_percent\x18\x14 \x01(\x01H\x03R\n" +
+	"nplPercent\x88\x01\x01\x12$\n" +
+	"\vcar_percent\x18\x15 \x01(\x01H\x04R\n" +
+	"carPercent\x88\x01\x01\x126\n" +
+	"\x14distributable_profit\x18\x16 \x01(\x01H\x05R\x13distributableProfit\x88\x01\x01\x12%\n" +
+	"\x0emetrics_period\x18\x17 \x01(\tR\rmetricsPeriod\x12%\n" +
+	"\x0emetrics_source\x18\x18 \x01(\tR\rmetricsSourceB\x05\n" +
 	"\x03_peB\x13\n" +
-	"\x11_sector_pe_median\"g\n" +
+	"\x11_sector_pe_medianB\x10\n" +
+	"\x0e_annualized_peB\x0e\n" +
+	"\f_npl_percentB\x0e\n" +
+	"\f_car_percentB\x17\n" +
+	"\x15_distributable_profit\"\xa2\x01\n" +
+	"\tGoalPoint\x12\x14\n" +
+	"\x05month\x18\x01 \x01(\tR\x05month\x12\x19\n" +
+	"\bvalue_rs\x18\x02 \x01(\x01R\avalueRs\x12%\n" +
+	"\x0econtributed_rs\x18\x03 \x01(\x01R\rcontributedRs\x12\x17\n" +
+	"\aflat_rs\x18\x04 \x01(\x01R\x06flatRs\x12$\n" +
+	"\x0ewith_return_rs\x18\x05 \x01(\x01R\fwithReturnRs\"\x83\x03\n" +
+	"\x04Goal\x12\x17\n" +
+	"\agoal_rs\x18\x01 \x01(\x01R\x06goalRs\x12\x19\n" +
+	"\bvalue_rs\x18\x02 \x01(\x01R\avalueRs\x12\x1d\n" +
+	"\n" +
+	"monthly_rs\x18\x03 \x01(\x01R\tmonthlyRs\x12%\n" +
+	"\x0econtributed_rs\x18\x04 \x01(\x01R\rcontributedRs\x12*\n" +
+	"\x0ereturn_percent\x18\x05 \x01(\x01H\x00R\rreturnPercent\x88\x01\x01\x12\x14\n" +
+	"\x05since\x18\x06 \x01(\tR\x05since\x12\x1d\n" +
+	"\n" +
+	"flat_month\x18\a \x01(\tR\tflatMonth\x12!\n" +
+	"\freturn_month\x18\b \x01(\tR\vreturnMonth\x12\x18\n" +
+	"\aopening\x18\t \x01(\tR\aopening\x12)\n" +
+	"\x06series\x18\n" +
+	" \x03(\v2\x11.ntx.v1.GoalPointR\x06series\x12%\n" +
+	"\x04band\x18\v \x03(\v2\x11.ntx.v1.GoalPointR\x04bandB\x11\n" +
+	"\x0f_return_percent\"g\n" +
 	"\rCalendarEntry\x12\x10\n" +
 	"\x03day\x18\x01 \x01(\tR\x03day\x12\x16\n" +
 	"\x06symbol\x18\x02 \x01(\tR\x06symbol\x12\x12\n" +
@@ -3040,7 +3427,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x03Cap\x12\x12\n" +
 	"\x04rule\x18\x01 \x01(\tR\x04rule\x12\x18\n" +
 	"\averdict\x18\x02 \x01(\tR\averdict\x12\x16\n" +
-	"\x06detail\x18\x03 \x01(\tR\x06detail\"\x8d\x04\n" +
+	"\x06detail\x18\x03 \x01(\tR\x06detail\"\x92\x06\n" +
 	"\x05Rules\x12(\n" +
 	"\x10soft_cap_percent\x18\x01 \x01(\x01R\x0esoftCapPercent\x12(\n" +
 	"\x10hard_cap_percent\x18\x02 \x01(\x01R\x0ehardCapPercent\x12,\n" +
@@ -3054,7 +3441,13 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\x11monthly_budget_rs\x18\t \x01(\x01R\x0fmonthlyBudgetRs\x126\n" +
 	"\x17multiplier_below_median\x18\n" +
 	" \x01(\x01R\x15multiplierBelowMedian\x12:\n" +
-	"\x19multiplier_bottom_quarter\x18\v \x01(\x01R\x17multiplierBottomQuarter\"\x8e\x01\n" +
+	"\x19multiplier_bottom_quarter\x18\v \x01(\x01R\x17multiplierBottomQuarter\x12\x17\n" +
+	"\agoal_rs\x18\f \x01(\x01R\x06goalRs\x12\x1e\n" +
+	"\vfund_sip_rs\x18\r \x01(\x01R\tfundSipRs\x12.\n" +
+	"\x13npl_ceiling_percent\x18\x0e \x01(\x01R\x11nplCeilingPercent\x12*\n" +
+	"\x11car_floor_percent\x18\x0f \x01(\x01R\x0fcarFloorPercent\x128\n" +
+	"\x18distributable_above_zero\x18\x10 \x01(\bR\x16distributableAboveZero\x124\n" +
+	"\x17max_pe_to_sector_median\x18\x11 \x01(\x01R\x13maxPeToSectorMedian\"\x8e\x01\n" +
 	"\vTransaction\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
 	"\x03day\x18\x02 \x01(\tR\x03day\x12+\n" +
@@ -3096,7 +3489,7 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\tfund_navs\x18\x01 \x03(\v2).ntx.v1.GetPortfolioRequest.FundNavsEntryR\bfundNavs\x1a;\n" +
 	"\rFundNavsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xed\x03\n" +
+	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\x8f\x04\n" +
 	"\x14GetPortfolioResponse\x12+\n" +
 	"\bholdings\x18\x01 \x03(\v2\x0f.ntx.v1.HoldingR\bholdings\x12\x1f\n" +
 	"\vtotal_value\x18\x02 \x01(\x01R\n" +
@@ -3114,7 +3507,8 @@ const file_ntx_v1_portfolio_proto_rawDesc = "" +
 	"\n" +
 	"candidates\x18\v \x03(\v2\x11.ntx.v1.CandidateR\n" +
 	"candidates\x12-\n" +
-	"\x12candidates_opening\x18\f \x01(\tR\x11candidatesOpening\"\xe6\x02\n" +
+	"\x12candidates_opening\x18\f \x01(\tR\x11candidatesOpening\x12 \n" +
+	"\x04goal\x18\r \x01(\v2\f.ntx.v1.GoalR\x04goal\"\xe6\x02\n" +
 	"\x14UpsertHoldingRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12-\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x15.ntx.v1.HoldingStatusR\x06status\x12#\n" +
@@ -3264,7 +3658,7 @@ func file_ntx_v1_portfolio_proto_rawDescGZIP() []byte {
 }
 
 var file_ntx_v1_portfolio_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
+var file_ntx_v1_portfolio_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
 var file_ntx_v1_portfolio_proto_goTypes = []any{
 	(GateKind)(0),                     // 0: ntx.v1.GateKind
 	(GateDirection)(0),                // 1: ntx.v1.GateDirection
@@ -3273,108 +3667,113 @@ var file_ntx_v1_portfolio_proto_goTypes = []any{
 	(*OrderLine)(nil),                 // 4: ntx.v1.OrderLine
 	(*OrderSheet)(nil),                // 5: ntx.v1.OrderSheet
 	(*Candidate)(nil),                 // 6: ntx.v1.Candidate
-	(*CalendarEntry)(nil),             // 7: ntx.v1.CalendarEntry
-	(*Gate)(nil),                      // 8: ntx.v1.Gate
-	(*Cap)(nil),                       // 9: ntx.v1.Cap
-	(*Rules)(nil),                     // 10: ntx.v1.Rules
-	(*Transaction)(nil),               // 11: ntx.v1.Transaction
-	(*Note)(nil),                      // 12: ntx.v1.Note
-	(*Holding)(nil),                   // 13: ntx.v1.Holding
-	(*GetPortfolioRequest)(nil),       // 14: ntx.v1.GetPortfolioRequest
-	(*GetPortfolioResponse)(nil),      // 15: ntx.v1.GetPortfolioResponse
-	(*UpsertHoldingRequest)(nil),      // 16: ntx.v1.UpsertHoldingRequest
-	(*UpsertHoldingResponse)(nil),     // 17: ntx.v1.UpsertHoldingResponse
-	(*DeleteHoldingRequest)(nil),      // 18: ntx.v1.DeleteHoldingRequest
-	(*DeleteHoldingResponse)(nil),     // 19: ntx.v1.DeleteHoldingResponse
-	(*AddTransactionRequest)(nil),     // 20: ntx.v1.AddTransactionRequest
-	(*AddTransactionResponse)(nil),    // 21: ntx.v1.AddTransactionResponse
-	(*AddNoteRequest)(nil),            // 22: ntx.v1.AddNoteRequest
-	(*AddNoteResponse)(nil),           // 23: ntx.v1.AddNoteResponse
-	(*UpsertGateRequest)(nil),         // 24: ntx.v1.UpsertGateRequest
-	(*UpsertGateResponse)(nil),        // 25: ntx.v1.UpsertGateResponse
-	(*DeleteGateRequest)(nil),         // 26: ntx.v1.DeleteGateRequest
-	(*DeleteGateResponse)(nil),        // 27: ntx.v1.DeleteGateResponse
-	(*UpdateRulesRequest)(nil),        // 28: ntx.v1.UpdateRulesRequest
-	(*UpdateRulesResponse)(nil),       // 29: ntx.v1.UpdateRulesResponse
-	(*GetHoldingStoryRequest)(nil),    // 30: ntx.v1.GetHoldingStoryRequest
-	(*GetHoldingStoryResponse)(nil),   // 31: ntx.v1.GetHoldingStoryResponse
-	(*BankMetric)(nil),                // 32: ntx.v1.BankMetric
-	(*UpsertBankMetricRequest)(nil),   // 33: ntx.v1.UpsertBankMetricRequest
-	(*UpsertBankMetricResponse)(nil),  // 34: ntx.v1.UpsertBankMetricResponse
-	(*MarkMonthExecutedRequest)(nil),  // 35: ntx.v1.MarkMonthExecutedRequest
-	(*MarkMonthExecutedResponse)(nil), // 36: ntx.v1.MarkMonthExecutedResponse
-	(*ExportPersonalRequest)(nil),     // 37: ntx.v1.ExportPersonalRequest
-	(*ExportPersonalResponse)(nil),    // 38: ntx.v1.ExportPersonalResponse
-	(*ImportPersonalRequest)(nil),     // 39: ntx.v1.ImportPersonalRequest
-	(*ImportPersonalResponse)(nil),    // 40: ntx.v1.ImportPersonalResponse
-	nil,                               // 41: ntx.v1.GetPortfolioRequest.FundNavsEntry
-	nil,                               // 42: ntx.v1.GetHoldingStoryRequest.FundNavsEntry
-	nil,                               // 43: ntx.v1.MarkMonthExecutedRequest.CarriesEntry
+	(*GoalPoint)(nil),                 // 7: ntx.v1.GoalPoint
+	(*Goal)(nil),                      // 8: ntx.v1.Goal
+	(*CalendarEntry)(nil),             // 9: ntx.v1.CalendarEntry
+	(*Gate)(nil),                      // 10: ntx.v1.Gate
+	(*Cap)(nil),                       // 11: ntx.v1.Cap
+	(*Rules)(nil),                     // 12: ntx.v1.Rules
+	(*Transaction)(nil),               // 13: ntx.v1.Transaction
+	(*Note)(nil),                      // 14: ntx.v1.Note
+	(*Holding)(nil),                   // 15: ntx.v1.Holding
+	(*GetPortfolioRequest)(nil),       // 16: ntx.v1.GetPortfolioRequest
+	(*GetPortfolioResponse)(nil),      // 17: ntx.v1.GetPortfolioResponse
+	(*UpsertHoldingRequest)(nil),      // 18: ntx.v1.UpsertHoldingRequest
+	(*UpsertHoldingResponse)(nil),     // 19: ntx.v1.UpsertHoldingResponse
+	(*DeleteHoldingRequest)(nil),      // 20: ntx.v1.DeleteHoldingRequest
+	(*DeleteHoldingResponse)(nil),     // 21: ntx.v1.DeleteHoldingResponse
+	(*AddTransactionRequest)(nil),     // 22: ntx.v1.AddTransactionRequest
+	(*AddTransactionResponse)(nil),    // 23: ntx.v1.AddTransactionResponse
+	(*AddNoteRequest)(nil),            // 24: ntx.v1.AddNoteRequest
+	(*AddNoteResponse)(nil),           // 25: ntx.v1.AddNoteResponse
+	(*UpsertGateRequest)(nil),         // 26: ntx.v1.UpsertGateRequest
+	(*UpsertGateResponse)(nil),        // 27: ntx.v1.UpsertGateResponse
+	(*DeleteGateRequest)(nil),         // 28: ntx.v1.DeleteGateRequest
+	(*DeleteGateResponse)(nil),        // 29: ntx.v1.DeleteGateResponse
+	(*UpdateRulesRequest)(nil),        // 30: ntx.v1.UpdateRulesRequest
+	(*UpdateRulesResponse)(nil),       // 31: ntx.v1.UpdateRulesResponse
+	(*GetHoldingStoryRequest)(nil),    // 32: ntx.v1.GetHoldingStoryRequest
+	(*GetHoldingStoryResponse)(nil),   // 33: ntx.v1.GetHoldingStoryResponse
+	(*BankMetric)(nil),                // 34: ntx.v1.BankMetric
+	(*UpsertBankMetricRequest)(nil),   // 35: ntx.v1.UpsertBankMetricRequest
+	(*UpsertBankMetricResponse)(nil),  // 36: ntx.v1.UpsertBankMetricResponse
+	(*MarkMonthExecutedRequest)(nil),  // 37: ntx.v1.MarkMonthExecutedRequest
+	(*MarkMonthExecutedResponse)(nil), // 38: ntx.v1.MarkMonthExecutedResponse
+	(*ExportPersonalRequest)(nil),     // 39: ntx.v1.ExportPersonalRequest
+	(*ExportPersonalResponse)(nil),    // 40: ntx.v1.ExportPersonalResponse
+	(*ImportPersonalRequest)(nil),     // 41: ntx.v1.ImportPersonalRequest
+	(*ImportPersonalResponse)(nil),    // 42: ntx.v1.ImportPersonalResponse
+	nil,                               // 43: ntx.v1.GetPortfolioRequest.FundNavsEntry
+	nil,                               // 44: ntx.v1.GetHoldingStoryRequest.FundNavsEntry
+	nil,                               // 45: ntx.v1.MarkMonthExecutedRequest.CarriesEntry
 }
 var file_ntx_v1_portfolio_proto_depIdxs = []int32{
 	2,  // 0: ntx.v1.OrderLine.status:type_name -> ntx.v1.HoldingStatus
 	4,  // 1: ntx.v1.OrderSheet.lines:type_name -> ntx.v1.OrderLine
-	0,  // 2: ntx.v1.Gate.kind:type_name -> ntx.v1.GateKind
-	1,  // 3: ntx.v1.Gate.direction:type_name -> ntx.v1.GateDirection
-	3,  // 4: ntx.v1.Transaction.kind:type_name -> ntx.v1.TransactionKind
-	2,  // 5: ntx.v1.Holding.status:type_name -> ntx.v1.HoldingStatus
-	11, // 6: ntx.v1.Holding.transactions:type_name -> ntx.v1.Transaction
-	12, // 7: ntx.v1.Holding.notes:type_name -> ntx.v1.Note
-	8,  // 8: ntx.v1.Holding.gates:type_name -> ntx.v1.Gate
-	41, // 9: ntx.v1.GetPortfolioRequest.fund_navs:type_name -> ntx.v1.GetPortfolioRequest.FundNavsEntry
-	13, // 10: ntx.v1.GetPortfolioResponse.holdings:type_name -> ntx.v1.Holding
-	9,  // 11: ntx.v1.GetPortfolioResponse.caps:type_name -> ntx.v1.Cap
-	10, // 12: ntx.v1.GetPortfolioResponse.rules:type_name -> ntx.v1.Rules
-	5,  // 13: ntx.v1.GetPortfolioResponse.order_sheet:type_name -> ntx.v1.OrderSheet
-	7,  // 14: ntx.v1.GetPortfolioResponse.calendar:type_name -> ntx.v1.CalendarEntry
-	6,  // 15: ntx.v1.GetPortfolioResponse.candidates:type_name -> ntx.v1.Candidate
-	2,  // 16: ntx.v1.UpsertHoldingRequest.status:type_name -> ntx.v1.HoldingStatus
-	13, // 17: ntx.v1.UpsertHoldingResponse.holding:type_name -> ntx.v1.Holding
-	3,  // 18: ntx.v1.AddTransactionRequest.kind:type_name -> ntx.v1.TransactionKind
-	11, // 19: ntx.v1.AddTransactionResponse.transaction:type_name -> ntx.v1.Transaction
-	12, // 20: ntx.v1.AddNoteResponse.note:type_name -> ntx.v1.Note
-	0,  // 21: ntx.v1.UpsertGateRequest.kind:type_name -> ntx.v1.GateKind
-	1,  // 22: ntx.v1.UpsertGateRequest.direction:type_name -> ntx.v1.GateDirection
-	8,  // 23: ntx.v1.UpsertGateResponse.gate:type_name -> ntx.v1.Gate
-	10, // 24: ntx.v1.UpdateRulesRequest.rules:type_name -> ntx.v1.Rules
-	10, // 25: ntx.v1.UpdateRulesResponse.rules:type_name -> ntx.v1.Rules
-	42, // 26: ntx.v1.GetHoldingStoryRequest.fund_navs:type_name -> ntx.v1.GetHoldingStoryRequest.FundNavsEntry
-	13, // 27: ntx.v1.GetHoldingStoryResponse.holding:type_name -> ntx.v1.Holding
-	32, // 28: ntx.v1.GetHoldingStoryResponse.bank_metrics:type_name -> ntx.v1.BankMetric
-	32, // 29: ntx.v1.UpsertBankMetricRequest.metric:type_name -> ntx.v1.BankMetric
-	32, // 30: ntx.v1.UpsertBankMetricResponse.metric:type_name -> ntx.v1.BankMetric
-	43, // 31: ntx.v1.MarkMonthExecutedRequest.carries:type_name -> ntx.v1.MarkMonthExecutedRequest.CarriesEntry
-	14, // 32: ntx.v1.PortfolioService.GetPortfolio:input_type -> ntx.v1.GetPortfolioRequest
-	16, // 33: ntx.v1.PortfolioService.UpsertHolding:input_type -> ntx.v1.UpsertHoldingRequest
-	18, // 34: ntx.v1.PortfolioService.DeleteHolding:input_type -> ntx.v1.DeleteHoldingRequest
-	20, // 35: ntx.v1.PortfolioService.AddTransaction:input_type -> ntx.v1.AddTransactionRequest
-	22, // 36: ntx.v1.PortfolioService.AddNote:input_type -> ntx.v1.AddNoteRequest
-	24, // 37: ntx.v1.PortfolioService.UpsertGate:input_type -> ntx.v1.UpsertGateRequest
-	26, // 38: ntx.v1.PortfolioService.DeleteGate:input_type -> ntx.v1.DeleteGateRequest
-	28, // 39: ntx.v1.PortfolioService.UpdateRules:input_type -> ntx.v1.UpdateRulesRequest
-	30, // 40: ntx.v1.PortfolioService.GetHoldingStory:input_type -> ntx.v1.GetHoldingStoryRequest
-	35, // 41: ntx.v1.PortfolioService.MarkMonthExecuted:input_type -> ntx.v1.MarkMonthExecutedRequest
-	33, // 42: ntx.v1.PortfolioService.UpsertBankMetric:input_type -> ntx.v1.UpsertBankMetricRequest
-	37, // 43: ntx.v1.PortfolioService.ExportPersonal:input_type -> ntx.v1.ExportPersonalRequest
-	39, // 44: ntx.v1.PortfolioService.ImportPersonal:input_type -> ntx.v1.ImportPersonalRequest
-	15, // 45: ntx.v1.PortfolioService.GetPortfolio:output_type -> ntx.v1.GetPortfolioResponse
-	17, // 46: ntx.v1.PortfolioService.UpsertHolding:output_type -> ntx.v1.UpsertHoldingResponse
-	19, // 47: ntx.v1.PortfolioService.DeleteHolding:output_type -> ntx.v1.DeleteHoldingResponse
-	21, // 48: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
-	23, // 49: ntx.v1.PortfolioService.AddNote:output_type -> ntx.v1.AddNoteResponse
-	25, // 50: ntx.v1.PortfolioService.UpsertGate:output_type -> ntx.v1.UpsertGateResponse
-	27, // 51: ntx.v1.PortfolioService.DeleteGate:output_type -> ntx.v1.DeleteGateResponse
-	29, // 52: ntx.v1.PortfolioService.UpdateRules:output_type -> ntx.v1.UpdateRulesResponse
-	31, // 53: ntx.v1.PortfolioService.GetHoldingStory:output_type -> ntx.v1.GetHoldingStoryResponse
-	36, // 54: ntx.v1.PortfolioService.MarkMonthExecuted:output_type -> ntx.v1.MarkMonthExecutedResponse
-	34, // 55: ntx.v1.PortfolioService.UpsertBankMetric:output_type -> ntx.v1.UpsertBankMetricResponse
-	38, // 56: ntx.v1.PortfolioService.ExportPersonal:output_type -> ntx.v1.ExportPersonalResponse
-	40, // 57: ntx.v1.PortfolioService.ImportPersonal:output_type -> ntx.v1.ImportPersonalResponse
-	45, // [45:58] is the sub-list for method output_type
-	32, // [32:45] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	7,  // 2: ntx.v1.Goal.series:type_name -> ntx.v1.GoalPoint
+	7,  // 3: ntx.v1.Goal.band:type_name -> ntx.v1.GoalPoint
+	0,  // 4: ntx.v1.Gate.kind:type_name -> ntx.v1.GateKind
+	1,  // 5: ntx.v1.Gate.direction:type_name -> ntx.v1.GateDirection
+	3,  // 6: ntx.v1.Transaction.kind:type_name -> ntx.v1.TransactionKind
+	2,  // 7: ntx.v1.Holding.status:type_name -> ntx.v1.HoldingStatus
+	13, // 8: ntx.v1.Holding.transactions:type_name -> ntx.v1.Transaction
+	14, // 9: ntx.v1.Holding.notes:type_name -> ntx.v1.Note
+	10, // 10: ntx.v1.Holding.gates:type_name -> ntx.v1.Gate
+	43, // 11: ntx.v1.GetPortfolioRequest.fund_navs:type_name -> ntx.v1.GetPortfolioRequest.FundNavsEntry
+	15, // 12: ntx.v1.GetPortfolioResponse.holdings:type_name -> ntx.v1.Holding
+	11, // 13: ntx.v1.GetPortfolioResponse.caps:type_name -> ntx.v1.Cap
+	12, // 14: ntx.v1.GetPortfolioResponse.rules:type_name -> ntx.v1.Rules
+	5,  // 15: ntx.v1.GetPortfolioResponse.order_sheet:type_name -> ntx.v1.OrderSheet
+	9,  // 16: ntx.v1.GetPortfolioResponse.calendar:type_name -> ntx.v1.CalendarEntry
+	6,  // 17: ntx.v1.GetPortfolioResponse.candidates:type_name -> ntx.v1.Candidate
+	8,  // 18: ntx.v1.GetPortfolioResponse.goal:type_name -> ntx.v1.Goal
+	2,  // 19: ntx.v1.UpsertHoldingRequest.status:type_name -> ntx.v1.HoldingStatus
+	15, // 20: ntx.v1.UpsertHoldingResponse.holding:type_name -> ntx.v1.Holding
+	3,  // 21: ntx.v1.AddTransactionRequest.kind:type_name -> ntx.v1.TransactionKind
+	13, // 22: ntx.v1.AddTransactionResponse.transaction:type_name -> ntx.v1.Transaction
+	14, // 23: ntx.v1.AddNoteResponse.note:type_name -> ntx.v1.Note
+	0,  // 24: ntx.v1.UpsertGateRequest.kind:type_name -> ntx.v1.GateKind
+	1,  // 25: ntx.v1.UpsertGateRequest.direction:type_name -> ntx.v1.GateDirection
+	10, // 26: ntx.v1.UpsertGateResponse.gate:type_name -> ntx.v1.Gate
+	12, // 27: ntx.v1.UpdateRulesRequest.rules:type_name -> ntx.v1.Rules
+	12, // 28: ntx.v1.UpdateRulesResponse.rules:type_name -> ntx.v1.Rules
+	44, // 29: ntx.v1.GetHoldingStoryRequest.fund_navs:type_name -> ntx.v1.GetHoldingStoryRequest.FundNavsEntry
+	15, // 30: ntx.v1.GetHoldingStoryResponse.holding:type_name -> ntx.v1.Holding
+	34, // 31: ntx.v1.GetHoldingStoryResponse.bank_metrics:type_name -> ntx.v1.BankMetric
+	34, // 32: ntx.v1.UpsertBankMetricRequest.metric:type_name -> ntx.v1.BankMetric
+	34, // 33: ntx.v1.UpsertBankMetricResponse.metric:type_name -> ntx.v1.BankMetric
+	45, // 34: ntx.v1.MarkMonthExecutedRequest.carries:type_name -> ntx.v1.MarkMonthExecutedRequest.CarriesEntry
+	16, // 35: ntx.v1.PortfolioService.GetPortfolio:input_type -> ntx.v1.GetPortfolioRequest
+	18, // 36: ntx.v1.PortfolioService.UpsertHolding:input_type -> ntx.v1.UpsertHoldingRequest
+	20, // 37: ntx.v1.PortfolioService.DeleteHolding:input_type -> ntx.v1.DeleteHoldingRequest
+	22, // 38: ntx.v1.PortfolioService.AddTransaction:input_type -> ntx.v1.AddTransactionRequest
+	24, // 39: ntx.v1.PortfolioService.AddNote:input_type -> ntx.v1.AddNoteRequest
+	26, // 40: ntx.v1.PortfolioService.UpsertGate:input_type -> ntx.v1.UpsertGateRequest
+	28, // 41: ntx.v1.PortfolioService.DeleteGate:input_type -> ntx.v1.DeleteGateRequest
+	30, // 42: ntx.v1.PortfolioService.UpdateRules:input_type -> ntx.v1.UpdateRulesRequest
+	32, // 43: ntx.v1.PortfolioService.GetHoldingStory:input_type -> ntx.v1.GetHoldingStoryRequest
+	37, // 44: ntx.v1.PortfolioService.MarkMonthExecuted:input_type -> ntx.v1.MarkMonthExecutedRequest
+	35, // 45: ntx.v1.PortfolioService.UpsertBankMetric:input_type -> ntx.v1.UpsertBankMetricRequest
+	39, // 46: ntx.v1.PortfolioService.ExportPersonal:input_type -> ntx.v1.ExportPersonalRequest
+	41, // 47: ntx.v1.PortfolioService.ImportPersonal:input_type -> ntx.v1.ImportPersonalRequest
+	17, // 48: ntx.v1.PortfolioService.GetPortfolio:output_type -> ntx.v1.GetPortfolioResponse
+	19, // 49: ntx.v1.PortfolioService.UpsertHolding:output_type -> ntx.v1.UpsertHoldingResponse
+	21, // 50: ntx.v1.PortfolioService.DeleteHolding:output_type -> ntx.v1.DeleteHoldingResponse
+	23, // 51: ntx.v1.PortfolioService.AddTransaction:output_type -> ntx.v1.AddTransactionResponse
+	25, // 52: ntx.v1.PortfolioService.AddNote:output_type -> ntx.v1.AddNoteResponse
+	27, // 53: ntx.v1.PortfolioService.UpsertGate:output_type -> ntx.v1.UpsertGateResponse
+	29, // 54: ntx.v1.PortfolioService.DeleteGate:output_type -> ntx.v1.DeleteGateResponse
+	31, // 55: ntx.v1.PortfolioService.UpdateRules:output_type -> ntx.v1.UpdateRulesResponse
+	33, // 56: ntx.v1.PortfolioService.GetHoldingStory:output_type -> ntx.v1.GetHoldingStoryResponse
+	38, // 57: ntx.v1.PortfolioService.MarkMonthExecuted:output_type -> ntx.v1.MarkMonthExecutedResponse
+	36, // 58: ntx.v1.PortfolioService.UpsertBankMetric:output_type -> ntx.v1.UpsertBankMetricResponse
+	40, // 59: ntx.v1.PortfolioService.ExportPersonal:output_type -> ntx.v1.ExportPersonalResponse
+	42, // 60: ntx.v1.PortfolioService.ImportPersonal:output_type -> ntx.v1.ImportPersonalResponse
+	48, // [48:61] is the sub-list for method output_type
+	35, // [35:48] is the sub-list for method input_type
+	35, // [35:35] is the sub-list for extension type_name
+	35, // [35:35] is the sub-list for extension extendee
+	0,  // [0:35] is the sub-list for field type_name
 }
 
 func init() { file_ntx_v1_portfolio_proto_init() }
@@ -3386,16 +3785,17 @@ func file_ntx_v1_portfolio_proto_init() {
 	file_ntx_v1_portfolio_proto_msgTypes[1].OneofWrappers = []any{}
 	file_ntx_v1_portfolio_proto_msgTypes[2].OneofWrappers = []any{}
 	file_ntx_v1_portfolio_proto_msgTypes[4].OneofWrappers = []any{}
-	file_ntx_v1_portfolio_proto_msgTypes[9].OneofWrappers = []any{}
-	file_ntx_v1_portfolio_proto_msgTypes[12].OneofWrappers = []any{}
-	file_ntx_v1_portfolio_proto_msgTypes[28].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[6].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[11].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[14].OneofWrappers = []any{}
+	file_ntx_v1_portfolio_proto_msgTypes[30].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ntx_v1_portfolio_proto_rawDesc), len(file_ntx_v1_portfolio_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   40,
+			NumMessages:   42,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

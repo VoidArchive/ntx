@@ -86,6 +86,47 @@ message Candidate {
   double cost_rs = 11;
   double months = 12;
   string note = 13;
+  // "passes", "needs data" or "turned away" (GLOSSARY: Candidates, Turned away).
+  string verdict = 15;
+  // The rule that turned the company away, or what a lender still needs, in one sentence.
+  string reason = 16;
+  // PE at the close over the latest filing's EPS as the exchange annualizes it, with that quarter.
+  optional double annualized_pe = 17;
+  string annualized_period = 18;
+  // Set when the latest filing is older than the newest quarter the sector has filed (GLOSSARY: Behind).
+  string behind = 19;
+  // A lender's figures from the owner's bank row for its latest filed quarter, with provenance.
+  optional double npl_percent = 20;
+  optional double car_percent = 21;
+  optional double distributable_profit = 22;
+  string metrics_period = 23;
+  string metrics_source = 24;
+}
+
+// GoalPoint is one month of the goal chart: the book's value and what was paid in to
+// date, or forward of today the two projections (GLOSSARY: Goal).
+message GoalPoint {
+  string month = 1; // "2026-10"
+  double value_rs = 2;
+  double contributed_rs = 3;
+  double flat_rs = 4;
+  double with_return_rs = 5;
+}
+
+// Goal is the book against the owner's goal: value, the monthly figure, the realised
+// return, the two projected months and the sentence (ADR 0001). Never a forecast.
+message Goal {
+  double goal_rs = 1;
+  double value_rs = 2;
+  double monthly_rs = 3;
+  double contributed_rs = 4;
+  optional double return_percent = 5;
+  string since = 6;
+  string flat_month = 7;
+  string return_month = 8;
+  string opening = 9;
+  repeated GoalPoint series = 10;
+  repeated GoalPoint band = 11;
 }
 
 // CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
@@ -161,6 +202,15 @@ message Rules {
   double monthly_budget_rs = 9;
   double multiplier_below_median = 10;
   double multiplier_bottom_quarter = 11;
+  // The goal the book is measured against, and the fund SIP paid in beside the budget.
+  double goal_rs = 12;
+  double fund_sip_rs = 13;
+  // Lender rules for Candidates: NPL at most, CAR at least, distributable profit above zero.
+  double npl_ceiling_percent = 14;
+  double car_floor_percent = 15;
+  bool distributable_above_zero = 16;
+  // A candidate's PE at most this many times its sector median; zero switches the rule off.
+  double max_pe_to_sector_median = 17;
 }
 
 enum HoldingStatus {
@@ -245,10 +295,12 @@ message GetPortfolioResponse {
   repeated CalendarEntry calendar = 9;
   // The Calendar section's sentence: what is next, and how many dates have passed.
   string calendar_opening = 10;
-  // Sorted by rating, then PE against the sector.
+  // Every listed company once: passes first, then needs data, then turned away; within a
+  // group by rating, then PE against the sector.
   repeated Candidate candidates = 11;
-  // The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+  // The owner's standing rule, then the count of each verdict.
   string candidates_opening = 12;
+  Goal goal = 13;
 }
 
 message UpsertHoldingRequest {

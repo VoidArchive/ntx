@@ -333,33 +333,31 @@ func rulesToProto(r sqlc.Rule) *ntxv1.Rules {
 		MonthlyBudgetRs:         r.MonthlyBudgetRs,
 		MultiplierBelowMedian:   r.MultiplierBelowMedian,
 		MultiplierBottomQuarter: r.MultiplierBottomQuarter,
+		GoalRs:                  r.GoalRs,
+		FundSipRs:               r.FundSipRs,
+		NplCeilingPercent:       r.NplCeilingPercent,
+		CarFloorPercent:         r.CarFloorPercent,
+		DistributableAboveZero:  r.DistributableAboveZero != 0,
+		MaxPeToSectorMedian:     r.MaxPeToSectorMedian,
 	}
 }
 
-func flag(b bool) int64 {
-	if b {
-		return 1
+// rulesParams is the rules row as the form and the import both write it.
+func rulesParams(r sqlc.Rule) sqlc.UpdateRulesParams {
+	return sqlc.UpdateRulesParams{
+		SoftCapPercent: r.SoftCapPercent, HardCapPercent: r.HardCapPercent, SectorCapPercent: r.SectorCapPercent,
+		MaxPositions: r.MaxPositions, MinEntryRs: r.MinEntryRs, OneHydroPerBasin: r.OneHydroPerBasin,
+		CandidateMinRating: r.CandidateMinRating, CandidateDividendRecord: r.CandidateDividendRecord,
+		MonthlyBudgetRs: r.MonthlyBudgetRs, MultiplierBelowMedian: r.MultiplierBelowMedian,
+		MultiplierBottomQuarter: r.MultiplierBottomQuarter,
+		GoalRs:                  r.GoalRs, FundSipRs: r.FundSipRs, NplCeilingPercent: r.NplCeilingPercent,
+		CarFloorPercent: r.CarFloorPercent, DistributableAboveZero: r.DistributableAboveZero,
+		MaxPeToSectorMedian: r.MaxPeToSectorMedian,
 	}
-	return 0
 }
 
-// validRules is the one guard on the rules row, for the form and the import alike.
-func validRules(soft, hard float64, positions int64) error {
-	if soft <= 0 || hard < soft || positions < 1 {
-		return errors.New("the soft cap must be positive, the hard cap at least the soft cap, and positions at least 1")
-	}
-	return nil
-}
-
-func (s *Service) UpdateRules(
-	ctx context.Context,
-	req *connect.Request[ntxv1.UpdateRulesRequest],
-) (*connect.Response[ntxv1.UpdateRulesResponse], error) {
-	r := req.Msg.GetRules()
-	if err := validRules(r.GetSoftCapPercent(), r.GetHardCapPercent(), int64(r.GetMaxPositions())); err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
-	}
-	row, err := s.queries.UpdateRules(ctx, sqlc.UpdateRulesParams{
+func rulesFromProto(r *ntxv1.Rules) sqlc.Rule {
+	return sqlc.Rule{
 		SoftCapPercent:          r.GetSoftCapPercent(),
 		HardCapPercent:          r.GetHardCapPercent(),
 		SectorCapPercent:        r.GetSectorCapPercent(),
@@ -371,7 +369,44 @@ func (s *Service) UpdateRules(
 		MonthlyBudgetRs:         r.GetMonthlyBudgetRs(),
 		MultiplierBelowMedian:   r.GetMultiplierBelowMedian(),
 		MultiplierBottomQuarter: r.GetMultiplierBottomQuarter(),
-	})
+		GoalRs:                  r.GetGoalRs(),
+		FundSipRs:               r.GetFundSipRs(),
+		NplCeilingPercent:       r.GetNplCeilingPercent(),
+		CarFloorPercent:         r.GetCarFloorPercent(),
+		DistributableAboveZero:  flag(r.GetDistributableAboveZero()),
+		MaxPeToSectorMedian:     r.GetMaxPeToSectorMedian(),
+	}
+}
+
+func flag(b bool) int64 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+// validRules is the one guard on the rules row, for the form and the import alike. A
+// ceiling, floor or multiple of zero switches that rule off; below zero is a mistake.
+func validRules(r sqlc.Rule) error {
+	if r.SoftCapPercent <= 0 || r.HardCapPercent < r.SoftCapPercent || r.MaxPositions < 1 {
+		return errors.New("the soft cap must be positive, the hard cap at least the soft cap, and positions at least 1")
+	}
+	if r.GoalRs < 0 || r.FundSipRs < 0 || r.NplCeilingPercent < 0 || r.CarFloorPercent < 0 ||
+		r.MaxPeToSectorMedian < 0 {
+		return errors.New("the goal, the fund SIP, the lender ceilings and the PE multiple cannot be negative")
+	}
+	return nil
+}
+
+func (s *Service) UpdateRules(
+	ctx context.Context,
+	req *connect.Request[ntxv1.UpdateRulesRequest],
+) (*connect.Response[ntxv1.UpdateRulesResponse], error) {
+	r := rulesFromProto(req.Msg.GetRules())
+	if err := validRules(r); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	row, err := s.queries.UpdateRules(ctx, rulesParams(r))
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

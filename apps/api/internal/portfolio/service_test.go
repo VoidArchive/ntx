@@ -637,19 +637,25 @@ func TestCandidatesOnTheBook(t *testing.T) {
 		got = append(
 			got,
 			fmt.Sprintf(
-				"%s %s %d@%.0f %s",
+				"%s %s %d@%.0f %s %s",
 				cd.GetSymbol(),
 				cd.GetRating(),
 				cd.GetShares(),
 				cd.GetCostRs(),
 				cd.GetBasin(),
+				cd.GetVerdict(),
 			),
 		)
 	}
-	if want := []string{"NTC A 20@18200 ", "API B 50@17150 Mahakali"}; !slices.Equal(got, want) {
+	// Every listed company once: the two that pass, then the held and the turned away with their rules.
+	want := []string{
+		"NTC A 20@18200  passes", "API B 50@17150 Mahakali passes", "MEN  0@0  turned away",
+		"SAHAS A 0@0 Gandaki turned away", "NABIL C 0@0  turned away",
+	}
+	if !slices.Equal(got, want) {
 		t.Errorf("candidates %q, want %q", got, want)
 	}
-	if res.Msg.GetCandidatesOpening() != "Positions stand at 1 of 8; a new scrip needs a sale first. 2 companies pass the rules." {
+	if res.Msg.GetCandidatesOpening() != "Positions stand at 1 of 8; a new scrip needs a sale first. 2 companies pass the rules and 3 are turned away." {
 		t.Errorf("opening %q", res.Msg.GetCandidatesOpening())
 	}
 }
