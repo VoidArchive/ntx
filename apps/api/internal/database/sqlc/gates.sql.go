@@ -19,7 +19,7 @@ func (q *Queries) DeleteGate(ctx context.Context, id int64) error {
 }
 
 const getRules = `-- name: GetRules :one
-SELECT id, soft_cap_percent, hard_cap_percent, sector_cap_percent, max_positions, min_entry_rs, one_hydro_per_basin, candidate_min_rating, candidate_dividend_record, monthly_budget_rs, multiplier_below_median, multiplier_bottom_quarter FROM rules WHERE id = 1
+SELECT id, soft_cap_percent, hard_cap_percent, sector_cap_percent, max_positions, min_entry_rs, one_hydro_per_basin, candidate_min_rating, candidate_dividend_record, monthly_budget_rs, multiplier_below_median, multiplier_bottom_quarter, goal_rs, fund_sip_rs, npl_ceiling_percent, car_floor_percent, distributable_above_zero, max_pe_to_sector_median FROM rules WHERE id = 1
 `
 
 func (q *Queries) GetRules(ctx context.Context) (Rule, error) {
@@ -38,6 +38,12 @@ func (q *Queries) GetRules(ctx context.Context) (Rule, error) {
 		&i.MonthlyBudgetRs,
 		&i.MultiplierBelowMedian,
 		&i.MultiplierBottomQuarter,
+		&i.GoalRs,
+		&i.FundSipRs,
+		&i.NplCeilingPercent,
+		&i.CarFloorPercent,
+		&i.DistributableAboveZero,
+		&i.MaxPeToSectorMedian,
 	)
 	return i, err
 }
@@ -171,9 +177,11 @@ const updateRules = `-- name: UpdateRules :one
 UPDATE rules SET
     soft_cap_percent = ?, hard_cap_percent = ?, sector_cap_percent = ?, max_positions = ?,
     min_entry_rs = ?, one_hydro_per_basin = ?, candidate_min_rating = ?, candidate_dividend_record = ?,
-    monthly_budget_rs = ?, multiplier_below_median = ?, multiplier_bottom_quarter = ?
+    monthly_budget_rs = ?, multiplier_below_median = ?, multiplier_bottom_quarter = ?,
+    goal_rs = ?, fund_sip_rs = ?, npl_ceiling_percent = ?, car_floor_percent = ?,
+    distributable_above_zero = ?, max_pe_to_sector_median = ?
 WHERE id = 1
-RETURNING id, soft_cap_percent, hard_cap_percent, sector_cap_percent, max_positions, min_entry_rs, one_hydro_per_basin, candidate_min_rating, candidate_dividend_record, monthly_budget_rs, multiplier_below_median, multiplier_bottom_quarter
+RETURNING id, soft_cap_percent, hard_cap_percent, sector_cap_percent, max_positions, min_entry_rs, one_hydro_per_basin, candidate_min_rating, candidate_dividend_record, monthly_budget_rs, multiplier_below_median, multiplier_bottom_quarter, goal_rs, fund_sip_rs, npl_ceiling_percent, car_floor_percent, distributable_above_zero, max_pe_to_sector_median
 `
 
 type UpdateRulesParams struct {
@@ -188,6 +196,12 @@ type UpdateRulesParams struct {
 	MonthlyBudgetRs         float64 `json:"monthly_budget_rs"`
 	MultiplierBelowMedian   float64 `json:"multiplier_below_median"`
 	MultiplierBottomQuarter float64 `json:"multiplier_bottom_quarter"`
+	GoalRs                  float64 `json:"goal_rs"`
+	FundSipRs               float64 `json:"fund_sip_rs"`
+	NplCeilingPercent       float64 `json:"npl_ceiling_percent"`
+	CarFloorPercent         float64 `json:"car_floor_percent"`
+	DistributableAboveZero  int64   `json:"distributable_above_zero"`
+	MaxPeToSectorMedian     float64 `json:"max_pe_to_sector_median"`
 }
 
 func (q *Queries) UpdateRules(ctx context.Context, arg UpdateRulesParams) (Rule, error) {
@@ -203,6 +217,12 @@ func (q *Queries) UpdateRules(ctx context.Context, arg UpdateRulesParams) (Rule,
 		arg.MonthlyBudgetRs,
 		arg.MultiplierBelowMedian,
 		arg.MultiplierBottomQuarter,
+		arg.GoalRs,
+		arg.FundSipRs,
+		arg.NplCeilingPercent,
+		arg.CarFloorPercent,
+		arg.DistributableAboveZero,
+		arg.MaxPeToSectorMedian,
 	)
 	var i Rule
 	err := row.Scan(
@@ -218,6 +238,12 @@ func (q *Queries) UpdateRules(ctx context.Context, arg UpdateRulesParams) (Rule,
 		&i.MonthlyBudgetRs,
 		&i.MultiplierBelowMedian,
 		&i.MultiplierBottomQuarter,
+		&i.GoalRs,
+		&i.FundSipRs,
+		&i.NplCeilingPercent,
+		&i.CarFloorPercent,
+		&i.DistributableAboveZero,
+		&i.MaxPeToSectorMedian,
 	)
 	return i, err
 }

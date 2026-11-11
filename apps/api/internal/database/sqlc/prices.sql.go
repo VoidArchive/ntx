@@ -144,6 +144,53 @@ func (q *Queries) ListLatestPrices(ctx context.Context) ([]Price, error) {
 	return items, nil
 }
 
+const listMonthEndCloses = `-- name: ListMonthEndCloses :many
+SELECT substr(p.business_date, 1, 7) AS month, p.close_price
+FROM prices p
+WHERE p.company_id = ? AND p.business_date >= ? AND p.close_price IS NOT NULL
+  AND p.business_date = (
+    SELECT MAX(p2.business_date) FROM prices p2
+    WHERE p2.company_id = p.company_id AND p2.close_price IS NOT NULL
+      AND substr(p2.business_date, 1, 7) = substr(p.business_date, 1, 7)
+  )
+ORDER BY month
+`
+
+type ListMonthEndClosesParams struct {
+	CompanyID    int64  `json:"company_id"`
+	BusinessDate string `json:"business_date"`
+}
+
+type ListMonthEndClosesRow struct {
+	Month      string          `json:"month"`
+	ClosePrice sql.NullFloat64 `json:"close_price"`
+}
+
+// The last close of each calendar month for one company since a day, for the
+// goal chart's value by month (issue #67).
+func (q *Queries) ListMonthEndCloses(ctx context.Context, arg ListMonthEndClosesParams) ([]ListMonthEndClosesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listMonthEndCloses, arg.CompanyID, arg.BusinessDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListMonthEndClosesRow
+	for rows.Next() {
+		var i ListMonthEndClosesRow
+		if err := rows.Scan(&i.Month, &i.ClosePrice); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPricesByCompany = `-- name: ListPricesByCompany :many
 SELECT id, company_id, business_date, open_price, high_price, low_price, close_price, last_traded_price, previous_close, change_amount, change_percent, volume, turnover, trades, created_at FROM prices
 WHERE company_id = ?

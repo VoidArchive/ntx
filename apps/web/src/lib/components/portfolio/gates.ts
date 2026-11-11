@@ -5,7 +5,9 @@ export const VERDICT: Record<string, string> = {
 	triggered: 'Triggered',
 	holds: 'Holds',
 	watch: 'Watch',
-	'needs data': 'Needs data'
+	'needs data': 'Needs data',
+	passes: 'Passes',
+	'turned away': 'Turned away'
 };
 
 // Triggered and Needs data first (spec, section 5); event gates and switched-off gates carry no verdict.

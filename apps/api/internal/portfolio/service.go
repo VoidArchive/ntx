@@ -120,12 +120,49 @@ func (s *Service) portfolio(ctx context.Context, navs map[string]float64) (*ntxv
 	res.OrderSheet = sheet(month(today), rules, index, holdings)
 	res.Calendar = calendar(today, holdings)
 	res.CalendarOpening = calendarOpening(res.Calendar)
-	if res.Candidates, err = s.candidates(ctx, res, rules, plants); err != nil {
+	if res.Candidates, err = s.candidates(ctx, res, rules, plants, today); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	res.CandidatesOpening = candidatesOpening(len(res.Candidates), res, rules)
+	res.CandidatesOpening = candidatesOpening(res.Candidates, res, rules)
+	closes, err := s.monthCloses(ctx, holdings)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	res.Goal = goal(today, rules, res, closes)
 	res.Opening = opening(res)
 	return res, nil
+}
+
+// monthCloses is each held company's month-end closes since the book's first
+// transaction, by symbol, for the goal chart.
+func (s *Service) monthCloses(
+	ctx context.Context,
+	holdings []*ntxv1.Holding,
+) (map[string][]sqlc.ListMonthEndClosesRow, error) {
+	out := map[string][]sqlc.ListMonthEndClosesRow{}
+	flows := cashFlows(holdings)
+	if len(flows) == 0 {
+		return out, nil
+	}
+	since := flows[0].day.Format(time.DateOnly)
+	for _, h := range holdings {
+		if h.GetIsFund() || len(h.GetTransactions()) == 0 {
+			continue
+		}
+		c, err := s.queries.GetCompany(ctx, h.GetSymbol())
+		if err != nil {
+			return nil, fmt.Errorf("company %s: %w", h.GetSymbol(), err)
+		}
+		rows, err := s.queries.ListMonthEndCloses(
+			ctx,
+			sqlc.ListMonthEndClosesParams{CompanyID: c.ID, BusinessDate: since},
+		)
+		if err != nil {
+			return nil, err
+		}
+		out[h.GetSymbol()] = rows
+	}
+	return out, nil
 }
 
 // candidates prices the screener as the screener page does and filters it by the rules.
@@ -135,12 +172,17 @@ func (s *Service) candidates(
 	res *ntxv1.GetPortfolioResponse,
 	rules sqlc.Rule,
 	plants []sqlc.HydroPlant,
+	today time.Time,
 ) ([]*ntxv1.Candidate, error) {
 	rows, err := s.queries.ListScreener(ctx, story.RatingVersion)
 	if err != nil {
 		return nil, err
 	}
 	earningsRows, err := s.queries.ListEarningsRows(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	bank, err := s.queries.ListBankMetrics(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +193,7 @@ func (s *Service) candidates(
 			pes[row.ID] = priced{row.ClosePrice.Float64 / e.EPS, e.Period}
 		}
 	}
-	return candidates(rows, pes, res, rules, plants), nil
+	return candidates(rows, pes, res, rules, plants, bank, today), nil
 }
 
 // indexYear is the index's trailing 52 weeks of closes, oldest first; nil without a market day.

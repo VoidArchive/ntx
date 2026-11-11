@@ -244,6 +244,66 @@ export declare type Candidate = Message<"ntx.v1.Candidate"> & {
    * @generated from field: string note = 13;
    */
   note: string;
+
+  /**
+   * "passes", "needs data" or "turned away" (GLOSSARY: Candidates, Turned away).
+   *
+   * @generated from field: string verdict = 15;
+   */
+  verdict: string;
+
+  /**
+   * The rule that turned the company away, or what a lender still needs, in one sentence.
+   *
+   * @generated from field: string reason = 16;
+   */
+  reason: string;
+
+  /**
+   * PE at the close over the latest filing's EPS as the exchange annualizes it, with that quarter.
+   *
+   * @generated from field: optional double annualized_pe = 17;
+   */
+  annualizedPe?: number;
+
+  /**
+   * @generated from field: string annualized_period = 18;
+   */
+  annualizedPeriod: string;
+
+  /**
+   * Set when the latest filing is older than the newest quarter the sector has filed (GLOSSARY: Behind).
+   *
+   * @generated from field: string behind = 19;
+   */
+  behind: string;
+
+  /**
+   * A lender's figures from the owner's bank row for its latest filed quarter, with provenance.
+   *
+   * @generated from field: optional double npl_percent = 20;
+   */
+  nplPercent?: number;
+
+  /**
+   * @generated from field: optional double car_percent = 21;
+   */
+  carPercent?: number;
+
+  /**
+   * @generated from field: optional double distributable_profit = 22;
+   */
+  distributableProfit?: number;
+
+  /**
+   * @generated from field: string metrics_period = 23;
+   */
+  metricsPeriod: string;
+
+  /**
+   * @generated from field: string metrics_source = 24;
+   */
+  metricsSource: string;
 };
 
 /**
@@ -251,6 +311,116 @@ export declare type Candidate = Message<"ntx.v1.Candidate"> & {
  * Use `create(CandidateSchema)` to create a new message.
  */
 export declare const CandidateSchema: GenMessage<Candidate>;
+
+/**
+ * GoalPoint is one month of the goal chart: the book's value and what was paid in to
+ * date, or forward of today the two projections (GLOSSARY: Goal).
+ *
+ * @generated from message ntx.v1.GoalPoint
+ */
+export declare type GoalPoint = Message<"ntx.v1.GoalPoint"> & {
+  /**
+   * "2026-10"
+   *
+   * @generated from field: string month = 1;
+   */
+  month: string;
+
+  /**
+   * @generated from field: double value_rs = 2;
+   */
+  valueRs: number;
+
+  /**
+   * @generated from field: double contributed_rs = 3;
+   */
+  contributedRs: number;
+
+  /**
+   * @generated from field: double flat_rs = 4;
+   */
+  flatRs: number;
+
+  /**
+   * @generated from field: double with_return_rs = 5;
+   */
+  withReturnRs: number;
+};
+
+/**
+ * Describes the message ntx.v1.GoalPoint.
+ * Use `create(GoalPointSchema)` to create a new message.
+ */
+export declare const GoalPointSchema: GenMessage<GoalPoint>;
+
+/**
+ * Goal is the book against the owner's goal: value, the monthly figure, the realised
+ * return, the two projected months and the sentence (ADR 0001). Never a forecast.
+ *
+ * @generated from message ntx.v1.Goal
+ */
+export declare type Goal = Message<"ntx.v1.Goal"> & {
+  /**
+   * @generated from field: double goal_rs = 1;
+   */
+  goalRs: number;
+
+  /**
+   * @generated from field: double value_rs = 2;
+   */
+  valueRs: number;
+
+  /**
+   * @generated from field: double monthly_rs = 3;
+   */
+  monthlyRs: number;
+
+  /**
+   * @generated from field: double contributed_rs = 4;
+   */
+  contributedRs: number;
+
+  /**
+   * @generated from field: optional double return_percent = 5;
+   */
+  returnPercent?: number;
+
+  /**
+   * @generated from field: string since = 6;
+   */
+  since: string;
+
+  /**
+   * @generated from field: string flat_month = 7;
+   */
+  flatMonth: string;
+
+  /**
+   * @generated from field: string return_month = 8;
+   */
+  returnMonth: string;
+
+  /**
+   * @generated from field: string opening = 9;
+   */
+  opening: string;
+
+  /**
+   * @generated from field: repeated ntx.v1.GoalPoint series = 10;
+   */
+  series: GoalPoint[];
+
+  /**
+   * @generated from field: repeated ntx.v1.GoalPoint band = 11;
+   */
+  band: GoalPoint[];
+};
+
+/**
+ * Describes the message ntx.v1.Goal.
+ * Use `create(GoalSchema)` to create a new message.
+ */
+export declare const GoalSchema: GenMessage<Goal>;
 
 /**
  * CalendarEntry is one dated item: a filing due, a review date or an event gate's next tick.
@@ -482,6 +652,42 @@ export declare type Rules = Message<"ntx.v1.Rules"> & {
    * @generated from field: double multiplier_bottom_quarter = 11;
    */
   multiplierBottomQuarter: number;
+
+  /**
+   * The goal the book is measured against, and the fund SIP paid in beside the budget.
+   *
+   * @generated from field: double goal_rs = 12;
+   */
+  goalRs: number;
+
+  /**
+   * @generated from field: double fund_sip_rs = 13;
+   */
+  fundSipRs: number;
+
+  /**
+   * Lender rules for Candidates: NPL at most, CAR at least, distributable profit above zero.
+   *
+   * @generated from field: double npl_ceiling_percent = 14;
+   */
+  nplCeilingPercent: number;
+
+  /**
+   * @generated from field: double car_floor_percent = 15;
+   */
+  carFloorPercent: number;
+
+  /**
+   * @generated from field: bool distributable_above_zero = 16;
+   */
+  distributableAboveZero: boolean;
+
+  /**
+   * A candidate's PE at most this many times its sector median; zero switches the rule off.
+   *
+   * @generated from field: double max_pe_to_sector_median = 17;
+   */
+  maxPeToSectorMedian: number;
 };
 
 /**
@@ -768,18 +974,24 @@ export declare type GetPortfolioResponse = Message<"ntx.v1.GetPortfolioResponse"
   calendarOpening: string;
 
   /**
-   * Sorted by rating, then PE against the sector.
+   * Every listed company once: passes first, then needs data, then turned away; within a
+   * group by rating, then PE against the sector.
    *
    * @generated from field: repeated ntx.v1.Candidate candidates = 11;
    */
   candidates: Candidate[];
 
   /**
-   * The owner's standing rule: a new scrip needs a sale first, positions at N of max.
+   * The owner's standing rule, then the count of each verdict.
    *
    * @generated from field: string candidates_opening = 12;
    */
   candidatesOpening: string;
+
+  /**
+   * @generated from field: ntx.v1.Goal goal = 13;
+   */
+  goal?: Goal;
 };
 
 /**

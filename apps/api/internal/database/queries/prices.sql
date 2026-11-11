@@ -47,3 +47,16 @@ WHERE c.symbol = ?
 ORDER BY p.business_date DESC
 LIMIT 1;
 
+
+-- The last close of each calendar month for one company since a day, for the
+-- goal chart's value by month (issue #67).
+-- name: ListMonthEndCloses :many
+SELECT substr(p.business_date, 1, 7) AS month, p.close_price
+FROM prices p
+WHERE p.company_id = ? AND p.business_date >= ? AND p.close_price IS NOT NULL
+  AND p.business_date = (
+    SELECT MAX(p2.business_date) FROM prices p2
+    WHERE p2.company_id = p.company_id AND p2.close_price IS NOT NULL
+      AND substr(p2.business_date, 1, 7) = substr(p.business_date, 1, 7)
+  )
+ORDER BY month;

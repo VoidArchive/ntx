@@ -49,8 +49,24 @@ One of the owner's own written break conditions for a holding, evaluated against
 _Avoid_: signal, sell trigger (as the display word), alert, recommendation
 
 **Candidates**:
-The companies that pass the owner's rules and are not held: the screener filtered by sector headroom, basin, rating and minimum size. A list of what the rules admit, not a ranking of what to buy.
+Every listed company read against the owner's rules, in one of three states: passes, needs data, or turned away. The rules are not held, rated at least the minimum, the Dividend record check holding, sector headroom after a minimum entry, one hydro per basin, PE within a multiple of the sector median, and for a Lender the owner's NPL ceiling, CAR floor and distributable profit above zero read from the owner's bank row. A list of what the rules admit, not a ranking of what to buy.
 _Avoid_: picks, recommendations, ideas, best buys
+
+**Lender**:
+A company in the Commercial Banks, Development Banks, Finance or Microfinance sector. The lender rules apply to it and to nothing else; a Lender with no bank row for its latest filed quarter is Needs data among the Candidates and never passes.
+_Avoid_: bank (for the four sectors together), financial institution, BFI
+
+**Turned away**:
+A company the owner's rules do not admit, always with the rule that turned it away and its figure in one sentence: "NPL 7.64% above the 5% ceiling, Q1 2083/84". Every rejection is explainable without reading the code.
+_Avoid_: rejected, failed, excluded
+
+**Behind**:
+A company whose latest filing is older than the newest quarter its sector has filed, so its PE is priced on the older period. A mark beside the figure, not a rule; a quarter that has not ended does not count as the sector's newest.
+_Avoid_: stale, outdated, late
+
+**Goal**:
+The rupee amount in Rules the book is measured against. Shown with a projected range, from contributions at flat prices to contributions plus the book's own money-weighted return since its first transaction, assumptions stated. Arithmetic, never a forecast.
+_Avoid_: target, forecast, projection (as the display word), expected date
 
 **Triggered / Holds / Needs data**:
 The three verdicts of a Gate. Triggered means the owner's condition is met for the required consecutive periods, against a fixed threshold or against the previous period's own figure (a ratchet); Holds means it is not; Needs data means the figure or its provenance is missing. Every verdict names the period it was evaluated against.

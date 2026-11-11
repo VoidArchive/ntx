@@ -80,6 +80,9 @@ func (s *Service) exportFile(ctx context.Context) (personalFile, error) {
 	if f.Gates, err = q.ListGates(ctx); err != nil {
 		return f, err
 	}
+	// An empty table is "[]", never null: the import refuses a null table as a truncated file.
+	f.Holdings, f.Transactions = orEmpty(f.Holdings), orEmpty(f.Transactions)
+	f.Notes, f.Gates = orEmpty(f.Notes), orEmpty(f.Gates)
 	rules, err := q.GetRules(ctx)
 	if err != nil {
 		return f, err
@@ -100,13 +103,26 @@ func (s *Service) exportFile(ctx context.Context) (personalFile, error) {
 	return f, nil
 }
 
+func orEmpty[T any](s []T) []T {
+	if s == nil {
+		return []T{}
+	}
+	return s
+}
+
 // ImportPersonal replaces every personal table with the file's rows in one
 // transaction; a file it cannot take, or a row the schema refuses, changes nothing.
 func (s *Service) ImportPersonal(
 	ctx context.Context,
 	req *connect.Request[ntxv1.ImportPersonalRequest],
 ) (*connect.Response[ntxv1.ImportPersonalResponse], error) {
-	var f personalFile
+	// The rules decode over the row as it stands, so a file written before a rule
+	// existed keeps that rule's current value rather than zeroing it.
+	current, err := s.queries.GetRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	f := personalFile{Rules: &current}
 	dec := json.NewDecoder(bytes.NewReader(req.Msg.GetJson()))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(&f); err != nil {
@@ -119,7 +135,7 @@ func (s *Service) ImportPersonal(
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	defer func() { _ = tx.Rollback() }()
+	defer func() { _ = tx.Rollback() }() //nolint:errcheck // a rollback after commit is a no-op
 	if err := importAll(ctx, s.queries.WithTx(tx), f); err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -143,7 +159,7 @@ func (f personalFile) complete() error {
 			return fmt.Errorf("the file has no %q", name)
 		}
 	}
-	if err := validRules(f.Rules.SoftCapPercent, f.Rules.HardCapPercent, f.Rules.MaxPositions); err != nil {
+	if err := validRules(*f.Rules); err != nil {
 		return err
 	}
 	for _, b := range f.BankMetrics {
@@ -205,13 +221,6 @@ func importAll(ctx context.Context, q *sqlc.Queries, f personalFile) error {
 			return fmt.Errorf("bank row %d: %w", b.ID, err)
 		}
 	}
-	r := *f.Rules
-	_, err := q.UpdateRules(ctx, sqlc.UpdateRulesParams{
-		SoftCapPercent: r.SoftCapPercent, HardCapPercent: r.HardCapPercent, SectorCapPercent: r.SectorCapPercent,
-		MaxPositions: r.MaxPositions, MinEntryRs: r.MinEntryRs, OneHydroPerBasin: r.OneHydroPerBasin,
-		CandidateMinRating: r.CandidateMinRating, CandidateDividendRecord: r.CandidateDividendRecord,
-		MonthlyBudgetRs: r.MonthlyBudgetRs, MultiplierBelowMedian: r.MultiplierBelowMedian,
-		MultiplierBottomQuarter: r.MultiplierBottomQuarter,
-	})
+	_, err := q.UpdateRules(ctx, rulesParams(*f.Rules))
 	return err
 }

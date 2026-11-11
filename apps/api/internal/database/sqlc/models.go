@@ -201,6 +201,12 @@ type Rule struct {
 	MonthlyBudgetRs         float64 `json:"monthly_budget_rs"`
 	MultiplierBelowMedian   float64 `json:"multiplier_below_median"`
 	MultiplierBottomQuarter float64 `json:"multiplier_bottom_quarter"`
+	GoalRs                  float64 `json:"goal_rs"`
+	FundSipRs               float64 `json:"fund_sip_rs"`
+	NplCeilingPercent       float64 `json:"npl_ceiling_percent"`
+	CarFloorPercent         float64 `json:"car_floor_percent"`
+	DistributableAboveZero  int64   `json:"distributable_above_zero"`
+	MaxPeToSectorMedian     float64 `json:"max_pe_to_sector_median"`
 }
 
 type Transaction struct {

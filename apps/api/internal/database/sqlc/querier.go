@@ -88,6 +88,9 @@ type Querier interface {
 	// Newest day per plant, the reading the state is computed from. The GROUP BY
 	// walks the (plant_id, day) index once; a correlated MAX scanned every row.
 	ListLatestReadings(ctx context.Context) ([]HydroReading, error)
+	// The last close of each calendar month for one company since a day, for the
+	// goal chart's value by month (issue #67).
+	ListMonthEndCloses(ctx context.Context, arg ListMonthEndClosesParams) ([]ListMonthEndClosesRow, error)
 	ListNotes(ctx context.Context) ([]HoldingNote, error)
 	ListOwnershipHistory(ctx context.Context, companyID int64) ([]OwnershipHistory, error)
 	ListPricesByCompany(ctx context.Context, arg ListPricesByCompanyParams) ([]Price, error)

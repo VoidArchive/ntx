@@ -79,6 +79,45 @@ func TestExportThenImportRoundTrips(t *testing.T) {
 	}
 }
 
+// A book with nothing in it exports tables as "[]", so the file imports back.
+func TestEmptyBookRoundTrips(t *testing.T) {
+	c, _ := clientAndDB(t, testToken)
+	file := export(t, c)
+	if bytes.Contains(file, []byte("null")) {
+		t.Errorf("an empty table exported as null:\n%s", file)
+	}
+	must(t, importFile(c, file))
+}
+
+// A file written before the goal and lender rules existed keeps the row's current
+// values for them; a file written after carries its own.
+func TestOldFileKeepsTheRulesItDoesNotName(t *testing.T) {
+	c, _ := clientAndDB(t, testToken)
+	ctx := context.Background()
+	rules := readBook(t, c).GetRules()
+	rules.GoalRs, rules.CarFloorPercent = 600000, 11
+	_, err := c.UpdateRules(ctx, connect.NewRequest(&ntxv1.UpdateRulesRequest{Rules: rules}))
+	must(t, err)
+	file := export(t, c)
+	old := regexp.MustCompile(`,\n\s+"(goal_rs|fund_sip_rs|npl_ceiling_percent|car_floor_percent|distributable_above_zero|max_pe_to_sector_median)": [0-9.]+`).
+		ReplaceAll(file, nil)
+	if bytes.Equal(old, file) {
+		t.Fatal("the new rule keys were not in the export")
+	}
+	must(t, importFile(c, old))
+	if got := readBook(
+		t,
+		c,
+	).GetRules(); got.GetGoalRs() != 600000 || got.GetCarFloorPercent() != 11 ||
+		got.GetNplCeilingPercent() != 5 {
+		t.Errorf("after an old file: %v", got)
+	}
+	must(t, importFile(c, file))
+	if again := export(t, c); !bytes.Equal(again, file) {
+		t.Errorf("the new fields did not round-trip:\n%s\n%s", again, file)
+	}
+}
+
 // table is the exported file with one table's rows replaced.
 func table(file []byte, name, rows string) string {
 	re := regexp.MustCompile(`"` + name + `": \[[^\]]*\]`)

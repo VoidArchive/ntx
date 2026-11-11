@@ -21,6 +21,8 @@ SELECT * FROM rules WHERE id = 1;
 UPDATE rules SET
     soft_cap_percent = ?, hard_cap_percent = ?, sector_cap_percent = ?, max_positions = ?,
     min_entry_rs = ?, one_hydro_per_basin = ?, candidate_min_rating = ?, candidate_dividend_record = ?,
-    monthly_budget_rs = ?, multiplier_below_median = ?, multiplier_bottom_quarter = ?
+    monthly_budget_rs = ?, multiplier_below_median = ?, multiplier_bottom_quarter = ?,
+    goal_rs = ?, fund_sip_rs = ?, npl_ceiling_percent = ?, car_floor_percent = ?,
+    distributable_above_zero = ?, max_pe_to_sector_median = ?
 WHERE id = 1
 RETURNING *;
