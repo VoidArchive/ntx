@@ -213,6 +213,19 @@
 						{/each}
 					</select>
 				</label>
+				<label class="flex items-center gap-1 lg:hidden">
+					Sort
+					<select
+						value={sortCol.key}
+						onchange={(e) =>
+							sortBy(columns.find((c) => c.key === e.currentTarget.value) ?? columns[0])}
+						class="h-8 rounded-md border border-input bg-background px-2 text-sm"
+					>
+						{#each columns as col (col.key)}
+							<option value={col.key}>{col.label}</option>
+						{/each}
+					</select>
+				</label>
 				{#if hasFilters}
 					<button
 						onclick={() => goto('?', { replace: true, shallow: true })}
@@ -225,13 +238,74 @@
 				>
 			</div>
 
-			<div class="table-scroll mt-3">
+			<ul class="mt-3 text-sm lg:hidden" aria-label="Plants">
+				{#each rows as p, i (p.id)}
+					{#if sortCol.key === 'basin' && rows[i - 1]?.basin !== p.basin}
+						{@const b = data.basins.find((x) => x.name === p.basin)}
+						<li class="-mx-2 rounded bg-muted/30 px-2 py-1.5 text-xs font-medium">
+							{p.basin}
+							{#if b}
+								<span class="font-normal text-muted-foreground">
+									· {b.plantCount} plants
+									<span class="ml-3"><StateMark state={b.state} /></span>
+								</span>
+							{/if}
+						</li>
+					{/if}
+					<li class="border-b border-border/50">
+						<button
+							onclick={() => select(selected?.id === p.id ? undefined : p)}
+							aria-pressed={selected?.id === p.id}
+							class="-mx-2 flex w-[calc(100%+1rem)] items-start justify-between gap-3 rounded px-2 py-2.5 text-left {selected?.id ===
+							p.id
+								? 'bg-muted/50'
+								: ''}"
+						>
+							<span class="min-w-0">
+								<span class="block font-medium">
+									{p.plant}{#if p.status !== 'operating'}
+										<span class="text-xs font-normal text-muted-foreground">
+											({STATUS_LABEL[p.status]})</span
+										>{/if}
+								</span>
+								<span class="block truncate text-xs text-muted-foreground">
+									<span class="font-serif font-medium text-foreground">{p.symbol}</span>
+									· {p.river} · {num(p.mw, 2)} MW
+								</span>
+								<span class="block text-xs">
+									<StateMark state={p.state} stale={p.stale} />
+									{#if p.latest}
+										<span class="text-muted-foreground">
+											· {num(p.latest.rainMm)} mm · {num(p.latest.dischargeM3s)} m³/s</span
+										>
+									{:else}
+										<span class="text-muted-foreground">· not recorded</span>
+									{/if}
+								</span>
+							</span>
+							<span class="shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+								<span class="block text-sm text-foreground">{num(p.close, 2)}</span>
+								PE {p.pe === undefined ? '—' : `${num(p.pe)}x`} · {p.rating || '—'}
+							</span>
+						</button>
+					</li>
+				{:else}
+					<li class="py-12 text-center text-muted-foreground">
+						No plant matches.
+						<button onclick={() => goto('?', { replace: true, shallow: true })} class="underline"
+							>Clear filters</button
+						>
+					</li>
+				{/each}
+			</ul>
+
+			<div class="table-scroll mt-3 hidden lg:block">
 				<table class="w-full text-sm whitespace-nowrap tabular-nums [&_td+td]:pl-3 [&_th+th]:pl-3">
 					<!-- The header stays while 141 rows scroll; the plant stays while a phone scrolls sideways. -->
 					<!-- Sticky against the scrolling wrapper, so top is 0 on every screen. -->
 					<thead class="sticky top-0 z-10 bg-card text-xs text-muted-foreground">
 						<tr class="border-b border-border">
-							<th class="{thClass} text-left">Plant</th>
+							<th class="{thClass} sticky left-0 bg-card text-left">Plant</th>
 							<th class="{thClass} text-left">Symbol</th>
 							<th class="{thClass} text-left">River</th>
 							{#each columns as col (col.key)}
@@ -293,7 +367,11 @@
 								onmouseenter={() => (hovered = p)}
 								onmouseleave={() => (hovered = undefined)}
 							>
-								<td class="py-1.5 font-medium {active?.id === p.id ? 'bg-muted' : 'bg-background'}">
+								<td
+									class="sticky left-0 py-1.5 font-medium {active?.id === p.id
+										? 'bg-muted'
+										: 'bg-card'}"
+								>
 									<button
 										onclick={() => toggle(p)}
 										aria-expanded={open.has(p.id)}
