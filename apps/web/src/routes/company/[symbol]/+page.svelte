@@ -298,7 +298,7 @@
 					<div class="mt-6">
 						<h3 class="text-xs text-muted-foreground">Bank figures, as filed</h3>
 						<div class="table-scroll mt-1">
-							<table class="w-full text-sm">
+							<table class="w-full text-sm whitespace-nowrap [&_td+td]:pl-3 [&_th+th]:pl-3">
 								<thead class="text-xs text-muted-foreground">
 									<tr>
 										<th class="py-1 text-left font-normal">Period</th>

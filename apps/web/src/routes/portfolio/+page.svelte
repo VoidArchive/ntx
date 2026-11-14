@@ -133,8 +133,12 @@
 		<tr class="border-b border-border/50 hover:bg-accent/40">
 			<td class="py-1.5">
 				<a href="/company/{c.symbol}" class="font-medium hover:underline">{c.symbol}</a>
-				<span class="ml-2 text-muted-foreground">{c.name}</span>
-				{#if c.behind}<span class="block text-xs text-muted-foreground">{c.behind}</span>{/if}
+				<!-- The pinned first column must stay narrow on a phone, or it covers the row it names -->
+				<span class="ml-2 text-muted-foreground max-sm:hidden">{c.name}</span>
+				{#if c.behind}<span
+						class="block text-xs text-muted-foreground max-sm:w-28 max-sm:whitespace-normal"
+						>{c.behind}</span
+					>{/if}
 			</td>
 			<td class="py-1.5 text-muted-foreground">{c.sector}</td>
 			<td class="py-1.5">{c.rating}</td>
@@ -153,7 +157,7 @@
 			<td class="py-1.5 text-right text-muted-foreground"
 				>{c.sectorPeMedian === undefined ? 'not recorded' : `${rs(c.sectorPeMedian, 1)}x`}</td
 			>
-			<td class="max-w-xs py-1.5 text-xs whitespace-normal text-muted-foreground">
+			<td class="max-w-xs py-1.5 text-xs whitespace-normal text-muted-foreground max-sm:min-w-48">
 				{#if c.metricsPeriod}
 					<span class="text-sm text-foreground"
 						>NPL {figure(c.nplPercent, '%')} · CAR {figure(c.carPercent, '%')} · {crore(
@@ -200,7 +204,9 @@
 			<div class="flex items-baseline justify-between gap-4">
 				<h1 class="font-serif text-3xl font-medium tracking-tight">Portfolio</h1>
 				<form method="POST" action="?/forget" use:enhance>
-					<button type="submit" class="text-xs text-muted-foreground underline underline-offset-2"
+					<button
+						type="submit"
+						class="py-1 text-xs text-muted-foreground underline underline-offset-2"
 						>Forget token</button
 					>
 				</form>
@@ -212,7 +218,8 @@
 		<!-- The monthly read: what to buy, what waits on the owner, the next date, the goal. -->
 		<section class="mt-6 card-report" aria-label="This month">
 			<div class="grid gap-8 lg:grid-cols-[1fr_20rem]">
-				<div>
+				<!-- min-w-0: a grid item will not shrink below its table without it, so nothing scrolls -->
+				<div class="min-w-0">
 					<h2 class="font-serif text-xl">This month</h2>
 					{#if sheet}
 						<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{sheet.opening}</p>
@@ -252,7 +259,9 @@
 													class="{field} w-24 text-right"
 												/>
 											</td>
-											<td class="py-1.5 text-xs text-muted-foreground">{l.note}</td>
+											<td class="min-w-64 py-1.5 text-xs whitespace-normal text-muted-foreground"
+												>{l.note}</td
+											>
 										</tr>
 									{:else}
 										<tr
@@ -371,10 +380,14 @@
 							<tr class="border-b border-border/50 hover:bg-accent/40">
 								<td class="py-1.5">
 									<a href={href(h)} class="font-medium hover:underline">{h.symbol}</a>
-									<span class="ml-2 text-muted-foreground">{h.name}</span>
+									<span class="ml-2 text-muted-foreground max-sm:hidden">{h.name}</span>
 								</td>
 								<td class="py-1.5 text-muted-foreground">{h.sector}</td>
-								<td class="py-1.5">
+								<td
+									class="py-1.5 {h.status === HoldingStatus.FROZEN && h.frozenReason
+										? 'max-w-xs min-w-44 whitespace-normal'
+										: ''}"
+								>
 									{statusLabel.get(h.status)}
 									{#if h.status === HoldingStatus.FROZEN && h.frozenReason}
 										<span class="text-xs text-muted-foreground"
@@ -399,7 +412,7 @@
 								<td class="py-1.5 text-right">
 									<button
 										type="button"
-										class="text-xs text-muted-foreground underline underline-offset-2"
+										class="py-1 text-xs text-muted-foreground underline underline-offset-2"
 										onclick={() => (editing = editing === h.symbol ? undefined : h.symbol)}
 										>{editing === h.symbol ? 'Close' : 'Open'}</button
 									>
