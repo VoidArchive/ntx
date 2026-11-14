@@ -305,7 +305,9 @@
 							>
 								<button
 									onclick={() => sortBy(col)}
-									class="hover:text-foreground {col.key === sortCol.key ? 'text-foreground' : ''}"
+									class="-my-2 -ml-3 py-2 pl-3 hover:text-foreground {col.key === sortCol.key
+										? 'text-foreground'
+										: ''}"
 								>
 									{col.label}{#if col.key === sortCol.key}
 										<span aria-hidden="true">{sortDesc ? ' ▼' : ' ▲'}</span>{/if}

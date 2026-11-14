@@ -23,7 +23,7 @@
 
 		<!-- Horizontal Bar Chart -->
 		<div class="overflow-x-auto">
-			<div class="min-w-[36rem] space-y-3">
+			<div class="space-y-3 sm:min-w-[36rem]">
 				{#each holdings as holding (holding.fundSymbol)}
 					{@const barWidth = (holding.value / maxValue) * 100}
 					<a href="/mutual-funds/{holding.fundSymbol}" class="group flex items-center gap-3">
@@ -46,10 +46,14 @@
 						<span class="w-20 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
 							{fmtValue(holding.value)}
 						</span>
-						<span class="w-28 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+						<span
+							class="hidden w-28 shrink-0 text-right text-xs text-muted-foreground tabular-nums sm:block"
+						>
 							{holding.units !== undefined ? `${holding.units.toLocaleString('en-NP')} units` : ''}
 						</span>
-						<span class="w-24 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+						<span
+							class="hidden w-24 shrink-0 text-right text-xs text-muted-foreground tabular-nums sm:block"
+						>
 							{holding.percentOfFund.toFixed(2)}% of fund
 						</span>
 					</a>
