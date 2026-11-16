@@ -217,61 +217,75 @@
 
 		<!-- The monthly read: what to buy, what waits on the owner, the next date, the goal. -->
 		<section class="mt-6 card-report" aria-label="This month">
-			<div class="grid gap-8 lg:grid-cols-[1fr_20rem]">
+			<div class="grid gap-8 xl:grid-cols-[1fr_20rem]">
 				<!-- min-w-0: a grid item will not shrink below its table without it, so nothing scrolls -->
 				<div class="min-w-0">
 					<h2 class="font-serif text-xl">This month</h2>
 					{#if sheet}
 						<p class="mt-3 max-w-3xl font-serif text-xl leading-snug">{sheet.opening}</p>
-						<form method="POST" action="?/executed" use:enhance class="table-scroll mt-3">
-							<table class={table}>
-								<thead class="text-xs text-muted-foreground">
-									<tr class="border-b border-border">
-										<th class="{th} text-left">Symbol</th>
-										<th class="{th} text-right">Available</th>
-										<th class="{th} text-right">Close</th>
-										<th class="{th} text-right">Shares</th>
-										<th class="{th} text-right">Cost</th>
-										<th class="{th} text-right">Carry out</th>
-										<th class="{th} text-left">Note</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each sheet.lines as l (l.symbol)}
-										<tr class="border-b border-border/50">
-											<td class="py-1.5 font-medium">{l.symbol}</td>
-											<td class="py-1.5 text-right">{l.availableRs ? rs(l.availableRs, 0) : '—'}</td
-											>
-											<td class="py-1.5 text-right">
-												{l.close === undefined ? 'not recorded' : rs(l.close)}
-												<span class="block text-xs text-muted-foreground">{l.closeDay}</span>
-											</td>
-											<td class="py-1.5 text-right">{l.shares ? n(l.shares) : '—'}</td>
-											<td class="py-1.5 text-right">{l.costRs ? rs(l.costRs, 0) : '—'}</td>
-											<td class="py-1.5 text-right">
-												<input
-													type="number"
-													name="carry:{l.symbol}"
-													min="0"
-													step="1"
-													value={Math.round(l.newCarryRs)}
-													aria-label="{l.symbol} carry out"
-													class="{field} w-24 text-right"
-												/>
-											</td>
-											<td class="min-w-64 py-1.5 text-xs whitespace-normal text-muted-foreground"
-												>{l.note}</td
-											>
+						<form method="POST" action="?/executed" use:enhance class="mt-3">
+							<div class="@container table-scroll">
+								<table class={table}>
+									<thead class="text-xs text-muted-foreground">
+										<tr class="border-b border-border">
+											<th class="{th} text-left">Symbol</th>
+											<th class="{th} text-right">Available</th>
+											<th class="{th} text-right">Close</th>
+											<th class="{th} text-right">Shares</th>
+											<th class="{th} text-right">Cost</th>
+											<th class="{th} text-right">Carry out</th>
 										</tr>
+									</thead>
+									{#each sheet.lines as l (l.symbol)}
+										<tbody class="border-b border-border/50">
+											<tr>
+												<td class="py-1.5 font-medium">{l.symbol}</td>
+												<td class="py-1.5 text-right"
+													>{l.availableRs ? rs(l.availableRs, 0) : '—'}</td
+												>
+												<td class="py-1.5 text-right">
+													{l.close === undefined ? 'not recorded' : rs(l.close)}
+													<span class="block text-xs text-muted-foreground">{l.closeDay}</span>
+												</td>
+												<td class="py-1.5 text-right">{l.shares ? n(l.shares) : '—'}</td>
+												<td class="py-1.5 text-right">{l.costRs ? rs(l.costRs, 0) : '—'}</td>
+												<td class="py-1.5 text-right">
+													<input
+														type="number"
+														name="carry:{l.symbol}"
+														min="0"
+														step="1"
+														value={Math.round(l.newCarryRs)}
+														aria-label="{l.symbol} carry out"
+														class="{field} w-24 text-right"
+													/>
+												</td>
+											</tr>
+											{#if l.note}
+												<tr>
+													<td
+														colspan="6"
+														class="pb-1.5 text-xs whitespace-normal text-muted-foreground"
+													>
+														<!-- Pinned to the scroll box and capped at its width, so the note reads whole while the figures scroll -->
+														<p class="sticky left-0 max-w-[calc(100cqw-3rem)] max-sm:left-6">
+															{l.note}
+														</p>
+													</td>
+												</tr>
+											{/if}
+										</tbody>
 									{:else}
-										<tr
-											><td colspan="7" class="py-3 text-muted-foreground"
-												>No Build or Frozen holding: nothing to propose this month.</td
-											></tr
-										>
+										<tbody>
+											<tr
+												><td colspan="6" class="py-3 text-muted-foreground"
+													>No Build or Frozen holding: nothing to propose this month.</td
+												></tr
+											>
+										</tbody>
 									{/each}
-								</tbody>
-							</table>
+								</table>
+							</div>
 							<p class="mt-2 text-xs text-muted-foreground">
 								A proposal, never an order placed: whole lots of ten at the latest close, the
 								remainder carried. Edit a carry before marking the month executed.
@@ -282,7 +296,7 @@
 						</form>
 					{/if}
 				</div>
-				<dl class="grid gap-5 text-sm sm:grid-cols-3 lg:grid-cols-1">
+				<dl class="grid gap-5 text-sm sm:grid-cols-3 xl:grid-cols-1">
 					<div>
 						<dt class="text-xs text-muted-foreground">Triggered or waiting on you</dt>
 						<dd class="mt-1 font-serif text-3xl font-medium tabular-nums">
