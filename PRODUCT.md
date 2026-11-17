@@ -54,7 +54,7 @@ Decided 2026-11-10: sub-project 3, the personal rules layer, is specified (docs/
 ## Brand Commitments
 
 - Name: NTX. Domain: ntx.anishshrestha.com. Repository: github.com/voidarchive/ntx. License: MIT.
-- Favicon: apps/web/src/lib/assets/favicon.png.
+- Favicon: apps/web/static/favicon.png.
 - No visual constraint was pinned. The current Fira Code monospace typography and cream palette were an experiment, not a commitment.
 
 ## Evidence on Hand
