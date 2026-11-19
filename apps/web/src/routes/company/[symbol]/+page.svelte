@@ -21,6 +21,7 @@
 	import CircleDashed from '@lucide/svelte/icons/circle-dashed';
 	import type { Claim, Check } from '#lib/gen/ntx/v1/story_pb.js';
 	import BankMetricForm from '#lib/components/portfolio/BankMetricForm.svelte';
+	import { sectorNames } from '#lib/utils.js';
 
 	let { data } = $props();
 
@@ -155,6 +156,18 @@
 		</ul>
 	{/if}
 {/snippet}
+
+<svelte:head>
+	{#if company}
+		<title>{company.name} ({company.symbol}) share price and fundamentals · NTX</title>
+		<meta
+			name="description"
+			content={lede.length
+				? lede.map((c) => c.text).join(' ')
+				: `${company.name} (${company.symbol}), ${sectorNames[company.sector] ?? 'Others'} sector on NEPSE: share price, quarterly filings and fundamentals.`}
+		/>
+	{/if}
+</svelte:head>
 
 {#if company}
 	<div class="mx-auto max-w-7xl px-4 py-6">

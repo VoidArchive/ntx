@@ -3,6 +3,7 @@
 	import favicon from '#lib/assets/favicon.png';
 	import AlertCircle from '@lucide/svelte/icons/circle-alert';
 	import { onNavigate } from '$app/navigation';
+	import { page } from '$app/state';
 	import { ModeWatcher } from 'mode-watcher';
 	import Sidebar from '#lib/components/Sidebar.svelte';
 	import type { LayoutData } from './$types';
@@ -49,6 +50,7 @@
 			"sameAs": ["https://github.com/voidarchive/ntx"]
 		}
 	</script>
+	<link rel="canonical" href="https://ntx.anishshrestha.com{page.url.pathname}" />
 </svelte:head>
 <ModeWatcher defaultMode="dark" />
 <div class="lg:flex">
