@@ -157,6 +157,14 @@
 	);
 </script>
 
+<svelte:head>
+	<title>NTX · NEPSE stocks, fundamentals and screener</title>
+	<meta
+		name="description"
+		content="NEPSE's latest session, gainers and losers, sector PE and profitability, and recent company filings, with a screener and a page for every listed company."
+	/>
+</svelte:head>
+
 <main class="mx-auto max-w-7xl px-4 py-6">
 	<!-- The session: what the market did, how broadly, and the figures behind it -->
 	<header class="card-report">
