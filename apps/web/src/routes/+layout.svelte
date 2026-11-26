@@ -1,6 +1,5 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '#lib/assets/favicon.png';
 	import AlertCircle from '@lucide/svelte/icons/circle-alert';
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
@@ -25,7 +24,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
 	<script type="application/ld+json">
 		{
 			"@context": "https://schema.org",
